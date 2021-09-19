@@ -1,0 +1,94 @@
+{
+  "project_info": {
+    "project_number": "232181553323",
+    "firebase_url": "https://commer-ef151.firebaseio.com",
+    "project_id": "commer-ef151",
+    "storage_bucket": "commer-ef151.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:232181553323:android:b22ebeac82c93604",
+        "android_client_info": {
+          "package_name": "com.commer.admin.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "232181553323-qek21bqbanl14k40ph4ddparglohdirs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.commer.admin.app",
+            "certificate_hash": "362754dc45d99c716caf710380299d87f34b5ebc"
+          }
+        },
+        {
+          "client_id": "232181553323-eilihkps148nu7dp45cole4mlr7pkf1d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfW5Wqa5hgsUAzxsI22f9u3iimLNBzl0w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "232181553323-eilihkps148nu7dp45cole4mlr7pkf1d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:232181553323:android:4bad672932d0f6e19b3fee",
+        "android_client_info": {
+          "package_name": "com.logicabooleana.commer.producto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "232181553323-70ph5ut3ibq0s9h7ht25kbg9lth6doau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.logicabooleana.commer.producto",
+            "certificate_hash": "362754dc45d99c716caf710380299d87f34b5ebc"
+          }
+        },
+        {
+          "client_id": "232181553323-mpl6pq1r85a2qfjlt7gsshbppa4st4je.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.logicabooleana.commer.producto",
+            "certificate_hash": "6a27b7b046baf17a979420ce37d0252dbd6ec7f3"
+          }
+        },
+        {
+          "client_id": "232181553323-eilihkps148nu7dp45cole4mlr7pkf1d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfW5Wqa5hgsUAzxsI22f9u3iimLNBzl0w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "232181553323-eilihkps148nu7dp45cole4mlr7pkf1d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-8441738551183357~8351989933"
+    }
+  ],
+  "configuration_version": "1"
+}
