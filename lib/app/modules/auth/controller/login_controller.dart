@@ -2,11 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../customFullScreenDialog.dart';
-import 'home_controller.dart';
+import '../../home/customFullScreenDialog.dart';
+import '../../splash/controllers/splash_controller.dart';
 
 class LoginController extends GetxController {
-  HomeController homeController = Get.find<HomeController>();
+
+
+  SplashController homeController = Get.find<SplashController>();
 
   @override
   void onInit() async {
@@ -20,6 +22,7 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {}
+
 
   void login() async {
     // visualizamos un diálogo alerta

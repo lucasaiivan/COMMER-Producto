@@ -1,15 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-
-import 'home_controller.dart';
+import '../../splash/controllers/splash_controller.dart';
 
 class WelcomeController extends GetxController {
-  HomeController homeController = Get.find<HomeController>();
+
+  SplashController homeController = Get.find<SplashController>();
+
   late User user;
+
+
   @override
   void onInit() async {
     super.onInit();
-    user = Get.arguments;
+    user = Get.arguments['currentUser'];
   }
 
   @override

@@ -1,10 +1,11 @@
-import 'package:producto/app/modules/home/bindings/home_binding.dart';
-import 'package:producto/app/modules/home/bindings/login_binding.dart';
+
+import 'package:producto/app/modules/auth/bindings/login_binding.dart';
+import 'package:producto/app/modules/auth/views/login_view.dart';
+import 'package:producto/app/modules/splash/bindings/splash_binding.dart';
 import 'package:producto/app/modules/home/bindings/welcome_binding.dart';
-import 'package:producto/app/modules/home/views/splash_view.dart';
-import 'package:producto/app/modules/home/views/login_view.dart';
 import 'package:producto/app/modules/home/views/welcome_view.dart';
 import 'package:get/get.dart';
+import 'package:producto/app/modules/splash/views/splash_view.dart';
 
 part 'app_routes.dart';
 

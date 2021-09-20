@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../customFullScreenDialog.dart';
+import '../../home/customFullScreenDialog.dart';
 
-class HomeController extends GetxController {
+class SplashController extends GetxController {
 
   var isSignIn = false.obs;
   // instancias de FirebaseAuth y GoogleSignIn
@@ -37,7 +37,7 @@ class HomeController extends GetxController {
     CustomFullScreenDialog.showDialog();  // visualizamos un diálogo alerta
     
     if (isLoggedIn) {
-      Get.offAllNamed(Routes.WELCOME, arguments: firebaseAuth.currentUser);
+      Get.offAllNamed(Routes.WELCOME, arguments: {'currentUser':firebaseAuth.currentUser});
     } else {
       Get.offAllNamed(Routes.LOGIN);
     }
