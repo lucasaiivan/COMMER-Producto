@@ -4,39 +4,39 @@
 
 import 'dart:convert';
 
-UsersModel usersModelFromJson(String str) =>
-    UsersModel.fromJson(json.decode(str));
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-String usersModelToJson(UsersModel data) => json.encode(data.toJson());
+UserAuthModel usersModelFromJson(String str) =>
+    UserAuthModel.fromJson(json.decode(str));
 
-class UsersModel {
-  UsersModel({
-    this.uid,
-    this.name,
-    this.keyName,
-    this.email,
-    this.creationTime,
-    this.lastSignInTime,
-    this.photoUrl,
-    this.status,
-    this.updatedTime,
-    this.chats,
+String usersModelToJson(UserAuthModel data) => json.encode(data.toJson());
+
+class UserAuthModel {
+  UserAuthModel({
+    required this.uid,
+    required this.nombre,
+    required this.keyName,
+    required this.email,
+    required this.creationTime,
+    required this.lastSignInTime,
+    required this.photoUrl,
+    required this.status,
+    required this.updatedTime,
   });
 
-  String? uid;
-  String? name;
-  String? keyName;
-  String? email;
-  String? creationTime;
-  String? lastSignInTime;
-  String? photoUrl;
-  String? status;
-  String? updatedTime;
-  List<ChatUser>? chats;
+  String uid;
+  String nombre;
+  String keyName;
+  String email;
+  String creationTime;
+  String lastSignInTime;
+  String photoUrl;
+  String status;
+  String updatedTime;
 
-  factory UsersModel.fromJson(Map<String, dynamic> json) => UsersModel(
+  factory UserAuthModel.fromJson(Map<String, dynamic> json) => UserAuthModel(
         uid: json["uid"],
-        name: json["name"],
+        nombre: json["nombre"],
         keyName: json["keyName"],
         email: json["email"],
         creationTime: json["creationTime"],
@@ -48,7 +48,7 @@ class UsersModel {
 
   Map<String, dynamic> toJson() => {
         "uid": uid,
-        "name": name,
+        "name": nombre,
         "keyName": keyName,
         "email": email,
         "creationTime": creationTime,
@@ -59,30 +59,52 @@ class UsersModel {
       };
 }
 
-class ChatUser {
-  ChatUser({
-    this.connection,
-    this.chatId,
-    this.lastTime,
-    this.total_unread,
+class UsersModel {
+  UsersModel({
+    this.id = '',
+    this.email = '',
+    this.keyName = '',
+    this.urlfotoPerfil = '',
+    //required this.timestamCreation ,
+    //required this.timestampSesion,
+    this.idBusiness = '',
   });
 
-  String? connection;
-  String? chatId;
-  String? lastTime;
-  int? total_unread;
+  late String id;
+  late String email;
+  late String urlfotoPerfil;
+  late String keyName;
+  //late Timestamp timestamCreation;
+  //late Timestamp timestampSesion;
+  late String idBusiness;
 
-  factory ChatUser.fromJson(Map<String, dynamic> json) => ChatUser(
-        connection: json["connection"],
-        chatId: json["chat_id"],
-        lastTime: json["lastTime"],
-        total_unread: json["total_unread"],
+  factory UsersModel.fromJson(Map<String, dynamic> json) => UsersModel(
+        id: json["id"],
+        email: json["email"],
+        keyName: json["keyName"] ?? json["nombre"],
+        urlfotoPerfil: json["urlfotoPerfil"],
+        //timestamCreation: json["timestamCreation"] ?? json["timestamp_creation"],
+        //timestampSesion: json["timestampSesion"] ?? json["timestamp_sesion"],
+        idBusiness: json["idBusiness"] ?? json["id_cuenta_negocio"],
       );
 
   Map<String, dynamic> toJson() => {
-        "connection": connection,
-        "chat_id": chatId,
-        "lastTime": lastTime,
-        "total_unread": total_unread,
+        "id": id,
+        "email": email,
+        "keyName": keyName,
+        "urlfotoPerfil": urlfotoPerfil,
+        //"timestamCreation": timestamCreation,
+        //"timestampSesion": timestampSesion,
+        "idBusiness": idBusiness,
       };
+  UsersModel.fromDocumentSnapshot(
+      {required DocumentSnapshot documentSnapshot}) {
+    this.id = documentSnapshot.id;
+    this.email = documentSnapshot["email"];
+    this.keyName = documentSnapshot["nombre"]  ;
+    this.urlfotoPerfil = documentSnapshot["urlfotoPerfil"] ?? 'null';
+    //this.timestamCreation = documentSnapshot["timestamCreation"] ?? documentSnapshot["timestamp_creation"];
+    //this.timestampSesion = documentSnapshot["timestampSesion"] ?? documentSnapshot["timestamp_sesion"];
+    this.idBusiness = documentSnapshot["id_cuenta_negocio"] ;
+  }
 }

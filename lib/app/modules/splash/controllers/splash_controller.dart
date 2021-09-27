@@ -22,7 +22,6 @@ class SplashController extends GetxController {
     ever(isSignIn, handleAuthStateChanged);
     isSignIn.value = firebaseAuth.currentUser != null;
     firebaseAuth.authStateChanges().listen((event) {
-      if (event != null) Database.initUserModel(event.uid);
       isSignIn.value = event != null;
     });
 

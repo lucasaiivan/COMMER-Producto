@@ -8,7 +8,7 @@ class WelcomeView extends GetView<WelcomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
+        child: Obx(()=> controller.load==false?Text('profile load...'):Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -19,24 +19,24 @@ class WelcomeView extends GetView<WelcomeController> {
             SizedBox(
               height: 16,
             ),
-            CircleAvatar(
+           CircleAvatar(
               radius: 70,
-              backgroundImage: NetworkImage(controller.user.photoURL as String),
-            ),
+              backgroundImage: NetworkImage( controller.userProfile.urlfotoPerfil ),
+            ), 
             SizedBox(
               height: 10,
             ),
             Text(
-              'Display Name : ${controller.user.displayName}',
+              'Display Name : ${controller.userProfile.keyName}',
               style: TextStyle(fontSize: 18, color: Colors.white),
             ),
             SizedBox(
               height: 10,
             ),
-            Text(
-              controller.user.email as String,
+            Obx(()=>Text(
+              controller.userProfile.email ,
               style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
+            ),),
             SizedBox(
               height: 10,
             ),
@@ -52,9 +52,11 @@ class WelcomeView extends GetView<WelcomeController> {
                 },
               ),
             ),
+            
+
           ],
         ),
-      ),
+      )),
     );
   }
 }
