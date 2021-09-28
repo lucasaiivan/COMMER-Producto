@@ -52,7 +52,7 @@ class WelcomeView extends GetView<WelcomeController> {
                 },
               ),
             ),
-            
+            Text('Display Name business : ${ controller.profileBusiness.username }',style: TextStyle(fontSize: 18, color: Colors.white)),
 
           ],
         ),

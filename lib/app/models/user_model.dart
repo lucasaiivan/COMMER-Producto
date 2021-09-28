@@ -108,3 +108,116 @@ class UsersModel {
     this.idBusiness = documentSnapshot["id_cuenta_negocio"] ;
   }
 }
+
+
+
+class ProfileBusinessModel {
+  
+  // Informacion del negocios
+    String id="";
+    String username="";
+    String imagen_perfil="";
+    String nombre_negocio="";
+    String descripcion="";
+    //Timestamp timestamp_creation; // Fecha en la que se creo la cuenta
+    //Timestamp timestamp_login; // Fecha de las ultima ves que inicio la app
+    String signo_moneda ="\$" ;
+
+
+    // informacion de cuenta
+    bool bloqueo=false;
+    String  mensaje_bloqueo="";
+    bool cuenta_activa = true;  // Estado de el uso de la cuenta dependiendo el uso // Las cuentas desactivadas no aprecen en el mapa
+    bool cuenta_verificada=false; // Cuenta verificada
+
+    // Ubicacion
+    String codigo_pais="";
+    String pais="";
+    String provincia="";
+    String ciudad="";
+    String direccion="";
+   
+
+  ProfileBusinessModel({
+    // Informacion del negocios
+    this.id="",
+    this.username="",
+    this.imagen_perfil="",
+    this.nombre_negocio="",
+    this.descripcion="",
+    //this.timestamp_creation, // Fecha en la que se creo la cuenta
+    //this.timestamp_login, // Fecha de las ultima ves que inicio la app
+    this.signo_moneda ="\$" ,
+    // informacion de cuenta
+    this.bloqueo=false,
+    this.mensaje_bloqueo="",
+    this.cuenta_activa = true, // Estado de el uso de la cuenta dependiendo el uso // Las cuentas desactivadas no aprecen en el mapa
+    this.cuenta_verificada=false, // Cuenta verificada
+
+    // Ubicacion
+    this.codigo_pais="",
+    this.pais="",
+    this.provincia="",
+    this.ciudad="",
+    this.direccion="",
+    });
+  ProfileBusinessModel.fromMap(Map data) {
+    id = data['id'];
+    username=data['username'];
+    imagen_perfil = data['imagen_perfil'] ?? '';
+    nombre_negocio = data['nombre_negocio'];
+    descripcion = data['descripcion'];
+   // timestamp_creation = data['timestamp_creation'];
+    //timestamp_login = data['timestamp_login'];
+    signo_moneda = data['signo_moneda']??"\$";
+    bloqueo = data['bloqueo'];
+    mensaje_bloqueo = data['mensaje_bloqueo'];
+    cuenta_activa = data['cuenta_activa'];
+    cuenta_verificada = data['cuenta_verificada'];
+    codigo_pais = data['codigo_pais'];
+    direccion = data['direccion'];
+    ciudad = data['ciudad'];
+    provincia = data['provincia'];
+    pais = data['pais'];
+  }
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "username":username,
+        "imagen_perfil": imagen_perfil,
+        "nombre_negocio": nombre_negocio,
+        "descripcion": descripcion,
+        //"timestamp_creation": timestamp_creation,
+        //"timestamp_login": timestamp_login,
+        "signo_moneda": signo_moneda,
+        "bloqueo": bloqueo,
+        "mensaje_bloqueo": mensaje_bloqueo,
+        "cuenta_activa": cuenta_activa,
+        "cuenta_verificada": cuenta_verificada,
+        "codigo_pais": codigo_pais,
+        "pais": pais,
+        "provincia": provincia,
+        "ciudad": ciudad,
+        "direccion": direccion,
+        
+    };
+
+    ProfileBusinessModel.fromDocumentSnapshot(
+      {required DocumentSnapshot documentSnapshot}) {
+    this.id = documentSnapshot.id;
+    this.username = documentSnapshot["username"];
+    this.imagen_perfil = documentSnapshot["imagen_perfil"]  ;
+    this.nombre_negocio = documentSnapshot["nombre_negocio"] ?? 'null';
+    this.descripcion = documentSnapshot["descripcion"];
+    this.signo_moneda = documentSnapshot["signo_moneda"];
+    this.bloqueo = documentSnapshot["bloqueo"];
+    this.mensaje_bloqueo = documentSnapshot["mensaje_bloqueo"];
+    this.cuenta_activa = documentSnapshot["cuenta_activa"];
+    this.cuenta_verificada = documentSnapshot["cuenta_verificada"];
+    this.codigo_pais = documentSnapshot["codigo_pais"];
+    this.pais = documentSnapshot["pais"];
+    this.provincia = documentSnapshot["provincia"];
+    this.ciudad = documentSnapshot["ciudad"];
+    this.direccion = documentSnapshot["direccion"];
+  }
+
+}
