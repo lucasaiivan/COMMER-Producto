@@ -13,13 +13,16 @@ class WelcomeController extends GetxController {
   static Rx<bool> loadData = false.obs;
   static Rx<bool> loadDataProfileBusiness = false.obs;
   static Rx<String> nameBusiness = ''.obs;
+  static Rx<String> selectBusinessId = ''.obs;
 
 
 
+  User get getUserAuth => userAuth;
   bool get load => loadData.value;
   UsersModel get userProfile => _userModel.value;
   bool get loadProfileBusiness => loadDataProfileBusiness.value;
   String get nameProfileBusiness => nameBusiness.value;
+  String get getSelectBusinessId => selectBusinessId.value;
   ProfileBusinessModel get profileBusiness => _profileBusiness.value;
 
   set setProfileBusiness(ProfileBusinessModel user) => _profileBusiness.value = user;
@@ -27,6 +30,7 @@ class WelcomeController extends GetxController {
   set setLoad(bool value) => loadData.value = value;
   set setLoadProfileBusiness(bool value) => loadDataProfileBusiness.value = value;
   set setnameProfileBusiness(String value) => nameBusiness.value = value;
+  set setSelectBusinessId(String value) => selectBusinessId.value = value;
 
   void readProfileBursiness({required String id}) {
 

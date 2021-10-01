@@ -2,11 +2,11 @@ import 'package:producto/app/routes/app_pages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:producto/app/services/database.dart';
 
 import '../../home/customFullScreenDialog.dart';
 
 class SplashController extends GetxController {
+  
   var isSignIn = false.obs;
   // instancias de FirebaseAuth y GoogleSignIn
   late GoogleSignIn googleSign = GoogleSignIn();

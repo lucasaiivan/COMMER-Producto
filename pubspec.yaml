@@ -42,6 +42,13 @@ dependencies:
   liquid_swipe: ^2.1.0
   cupertino_icons: ^1.0.2 # Use with the CupertinoIcons class for iOS style icons.
   font_awesome_flutter: ^9.1.0 # El paquete Font Awesome Icon disponible como conjunto de Flutter Icons.
+  cached_network_image: ^3.1.0 # Una biblioteca de aleteo para mostrar imágenes de Internet y mantenerlas en el directorio de caché.
+  animated_floating_buttons: ^0.0.2 # Este paquete se basa en el tutorial de Agung Surya.
+  get_storage: ^2.0.3 # Un valor clave rápido, extra ligero y sincrónico en la memoria, que realiza una copia de seguridad de los datos en el disco en cada operación.
+  animate_do: ^2.0.0 # Un paquete de animación inspirado en Animate.css , construido usando solo animaciones de Flutter, sin paquetes adicionales.
+  url_launcher: ^6.0.12 # Un complemento de Flutter para lanzar una URL. Admite iOS, Android, web, Windows, macOS y Linux.
+  shimmer: ^2.0.0 # Un paquete proporciona una manera fácil de agregar un efecto de brillo en el proyecto Flutter
+
 
 flutter_icons:
   android: true

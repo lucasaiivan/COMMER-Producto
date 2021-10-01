@@ -27,7 +27,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.WELCOME,
-      page: () => WelcomeView(),
+      page: () => PagePrincipal(),
       binding: WelcomeBinding(),
     ),
   ];
