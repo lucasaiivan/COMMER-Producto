@@ -41,9 +41,12 @@ class Database {
   // future
   static Future<DocumentSnapshot<Map<String, dynamic>>> readFutureUserModel( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readFutureProfileBusinessModel( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).get();
+  static Future<QuerySnapshot<Map<String, dynamic>>> readFutureProducts( {int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).get();
+  static Future<QuerySnapshot<Map<String, dynamic>>> readFutureProductCatalogue( { required String idBusiness,required String idProduct}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idBusiness/EXTENSION_CATALOGO/$idProduct').get();
   // stream 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readStreamUserModel( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).snapshots();
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readStreamProfileBusinessModel( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).snapshots();
+  static Stream<QuerySnapshot<Map<String, dynamic>>> readStreamProductsCatalogue( { required String id}) => FirebaseFirestore.instance.collection('NEGOCIOS/$id/EXTENSION_CATALOGO').orderBy("timestamp_creation",descending: true).snapshots();
 
   //  update value
   //  Para actualizar los datos en la base de datos, puede usar el update()método en el documentReferencerobjeto pasando los nuevos datos como un mapa. Para actualizar un documento en particular de la base de datos, deberá usar su ID de documento único .

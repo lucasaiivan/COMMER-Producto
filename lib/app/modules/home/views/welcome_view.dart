@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:math' as math;
 import 'package:get/get.dart';
+import 'package:producto/app/models/catalogo_model.dart';
 
 import 'package:producto/app/modules/home/controllers/welcome_controller.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
@@ -62,7 +63,7 @@ class PagePrincipal extends GetView<WelcomeController> {
                 padding: const EdgeInsets.all(30.0),
                 decoration: BoxDecoration(
                     color: Colors.transparent,
-                    border: Border.all(width: 0.2, color: color),
+                    border: Border.all(width: 0.5, color: color),
                     borderRadius: BorderRadius.all(Radius.circular(30.0))),
                 child: Image(
                     color: color,
@@ -82,57 +83,91 @@ class PagePrincipal extends GetView<WelcomeController> {
                       fontSize: 24.0),
                   textAlign: TextAlign.center),
             ),
-            widgetSuggestions(),
+            Obx(() =>
+                widgetSuggestions(list: controller.getListSuggestedProducts)),
           ],
         ),
       ),
     );
   }
 
-  Widget widgetSuggestions() {
+  Widget widgetSuggestions({required List<Producto> list}) {
+    if (list.length == 0) return Container();
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text('sugerencias para ti'),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              InkWell(
-                onTap: (){},
-                borderRadius: BorderRadius.circular(50),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Container(child: CircleAvatar(child: CircleAvatar(child: Icon(Icons.search),radius: 24),radius: 26,backgroundColor: Colors.purple)),
-                ),
-              ),
-              InkWell(
-                onTap: (){},
-                borderRadius: BorderRadius.circular(50),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: CircleAvatar(child: CircleAvatar(child:ClipRRect(child: CachedNetworkImage(imageUrl: 'https://picsum.photos/300/300',fit: BoxFit.cover,),borderRadius: BorderRadius.circular(10000.0),),radius: 24),radius: 26,backgroundColor: Colors.purple),
-                ),
-              ),
-              InkWell(
-                onTap: (){},
-                borderRadius: BorderRadius.circular(50),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: CircleAvatar(child: CircleAvatar(child:ClipRRect(child: CachedNetworkImage(imageUrl: 'https://picsum.photos/300/300',fit: BoxFit.cover,),borderRadius: BorderRadius.circular(10000.0),),radius: 24),radius: 26,backgroundColor: Colors.purple),
-                ),
-              ),
-              InkWell(
-                onTap: (){},
-                borderRadius: BorderRadius.circular(50),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: CircleAvatar(child: CircleAvatar(child:ClipRRect(child: CachedNetworkImage(imageUrl: 'https://picsum.photos/300/300',fit: BoxFit.cover,),borderRadius: BorderRadius.circular(10000.0),),radius: 24),radius: 26,backgroundColor: Colors.purple),
-                ),
-              ),
-
-            ],
+        Container(
+          height: 100,
+          child: ListView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemCount: list.length,
+            itemBuilder: (_, index) {
+              if (index == 0) {
+                return Row(
+                  children: [
+                    InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(50),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: Icon(
+                                  Icons.search,
+                                  color: Colors.purple,
+                                ),
+                                radius: 24,
+                                backgroundColor: Colors.white),
+                            radius: 26,
+                            backgroundColor: Colors.purple),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(50),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: ClipRRect(
+                                  child: CachedNetworkImage(
+                                      imageUrl: list[index].urlimagen, fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                radius: 24),
+                            radius: 26,
+                            backgroundColor: Colors.purple),
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  InkWell(
+                    onTap: () {},
+                    borderRadius: BorderRadius.circular(50),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: CircleAvatar(
+                          child: CircleAvatar(
+                              child: ClipRRect(
+                                child: CachedNetworkImage(
+                                    imageUrl: list[index].urlimagen, fit: BoxFit.cover),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              radius: 24),
+                          radius: 26,
+                          backgroundColor: Colors.purple),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ],
