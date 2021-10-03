@@ -48,7 +48,7 @@ dependencies:
   animate_do: ^2.0.0 # Un paquete de animación inspirado en Animate.css , construido usando solo animaciones de Flutter, sin paquetes adicionales.
   url_launcher: ^6.0.12 # Un complemento de Flutter para lanzar una URL. Admite iOS, Android, web, Windows, macOS y Linux.
   shimmer: ^2.0.0 # Un paquete proporciona una manera fácil de agregar un efecto de brillo en el proyecto Flutter
-
+  expandable_bottom_sheet: ^1.1.1+1 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
 
 flutter_icons:
   android: true

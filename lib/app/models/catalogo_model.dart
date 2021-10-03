@@ -6,9 +6,12 @@ class Producto {
   bool favorite = false;
   String idMarca = ""; // ID de la marca por defecto esta vacia
   String idNegocio = ""; // ID del negocios que actualizo el producto
-  String urlimagen = "https://default"; // URL imagen
+  String urlImagen = "https://default"; // URL imagen
   String titulo = ""; // Titulo
   String descripcion = ""; // Informacion
+  double precioVenta = 0.0;
+  double precioCompra = 0.0;
+  double precioComparacion = 0.0;
   String codigo = "";
   String categoria = ""; // ID de la categoria del producto
   String subcategoria = ""; // ID de la subcategoria del producto
@@ -23,9 +26,12 @@ class Producto {
     this.favorite = false,
     this.idMarca = "",
     this.idNegocio = "",
-    this.urlimagen = "",
+    this.urlImagen = "",
     this.titulo = "",
     this.descripcion = "",
+    this.precioVenta = 0.0,
+    this.precioCompra = 0.0,
+    this.precioComparacion = 0.0,
     this.codigo = "",
     this.categoria = "",
     this.subcategoria = "",
@@ -41,9 +47,12 @@ class Producto {
         "favorite": verificado,
         "id_marca": idMarca,
         "id_negocio": idNegocio,
-        "urlimagen": urlimagen,
+        "urlimagen": urlImagen,
         "titulo": titulo,
         "descripcion": descripcion,
+        "precio_venta": precioVenta,
+        "precio_compra": precioCompra,
+        "precio_comparacion": precioComparacion,
         "codigo": codigo,
         "categoria": categoria,
         "subcategoria": subcategoria,
@@ -58,9 +67,12 @@ class Producto {
       favorite: data['favorite'] ?? false,
       idMarca: data['id_marca'] ?? '',
       idNegocio: data['id_negocio'] ?? '',
-      urlimagen: data['urlimagen'] ?? 'https://default',
+      urlImagen: data['urlimagen'] ?? 'https://default',
       titulo: data['titulo'] ?? '',
       descripcion: data['descripcion'] ?? '',
+      precioVenta: data['precio_venta'] ?? 0.0,
+      precioCompra: data['precio_compra'] ?? 0.0,
+      precioComparacion: data['precio_comparacion'] ?? 0.0,
       codigo: data['codigo'] ?? '',
       categoria: data['categoria'] ?? '',
       subcategoria: data['subcategoria'] ?? '',
@@ -68,25 +80,24 @@ class Producto {
       timestampCreation: data['timestamp_creation'],
     );
   }
-  ProductoNegocio convertProductCatalogue(){
-    ProductoNegocio productoNegocio=new ProductoNegocio();
-    productoNegocio.id=this.id;
-    productoNegocio.urlimagen=this.urlimagen;
-     productoNegocio.idNegocio=this.idNegocio;
-    productoNegocio.verificado=this.verificado;
-    productoNegocio.favorite=this.favorite;
-    productoNegocio.idMarca=this.idMarca;
-    productoNegocio.titulo=this.titulo;
-    productoNegocio.descripcion=this.descripcion;
-    productoNegocio.codigo=this.codigo;
-    productoNegocio.categoria=this.categoria;
-    productoNegocio.subcategoria=this.subcategoria;
-    productoNegocio.timestampActualizacion=this.timestampActualizacion;
-    productoNegocio.timestampCreation=this.timestampCreation;
+  ProductoNegocio convertProductCatalogue() {
+    ProductoNegocio productoNegocio = new ProductoNegocio();
+    productoNegocio.id = this.id;
+    productoNegocio.urlimagen = this.urlImagen;
+    productoNegocio.idNegocio = this.idNegocio;
+    productoNegocio.verificado = this.verificado;
+    productoNegocio.favorite = this.favorite;
+    productoNegocio.idMarca = this.idMarca;
+    productoNegocio.titulo = this.titulo;
+    productoNegocio.descripcion = this.descripcion;
+    productoNegocio.codigo = this.codigo;
+    productoNegocio.categoria = this.categoria;
+    productoNegocio.subcategoria = this.subcategoria;
+    //productoNegocio.timestampActualizacion=this.timestampActualizacion;
+    //productoNegocio.timestampCreation=this.timestampCreation;
 
     return productoNegocio;
   }
-
 }
 
 class ProductoNegocio {
@@ -201,11 +212,11 @@ class ProductoNegocio {
   Producto convertProductoDefault() {
     Producto productoDefault = new Producto();
     productoDefault.id = this.id;
-    productoDefault.urlimagen = this.urlimagen;
+    productoDefault.urlImagen = this.urlimagen;
     productoDefault.verificado = this.verificado;
     productoDefault.favorite = this.favorite;
     productoDefault.idMarca = this.idMarca;
-    productoDefault.titulo = this.titulo ;
+    productoDefault.titulo = this.titulo;
     productoDefault.descripcion = this.descripcion;
     productoDefault.codigo = this.codigo;
     productoDefault.timestampActualizacion = this.timestampActualizacion;
@@ -213,4 +224,121 @@ class ProductoNegocio {
 
     return productoDefault;
   }
+}
+
+DateTime  date = Timestamp.now() as DateTime;
+
+class Precio {
+  String idNegocio = "";
+  double precio = 0.0;
+  late Timestamp timestamp;
+  String moneda = "";
+  String provincia = "";
+  String ciudad = "";
+
+  Precio({
+    required this.idNegocio ,
+    required this.precio ,
+    required this.timestamp,
+    required this.moneda,
+    this.provincia='',
+    this.ciudad='',
+  });
+
+  Precio.fromMap(Map data) {
+    idNegocio = data['id_negocio'] ?? '';
+    precio = data['precio'] ?? 0.0;
+    timestamp = data['timestamp'];
+    moneda = data['moneda'] ?? '';
+    provincia = data['provincia'] ?? '';
+    ciudad = data['ciudad'] ?? '';
+  }
+  Map<String, dynamic> toJson() => {
+        "id_negocio": idNegocio,
+        "precio": precio,
+        "timestamp": timestamp,
+        "moneda": moneda,
+        "provincia": provincia,
+        "ciudad": ciudad,
+      };
+}
+
+class Categoria {
+  String id = "";
+  String nombre = "";
+  Map<String, dynamic> subcategorias = Map<String, dynamic>();
+
+  Categoria({
+    required this.id,
+    required this.nombre ,
+    required this.subcategorias,
+  });
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "nombre": nombre,
+        "subcategorias": subcategorias ,
+      };
+  factory Categoria.fromMap(Map data) {
+    return Categoria(
+      id: data['id'] ?? '',
+      nombre: data['nombre'] ?? '',
+      subcategorias: data['subcategorias'] ?? new Map<String, dynamic>(),
+    );
+  }
+}
+
+class Marca {
+  String id = "";
+  String titulo = "";
+  String descripcion = "";
+  String urlImagen = "";
+  bool verificado=false;
+
+  // Datos de la creación
+  String idUsuarioCreador = ""; // ID el usuaruio que creo el productos
+  late Timestamp timestampCreacion; // Marca de tiempo de la creacion del documento
+  String idUsuarioActualizado = ""; // ID el usuaruio que actualizo el productos
+  late Timestamp timestampActualizado; // Marca de tiempo de la ultima actualizacion
+  
+  Marca({
+    this.id = "",
+    this.titulo = "",
+    this.descripcion = "",
+    this.urlImagen = "",
+    this.verificado=false,
+    required this.timestampActualizado,
+    required this.timestampCreacion,
+  });
+  Marca.fromDocumentSnapshot( {required DocumentSnapshot documentSnapshot}) {
+    id = documentSnapshot['id'] ?? '';
+    titulo = documentSnapshot['titulo'] ?? '';
+    descripcion = documentSnapshot['descripcion'] ?? '';
+    urlImagen = documentSnapshot['url_imagen'] ?? 'default';
+    //verificado = documentSnapshot['verificado']??'' ;
+    //idUsuarioCreador = documentSnapshot['id_usuario_creador'] ?? '';
+    //idUsuarioActualizado = documentSnapshot['id_usuario_actualizado'] ?? '';
+    //timestampCreacion = documentSnapshot['timestamp_creacion'];
+    //timestampActualizado = documentSnapshot['timestamp_actualizado'];
+  }
+  Marca.fromMap(Map data) {
+    id = data['id'] ?? '';
+    titulo = data['titulo'] ?? '';
+    descripcion = data['descripcion'] ?? '';
+    urlImagen = data['url_imagen'] ?? 'default';
+    verificado = data['verificado'] ?? false;
+    idUsuarioCreador = data['id_usuario_creador'] ?? '';
+    idUsuarioActualizado = data['id_usuario_actualizado'] ?? '';
+    timestampCreacion = data['timestamp_creacion'];
+    timestampActualizado = data['timestamp_actualizado'];
+  }
+  Map<String, dynamic> toJson() => {
+        "id": id ,
+        "titulo": titulo,
+        "descripcion": descripcion,
+        "urlImagen": urlImagen,
+        "verificado": verificado,
+        "idUsuarioActualizado": idUsuarioActualizado,
+        "timestampCreacion": timestampCreacion,
+        "timestampActualizado": timestampActualizado,
+      };
 }

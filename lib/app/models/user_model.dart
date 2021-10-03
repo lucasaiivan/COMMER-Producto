@@ -194,20 +194,20 @@ class ProfileBusinessModel {
     ProfileBusinessModel.fromDocumentSnapshot(
       {required DocumentSnapshot documentSnapshot}) {
     this.id = documentSnapshot.id;
-    this.username = documentSnapshot["username"];
-    this.imagenPerfil = documentSnapshot["imagen_perfil"]  ;
+    //this.username = documentSnapshot["username"]??'';
+    this.imagenPerfil = documentSnapshot["imagen_perfil"]??''  ;
     this.nombreNegocio = documentSnapshot["nombre_negocio"] ?? 'null';
-    this.descripcion = documentSnapshot["descripcion"];
-    this.signoMoneda = documentSnapshot["signo_moneda"];
-    this.bloqueo = documentSnapshot["bloqueo"];
-    this.mensajeBloqueo = documentSnapshot["mensaje_bloqueo"];
-    this.cuentaActiva = documentSnapshot["cuenta_activa"];
-    this.cuentaVerificada = documentSnapshot["cuenta_verificada"];
-    this.codigoPais = documentSnapshot["codigo_pais"];
-    this.pais = documentSnapshot["pais"];
-    this.provincia = documentSnapshot["provincia"];
-    this.ciudad = documentSnapshot["ciudad"];
-    this.direccion = documentSnapshot["direccion"];
+    this.descripcion = documentSnapshot["descripcion"]??'';
+    //this.signoMoneda = documentSnapshot["signo_moneda"]??'';
+    this.bloqueo = documentSnapshot["bloqueo"]??'';
+    this.mensajeBloqueo = documentSnapshot["mensaje_bloqueo"]??'';
+    this.cuentaActiva = documentSnapshot["cuenta_activa"]??false;
+    this.cuentaVerificada = documentSnapshot["cuenta_verificada"]??false;
+    this.codigoPais = documentSnapshot["codigo_pais"]??'';
+    this.pais = documentSnapshot["pais"]??'';
+    this.provincia = documentSnapshot["provincia"]??'';
+    this.ciudad = documentSnapshot["ciudad"]??'';
+    this.direccion = documentSnapshot["direccion"]??'';
   }
 
 }

@@ -35,8 +35,7 @@ class SplashController extends GetxController {
     CustomFullScreenDialog.showDialog(); // visualizamos un diálogo alerta
 
     if (isLoggedIn) {
-      Get.offAllNamed(Routes.WELCOME,
-          arguments: {'currentUser': firebaseAuth.currentUser});
+      Get.offAllNamed(Routes.WELCOME,arguments: {'currentUser': firebaseAuth.currentUser});
     } else {
       Get.offAllNamed(Routes.LOGIN);
     }

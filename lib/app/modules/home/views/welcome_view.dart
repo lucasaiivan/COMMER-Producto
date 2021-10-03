@@ -127,7 +127,7 @@ class PagePrincipal extends GetView<WelcomeController> {
                       ),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () => controller.toProductView(porduct: list[index]),
                       borderRadius: BorderRadius.circular(50),
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
@@ -135,7 +135,8 @@ class PagePrincipal extends GetView<WelcomeController> {
                             child: CircleAvatar(
                                 child: ClipRRect(
                                   child: CachedNetworkImage(
-                                      imageUrl: list[index].urlimagen, fit: BoxFit.cover),
+                                      imageUrl: list[index].urlImagen,
+                                      fit: BoxFit.cover),
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 radius: 24),
@@ -149,7 +150,7 @@ class PagePrincipal extends GetView<WelcomeController> {
               return Row(
                 children: [
                   InkWell(
-                    onTap: () {},
+                    onTap: ()=>controller.toProductView(porduct: list[index]),
                     borderRadius: BorderRadius.circular(50),
                     child: Padding(
                       padding: const EdgeInsets.all(5.0),
@@ -157,7 +158,8 @@ class PagePrincipal extends GetView<WelcomeController> {
                           child: CircleAvatar(
                               child: ClipRRect(
                                 child: CachedNetworkImage(
-                                    imageUrl: list[index].urlimagen, fit: BoxFit.cover),
+                                    imageUrl: list[index].urlImagen,
+                                    fit: BoxFit.cover),
                                 borderRadius: BorderRadius.circular(999),
                               ),
                               radius: 24),

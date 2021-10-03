@@ -38,14 +38,21 @@ class Database {
   // read values 
   //  Podemos leer datos de Firestore de dos formas: como Futuro como Stream. Puede usar Future si desea leer los datos una sola vez.
   //  de lo contrario usaremos Stream, ya que sincronizará automáticamente los datos cada vez que se modifiquen en la base de datos.
-  // future
+  // future - QuerySnapshot
+  static Future<QuerySnapshot<Map<String, dynamic>>> readFutureProducts( {int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).get();
+  static Future<QuerySnapshot<Map<String, dynamic>>> readFutureProductsForMak( {required String idMark,int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("id_marca",isEqualTo: idMark).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("id_marca",isEqualTo: idMark).get();
+  static Future<QuerySnapshot<Map<String, dynamic>>> readFutureListPricesProduct( {required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis').get();
+  // future - DocumentSnapshot
   static Future<DocumentSnapshot<Map<String, dynamic>>> readFutureUserModel( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readFutureProfileBusinessModel( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).get();
-  static Future<QuerySnapshot<Map<String, dynamic>>> readFutureProducts( {int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).get();
-  static Future<QuerySnapshot<Map<String, dynamic>>> readFutureProductCatalogue( { required String idBusiness,required String idProduct}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idBusiness/EXTENSION_CATALOGO/$idProduct').get();
-  // stream 
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readFutureProductCatalogue( { required String idBusiness,required String idProduct}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idBusiness/EXTENSION_CATALOGO/').doc(idProduct).get();
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readFutureCategotyCatalogue( { required String idBusiness,required String idCategory}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idBusiness/EXTENSION_CATALOGO_CATEGORIA/').doc(idCategory).get();
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readFutureSubcategotyCatalogue( { required String idBusiness,required String idCategory,required String idSubcategory}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idBusiness/EXTENSION_CATALOGO_CATEGORIA/$idCategory/SUBCATEGORIA/').doc(idSubcategory).get();
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readFutureMarkProduct( { required String id}) => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS/').doc(id).get();
+  // stream - DocumentSnapshot
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readStreamUserModel( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).snapshots();
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readStreamProfileBusinessModel( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).snapshots();
+  // stream - QuerySnapshot
   static Stream<QuerySnapshot<Map<String, dynamic>>> readStreamProductsCatalogue( { required String id}) => FirebaseFirestore.instance.collection('NEGOCIOS/$id/EXTENSION_CATALOGO').orderBy("timestamp_creation",descending: true).snapshots();
 
   //  update value

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
+import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 import '../../splash/controllers/splash_controller.dart';
 
@@ -106,5 +107,8 @@ class WelcomeController extends GetxController {
     // aca implementamos el cierre de sesión dentro de la función logout.
     await homeController.googleSign.disconnect();
     await homeController.firebaseAuth.signOut();
+  }
+  void toProductView({required Producto porduct}){
+    Get.toNamed(Routes.PRODUCT,arguments: {'product':porduct.convertProductCatalogue()});
   }
 }
