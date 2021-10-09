@@ -20,19 +20,33 @@ void main() async {
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
-      darkTheme: ThemeData.dark().copyWith(
-        canvasColor: Color(0xff141A31),
-        primaryColor: Color(0xff141A31),
-        primaryColorDark: Color(0xff081029),
-        scaffoldBackgroundColor: Color(0xff141A31),
-        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.yellow),
+      theme: ThemeData(
+        primaryColor: Color.fromRGBO(254, 194, 96, 1.0),
+        scaffoldBackgroundColor:Colors.white,
+        backgroundColor: Colors.grey[200],
+        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),),
-              backgroundColor: MaterialStateProperty.all(Colors.yellowAccent),
+              backgroundColor: MaterialStateProperty.all(Color.fromRGBO(254, 194, 96, 1.0)),
+              padding: MaterialStateProperty.all(EdgeInsets.all(14))),
+        ),
+      ),
+      darkTheme: ThemeData.dark().copyWith(
+        primaryColor: Color.fromRGBO(254, 194, 96, 1.0),
+        scaffoldBackgroundColor:Color.fromRGBO(42, 9, 68, 1.0),
+        backgroundColor: Color.fromRGBO(59, 24, 95, 1.0),
+        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),),
+              backgroundColor: MaterialStateProperty.all(Color.fromRGBO(254, 194, 96, 1.0)),
               padding: MaterialStateProperty.all(EdgeInsets.all(14))),
         ),
       ),

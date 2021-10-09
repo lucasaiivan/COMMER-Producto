@@ -11,15 +11,16 @@ class WelcomeController extends GetxController {
 
   static late User userAuth; // perfil auth user
   static Rx<UsersModel> _userModel = UsersModel().obs; // perfil del usuario
-  static Rx<ProfileBusinessModel> _profileBusiness =
-      ProfileBusinessModel().obs; // perfil del negocio
+  static Rx<ProfileBusinessModel> _profileBusiness = ProfileBusinessModel().obs; // perfil del negocio
   static RxBool loadData = false.obs;
   static RxBool loadDataProfileBusiness = false.obs;
   static RxString nameBusiness = ''.obs;
   static RxString selectBusinessId = ''.obs;
   static RxList<Producto> listSuggestedProducts = <Producto>[].obs ;
+  static RxList<ProductoNegocio> listProductsBusiness = <ProductoNegocio>[].obs ;
 
   List<Producto> get getListSuggestedProducts => listSuggestedProducts;
+  List<ProductoNegocio> get getListProductsBusines => listProductsBusiness;
   User get getUserAuth => userAuth;
   bool get load => loadData.value;
   UsersModel get userProfile => _userModel.value;
@@ -28,8 +29,7 @@ class WelcomeController extends GetxController {
   String get getSelectBusinessId => selectBusinessId.value;
   ProfileBusinessModel get profileBusiness => _profileBusiness.value;
 
-  set setProfileBusiness(ProfileBusinessModel user) =>
-      _profileBusiness.value = user;
+  set setProfileBusiness(ProfileBusinessModel user) => _profileBusiness.value = user;
   set setUser(UsersModel user) => _userModel.value = user;
   set setLoad(bool value) => loadData.value = value;
   set setLoadProfileBusiness(bool value) =>
@@ -37,11 +37,12 @@ class WelcomeController extends GetxController {
   set setnameProfileBusiness(String value) => nameBusiness.value = value;
   set setSelectBusinessId(String value) => selectBusinessId.value = value;
   set setListSuggestedProducts(List<Producto> products) => listSuggestedProducts.value = products;
+  set setListProductsBusiness(List<ProductoNegocio> products) => listProductsBusiness.value = products;
 
   void readProfileBursiness({required String id}) {
     Database.readStreamProfileBusinessModel(id).listen((event) {
-      setProfileBusiness =
-          ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+      setProfileBusiness = ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+      setSelectBusinessId=profileBusiness.id;
       setnameProfileBusiness = event['nombre_negocio'];
       setLoadProfileBusiness = true;
     }).onError((error) {

@@ -1,10 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/modules/product/controllers/product_controller.dart';
@@ -23,10 +22,11 @@ class Product extends GetView<ProductController> {
     );
   }
 
+  // WIDGETS VIEWS
   PreferredSizeWidget appbar({required BuildContext context}) {
     return AppBar(
       elevation: 0.0,
-      backgroundColor: Theme.of(context).canvasColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       iconTheme: Theme.of(context)
           .iconTheme
           .copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
@@ -41,23 +41,23 @@ class Product extends GetView<ProductController> {
               });
             } */
         },
-        child: Row(
-          children: <Widget>[
-            controller.getProduct.verificado == true
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 3.0),
-                    child: new Image.asset('assets/icon_verificado.png',
-                        width: 20.0, height: 20.0))
-                : new Container(),
-            Expanded(
-              child: Text(this.controller.getProduct.id,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      color: Theme.of(context).textTheme.bodyText1!.color)),
-            ),
-          ],
-        ),
+        child: Obx(() => Row(
+              children: <Widget>[
+                controller.getProduct.verificado == true
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 3.0),
+                        child: new Image.asset('assets/icon_verificado.png',
+                            width: 20.0, height: 20.0))
+                    : new Container(),
+                Expanded(
+                  child: Text(controller.getMark.titulo,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          color: Theme.of(context).textTheme.bodyText1!.color)),
+                ),
+              ],
+            )),
       ),
       actions: [
         IconButton(
@@ -175,15 +175,15 @@ class Product extends GetView<ProductController> {
   Widget body() {
     return ExpandableBottomSheet(
       background: background(),
-      persistentHeader: persistentHeader(),
-      expandableContent: expandableContent(),
+      persistentHeader: persistentHeader(colorBackground: Color.fromRGBO(161, 37, 104, 1.0),colorText: Color.fromRGBO(254, 194, 96, 1.0)),
+      expandableContent: expandableContent(colorBackground: Color.fromRGBO(161, 37, 104, 1.0),colorText: Colors.white),
     );
   }
 
   // WIDGETS VIEWS
   Widget widgetDescripcion(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.only(bottom: 12,right: 12,left: 12,top: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -228,7 +228,7 @@ class Product extends GetView<ProductController> {
                   ],
                 )
               : Container(),
-          controller.getProduct.titulo != ""
+          /* controller.getProduct.titulo != ""
               ? Container(
                   child: Text(controller.getProduct.titulo,
                       style: TextStyle(
@@ -240,11 +240,19 @@ class Product extends GetView<ProductController> {
           SizedBox(
             height: 8.0,
             width: 8.0,
-          ),
+          ), */
           controller.getProduct.descripcion != ""
               ? Text(controller.getProduct.descripcion,
                   style: TextStyle(
                       height: 1, fontSize: 16, fontWeight: FontWeight.normal))
+              : Container(),
+          controller.getProduct.codigo != ""
+              ? Align(
+                alignment: Alignment.bottomRight,
+                child: Text(controller.getProduct.codigo,
+                    style: TextStyle(
+                        height: 1, fontSize: 14, fontWeight: FontWeight.normal)),
+              )
               : Container(),
         ],
       ),
@@ -256,11 +264,17 @@ class Product extends GetView<ProductController> {
     return Builder(builder: (contextBuilder) {
       return SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            imageViewCard(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.all(20.0),
+              child: imageViewCard(),
+            ),
+            Card(
+              margin: EdgeInsets.all(0),
+              color: Get.theme.backgroundColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -270,13 +284,11 @@ class Product extends GetView<ProductController> {
                           producto: widget.producto,
                           subcategoria: this.subcategoria)
                       : Container(),*/
+                  otrosProductosEnCatalogo(),
                   otrosProductosViewList(),
+                  const SizedBox(height: 120.0, width: 120.0),
                 ],
               ),
-            ),
-            const SizedBox(
-              height: 190.0,
-              width: 190.0,
             ),
           ],
         ),
@@ -284,12 +296,11 @@ class Product extends GetView<ProductController> {
     });
   }
 
-  Widget persistentHeader() {
+  Widget persistentHeader({ required Color colorBackground,required Color colorText}) {
     return ClipRRect(
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
       child: Container(
-        color: Colors.black,
+        color: colorBackground,
         padding:
             EdgeInsets.only(bottom: 50.0, left: 12.0, right: 12.0, top: 12.0),
         child: Center(
@@ -392,11 +403,11 @@ class Product extends GetView<ProductController> {
                       ],
                     )
                   : Container(),
-              Icon(Icons.keyboard_arrow_up, color: Colors.blue),
+              Icon(Icons.keyboard_arrow_up, color: colorText),
               Text(
                 'Deslice hacia arriba para ver los últimos precios publicados',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: colorText),
               ),
             ],
           ),
@@ -405,12 +416,12 @@ class Product extends GetView<ProductController> {
     );
   }
 
-  Widget expandableContent() {
+  Widget expandableContent({ required Color colorBackground,required Color colorText}) {
     return Obx(() => ClipRRect(
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
         child: Container(
-            color: Colors.black,
+            color: colorBackground,
             padding: EdgeInsets.only(
                 bottom: 50.0, left: 12.0, right: 12.0, top: 12.0),
             child: ultimosPreciosView())));
@@ -564,10 +575,11 @@ class Product extends GetView<ProductController> {
       child: Hero(
         tag: controller.getProduct.id,
         child: Stack(
+          alignment: AlignmentDirectional.bottomEnd,
           children: [
             CachedNetworkImage(
-              width: Get.width,
-              height: Get.width,
+              width: 200,
+              height: 200,
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
               imageUrl: controller.getProduct.urlimagen,
@@ -591,13 +603,16 @@ class Product extends GetView<ProductController> {
               ),
             ),
             Obx(() => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
+                  padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
                   child: Chip(
+                    elevation: 0,
+                    backgroundColor: Get.theme.backgroundColor,
                     avatar: utilsWidget.viewCircleImage(
                         url: controller.getMark.urlImagen,
                         texto: controller.getMark.titulo,
                         size: 20),
-                    label: Text(controller.getMark.titulo),
+                    label: Text(''),
+                    labelPadding: EdgeInsets.zero,
                   ),
                 )),
           ],
@@ -619,6 +634,8 @@ class Product extends GetView<ProductController> {
                       ? Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.0),
                           child: Chip(
+                            elevation: 5,
+                            backgroundColor: Get.theme.backgroundColor,
                             avatar: utilsWidget.viewCircleImage(
                                 url: controller.getMark.urlImagen,
                                 texto: controller.getMark.titulo,
@@ -629,7 +646,8 @@ class Product extends GetView<ProductController> {
                       : Container(),
                 ],
               ),
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 12),
             ),
             SizedBox(
               height: 150,
@@ -647,8 +665,34 @@ class Product extends GetView<ProductController> {
                 },
               ),
             ),
+          ],
+        ));
+  }
+
+  Widget otrosProductosEnCatalogo() {
+    return Obx(() => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Divider(endIndent: 12.0, indent: 12.0),
+            Padding(
+              child: Text("En mi catálogo", style: TextStyle(fontSize: 16.0)),
+              padding:const EdgeInsets.all(12),
+            ),
             SizedBox(
-              height: 20.0,
+              height: 150,
+              width: double.infinity,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: controller.getListOthersProductsForMark.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                      width: 150.0,
+                      height: 150.0,
+                      child: itemProduct(
+                        product: controller.getListOthersProductsForMark[index],
+                      ));
+                },
+              ),
             ),
           ],
         ));
@@ -660,7 +704,7 @@ class Product extends GetView<ProductController> {
       width: 200.0,
       height: 200.0,
       child: Card(
-        elevation: 1,
+        elevation: 5,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         clipBehavior: Clip.antiAlias,
@@ -707,8 +751,7 @@ class Product extends GetView<ProductController> {
                         children: [
                           Expanded(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: const EdgeInsets.all(8),
                               child: Column(
                                 children: <Widget>[
                                   product.titulo != "" &&

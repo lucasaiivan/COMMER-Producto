@@ -4,8 +4,8 @@ import 'package:producto/app/modules/auth/views/login_view.dart';
 import 'package:producto/app/modules/product/bindings/product_binding.dart';
 import 'package:producto/app/modules/product/views/product_view.dart';
 import 'package:producto/app/modules/splash/bindings/splash_binding.dart';
-import 'package:producto/app/modules/home/bindings/welcome_binding.dart';
-import 'package:producto/app/modules/home/views/welcome_view.dart';
+import 'package:producto/app/modules/mainScreen/bindings/welcome_binding.dart';
+import 'package:producto/app/modules/mainScreen/views/mainScreen_view.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/modules/splash/views/splash_view.dart';
 

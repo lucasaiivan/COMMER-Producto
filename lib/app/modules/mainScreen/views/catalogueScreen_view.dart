@@ -1,179 +1,25 @@
+
+
+
+import 'package:animate_do/animate_do.dart';
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dart:math' as math;
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
-
-import 'package:producto/app/modules/home/controllers/welcome_controller.dart';
+import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/*  DESCRIPCIÓN */
-/*  Pantalla principal de la aplicación "Producto"  */
+class CatalogueScreenView extends StatelessWidget {
+  CatalogueScreenView({Key? key}) : super(key: key);
 
-class PagePrincipal extends GetView<WelcomeController> {
-  /* Declarar variables */
-  double get randHeight => math.Random().nextInt(100).toDouble();
+  final WelcomeController controller = Get.find();
 
   @override
-  Widget build(BuildContext buildContext) {
-    return controller.getSelectBusinessId == ""
-        ? scaffoldScan(buildContext: buildContext)
-        : scaffondCatalogo(buildContext: buildContext);
-  }
-
-  Scaffold scaffoldScan({required BuildContext buildContext}) {
-    Color color = Theme.of(buildContext).brightness == Brightness.dark
-        ? Colors.white54
-        : Colors.black38;
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Theme.of(buildContext).canvasColor,
-        iconTheme: Theme.of(buildContext)
-            .iconTheme
-            .copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
-        title: TextButton(
-          onPressed: () => showModalBottomSheetSetting(buildContext),
-          child: Text(
-            "Crear mi catálogo",
-            style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(buildContext).textTheme.bodyText1!.color),
-          ),
-        ),
-        actions: <Widget>[
-          WidgetsUtilsApp().buttonThemeBrightness(context: buildContext),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            InkWell(
-              borderRadius: BorderRadius.all(Radius.circular(30.0)),
-              splashColor: Theme.of(buildContext).primaryColor,
-              onTap: () => scanBarcodeNormal(context: buildContext),
-              child: Container(
-                margin: const EdgeInsets.all(0.0),
-                padding: const EdgeInsets.all(30.0),
-                decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(width: 0.5, color: color),
-                    borderRadius: BorderRadius.all(Radius.circular(30.0))),
-                child: Image(
-                    color: color,
-                    height: 200.0,
-                    width: 200.0,
-                    image: AssetImage('assets/barcode.png'),
-                    fit: BoxFit.contain),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 40.0),
-              child: Text("Escanea un producto para conocer su precio",
-                  style: TextStyle(
-                      fontFamily: "POPPINS_FONT",
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                      fontSize: 24.0),
-                  textAlign: TextAlign.center),
-            ),
-            Obx(() =>
-                widgetSuggestions(list: controller.getListSuggestedProducts)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget widgetSuggestions({required List<Producto> list}) {
-    if (list.length == 0) return Container();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('sugerencias para ti'),
-        Container(
-          height: 100,
-          child: ListView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemCount: list.length,
-            itemBuilder: (_, index) {
-              if (index == 0) {
-                return Row(
-                  children: [
-                    InkWell(
-                      onTap: () {},
-                      borderRadius: BorderRadius.circular(50),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: Icon(
-                                  Icons.search,
-                                  color: Colors.purple,
-                                ),
-                                radius: 24,
-                                backgroundColor: Colors.white),
-                            radius: 26,
-                            backgroundColor: Colors.purple),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => controller.toProductView(porduct: list[index]),
-                      borderRadius: BorderRadius.circular(50),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[index].urlImagen,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Colors.purple),
-                      ),
-                    ),
-                  ],
-                );
-              }
-              return Row(
-                children: [
-                  InkWell(
-                    onTap: ()=>controller.toProductView(porduct: list[index]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: CircleAvatar(
-                          child: CircleAvatar(
-                              child: ClipRRect(
-                                child: CachedNetworkImage(
-                                    imageUrl: list[index].urlImagen,
-                                    fit: BoxFit.cover),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              radius: 24),
-                          radius: 26,
-                          backgroundColor: Colors.purple),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
-    );
+  Widget build(BuildContext context) {
+    return scaffondCatalogo(buildContext: context);
   }
 
   Widget scaffondCatalogo({required BuildContext buildContext}) {
@@ -256,7 +102,7 @@ class PagePrincipal extends GetView<WelcomeController> {
           ),
         ],
       ),
-      body: ListView(),
+      body: body(buildContext: buildContext),
       /* new StreamBuilder(
         stream: Global.getCatalogoNegocio(
                 idNegocio: Global.oPerfilNegocio.id ?? "")
@@ -306,7 +152,6 @@ class PagePrincipal extends GetView<WelcomeController> {
       ),
     );
   }
-
   // Widgets
   Widget body({required BuildContext buildContext}) {
     return DefaultTabController(
@@ -337,7 +182,7 @@ class PagePrincipal extends GetView<WelcomeController> {
         },
         body: Column(
           children: <Widget>[
-            Divider(height: 0.0),
+            /* Divider(height: 0.0),
             TabBar(
               indicatorColor: Theme.of(buildContext).accentColor,
               indicatorWeight: 5.0,
@@ -371,16 +216,16 @@ class PagePrincipal extends GetView<WelcomeController> {
                   },
                 ), */
               ],
-            ),
+            ), */
             Divider(height: 0.0),
             Expanded(
               child: TabBarView(
                 children: [
-                  /* Global.listProudctosNegocio.length != 0
-                      ? WidgetCatalogoGridList()
+                  controller.getListProductsBusines.length != 0
+                      ? Container()//WidgetCatalogoGridList()
                       : Center(
                           child: Text("Todavía no has añadido ningún producto"),
-                        ), */
+                        ), 
                 ],
               ),
             ),
@@ -562,6 +407,116 @@ class PagePrincipal extends GetView<WelcomeController> {
             }),
       );
     }); */
+  }
+  Widget widgetSuggestions({required List<Producto> list}) {
+    if (list.length == 0) return Container();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text("sugerencias para ti"),
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () {},
+              borderRadius: BorderRadius.circular(50),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: FadeInLeft(
+                  child: CircleAvatar(
+                      child: CircleAvatar(
+                          child:
+                              Icon(Icons.search, color: Get.theme.primaryColor),
+                          radius: 24,
+                          backgroundColor: Colors.white),
+                      radius: 26,
+                      backgroundColor: Get.theme.primaryColor),
+                ),
+              ),
+            ),
+            Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: InkWell(
+                    onTap: () => controller.toProductView(porduct: list[0]),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FadeInRight(
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: ClipRRect(
+                                  child: CachedNetworkImage(
+                                      imageUrl: list[0].urlImagen,
+                                      fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                radius: 24),
+                            radius: 26,
+                            backgroundColor: Get.theme.primaryColor),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 40),
+                  child: InkWell(
+                    onTap: () => controller.toProductView(porduct: list[1]),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FadeInRight(
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: ClipRRect(
+                                  child: CachedNetworkImage(
+                                      imageUrl: list[1].urlImagen,
+                                      fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                radius: 24),
+                            radius: 26,
+                            backgroundColor: Get.theme.primaryColor),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 80),
+                  child: InkWell(
+                    onTap: () => controller.toProductView(porduct: list[2]),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FadeInRight(
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: ClipRRect(
+                                  child: CachedNetworkImage(
+                                      imageUrl: list[2].urlImagen,
+                                      fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                radius: 24),
+                            radius: 26,
+                            backgroundColor: Get.theme.primaryColor),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   // ShowModalBottomSheet
