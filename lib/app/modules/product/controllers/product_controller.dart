@@ -25,12 +25,12 @@ class ProductController extends GetxController {
   set setMark(Marca value) => mark.value = value;
 
   static Rx<Categoria> category =
-      Categoria(id: '', nombre: '', subcategorias: {}).obs;
+      Categoria(id: '', nombre: '').obs;
   Categoria get getCategoty => category.value;
   set setCategoty(Categoria value) => category.value = value;
 
   static Rx<Categoria> subcategory =
-      Categoria(id: '', nombre: '', subcategorias: {}).obs;
+      Categoria(id: '', nombre: '').obs;
   Categoria get getSubcategoty => subcategory.value;
   set setSubcategoty(Categoria value) => subcategory.value = value;
 
@@ -62,15 +62,15 @@ class ProductController extends GetxController {
   void onClose() {}
 
   void readMarkProducts() {
-    Database.readFutureMarkProduct(id: getProduct.idMarca).then((value) =>
+    Database.readMarkFuture(id: getProduct.idMarca).then((value) =>
         setMark = Marca.fromDocumentSnapshot(documentSnapshot: value));
   }
   void readProfileBusiness({required String id}) {
-    Database.readFutureProfileBusinessModel(id).then((value) =>setProfileBusiness = ProfileBusinessModel.fromMap(  value.data() as Map  ) );
+    Database.readProfileBusinessModelFuture(id).then((value) =>setProfileBusiness = ProfileBusinessModel.fromMap(  value.data() as Map  ) );
   }
 
   void readOthersProductsMark() {
-    Database.readFutureProductsForMak(idMark: getProduct.idMarca).then((value) {
+    Database.readProductsForMakFuture(idMark: getProduct.idMarca).then((value) {
       List<Producto> list = [];
       value.docs.forEach((element) {
         list.add(Producto.fromMap(element.data()));
@@ -80,7 +80,7 @@ class ProductController extends GetxController {
   }
 
   void readListPricesForProduct() {
-    Database.readFutureListPricesProduct(id: getProduct.id).then((value) {
+    Database.readListPricesProductFuture(id: getProduct.id).then((value) {
       List<Precio> list = [];
       value.docs.forEach((element) {
         list.add(Precio.fromMap(element.data()));

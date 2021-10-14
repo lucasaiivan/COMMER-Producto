@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:producto/app/models/catalogo_model.dart';
+import 'package:producto/app/utils/functions.dart';
 import 'dart:math';
 import 'dynamicTheme_lb.dart';
 
@@ -139,4 +141,139 @@ Widget viewCircleImage(
             errorWidget: (context, url, error) => Icon(Icons.error),
           ),
   );
+}
+
+
+class ProductoItem extends StatelessWidget {
+  final ProductoNegocio producto;
+  final double width;
+  ProductoItem({required this.producto, this.width = double.infinity});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      child: Hero(
+        tag: producto.id,
+        child: Card(
+          elevation: 1,
+          shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => producto != null
+                      ? ProductoItem(producto: producto)
+                      : Scaffold(body: Center(child: Text("Se produjo un Error!"))),
+                ),
+              );
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: <Widget>[
+                    WidgetImagenProducto(producto: producto),
+                    WidgetContentInfo(producto: producto),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class WidgetImagenProducto extends StatelessWidget {
+  const WidgetImagenProducto({required this.producto});
+  final ProductoNegocio producto;
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 100 / 100,
+      child: producto.urlimagen != ""
+          ? CachedNetworkImage(
+              fadeInDuration: Duration(milliseconds: 200),
+              fit: BoxFit.cover,
+              imageUrl: producto.urlimagen,
+              placeholder: (context, url) => FadeInImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage("assets/loading.gif"),
+                  placeholder: AssetImage("assets/loading.gif")),
+              errorWidget: (context, url, error) => Center(
+                child: Text(
+                  producto.titulo.substring(0, 3),
+                  style: TextStyle(fontSize: 24.0),
+                ),
+              ),
+            )
+          : Container(color: Colors.black26),
+    );
+  }
+}
+
+class WidgetContentInfo extends StatelessWidget {
+  const WidgetContentInfo({required this.producto});
+  final ProductoNegocio producto;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(13), topRight: Radius.circular(13)),
+      child: Container(
+        color: Theme.of(context).primaryColorDark.withOpacity(0.70),//Colors.black54,
+        child: ClipRect(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    children: <Widget>[
+                      producto.titulo != "" && producto.titulo != "default"
+                          ? Text(producto.titulo,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                              overflow: TextOverflow.fade,
+                              softWrap: false)
+                          : Container(),
+                      producto.descripcion != ""
+                          ? Text(producto.descripcion,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12.0,
+                                  color: Colors.white),
+                              overflow: TextOverflow.fade,
+                              softWrap: false)
+                          : Container(),
+                      producto.precioVenta != 0.0
+                          ? Text(
+                              Publicaciones.getFormatoPrecio(monto: producto.precioVenta),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16.0,
+                                  color: Colors.white),
+                              overflow: TextOverflow.fade,
+                              softWrap: false)
+                          : Container(),
+                    ],
+                  ),
+                ),
+              ),
+              // Text(topic.description)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

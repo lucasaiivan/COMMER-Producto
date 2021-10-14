@@ -49,7 +49,10 @@ dependencies:
   url_launcher: ^6.0.12 # Un complemento de Flutter para lanzar una URL. Admite iOS, Android, web, Windows, macOS y Linux.
   shimmer: ^2.0.0 # Un paquete proporciona una manera fácil de agregar un efecto de brillo en el proyecto Flutter
   expandable_bottom_sheet: ^1.1.1+1 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
+  loadany: ^1.0.0 # Un nuevo Flutter carga más paquetes.
+ 
 
+  
 flutter_icons:
   android: true
   ios: false

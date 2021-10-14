@@ -37,7 +37,7 @@ void main() async {
       ),
       darkTheme: ThemeData.dark().copyWith(
         primaryColor: Color.fromRGBO(254, 194, 96, 1.0),
-        scaffoldBackgroundColor:Color.fromRGBO(42, 9, 68, 1.0),
+        scaffoldBackgroundColor:Color.fromRGBO(33, 33, 33, 1.0),
         backgroundColor: Color.fromRGBO(59, 24, 95, 1.0),
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
         elevatedButtonTheme: ElevatedButtonThemeData(

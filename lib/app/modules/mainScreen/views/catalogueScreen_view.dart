@@ -1,14 +1,13 @@
-
-
-
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:loadany/loadany.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
+import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,7 +26,7 @@ class CatalogueScreenView extends StatelessWidget {
       /* AppBar persistente que nunca se desplaza */
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: Theme.of(buildContext).canvasColor,
+        backgroundColor: Theme.of(buildContext).scaffoldBackgroundColor,
         iconTheme: Theme.of(buildContext)
             .iconTheme
             .copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
@@ -86,7 +85,7 @@ class CatalogueScreenView extends StatelessWidget {
                           height: MediaQuery.of(context).size.width,
                           child: Center(
                             child: Text(
-                              controller.getUserAuth.displayName
+                              controller.getUserAccountAuth.displayName
                                   .toString()
                                   .substring(0, 1),
                               style: TextStyle(fontSize: 16.0),
@@ -152,118 +151,137 @@ class CatalogueScreenView extends StatelessWidget {
       ),
     );
   }
+
   // Widgets
   Widget body({required BuildContext buildContext}) {
-    return DefaultTabController(
-      length: 1,
-      child: NestedScrollView(
-        /* le permite crear una lista de elementos que se desplazarían hasta que el cuerpo alcanzara la parte superior */
-        floatHeaderSlivers: true,
-        physics: BouncingScrollPhysics(),
-        headerSliverBuilder: (context, _) {
-          return [
-            SliverList(
-              delegate: SliverChildListDelegate([
-                /* Global.listProudctosNegocio.length != 0
-                    ? SizedBox(height: 12.0)
-                    : Container(),
-                Global.listProudctosNegocio.length != 0
-                    ? widgetsListaHorizontalMarcas(buildContext: buildContext)
-                    : Container(),
-                Global.listProudctosNegocio.length != 0
-                    ? widgetBuscadorView(buildContext: buildContext)
-                    : Container(),
-                Global.listProudctosNegocio.length != 0
-                    ? SizedBox(height: 12.0)
-                    : Container(), */
-              ]),
-            ),
-          ];
-        },
-        body: Column(
-          children: <Widget>[
-            /* Divider(height: 0.0),
-            TabBar(
-              indicatorColor: Theme.of(buildContext).accentColor,
-              indicatorWeight: 5.0,
-              labelColor: Theme.of(buildContext).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-              onTap: (value) {
-                showModalBottomSheet(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0)),
-                    backgroundColor: Theme.of(buildContext).canvasColor,
-                    context: buildContext,
-                    builder: (ctx) {
-                      return Text('showModalBottomSheet');
-                      /* return ClipRRect(
-                        child: ViewCategoria(
-                          buildContext: buildContext,
-                        ),
-                      ); */
-                    });
-              },
-              tabs: [
-                /* Consumer<ProviderCatalogo>(
-                  child: Tab(
-                      text:
-                          "Todos (${Global.listProudctosNegocio.length.toString()})"),
-                  builder: (context, catalogo, child) {
-                    return Tab(
-                        text: catalogo.sNombreFiltro +
-                            " (${catalogo.categoria != null ? catalogo.cataloLoadMore.length.toString() : Global.listProudctosNegocio.length.toString()})");
+    return Obx(() => DefaultTabController(
+          length: 1,
+          child: NestedScrollView(
+            /* le permite crear una lista de elementos que se desplazarían hasta que el cuerpo alcanzara la parte superior */
+            floatHeaderSlivers: true,
+            physics: BouncingScrollPhysics(),
+            headerSliverBuilder: (context, _) {
+              return [
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    controller.getCatalogueBusiness.length != 0
+                        ? SizedBox(height: 12.0)
+                        : Container(),
+                    controller.getCatalogueBusiness.length != 0
+                        ? widgetsListaHorizontalMarcas(
+                            buildContext: buildContext)
+                        : Container(),
+                    controller.getCatalogueBusiness.length != 0
+                        ? widgetBuscadorView()
+                        : Container(),
+                    controller.getCatalogueBusiness.length != 0
+                        ? SizedBox(height: 12.0)
+                        : Container(),
+                  ]),
+                ),
+              ];
+            },
+            body: Column(
+              children: <Widget>[
+                Divider(height: 0.0),
+                TabBar(
+                  indicatorColor: Theme.of(buildContext).primaryColor,
+                  indicatorWeight: 5.0,
+                  labelColor:
+                      Theme.of(buildContext).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                  onTap: (value) {
+                    showModalBottomSheet(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
+                        backgroundColor: Theme.of(buildContext).canvasColor,
+                        context: buildContext,
+                        builder: (ctx) {
+                          return Text('showModalBottomSheet');
+                          /* return ClipRRect(
+                                    child: ViewCategoria(
+                                      buildContext: buildContext,
+                                    ),
+                                  ); */
+                        });
                   },
-                ), */
+                  tabs: [
+                    Tab(
+                        text: controller.getSelectCategoryId +
+                            " (${controller.getSelectCategoryId != '' ? controller.getCatalogueFilter.length.toString() : controller.getCatalogueBusiness.length.toString()})")
+                  ],
+                ),
+                Divider(height: 0.0),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      gridViewLoadAny(),
+                    ],
+                  ),
+                ),
               ],
-            ), */
-            Divider(height: 0.0),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  controller.getListProductsBusines.length != 0
-                      ? Container()//WidgetCatalogoGridList()
-                      : Center(
-                          child: Text("Todavía no has añadido ningún producto"),
-                        ), 
-                ],
-              ),
             ),
-          ],
-        ),
+          ),
+        ));
+  }
+
+  Widget gridViewLoadAny() {
+    /* return Obx(() => TextButton(
+        onPressed: controller.getCatalogueMoreLoad,
+        child:Text('count: ' + controller.getCatalogueLoad.length.toString()))); 
+    */
+    return LoadAny(
+      //onEndOfPage: controller.getCatalogueMoreLoad,
+      onLoadMore: controller.getCatalogueMoreLoad,
+      status: controller.getLoadGridCatalogueStatus,
+      loadingMsg: 'Cargando...',
+      errorMsg: 'errorMsg',
+      child: CustomScrollView(
+        slivers: <Widget>[
+          SliverGrid(
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return ProductoItem(
+                    producto: controller.getCatalogueLoad[index]);
+              },
+              childCount: controller.getCatalogueLoad.length,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget widgetBuscadorView({required BuildContext buildContext}) {
+  Widget widgetBuscadorView() {
+    // variables
+    Color colorCard = Get.isDarkMode
+        ? Colors.white.withOpacity(0.08)
+        : Colors.black.withOpacity(0.08);
+    Color colorTextIcon = Get.isDarkMode ? Colors.white54 : Colors.black54;
+
     return Padding(
       padding: EdgeInsets.all(12.0),
       child: Card(
-        color: Theme.of(buildContext).brightness == Brightness.dark
-            ? Colors.black12
-            : Colors.white,
+        color: colorCard,
         semanticContainer: true,
         clipBehavior: Clip.antiAliasWithSaveLayer,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        elevation: 0,
+        margin: EdgeInsets.all(0.0),
         child: InkWell(
           child: Padding(
             padding: EdgeInsets.all(16.0),
             child: Row(
               children: <Widget>[
-                Icon(Icons.search,
-                    color: Theme.of(buildContext).brightness == Brightness.dark
-                        ? Colors.white38
-                        : Colors.black54),
-                SizedBox(
-                  width: 12.0,
-                ),
-                Text(
-                  'Buscar',
-                  style: TextStyle(
-                      color:
-                          Theme.of(buildContext).brightness == Brightness.dark
-                              ? Colors.white38
-                              : Colors.black54),
-                ),
+                Icon(Icons.search, color: colorTextIcon),
+                SizedBox(width: 12.0),
+                Text('Buscar',
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal, color: colorTextIcon)),
               ],
             ),
           ),
@@ -273,11 +291,6 @@ class CatalogueScreenView extends StatelessWidget {
                 delegate: DataSearch(listOBJ: Global.listProudctosNegocio)); */
           },
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        elevation: 1,
-        margin: EdgeInsets.all(0.0),
       ),
     );
   }
@@ -309,6 +322,7 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   Widget widgetsListaHorizontalMarcas({required BuildContext buildContext}) {
+    
     /* Declarar variables */
     List<Color> colorGradientInstagram = [
       Color.fromRGBO(129, 52, 175, 1.0),
@@ -316,98 +330,93 @@ class CatalogueScreenView extends StatelessWidget {
       Color.fromRGBO(221, 42, 123, 1.0),
       Color.fromRGBO(68, 0, 71, 1.0)
     ];
-    return Container();
-
-    /* return Consumer<ProviderCatalogo>(builder: (context, catalogo, child) {
-      if (catalogo.getMarcas.length == 0) {
-        return Container();
-      }
-      return SizedBox(
-        height: 110.0,
-        child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: catalogo.getMarcas.length,
-            itemBuilder: (BuildContext c, int index) {
-              return catalogo.getMarcas[index]!=null&& catalogo.getMarcas[index]!=""?Container(
-                width: 81.0,
-                height: 100.0,
-                padding: EdgeInsets.all(5.0),
-                child: FutureBuilder(
-                  future: Global.getMarca(idMarca: catalogo.getMarcas[index]??"default").getDataMarca(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      Marca marca = snapshot.data;
-                      return GestureDetector(
-                        onTap: () {
-                          buildContext
-                              .read<ProviderCatalogo>()
+    
+    if (controller.getCatalogueMarks.length == 0) {
+      return Container();
+    }
+    return SizedBox(
+      height: 110.0,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.getCatalogueMarks.length,
+          itemBuilder: (BuildContext c, int index) {
+            return Container(
+              width: 81.0,
+              height: 100.0,
+              padding: EdgeInsets.all(5.0),
+              child: FutureBuilder(
+                future: controller.readMark(id: controller.getCatalogueMarks[index]),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    Marca marca = snapshot.data as Marca;
+                    return GestureDetector(
+                      onTap: () {
+                        /* buildContext.read<ProviderCatalogo>()
                               .setIdMarca = marca.id;
                           buildContext
                               .read<ProviderCatalogo>()
-                              .setNombreFiltro = marca.titulo;
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            image.DashedCircle(
-                              dashes:
-                                  catalogo.getNumeroDeProductosDeMarca(id: marca.id),
-                              gradientColor: colorGradientInstagram,
-                              child: Padding(
-                                padding: EdgeInsets.all(5.0),
-                                child: image.viewCircleImage(
-                                    url: marca.url_imagen,
-                                    texto: marca.titulo,
-                                    size: 50),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 8.0,
-                            ),
-                            Text(marca.titulo,
-                                style: TextStyle(
-                                    fontSize:
-                                        catalogo.getIdMarca == marca.id
-                                            ? 14
-                                            : 12,
-                                    fontWeight:
-                                        catalogo.getIdMarca == marca.id
-                                            ? FontWeight.bold
-                                            : FontWeight.normal),
-                                overflow: TextOverflow.fade,
-                                softWrap: false)
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Column(
+                              .setNombreFiltro = marca.titulo; */
+                      },
+                      child: Column(
                         children: <Widget>[
-                          image.DashedCircle(
-                            dashes: 1,
+                          DashedCircle(
+                            dashes:controller.getNumeroDeProductosDeMarca(id: marca.id),
                             gradientColor: colorGradientInstagram,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.black26,
-                              radius: 30,
+                            child: Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: viewCircleImage(
+                                  url: marca.urlImagen,
+                                  texto: marca.titulo,
+                                  size: 50),
                             ),
                           ),
                           SizedBox(
                             height: 8.0,
                           ),
-                          Text("null",
-                              style: TextStyle(
-                                  fontSize:12,
-                                  fontWeight: FontWeight.normal),
-                              overflow: TextOverflow.fade,
-                              softWrap: false)
+                          Text(marca.titulo,
+                                style: TextStyle(
+                                    fontSize:
+                                        controller.getSelectMarkId == marca.id
+                                            ? 14
+                                            : 12,
+                                    fontWeight:
+                                        controller.getSelectMarkId == marca.id
+                                            ? FontWeight.bold
+                                            : FontWeight.normal),
+                                overflow: TextOverflow.fade,
+                                softWrap: false)
                         ],
-                      );
-                    }
-                  },
-                ),
-              ):Container();
-            }),
-      );
-    }); */
+                      ),
+                    );
+                  } else {
+                    return Column(
+                      children: <Widget>[
+                        DashedCircle(
+                          dashes: 1,
+                          gradientColor: colorGradientInstagram,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.black26,
+                            radius: 30,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8.0,
+                        ),
+                        Text("",
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.normal),
+                            overflow: TextOverflow.fade,
+                            softWrap: false)
+                      ],
+                    );
+                  }
+                },
+              ),
+            );
+          }),
+    );
   }
+
   Widget widgetSuggestions({required List<Producto> list}) {
     if (list.length == 0) return Container();
 

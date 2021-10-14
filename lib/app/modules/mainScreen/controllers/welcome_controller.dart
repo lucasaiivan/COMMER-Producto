@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:loadany/loadany_widget.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/routes/app_pages.dart';
@@ -9,89 +12,106 @@ import '../../splash/controllers/splash_controller.dart';
 class WelcomeController extends GetxController {
   SplashController homeController = Get.find<SplashController>();
 
-  static late User userAuth; // perfil auth user
-  static Rx<UsersModel> _userModel = UsersModel().obs; // perfil del usuario
-  static Rx<ProfileBusinessModel> _profileBusiness = ProfileBusinessModel().obs; // perfil del negocio
-  static RxBool loadData = false.obs;
-  static RxBool loadDataProfileBusiness = false.obs;
-  static RxString nameBusiness = ''.obs;
-  static RxString selectBusinessId = ''.obs;
-  static RxList<Producto> listSuggestedProducts = <Producto>[].obs ;
-  static RxList<ProductoNegocio> listProductsBusiness = <ProductoNegocio>[].obs ;
+  //  authentication account profile
+  static late User _userAccountAuth;
+  User get getUserAccountAuth => _userAccountAuth;
+  set setUserAccountAuth(User user) => _userAccountAuth = user;
 
-  List<Producto> get getListSuggestedProducts => listSuggestedProducts;
-  List<ProductoNegocio> get getListProductsBusines => listProductsBusiness;
-  User get getUserAuth => userAuth;
-  bool get load => loadData.value;
-  UsersModel get userProfile => _userModel.value;
-  bool get loadProfileBusiness => loadDataProfileBusiness.value;
-  String get nameProfileBusiness => nameBusiness.value;
-  String get getSelectBusinessId => selectBusinessId.value;
-  ProfileBusinessModel get profileBusiness => _profileBusiness.value;
+  //  account profile
+  static Rx<UsersModel> _userAccount = UsersModel().obs;
+  UsersModel get getUserAccount => _userAccount.value;
+  set setUsetAccount(UsersModel user) => _userAccount.value = user;
 
-  set setProfileBusiness(ProfileBusinessModel user) => _profileBusiness.value = user;
-  set setUser(UsersModel user) => _userModel.value = user;
-  set setLoad(bool value) => loadData.value = value;
+  //  business account profile
+  static Rx<ProfileBusinessModel> _businessAccount =
+      ProfileBusinessModel().obs; // perfil del negocio
+  ProfileBusinessModel get profileBusiness => _businessAccount.value;
+  set setProfileBusiness(ProfileBusinessModel user) =>
+      _businessAccount.value = user;
+
+  // variable para comprobar cuando se han cargado los datos del perfil del usuario
+  static RxBool _loadDataProfileUser = false.obs;
+  bool get getLoadDataProfileUser => _loadDataProfileUser.value;
+  set setLoadDataProfileUser(bool value) => _loadDataProfileUser.value = value;
+
+  // variable para comprobar cuando se han cargado los datos del perfil de la cuenta
+  static RxBool _loadDataProfileBusiness = false.obs;
+  bool get loadProfileBusiness => _loadDataProfileBusiness.value;
   set setLoadProfileBusiness(bool value) =>
-      loadDataProfileBusiness.value = value;
-  set setnameProfileBusiness(String value) => nameBusiness.value = value;
-  set setSelectBusinessId(String value) => selectBusinessId.value = value;
-  set setListSuggestedProducts(List<Producto> products) => listSuggestedProducts.value = products;
-  set setListProductsBusiness(List<ProductoNegocio> products) => listProductsBusiness.value = products;
+      _loadDataProfileBusiness.value = value;
 
-  void readProfileBursiness({required String id}) {
-    Database.readStreamProfileBusinessModel(id).listen((event) {
-      setProfileBusiness = ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
-      setSelectBusinessId=profileBusiness.id;
-      setnameProfileBusiness = event['nombre_negocio'];
-      setLoadProfileBusiness = true;
-    }).onError((error) {
-      print('######################## Database.readUserModel: ' +
-          error.toString());
-      setLoadProfileBusiness = false;
-    });
+  // Si esta variable es diferente de 'vacía' mostrará el catálogo del id de la cuenta seleccionada
+  static RxString _selectBusinessId = ''.obs;
+  String get getSelectBusinessId => _selectBusinessId.value;
+  set setSelectBusinessId(String value) => _selectBusinessId.value = value;
 
-    /*  Database.readFutureUserModel(id).then((value) {
-      setUser = UsersModel.fromDocumentSnapshot(documentSnapshot: value);
-      setLoad = true;
-    }).catchError(
-        // ignore: invalid_return_type_for_catch_error
-        (error) {
-          print('######################## Database.readUserModel: ' + error.toString());
-          setLoad = false;
-        }
-    ); */
-  }
+  // catalog product list
+  static RxList<Producto> _listSuggestedProducts = <Producto>[].obs;
+  List<Producto> get getListSuggestedProducts => _listSuggestedProducts;
+  set setListSuggestedProducts(List<Producto> products) =>
+      _listSuggestedProducts.value = products;
 
-  void readProfileUser({required String id}) {
-    Database.readStreamUserModel(id).listen((event) {
-      setUser = UsersModel.fromDocumentSnapshot(documentSnapshot: event);
-      setLoad = true;
-      readProfileBursiness(
-          id: userProfile.idBusiness); // read profile from business
-    }).onError((error) {
-      print('######################## Database.readUserModel: ' +
-          error.toString());
-      setLoad = false;
-    });
-  }
+  // catalogue
+  static RxList<ProductoNegocio> _catalogueBusiness = <ProductoNegocio>[].obs;
+  List<ProductoNegocio> get getCatalogueBusiness => _catalogueBusiness;
+  set setCatalogueBusiness(List<ProductoNegocio> products) =>
+      _catalogueBusiness.value = products;
 
-  void readListSuggestedProducts() {
-    Database.readFutureProducts(limit: 3).then((value) {
-      List<Producto> list = [];
-      value.docs.forEach((element) {
-        list.add(Producto.fromMap(element.data()));
-      });
-      setListSuggestedProducts = list;
-    });
-  }
+  // filter catalog
+  static RxList<ProductoNegocio> _catalogueFilter = <ProductoNegocio>[].obs;
+  List<ProductoNegocio> get getCatalogueFilter => _catalogueFilter;
+  set setCatalogueFilter(List<ProductoNegocio> products) =>
+      _catalogueFilter.value = products;
+
+  // load catalog
+  static List<ProductoNegocio> _catalogueLoad = <ProductoNegocio>[].obs;
+  List<ProductoNegocio> get getCatalogueLoad => _catalogueLoad;
+  set setCatalogueLoad(List<ProductoNegocio> products) =>
+      _catalogueLoad = products;
+
+  // variable para comprobar cuando se han cargado todos los productos del cátalogo
+  static RxBool _loadDataCatalogue = false.obs;
+  bool get getLoadDataCatalogue => _loadDataCatalogue.value;
+  set setLoadDataCatalogue(bool value) => _loadDataCatalogue.value = value;
+
+  // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa categoria
+  static RxString _selectCategoryId = ''.obs;
+  String get getSelectCategoryId => _selectCategoryId.value;
+  set setSelectCategoryId(String value) => _selectCategoryId.value = value;
+
+  // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa subcategoria
+  static RxString _selectSubcategoryId = ''.obs;
+  String get getSelectSubcategoryId => _selectSubcategoryId.value;
+  set setSelectSubcategoryId(String value) =>
+      _selectSubcategoryId.value = value;
+
+  // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa categoría
+  static RxString _selectMarkId = ''.obs;
+  String get getSelectMarkId => _selectMarkId.value;
+  set setSelectMarkId(String value) => _selectMarkId.value = value;
+
+  //  account profile
+  static Rx<Categoria> _categorySelect = Categoria().obs; // perfil del usuario
+  Categoria get getCategorySelect => _categorySelect.value;
+  set setCategorySelect(Categoria value) => _categorySelect.value = value;
+
+  //  estado de la carga de obj en el grid del cátalogo
+  Rx<LoadStatus> _loadGridCatalogueStatus = LoadStatus.normal.obs;
+  LoadStatus get getLoadGridCatalogueStatus => _loadGridCatalogueStatus.value;
+  set setLoadGridCatalogueStatus(LoadStatus value) =>
+      _loadGridCatalogueStatus.value = value;
+
+  // load catalog
+  static RxList<String> _marks = <String>[].obs;
+  List<String> get getCatalogueMarks => _marks;
+  set setCatalogueMarks(List<String> value) => _marks.value = value;
 
   @override
   void onInit() async {
-    userAuth = Get.arguments['currentUser'];
-    if (userAuth.uid != '')
-      readProfileUser(id: userAuth.uid); // read profile from user
-    readListSuggestedProducts();
+    setUserAccountAuth = Get.arguments['currentUser'];
+    if (getUserAccountAuth.uid != '')
+      readProfileUserStream(id: _userAccountAuth.uid);
+    readListSuggestedProductsFuture();
 
     super.onInit();
   }
@@ -109,7 +129,148 @@ class WelcomeController extends GetxController {
     await homeController.googleSign.disconnect();
     await homeController.firebaseAuth.signOut();
   }
-  void toProductView({required Producto porduct}){
-    Get.toNamed(Routes.PRODUCT,arguments: {'product':porduct.convertProductCatalogue()});
+
+  void toProductView({required Producto porduct}) {
+    Get.toNamed(Routes.PRODUCT,
+        arguments: {'product': porduct.convertProductCatalogue()});
+  }
+
+  int getNumeroDeProductosDeMarca({required String id}) {
+    int cantidad = 0;
+
+    for (ProductoNegocio item in getCatalogueBusiness) {
+      if (item.idMarca == id) {
+        cantidad++;
+      }
+    }
+
+    return cantidad;
+  }
+
+  void readProfileBursinesStream({required String id}) {
+    // creamos un ayente
+    Database.readProfileBusinessModelStream(id).listen((event) {
+      setProfileBusiness =
+          ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+      setSelectBusinessId = profileBusiness.id;
+      setLoadProfileBusiness = true;
+      readCatalogueListProductsStream(id: getSelectBusinessId);
+    }).onError((error) {
+      print('######################## readProfileBursinesStreaml: ' +
+          error.toString());
+      setLoadProfileBusiness = false;
+    });
+  }
+
+  Future<Marca> readMark({required String id}) async {
+    return Database.readMarkFuture(id: id)
+        .then((value) => Marca.fromDocumentSnapshot(documentSnapshot: value))
+        .catchError((error) {
+      print('######################## readMark: ' +
+          error.toString());
+    });
+  }
+
+  void readProfileBursinesFuture({required String id}) {
+    // obtenemos una sola ves el perfil de la cuenta de un negocio
+    Database.readUserModelFuture(id).then((value) {
+      // ignore: unused_local_variable \
+      ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: value);
+      /* 
+      .
+      ..
+      ...
+      */
+    }).catchError((error) {
+      print('######################## readProfileBursinesFuture: ' +
+          error.toString());
+    });
+  }
+
+  void readProfileUserStream({required String id}) {
+    //  leemos el perfil de la cuenta del usuario en la db de firestore
+    Database.readUserModelStream(id).listen((event) {
+      setUsetAccount = UsersModel.fromDocumentSnapshot(documentSnapshot: event);
+      setLoadDataProfileUser = true;
+      readProfileBursinesStream(id: getUserAccount.idBusiness);
+    }).onError((error) {
+      print(
+          '######################## readUserModelStream: ' + error.toString());
+      setLoadDataProfileUser = false;
+    });
+  }
+
+  void readListSuggestedProductsFuture() {
+    // obtenemos tres primeros obj(productos) desctacados para mostrarle al usuario
+    Database.readProductsFuture(limit: 3).then((value) {
+      List<Producto> list = [];
+      value.docs
+          .forEach((element) => list.add(Producto.fromMap(element.data())));
+      setListSuggestedProducts = list;
+    });
+  }
+
+  void readCatalogueListProductsStream({required String id}) {
+    // obtenemos los obj(productos) del catalogo de la cuenta del negocio
+    Database.readProductsCatalogueStream(id: id).listen((value) {
+      List<ProductoNegocio> list = [];
+      value.docs.forEach(
+          (element) => list.add(ProductoNegocio.fromMap(element.data())));
+      setCatalogueBusiness = list;
+      setCatalogueFilter = list;
+      getCatalogueMoreLoad();
+      _updateMarks(list: list);
+      setLoadDataCatalogue = true;
+    }).onError((error) {
+      print('######################## readCatalogueListProductsStream: ' +
+          error.toString());
+      setLoadDataProfileUser = false;
+    });
+  }
+
+  //  Función - actualizamos las marcas de los productos cargados //
+  // release
+  // esta función recibe como parametro una lista de productos
+  // extraemos en una lista nueva las marca de los productos que contiene la lista
+  void _updateMarks({required List<ProductoNegocio> list}) {
+    List<String> marcas = [];
+
+    // si no se selecciono ninguna categoria muestra
+    for (var productoNegocio in list) {
+      if (productoNegocio.idMarca != '') {
+        marcas.add(productoNegocio.idMarca);
+      }
+    }
+    setCatalogueMarks = marcas.toSet().toList();
+  }
+
+  //  Future - 'LoadAny' widget //
+  // release
+  // esta función para el parametro 'onLoadMore' de nuestro widget 'LoadAny' para controlar la carga de lementos
+  // primero actualizamos a un estado de 'loading', emula un carga de 3 segundos
+  // mientras se ejecuta la lógica
+  Future<void> getCatalogueMoreLoad() async {
+    // estado de nuestro widget 'LoadAny'
+    setLoadGridCatalogueStatus = LoadStatus.loading;
+    // duración por defecto de la carga de datos
+    Timer.periodic(Duration(milliseconds: 2000), (Timer timer) {
+      timer.cancel();
+      List<ProductoNegocio> listLoad = getCatalogueLoad;
+
+      for (var i = 0; i < 15; ++i) {
+        // si nuestra carga es menor a una total  sigue agregando los elementos
+        if (listLoad.length < getCatalogueFilter.length) {
+          listLoad.add(getCatalogueFilter[listLoad.length + i]);
+        }
+      }
+
+      // cuando termina actualiza los datos
+      setCatalogueLoad = listLoad;
+
+      // tambien actualizamos el estado de nuestro widget 'LoadAny' para mostrar más elementos
+      setLoadGridCatalogueStatus = listLoad.length >= getCatalogueFilter.length
+          ? LoadStatus.completed
+          : LoadStatus.normal;
+    });
   }
 }

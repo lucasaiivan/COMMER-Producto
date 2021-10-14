@@ -452,7 +452,7 @@ class Product extends GetView<ProductController> {
             itemCount: controller.getListPricesForProduct.length,
             itemBuilder: (context, index) {
               return FutureBuilder(
-                  future: Database.readFutureProfileBusinessModel(
+                  future: Database.readProfileBusinessModelFuture(
                       controller.getListPricesForProduct[index].idNegocio),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
