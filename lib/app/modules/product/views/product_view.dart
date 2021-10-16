@@ -45,9 +45,9 @@ class Product extends GetView<ProductController> {
               children: <Widget>[
                 controller.getProduct.verificado == true
                     ? Padding(
-                        padding: const EdgeInsets.only(right: 3.0),
+                        padding: const EdgeInsets.only(right: 4.0),
                         child: new Image.asset('assets/icon_verificado.png',
-                            width: 20.0, height: 20.0))
+                            width: 14.0, height: 14.0))
                     : new Container(),
                 Expanded(
                   child: Text(controller.getMark.titulo,
@@ -273,6 +273,7 @@ class Product extends GetView<ProductController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SizedBox(height: 12),
             imageViewCard(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,15 +295,13 @@ class Product extends GetView<ProductController> {
     });
   }
 
-  Widget persistentHeader(
-      {required Color colorBackground, required Color colorText}) {
+  Widget persistentHeader({required Color colorBackground, required Color colorText}) {
+
     return ClipRRect(
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
       child: Container(
         color: colorBackground,
-        padding:
-            EdgeInsets.only(bottom: 50.0, left: 12.0, right: 12.0, top: 12.0),
+        padding:EdgeInsets.only(bottom: 50.0, left: 12.0, right: 12.0, top: 12.0),
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -314,28 +313,29 @@ class Product extends GetView<ProductController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       textDirection: TextDirection.ltr,
                       children: [
-                        controller.getProduct.precioVenta != null &&
-                                controller.getProduct.precioVenta != 0.0
-                            ? Padding(
+                        controller.getProduct.precioVenta != 0.0 ? Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: [
-                                    /* Text(
-                                        Publicaciones.getFormatoPrecio(
-                                            monto:
-                                                widget.producto.precio_venta),
+                                    Text(
+                                        Publicaciones.getFormatoPrecio(monto:controller.getProduct.precioVenta),
                                         style: TextStyle(
                                             color: colorText,
                                             fontSize: 30,
                                             fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.end), */
+                                        textAlign: TextAlign.end),
                                     Row(
                                       children: [
-                                        /* controller.getProduct.precioCompra != 0.0
+                                        controller.getProduct.precioCompra !=
+                                                0.0
+                                            ? Text(' ${Publicaciones.getFormatoPrecio(monto:controller.getProduct.precioCompra)} ',
+                                                style: TextStyle(fontSize: 12.0))
+                                            : Container(),
+                                        controller.getProduct.precioCompra != 0.0
                                             ? Text(
-                                                sProcentaje(precioCompra: widget.producto.precio_compra,precioVenta: widget.producto.precio_venta),
+                                                sProcentaje(precioCompra: controller.getProduct.precioCompra,precioVenta: controller.getProduct.precioVenta),
                                                 style: TextStyle(color: Colors.green,fontSize: 12.0,fontWeight:FontWeight.bold))
-                                            : Container(), */
+                                            : Container(),
                                         controller.getProduct.precioCompra !=
                                                 0.0
                                             ? Text(" > ",
@@ -343,24 +343,19 @@ class Product extends GetView<ProductController> {
                                                     color: Colors.green,
                                                     fontSize: 12.0))
                                             : Container(),
-                                        /* controller.getProduct.precioCompra != 0.0
+                                        controller.getProduct.precioCompra != 0.0
                                             ? Text(
-                                                sGanancia(
-                                                    precioCompra: widget
-                                                        .producto.precio_compra,
-                                                    precioVenta: widget
-                                                        .producto.precio_venta),
+                                                Publicaciones.sGanancia(
+                                                    precioCompra: controller.getProduct.precioCompra,
+                                                    precioVenta: controller.getProduct.precioVenta),
                                                 style: TextStyle(
-                                                    color: widget.producto
-                                                                .precio_compra <
-                                                            widget.producto
-                                                                .precio_venta
+                                                    color: controller.getProduct.precioCompra <controller.getProduct.precioVenta
                                                         ? Colors.green
                                                         : Colors.red,
                                                     fontSize: 12.0,
                                                     fontWeight:
                                                         FontWeight.bold))
-                                            : Container(), */
+                                            : Container(),
                                       ],
                                     ),
                                   ],
@@ -576,7 +571,7 @@ class Product extends GetView<ProductController> {
       child: Hero(
         tag: controller.getProduct.id,
         child: Stack(
-          alignment: AlignmentDirectional.bottomEnd,
+          alignment: AlignmentDirectional.topEnd,
           children: [
             CachedNetworkImage(
               width: Get.width,
@@ -603,18 +598,16 @@ class Product extends GetView<ProductController> {
                 ),
               ),
             ),
-            Obx(() => Material(
-              color: Colors.transparent,
-                  child: Chip(
-                    elevation: 0,
-                    backgroundColor: Get.theme.backgroundColor,
-                    avatar: utilsWidget.viewCircleImage(
-                        url: controller.getMark.urlImagen,
-                        texto: controller.getMark.titulo),
-                    label: Text(''),
-                    labelPadding: EdgeInsets.zero,
-                  ),
-                )),
+            Obx(() => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircleAvatar(radius: 30,
+                backgroundColor: Get.theme.scaffoldBackgroundColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: utilsWidget.viewCircleImage(size: 60,url: controller.getMark.urlImagen,texto: controller.getMark.titulo),
+                ),
+              ),
+            )),
           ],
         ),
       ),
