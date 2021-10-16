@@ -175,15 +175,19 @@ class Product extends GetView<ProductController> {
   Widget body() {
     return ExpandableBottomSheet(
       background: background(),
-      persistentHeader: persistentHeader(colorBackground: Color.fromRGBO(161, 37, 104, 1.0),colorText: Color.fromRGBO(254, 194, 96, 1.0)),
-      expandableContent: expandableContent(colorBackground: Color.fromRGBO(161, 37, 104, 1.0),colorText: Colors.white),
+      persistentHeader: persistentHeader(
+          colorBackground: Get.theme.cardColor,
+          colorText: Color.fromRGBO(254, 194, 96, 1.0)),
+      expandableContent: expandableContent(
+          colorBackground: Get.theme.cardColor,
+          colorText: Colors.white),
     );
   }
 
   // WIDGETS VIEWS
   Widget widgetDescripcion(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12,right: 12,left: 12,top: 24),
+      padding: const EdgeInsets.only(bottom: 12, right: 12, left: 12, top: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -246,12 +250,15 @@ class Product extends GetView<ProductController> {
                   style: TextStyle(
                       height: 1, fontSize: 16, fontWeight: FontWeight.normal))
               : Container(),
+          controller.getProduct.codigo != ""?SizedBox(height:5):Container(),   
           controller.getProduct.codigo != ""
-              ? Align(
-                alignment: Alignment.bottomRight,
+              ? Opacity(
+                opacity: 0.8,
                 child: Text(controller.getProduct.codigo,
-                    style: TextStyle(
-                        height: 1, fontSize: 14, fontWeight: FontWeight.normal)),
+                  style: TextStyle(
+                      height: 1,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal)),
               )
               : Container(),
         ],
@@ -266,29 +273,20 @@ class Product extends GetView<ProductController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: imageViewCard(),
-            ),
-            Card(
-              margin: EdgeInsets.all(0),
-              color: Get.theme.backgroundColor,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  widgetDescripcion(contextBuilder),
-                  /*productoEnCatalogo
-                      ? WidgetOtrosProductos(
-                          producto: widget.producto,
-                          subcategoria: this.subcategoria)
-                      : Container(),*/
-                  otrosProductosEnCatalogo(),
-                  otrosProductosViewList(),
-                  const SizedBox(height: 120.0, width: 120.0),
-                ],
-              ),
+            imageViewCard(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                widgetDescripcion(contextBuilder),
+                /*productoEnCatalogo
+                    ? WidgetOtrosProductos(
+                        producto: widget.producto,
+                        subcategoria: this.subcategoria)
+                    : Container(),*/
+                otrosProductosEnCatalogo(),
+                otrosProductosViewList(),
+                const SizedBox(height: 120.0, width: 120.0),
+              ],
             ),
           ],
         ),
@@ -296,9 +294,11 @@ class Product extends GetView<ProductController> {
     });
   }
 
-  Widget persistentHeader({ required Color colorBackground,required Color colorText}) {
+  Widget persistentHeader(
+      {required Color colorBackground, required Color colorText}) {
     return ClipRRect(
-      borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20), topRight: Radius.circular(20)),
       child: Container(
         color: colorBackground,
         padding:
@@ -416,7 +416,8 @@ class Product extends GetView<ProductController> {
     );
   }
 
-  Widget expandableContent({ required Color colorBackground,required Color colorText}) {
+  Widget expandableContent(
+      {required Color colorBackground, required Color colorText}) {
     return Obx(() => ClipRRect(
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
@@ -578,8 +579,8 @@ class Product extends GetView<ProductController> {
           alignment: AlignmentDirectional.bottomEnd,
           children: [
             CachedNetworkImage(
-              width: 200,
-              height: 200,
+              width: Get.width,
+              height: Get.width,
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
               imageUrl: controller.getProduct.urlimagen,
@@ -602,15 +603,14 @@ class Product extends GetView<ProductController> {
                 ),
               ),
             ),
-            Obx(() => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
+            Obx(() => Material(
+              color: Colors.transparent,
                   child: Chip(
                     elevation: 0,
                     backgroundColor: Get.theme.backgroundColor,
                     avatar: utilsWidget.viewCircleImage(
                         url: controller.getMark.urlImagen,
-                        texto: controller.getMark.titulo,
-                        size: 20),
+                        texto: controller.getMark.titulo),
                     label: Text(''),
                     labelPadding: EdgeInsets.zero,
                   ),
@@ -676,7 +676,7 @@ class Product extends GetView<ProductController> {
             Divider(endIndent: 12.0, indent: 12.0),
             Padding(
               child: Text("En mi catálogo", style: TextStyle(fontSize: 16.0)),
-              padding:const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
             ),
             SizedBox(
               height: 150,

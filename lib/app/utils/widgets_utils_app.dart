@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:producto/app/models/catalogo_model.dart';
+import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/functions.dart';
 import 'dart:math';
 import 'dynamicTheme_lb.dart';
@@ -161,13 +163,7 @@ class ProductoItem extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) => producto != null
-                      ? ProductoItem(producto: producto)
-                      : Scaffold(body: Center(child: Text("Se produjo un Error!"))),
-                ),
-              );
+              Get.toNamed(Routes.PRODUCT, arguments: {'product': producto});
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -25,6 +25,7 @@ void main() async {
         scaffoldBackgroundColor:Colors.white,
         backgroundColor: Colors.grey[200],
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
+        cardColor: Color.fromRGBO(51, 71, 86, 1.0),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               shape: MaterialStateProperty.all(
@@ -40,6 +41,7 @@ void main() async {
         scaffoldBackgroundColor:Color.fromRGBO(33, 33, 33, 1.0),
         backgroundColor: Color.fromRGBO(59, 24, 95, 1.0),
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
+        cardColor: Color.fromRGBO(21, 21, 21, 1.0),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               shape: MaterialStateProperty.all(

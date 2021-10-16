@@ -119,10 +119,15 @@ class CatalogueScreenView extends StatelessWidget {
       ), */
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 35.0),
-        child: AnimatedFloatingActionButton(
-            //Fab list
+        child: Theme(
+          data: ThemeData.light(),
+          child: AnimatedFloatingActionButton(
+            colorEndAnimation: Colors.grey,
+            animatedIconData: AnimatedIcons.menu_close,
+            colorStartAnimation: Get.theme.primaryColor,
             fabButtons: <Widget>[
               FloatingActionButton(
+                backgroundColor: Get.theme.primaryColor,
                   heroTag: "Escanear codigo",
                   child: Image(
                       color: Colors.white,
@@ -135,8 +140,9 @@ class CatalogueScreenView extends StatelessWidget {
                     scanBarcodeNormal(context: buildContext);
                   }),
               FloatingActionButton(
+                backgroundColor: Get.theme.primaryColor,
                   heroTag: "Escribir codigo",
-                  child: Icon(Icons.edit),
+                  child: Icon(Icons.edit,color:Colors.white),
                   tooltip: 'Escribe el codigo del producto',
                   onPressed: () {
                     Navigator.of(buildContext).push(MaterialPageRoute(
@@ -145,9 +151,9 @@ class CatalogueScreenView extends StatelessWidget {
                         ));
                   })
             ],
-            colorEndAnimation: Colors.grey,
-            animatedIconData: AnimatedIcons.menu_close //To principal button
+            
             ),
+        ),
       ),
     );
   }
@@ -168,8 +174,7 @@ class CatalogueScreenView extends StatelessWidget {
                         ? SizedBox(height: 12.0)
                         : Container(),
                     controller.getCatalogueBusiness.length != 0
-                        ? widgetsListaHorizontalMarcas(
-                            buildContext: buildContext)
+                        ? WidgetsListaHorizontalMarks()
                         : Container(),
                     controller.getCatalogueBusiness.length != 0
                         ? widgetBuscadorView()
@@ -227,12 +232,7 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   Widget gridViewLoadAny() {
-    /* return Obx(() => TextButton(
-        onPressed: controller.getCatalogueMoreLoad,
-        child:Text('count: ' + controller.getCatalogueLoad.length.toString()))); 
-    */
     return LoadAny(
-      //onEndOfPage: controller.getCatalogueMoreLoad,
       onLoadMore: controller.getCatalogueMoreLoad,
       status: controller.getLoadGridCatalogueStatus,
       loadingMsg: 'Cargando...',
@@ -249,7 +249,7 @@ class CatalogueScreenView extends StatelessWidget {
               },
               childCount: controller.getCatalogueLoad.length,
             ),
-          ),
+          )
         ],
       ),
     );
@@ -319,213 +319,6 @@ class CatalogueScreenView extends StatelessWidget {
         }
       },
     ); */
-  }
-
-  Widget widgetsListaHorizontalMarcas({required BuildContext buildContext}) {
-    
-    /* Declarar variables */
-    List<Color> colorGradientInstagram = [
-      Color.fromRGBO(129, 52, 175, 1.0),
-      Color.fromRGBO(129, 52, 175, 1.0),
-      Color.fromRGBO(221, 42, 123, 1.0),
-      Color.fromRGBO(68, 0, 71, 1.0)
-    ];
-    
-    if (controller.getCatalogueMarks.length == 0) {
-      return Container();
-    }
-    return SizedBox(
-      height: 110.0,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: controller.getCatalogueMarks.length,
-          itemBuilder: (BuildContext c, int index) {
-            return Container(
-              width: 81.0,
-              height: 100.0,
-              padding: EdgeInsets.all(5.0),
-              child: FutureBuilder(
-                future: controller.readMark(id: controller.getCatalogueMarks[index]),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    Marca marca = snapshot.data as Marca;
-                    return GestureDetector(
-                      onTap: () {
-                        /* buildContext.read<ProviderCatalogo>()
-                              .setIdMarca = marca.id;
-                          buildContext
-                              .read<ProviderCatalogo>()
-                              .setNombreFiltro = marca.titulo; */
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          DashedCircle(
-                            dashes:controller.getNumeroDeProductosDeMarca(id: marca.id),
-                            gradientColor: colorGradientInstagram,
-                            child: Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: viewCircleImage(
-                                  url: marca.urlImagen,
-                                  texto: marca.titulo,
-                                  size: 50),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8.0,
-                          ),
-                          Text(marca.titulo,
-                                style: TextStyle(
-                                    fontSize:
-                                        controller.getSelectMarkId == marca.id
-                                            ? 14
-                                            : 12,
-                                    fontWeight:
-                                        controller.getSelectMarkId == marca.id
-                                            ? FontWeight.bold
-                                            : FontWeight.normal),
-                                overflow: TextOverflow.fade,
-                                softWrap: false)
-                        ],
-                      ),
-                    );
-                  } else {
-                    return Column(
-                      children: <Widget>[
-                        DashedCircle(
-                          dashes: 1,
-                          gradientColor: colorGradientInstagram,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.black26,
-                            radius: 30,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8.0,
-                        ),
-                        Text("",
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.normal),
-                            overflow: TextOverflow.fade,
-                            softWrap: false)
-                      ],
-                    );
-                  }
-                },
-              ),
-            );
-          }),
-    );
-  }
-
-  Widget widgetSuggestions({required List<Producto> list}) {
-    if (list.length == 0) return Container();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Text("sugerencias para ti"),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-              onTap: () {},
-              borderRadius: BorderRadius.circular(50),
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: FadeInLeft(
-                  child: CircleAvatar(
-                      child: CircleAvatar(
-                          child:
-                              Icon(Icons.search, color: Get.theme.primaryColor),
-                          radius: 24,
-                          backgroundColor: Colors.white),
-                      radius: 26,
-                      backgroundColor: Get.theme.primaryColor),
-                ),
-              ),
-            ),
-            Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 0),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[0]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[0].urlImagen,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 40),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[1]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[1].urlImagen,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 80),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[2]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[2].urlImagen,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
   }
 
   // ShowModalBottomSheet
@@ -717,5 +510,202 @@ class CatalogueScreenView extends StatelessWidget {
         }
       }
     } */
+  }
+}
+
+// WIDGET - Sujerencias de productos
+class WidgetProductsSuggestions extends StatelessWidget {
+  WidgetProductsSuggestions({required this.list}) ;
+
+  // var 
+  final WelcomeController controller = Get.find();
+  final List<Producto> list ;
+  
+
+  @override
+  Widget build(BuildContext context) {
+    if (list.length == 0) return Container();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text("sugerencias para ti"),
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () {},
+              borderRadius: BorderRadius.circular(50),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: FadeInLeft(
+                  child: CircleAvatar(
+                      child: CircleAvatar(
+                          child:
+                              Icon(Icons.search, color: Get.theme.primaryColor),
+                          radius: 24,
+                          backgroundColor: Colors.white),
+                      radius: 26,
+                      backgroundColor: Get.theme.primaryColor),
+                ),
+              ),
+            ),
+            Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: InkWell(
+                    onTap: () => controller.toProductView(porduct: list[0]),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FadeInRight(
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: ClipRRect(
+                                  child: CachedNetworkImage(
+                                      imageUrl: list[0].urlImagen,
+                                      fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                radius: 24),
+                            radius: 26,
+                            backgroundColor: Get.theme.primaryColor),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 40),
+                  child: InkWell(
+                    onTap: () => controller.toProductView(porduct: list[1]),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FadeInRight(
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: ClipRRect(
+                                  child: CachedNetworkImage(
+                                      imageUrl: list[1].urlImagen,
+                                      fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                radius: 24),
+                            radius: 26,
+                            backgroundColor: Get.theme.primaryColor),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 80),
+                  child: InkWell(
+                    onTap: () => controller.toProductView(porduct: list[2]),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FadeInRight(
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: ClipRRect(
+                                  child: CachedNetworkImage(
+                                      imageUrl: list[2].urlImagen,
+                                      fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                radius: 24),
+                            radius: 26,
+                            backgroundColor: Get.theme.primaryColor),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+//  WIDGET - Marks list
+//  readme
+//  creamos un lista horizontal con las marcas de los productos que se muestran al usaurio
+class WidgetsListaHorizontalMarks extends StatelessWidget {
+  WidgetsListaHorizontalMarks({Key? key}) : super(key: key);
+
+  // var
+  final WelcomeController controller = Get.find();
+  final List<Color> colorGradientInstagram = [
+    Color.fromRGBO(129, 52, 175, 1.0),
+    Color.fromRGBO(129, 52, 175, 1.0),
+    Color.fromRGBO(221, 42, 123, 1.0),
+    Color.fromRGBO(68, 0, 71, 1.0)
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    if (controller.getCatalogueMarks.length == 0) return Container();
+    return SizedBox(
+      height: 110.0,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.getCatalogueMarks.length,
+          itemBuilder: (BuildContext c, int index) {
+            // get
+            Marca marca = controller.getCatalogueMarks[index];
+
+            return Container(
+              width: 81.0,
+              height: 100.0,
+              padding: EdgeInsets.all(5.0),
+              child: GestureDetector(
+                onTap: () {
+                  /* buildContext.read<ProviderCatalogo>()
+                              .setIdMarca = marca.id;
+                          buildContext
+                              .read<ProviderCatalogo>()
+                              .setNombreFiltro = marca.titulo; */
+                },
+                child: Column(
+                  children: <Widget>[
+                    DashedCircle(
+                      dashes:
+                          controller.getNumeroDeProductosDeMarca(id: marca.id),
+                      gradientColor: colorGradientInstagram,
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: viewCircleImage(
+                            url: marca.urlImagen,
+                            texto: marca.titulo,
+                            size: 50),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
+                    Text(marca.titulo,
+                        style: TextStyle(
+                            fontSize: controller.getSelectMarkId == marca.id
+                                ? 14
+                                : 12,
+                            fontWeight: controller.getSelectMarkId == marca.id
+                                ? FontWeight.bold
+                                : FontWeight.normal),
+                        overflow: TextOverflow.fade,
+                        softWrap: false)
+                  ],
+                ),
+              ),
+            );
+          }),
+    );
   }
 }

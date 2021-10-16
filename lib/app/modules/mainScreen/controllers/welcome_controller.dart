@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:loadany/loadany_widget.dart';
@@ -102,9 +103,18 @@ class WelcomeController extends GetxController {
       _loadGridCatalogueStatus.value = value;
 
   // load catalog
-  static RxList<String> _marks = <String>[].obs;
-  List<String> get getCatalogueMarks => _marks;
-  set setCatalogueMarks(List<String> value) => _marks.value = value;
+  static RxList<Marca> _marks = <Marca>[].obs;
+  List<Marca> get getCatalogueMarks => _marks;
+  set setCatalogueMarks(List<Marca> value) => _marks.value = value;
+  void addMark({required Marca markParam}) {
+    // cada ves que se agrega un obj se asegura que en la lista no alla ninguno repetido
+    bool repeated = false;
+    for (Marca mark in getCatalogueMarks) {
+      if (mark.id == markParam.id) repeated=true ;
+    }
+    // si 'repeated' es falso procede a agregar a la lista
+    if(repeated==false)_marks.add(markParam);
+  }
 
   @override
   void onInit() async {
@@ -131,8 +141,7 @@ class WelcomeController extends GetxController {
   }
 
   void toProductView({required Producto porduct}) {
-    Get.toNamed(Routes.PRODUCT,
-        arguments: {'product': porduct.convertProductCatalogue()});
+    Get.toNamed(Routes.PRODUCT, arguments: {'product': porduct.convertProductCatalogue()});
   }
 
   int getNumeroDeProductosDeMarca({required String id}) {
@@ -165,10 +174,7 @@ class WelcomeController extends GetxController {
   Future<Marca> readMark({required String id}) async {
     return Database.readMarkFuture(id: id)
         .then((value) => Marca.fromDocumentSnapshot(documentSnapshot: value))
-        .catchError((error) {
-      print('######################## readMark: ' +
-          error.toString());
-    });
+        .catchError((error) =>Marca(timestampActualizado: Timestamp.now(), timestampCreacion: Timestamp.now()));
   }
 
   void readProfileBursinesFuture({required String id}) {
@@ -228,24 +234,24 @@ class WelcomeController extends GetxController {
     });
   }
 
-  //  Función - actualizamos las marcas de los productos cargados //
+  //  Función -  obtenemos los datos de la marca //
   // release
-  // esta función recibe como parametro una lista de productos
-  // extraemos en una lista nueva las marca de los productos que contiene la lista
+  // obtenemos un lista de las id de cada marca y procedemos a hacer una consulta en la db
+  // y lo guardamos en las lista para mostrar al usuario
   void _updateMarks({required List<ProductoNegocio> list}) {
-    List<String> marcas = [];
+    // recorremos las lista de los productos
+    // obtenemos de la db los datos de la marca
+    // y finamente la agregamos con los datos cargados para mostrar al usuario
 
-    // si no se selecciono ninguna categoria muestra
     for (var productoNegocio in list) {
-      if (productoNegocio.idMarca != '') {
-        marcas.add(productoNegocio.idMarca);
-      }
+      if (productoNegocio.idMarca != '')
+        readMark(id: productoNegocio.idMarca)
+            .then((value) => addMark(markParam: value));
     }
-    setCatalogueMarks = marcas.toSet().toList();
   }
 
   //  Future - 'LoadAny' widget //
-  // release
+  // readme
   // esta función para el parametro 'onLoadMore' de nuestro widget 'LoadAny' para controlar la carga de lementos
   // primero actualizamos a un estado de 'loading', emula un carga de 3 segundos
   // mientras se ejecuta la lógica
