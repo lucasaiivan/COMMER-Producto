@@ -16,6 +16,6 @@ class PagePrincipal extends GetView<WelcomeController> {
 
   @override
   Widget build(BuildContext buildContext) {
-    return Obx(() => controller.getSelectBusinessId==""?ScanScreenView():CatalogueScreenView());
+    return Obx(() => controller.getIdAccountSelecte==""?ScanScreenView():CatalogueScreenView());
   }
 }

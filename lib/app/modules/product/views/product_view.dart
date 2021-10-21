@@ -177,7 +177,7 @@ class Product extends GetView<ProductController> {
       background: background(),
       persistentHeader: persistentHeader(
           colorBackground: Get.theme.cardColor,
-          colorText: Color.fromRGBO(254, 194, 96, 1.0)),
+          colorText: Colors.white),
       expandableContent: expandableContent(
           colorBackground: Get.theme.cardColor,
           colorText: Colors.white),

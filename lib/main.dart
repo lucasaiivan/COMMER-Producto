@@ -12,6 +12,10 @@ void main() async {
   MobileAds.instance.initialize();
   await Firebase.initializeApp();
   HomeBinding().dependencies(); 
+  
+
+  Color colorBlack =  Color.fromARGB(255,43, 45, 57);
+  Color colorLight = Color.fromARGB(255, 238, 238, 238);
 
   runApp(
     GetMaterialApp(
@@ -21,34 +25,34 @@ void main() async {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       theme: ThemeData(
-        primaryColor: Color.fromRGBO(254, 194, 96, 1.0),
-        scaffoldBackgroundColor:Colors.white,
+        primaryColor: Colors.deepPurple,
+        scaffoldBackgroundColor:colorLight,
         backgroundColor: Colors.grey[200],
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
-        cardColor: Color.fromRGBO(51, 71, 86, 1.0),
+        cardColor: Color.fromARGB(255, 19, 20,24),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),),
-              backgroundColor: MaterialStateProperty.all(Color.fromRGBO(254, 194, 96, 1.0)),
+              backgroundColor: MaterialStateProperty.all(Colors.deepPurple,),
               padding: MaterialStateProperty.all(EdgeInsets.all(14))),
         ),
       ),
       darkTheme: ThemeData.dark().copyWith(
-        primaryColor: Color.fromRGBO(254, 194, 96, 1.0),
-        scaffoldBackgroundColor:Color.fromRGBO(33, 33, 33, 1.0),
+        primaryColor: Colors.deepPurple,
+        scaffoldBackgroundColor:colorBlack,
         backgroundColor: Color.fromRGBO(59, 24, 95, 1.0),
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
-        cardColor: Color.fromRGBO(21, 21, 21, 1.0),
+        cardColor: Color.fromARGB(255, 19, 20,24),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),),
-              backgroundColor: MaterialStateProperty.all(Color.fromRGBO(254, 194, 96, 1.0)),
+              backgroundColor: MaterialStateProperty.all( Colors.deepPurple,),
               padding: MaterialStateProperty.all(EdgeInsets.all(14))),
         ),
       ),

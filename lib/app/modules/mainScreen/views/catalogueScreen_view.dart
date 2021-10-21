@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:loadany/loadany.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
-import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,16 +30,16 @@ class CatalogueScreenView extends StatelessWidget {
             .iconTheme
             .copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
         title: InkWell(
-          onTap: () => showModalBottomSheetSetting(buildContext),
+          onTap: () => showModalBottomSheetSelectAccount(buildContext),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 12.0),
             child: Row(
               children: <Widget>[
                 Text(
-                    controller.profileBusiness.id == ''
+                    controller.getProfileAccountSelected.id == ''
                         ? "Seleccionar cuenta"
-                        : controller.profileBusiness.nombreNegocio != ""
-                            ? controller.profileBusiness.nombreNegocio
+                        : controller.getProfileAccountSelected.nombreNegocio != ""
+                            ? controller.getProfileAccountSelected.nombreNegocio
                             : "Mi catalogo",
                     style: TextStyle(
                         color:
@@ -59,7 +58,7 @@ class CatalogueScreenView extends StatelessWidget {
               customBorder: new CircleBorder(),
               splashColor: Colors.red,
               onTap: () {
-                //showModalBottomSheetConfig(buildContext: buildContext);
+                showModalBottomSheetSetting(buildContext);
               },
               child: Hero(
                 tag: "fotoperfiltoolbar",
@@ -75,7 +74,7 @@ class CatalogueScreenView extends StatelessWidget {
                         height: 35.0,
                         fadeInDuration: Duration(milliseconds: 200),
                         fit: BoxFit.cover,
-                        imageUrl: controller.profileBusiness.imagenPerfil,
+                        imageUrl: controller.getProfileAccountSelected.imagenPerfil,
                         placeholder: (context, url) => FadeInImage(
                             image: AssetImage("assets/loading.gif"),
                             placeholder: AssetImage("assets/loading.gif")),
@@ -127,7 +126,7 @@ class CatalogueScreenView extends StatelessWidget {
             colorStartAnimation: Get.theme.primaryColor,
             fabButtons: <Widget>[
               FloatingActionButton(
-                backgroundColor: Get.theme.primaryColor,
+                  backgroundColor: Get.theme.primaryColor,
                   heroTag: "Escanear codigo",
                   child: Image(
                       color: Colors.white,
@@ -140,9 +139,9 @@ class CatalogueScreenView extends StatelessWidget {
                     scanBarcodeNormal(context: buildContext);
                   }),
               FloatingActionButton(
-                backgroundColor: Get.theme.primaryColor,
+                  backgroundColor: Get.theme.primaryColor,
                   heroTag: "Escribir codigo",
-                  child: Icon(Icons.edit,color:Colors.white),
+                  child: Icon(Icons.edit, color: Colors.white),
                   tooltip: 'Escribe el codigo del producto',
                   onPressed: () {
                     Navigator.of(buildContext).push(MaterialPageRoute(
@@ -151,8 +150,7 @@ class CatalogueScreenView extends StatelessWidget {
                         ));
                   })
             ],
-            
-            ),
+          ),
         ),
       ),
     );
@@ -295,33 +293,37 @@ class CatalogueScreenView extends StatelessWidget {
     );
   }
 
-  Widget getAdminUserData({required String idNegocio}) {
-    return Text("Tipo de permiso no definido");
-    /* return FutureBuilder(
-      future: Global.getDataAdminUserNegocio(
-              idNegocio: idNegocio, idUserAdmin: controller.userAuth.uid)
-          .getDataAdminUsuarioCuenta(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          AdminUsuarioCuenta adminUsuarioCuenta = snapshot.data;
-          switch (adminUsuarioCuenta.tipocuenta) {
-            case 0:
-              return Text("Tipo de permiso no definido");
-            case 1:
-              return Text("Administrador");
-            case 2:
-              return Text("Estandar");
-            default:
-              return Text("Se produj un error al obtener los datos!");
-          }
+  // BottomSheet - Getx
+  void showModalBottomSheetSelectAccount(BuildContext buildContext) {
+    Widget widget = ListView.builder(
+      padding: EdgeInsets.symmetric(vertical: 15.0),
+      shrinkWrap: true,
+      itemCount: controller.getManagedAccountData.length,
+      itemBuilder: (BuildContext context, int index) {
+        if (controller.getManagedAccountData.length == 0) {
+          return Column(
+            children: [
+              controller.getStateCreateCuentaEmpresa? WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext): Container(),
+              WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid),
+            ],
+          );
         } else {
-          return Text("Cargando datos...");
+          return WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid);
         }
       },
-    ); */
+    );
+
+    // muestre la hoja inferior modal de getx
+    Get.bottomSheet(
+      widget,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      enableDrag: true,
+      isDismissible: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+    );
   }
 
-  // ShowModalBottomSheet
+  // BottomSheet
   void showModalBottomSheetSetting(BuildContext buildContext) {
     showModalBottomSheet(
         context: buildContext,
@@ -333,12 +335,12 @@ class CatalogueScreenView extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 contentPadding: EdgeInsets.all(12.0),
-                leading: controller.profileBusiness.imagenPerfil == ""
+                leading: controller.getProfileAccountSelected.imagenPerfil == ""
                     ? CircleAvatar(
                         backgroundColor: Colors.black26,
                         radius: 18.0,
                         child: Text(
-                            controller.profileBusiness.nombreNegocio
+                            controller.getProfileAccountSelected.nombreNegocio
                                 .substring(0, 1),
                             style: TextStyle(
                                 fontSize: 18.0,
@@ -346,7 +348,7 @@ class CatalogueScreenView extends StatelessWidget {
                                 fontWeight: FontWeight.bold)),
                       )
                     : CachedNetworkImage(
-                        imageUrl: controller.profileBusiness.imagenPerfil,
+                        imageUrl: controller.getProfileAccountSelected.imagenPerfil,
                         placeholder: (context, url) => const CircleAvatar(
                           backgroundColor: Colors.grey,
                           radius: 18.0,
@@ -515,12 +517,11 @@ class CatalogueScreenView extends StatelessWidget {
 
 // WIDGET - Sujerencias de productos
 class WidgetProductsSuggestions extends StatelessWidget {
-  WidgetProductsSuggestions({required this.list}) ;
+  WidgetProductsSuggestions({required this.list});
 
-  // var 
+  // var
   final WelcomeController controller = Get.find();
-  final List<Producto> list ;
-  
+  final List<Producto> list;
 
   @override
   Widget build(BuildContext context) {
@@ -644,10 +645,14 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
   // var
   final WelcomeController controller = Get.find();
   final List<Color> colorGradientInstagram = [
-    Color.fromRGBO(129, 52, 175, 1.0),
+    /* Color.fromRGBO(129, 52, 175, 1.0),
     Color.fromRGBO(129, 52, 175, 1.0),
     Color.fromRGBO(221, 42, 123, 1.0),
-    Color.fromRGBO(68, 0, 71, 1.0)
+    Color.fromRGBO(68, 0, 71, 1.0), */
+    Get.theme.primaryColor,
+    Get.theme.primaryColor,
+    Get.theme.primaryColor,
+    Get.theme.primaryColor,
   ];
 
   @override
@@ -661,6 +666,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
           itemBuilder: (BuildContext c, int index) {
             // get
             Marca marca = controller.getCatalogueMarks[index];
+            if (marca.titulo == '') return Container();
 
             return Container(
               width: 81.0,

@@ -19,11 +19,12 @@ class SplashController extends GetxController {
 
   @override
   void onReady() async {
+
     ever(isSignIn, handleAuthStateChanged);
+    // verificamos que alla un usaario autentificado
     isSignIn.value = firebaseAuth.currentUser != null;
-    firebaseAuth.authStateChanges().listen((event) {
-      isSignIn.value = event != null;
-    });
+    // escuchamos el cambio de estado de la autentifiación del usuario
+    firebaseAuth.authStateChanges().listen((event) =>isSignIn.value = event != null);
 
     super.onReady();
   }
@@ -31,15 +32,18 @@ class SplashController extends GetxController {
   @override
   void onClose() {}
 
+// manejar el estado de autenticación
   void handleAuthStateChanged(isLoggedIn) {
-    CustomFullScreenDialog.showDialog(); // visualizamos un diálogo alerta
 
+    // visualizamos un diálogo alerta
+    CustomFullScreenDialog.showDialog(); 
+    // aquí, según el estado, redirigir al usuario a la vista correspondiente
     if (isLoggedIn) {
       Get.offAllNamed(Routes.WELCOME,arguments: {'currentUser': firebaseAuth.currentUser});
     } else {
       Get.offAllNamed(Routes.LOGIN);
     }
-
-    CustomFullScreenDialog.cancelDialog(); // finalizamos el diálogo alerta
+    // finalizamos el diálogo alerta
+    CustomFullScreenDialog.cancelDialog();
   }
 }

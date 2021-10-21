@@ -95,71 +95,74 @@ class UsersModel {
     this.email = documentSnapshot["email"];
     //this.timestamCreation = documentSnapshot["timestamCreation"] ?? documentSnapshot["timestamp_creation"];
     //this.timestampSesion = documentSnapshot["timestampSesion"] ?? documentSnapshot["timestamp_sesion"];
-    this.idBusiness = documentSnapshot["id_cuenta_negocio"] ;
+    this.idBusiness = documentSnapshot["id_cuenta_negocio"];
   }
 }
 
-
-
 class ProfileBusinessModel {
-  
   // Informacion del negocios
-    String id="";
-    String username="";
-    String imagenPerfil="";
-    String nombreNegocio="";
-    String descripcion="";
-    //Timestamp timestamp_creation; // Fecha en la que se creo la cuenta
-    //Timestamp timestamp_login; // Fecha de las ultima ves que inicio la app
-    String signoMoneda ="\$" ;
+  String id = "";
+  String username = "";
+  String imagenPerfil = "";
+  String nombreNegocio = "";
+  String descripcion = "";
+  //Timestamp timestamp_creation; // Fecha en la que se creo la cuenta
+  //Timestamp timestamp_login; // Fecha de las ultima ves que inicio la app
+  String signoMoneda = "\$";
 
+  // informacion de cuenta
+  bool bloqueo = false;
+  String mensajeBloqueo = "";
+  bool cuentaActiva =
+      true; // Estado de el uso de la cuenta dependiendo el uso // Las cuentas desactivadas no aprecen en el mapa
+  bool cuentaVerificada = false; // Cuenta verificada
 
-    // informacion de cuenta
-    bool bloqueo=false;
-    String  mensajeBloqueo="";
-    bool cuentaActiva = true;  // Estado de el uso de la cuenta dependiendo el uso // Las cuentas desactivadas no aprecen en el mapa
-    bool cuentaVerificada=false; // Cuenta verificada
+  // Ubicacion
+  String codigoPais = "";
+  String pais = "";
+  String provincia = "";
+  String ciudad = "";
+  String direccion = "";
 
-    // Ubicacion
-    String codigoPais="";
-    String pais="";
-    String provincia="";
-    String ciudad="";
-    String direccion="";
-   
+  // data app
+  String admin = '';
 
   ProfileBusinessModel({
     // Informacion del negocios
-    this.id="",
-    this.username="",
-    this.imagenPerfil="",
-    this.nombreNegocio="",
-    this.descripcion="",
+    this.id = "",
+    this.username = "",
+    this.imagenPerfil = "",
+    this.nombreNegocio = "",
+    this.descripcion = "",
     //this.timestamp_creation, // Fecha en la que se creo la cuenta
     //this.timestamp_login, // Fecha de las ultima ves que inicio la app
-    this.signoMoneda ="\$" ,
+    this.signoMoneda = "\$",
     // informacion de cuenta
-    this.bloqueo=false,
-    this.mensajeBloqueo="",
-    this.cuentaActiva= true, // Estado de el uso de la cuenta dependiendo el uso // Las cuentas desactivadas no aprecen en el mapa
-    this.cuentaVerificada=false, // Cuenta verificada
+    this.bloqueo = false,
+    this.mensajeBloqueo = "",
+    this.cuentaActiva =
+        true, // Estado de el uso de la cuenta dependiendo el uso // Las cuentas desactivadas no aprecen en el mapa
+    this.cuentaVerificada = false, // Cuenta verificada
 
     // Ubicacion
-    this.codigoPais="",
-    this.pais="",
-    this.provincia="",
-    this.ciudad="",
-    this.direccion="",
-    });
+    this.codigoPais = "",
+    this.pais = "",
+    this.provincia = "",
+    this.ciudad = "",
+    this.direccion = "",
+
+    // data app
+    this.admin = '',
+  });
   ProfileBusinessModel.fromMap(Map data) {
     id = data['id'];
-    username=data['username'];
+    username = data['username'];
     imagenPerfil = data['imagen_perfil'] ?? '';
     nombreNegocio = data['nombre_negocio'];
     descripcion = data['descripcion'];
-   // timestamp_creation = data['timestamp_creation'];
+    // timestamp_creation = data['timestamp_creation'];
     //timestamp_login = data['timestamp_login'];
-    signoMoneda = data['signo_moneda']??"\$";
+    signoMoneda = data['signo_moneda'] ?? "\$";
     bloqueo = data['bloqueo'];
     mensajeBloqueo = data['mensaje_bloqueo'];
     cuentaActiva = data['cuenta_activa'];
@@ -172,7 +175,7 @@ class ProfileBusinessModel {
   }
   Map<String, dynamic> toJson() => {
         "id": id,
-        "username":username,
+        "username": username,
         "imagen_perfil": imagenPerfil,
         "nombre_negocio": nombreNegocio,
         "descripcion": descripcion,
@@ -188,26 +191,61 @@ class ProfileBusinessModel {
         "provincia": provincia,
         "ciudad": ciudad,
         "direccion": direccion,
-        
-    };
+      };
 
-    ProfileBusinessModel.fromDocumentSnapshot(
+  ProfileBusinessModel.fromDocumentSnapshot(
       {required DocumentSnapshot documentSnapshot}) {
     this.id = documentSnapshot.id;
     //this.username = documentSnapshot["username"]??'';
-    this.imagenPerfil = documentSnapshot["imagen_perfil"]??''  ;
+    this.imagenPerfil = documentSnapshot["imagen_perfil"] ?? '';
     this.nombreNegocio = documentSnapshot["nombre_negocio"] ?? 'null';
-    this.descripcion = documentSnapshot["descripcion"]??'';
+    this.descripcion = documentSnapshot["descripcion"] ?? '';
     //this.signoMoneda = documentSnapshot["signo_moneda"]??'';
-    this.bloqueo = documentSnapshot["bloqueo"]??'';
-    this.mensajeBloqueo = documentSnapshot["mensaje_bloqueo"]??'';
-    this.cuentaActiva = documentSnapshot["cuenta_activa"]??false;
-    this.cuentaVerificada = documentSnapshot["cuenta_verificada"]??false;
-    this.codigoPais = documentSnapshot["codigo_pais"]??'';
-    this.pais = documentSnapshot["pais"]??'';
-    this.provincia = documentSnapshot["provincia"]??'';
-    this.ciudad = documentSnapshot["ciudad"]??'';
-    this.direccion = documentSnapshot["direccion"]??'';
+    this.bloqueo = documentSnapshot["bloqueo"] ?? '';
+    this.mensajeBloqueo = documentSnapshot["mensaje_bloqueo"] ?? '';
+    this.cuentaActiva = documentSnapshot["cuenta_activa"] ?? false;
+    this.cuentaVerificada = documentSnapshot["cuenta_verificada"] ?? false;
+    this.codigoPais = documentSnapshot["codigo_pais"] ?? '';
+    this.pais = documentSnapshot["pais"] ?? '';
+    this.provincia = documentSnapshot["provincia"] ?? '';
+    this.ciudad = documentSnapshot["ciudad"] ?? '';
+    this.direccion = documentSnapshot["direccion"] ?? '';
+  }
+}
+
+class AdminUsuarioCuenta {
+  String idUser = "";
+  String idAccount = "";
+  bool estadoCuentaUsuario = true;
+  int tipoUsuario = 0;
+  int tipocuenta = 0; // 0 = null | 1 = administrador  | 2 = etandar
+  bool propietarioCuenta =
+      false; // True el usuario fue quien creo la cuenta del negocios
+
+  AdminUsuarioCuenta({
+    this.idUser = "",
+    this.idAccount = "",
+    this.estadoCuentaUsuario = false,
+    this.tipoUsuario = 0,
+    this.tipocuenta = 0,
+  });
+
+  AdminUsuarioCuenta.fromMap(Map data) {
+    idUser = data['id_usuario'] ?? "";
+    idAccount = data['idAccount'] ?? "";
+    estadoCuentaUsuario = data['estado_cuenta_usuario'] ?? '';
+    tipoUsuario = data['tipo_usuario'] ?? '';
+    tipocuenta = data['tipocuenta'] ?? '';
+    propietarioCuenta = data['propietario_cuenta'] ?? '';
   }
 
+  AdminUsuarioCuenta.fromDocumentSnapshot(
+      {required DocumentSnapshot documentSnapshot}) {
+    idUser = documentSnapshot['id_usuario'] ?? "";
+    idAccount = documentSnapshot['idAccount'] ?? '';
+    estadoCuentaUsuario = documentSnapshot['estado_cuenta_usuario'] ?? '';
+    tipoUsuario = documentSnapshot['tipo_usuario'] ?? '';
+    tipocuenta = documentSnapshot['tipocuenta'] ?? '';
+    propietarioCuenta = documentSnapshot['propietario_cuenta'] ?? '';
+  }
 }

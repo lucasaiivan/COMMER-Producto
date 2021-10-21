@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:producto/app/models/catalogo_model.dart';
+import 'package:producto/app/models/user_model.dart';
+import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/functions.dart';
 import 'dart:math';
@@ -145,7 +147,6 @@ Widget viewCircleImage(
   );
 }
 
-
 class ProductoItem extends StatelessWidget {
   final ProductoNegocio producto;
   final double width;
@@ -159,7 +160,8 @@ class ProductoItem extends StatelessWidget {
         tag: producto.id,
         child: Card(
           elevation: 1,
-          shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () {
@@ -224,7 +226,7 @@ class WidgetContentInfo extends StatelessWidget {
       borderRadius: BorderRadius.only(
           topLeft: Radius.circular(13), topRight: Radius.circular(13)),
       child: Container(
-        color: Theme.of(context).primaryColorDark.withOpacity(0.70),//Colors.black54,
+        color: Colors.black38,
         child: ClipRect(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -253,7 +255,8 @@ class WidgetContentInfo extends StatelessWidget {
                           : Container(),
                       producto.precioVenta != 0.0
                           ? Text(
-                              Publicaciones.getFormatoPrecio(monto: producto.precioVenta),
+                              Publicaciones.getFormatoPrecio(
+                                  monto: producto.precioVenta),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16.0,
@@ -271,5 +274,265 @@ class WidgetContentInfo extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class WidgetButtonListTile extends StatelessWidget {
+  final BuildContext buildContext;
+  final WelcomeController controller = Get.find<WelcomeController>();
+
+  WidgetButtonListTile({required this.buildContext});
+
+  @override
+  Widget build(BuildContext context) {
+    return buttonListTileCrearCuenta(context: buildContext);
+  }
+
+  Widget buttonListTileCrearCuenta({required BuildContext context}) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+      leading: CircleAvatar(
+        radius: 24.0,
+        child: Icon(Icons.add),
+      ),
+      dense: true,
+      title:
+          Text("Crear cuenta para empresa", style: TextStyle(fontSize: 16.0)),
+      onTap: () {
+        /* Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (BuildContext context) => ProfileCuenta(
+              perfilNegocio: null,
+              createCuenta: true,
+            ),
+          ),
+        ); */
+      },
+    );
+  }
+
+  Widget buttonListTileCerrarSesion({required BuildContext buildContext}) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+      leading: controller.getProfileAccountSelected.imagenPerfil == ""
+          ? CircleAvatar(
+              backgroundColor: Colors.black26,
+              radius: 24.0,
+              child: Text(
+                  controller.getProfileAccountSelected.nombreNegocio
+                      .substring(0, 1),
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+            )
+          : CachedNetworkImage(
+              imageUrl: controller.getProfileAccountSelected.imagenPerfil,
+              placeholder: (context, url) => CircleAvatar(
+                backgroundColor: Colors.black26,
+                radius: 24.0,
+                child: Text(
+                    controller.getProfileAccountSelected.nombreNegocio
+                        .substring(0, 1),
+                    style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold)),
+              ),
+              imageBuilder: (context, image) => CircleAvatar(
+                backgroundImage: image,
+                radius: 24.0,
+              ),
+            ),
+      dense: true,
+      title: Text("Cerrar sesión", style: TextStyle(fontSize: 16.0)),
+      subtitle: null,
+      trailing: Icon(Icons.close),
+      onTap: () {
+        showDialogCerrarSesion(buildContext: buildContext);
+      },
+    );
+  }
+
+  void showDialogCerrarSesion({required BuildContext buildContext}) {
+    showDialog(
+      context: buildContext,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Cerrar sesión"),
+          content: new Text("¿Estás seguro de que quieres cerrar la sesión?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("si"),
+              onPressed: () async {
+                /* // Default values
+                Global.actualizarPerfilNegocio(perfilNegocio: null);
+                AuthService auth = AuthService();
+                await auth.signOut();
+                Future.delayed(const Duration(milliseconds: 800), () {
+                  Navigator.of(buildContext).pushNamedAndRemoveUntil(
+                      '/', (Route<dynamic> route) => false);
+                }); */
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget buttonListTileItemCuenta(
+      {required BuildContext buildContext,
+      required ProfileBusinessModel perfilNegocio,
+      bool adminPropietario = false}) {
+    if (perfilNegocio.id == '') {
+      return Container();
+    }
+    return Column(
+      children: <Widget>[
+        ListTile(
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(10000.0),
+            child: perfilNegocio.imagenPerfil != '' ||
+                    perfilNegocio.imagenPerfil.isNotEmpty
+                ? CachedNetworkImage(
+                    fadeInDuration: Duration(milliseconds: 200),
+                    fit: BoxFit.cover,
+                    imageUrl: perfilNegocio.imagenPerfil.contains('https://')
+                        ? perfilNegocio.imagenPerfil
+                        : "https://" + perfilNegocio.imagenPerfil,
+                    placeholder: (context, url) => CircleAvatar(
+                      backgroundColor: Colors.black26,
+                      radius: 24.0,
+                      child: Text(perfilNegocio.nombreNegocio.substring(0, 1),
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    imageBuilder: (context, image) => CircleAvatar(
+                      backgroundImage: image,
+                      radius: 24.0,
+                    ),
+                    errorWidget: (context, url, error) => CircleAvatar(
+                      backgroundColor: Colors.black26,
+                      radius: 24.0,
+                      child: Text(perfilNegocio.nombreNegocio.substring(0, 1),
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  )
+                : CircleAvatar(
+                    backgroundColor: Colors.black26,
+                    radius: 24.0,
+                    child: Text(perfilNegocio.nombreNegocio.substring(0, 1),
+                        style: TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold)),
+                  ),
+          ),
+          dense: true,
+          title: Text(perfilNegocio.nombreNegocio),
+          subtitle: !adminPropietario
+              ? Text(perfilNegocio.admin)
+              : Row(
+                  children: [
+                    Icon(
+                      Icons.security,
+                      size: 12.0,
+                      color: Get.theme.hintColor,
+                    ),
+                    SizedBox(width: 2.0),
+                    Text("Mi cuenta")
+                  ],
+                ),
+          trailing: Radio(
+            activeColor: Get.theme.primaryColor,
+            value: controller.getSelected(id:perfilNegocio.id ) ? 0 : 1,
+            groupValue: 0,
+            onChanged: (val) {
+              controller.setIdAccountSelected = perfilNegocio.id;
+              /* Global.actualizarPerfilNegocio(
+                    perfilNegocio: perfilNegocio);
+                Navigator.of(buildContext).pushNamedAndRemoveUntil(
+                    '/page_principal', (Route<dynamic> route) => false); */
+            },
+          ),
+          onTap: () {
+            controller.setIdAccountSelected = perfilNegocio.id;
+            /* if (perfilNegocio.id != "") {
+                Global.actualizarPerfilNegocio(
+                    perfilNegocio: perfilNegocio);
+                Navigator.of(buildContext).pushNamedAndRemoveUntil(
+                    '/page_principal', (Route<dynamic> route) => false);
+              } */
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _getAdminUserData({required String idNegocio}) {
+    return Text(idNegocio);
+    /* return FutureBuilder(
+      future: Global.getDataAdminUserNegocio(idNegocio: idNegocio, idUserAdmin: firebaseUser.uid)
+          .getDataAdminUsuarioCuenta(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          AdminUsuarioCuenta adminUsuarioCuenta = snapshot.data;
+          switch (adminUsuarioCuenta.tipocuenta) {
+            case 0:
+              return Row(
+                children: [
+                  Icon(
+                    Icons.security,
+                    size: 12.0,
+                    color: Theme.of(context).hintColor,
+                  ),
+                  SizedBox(width: 2.0),
+                  Text("Administrador")
+                ],
+              );
+            case 1:
+              return Row(
+                children: [
+                  Icon(
+                    Icons.account_circle,
+                    size: 12.0,
+                    color: Theme.of(context).hintColor,
+                  ),
+                  SizedBox(width: 2.0),
+                  Text("Estandar")
+                ],
+              );
+            default:
+              return Row(
+                children: [
+                  Icon(
+                    Icons.account_circle,
+                    size: 12.0,
+                    color: Theme.of(context).hintColor,
+                  ),
+                  SizedBox(width: 2.0),
+                  Text("Estandar")
+                ],
+              );
+          }
+        } else {
+          return Text("Cargando datos...");
+        }
+      },
+    ); */
   }
 }

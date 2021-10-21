@@ -22,6 +22,8 @@ class ScanScreenView extends StatelessWidget {
     Color color = Theme.of(buildContext).brightness == Brightness.dark
         ? Colors.white54
         : Colors.black38;
+    bool accountsAvailables =
+        controller.getManagedAccountData.length != 0 ? true : false;
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -29,14 +31,28 @@ class ScanScreenView extends StatelessWidget {
         iconTheme: Theme.of(buildContext)
             .iconTheme
             .copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
-        title: TextButton(
-          onPressed: () => showModalBottomSheetSetting(buildContext),
-          child: Text(
-            "Crear mi catálogo",
-            style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(buildContext).textTheme.bodyText1!.color),
+        title: InkWell(
+          onTap: () => showModalBottomSheetSelectAccount(buildContext),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.0),
+            child: Row(
+              children: <Widget>[
+                Text(
+                    controller.getProfileAccountSelected.id == ''
+                        ? "Seleccionar cuenta"
+                        : controller.getProfileAccountSelected.nombreNegocio != ""
+                            ? controller.getProfileAccountSelected.nombreNegocio
+                            : "Mi catalogo",
+                    style: TextStyle(
+                        color:
+                            Theme.of(buildContext).textTheme.bodyText1!.color),
+                    overflow: TextOverflow.fade,
+                    softWrap: false),
+                Icon(Icons.keyboard_arrow_down)
+              ],
+            ),
           ),
+        
         ),
         actions: <Widget>[
           WidgetsUtilsApp().buttonThemeBrightness(context: buildContext),
@@ -81,6 +97,36 @@ class ScanScreenView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // BottomSheet - Getx
+  void showModalBottomSheetSelectAccount(BuildContext buildContext) {
+    Widget widget = ListView.builder(
+      padding: EdgeInsets.symmetric(vertical: 15.0),
+      shrinkWrap: true,
+      itemCount: controller.getManagedAccountData.length,
+      itemBuilder: (BuildContext context, int index) {
+        if (controller.getManagedAccountData.length == 0) {
+          return Column(
+            children: [
+              controller.getStateCreateCuentaEmpresa? WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext): Container(),
+              WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid),
+            ],
+          );
+        } else {
+          return WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid);
+        }
+      },
+    );
+
+    // muestre la hoja inferior modal de getx
+    Get.bottomSheet(
+      widget,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      enableDrag: true,
+      isDismissible: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
     );
   }
 
@@ -207,12 +253,12 @@ class ScanScreenView extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 contentPadding: EdgeInsets.all(12.0),
-                leading: controller.profileBusiness.imagenPerfil == ""
+                leading: controller.getProfileAccountSelected.imagenPerfil == ""
                     ? CircleAvatar(
                         backgroundColor: Colors.black26,
                         radius: 18.0,
                         child: Text(
-                            controller.profileBusiness.nombreNegocio
+                            controller.getProfileAccountSelected.nombreNegocio
                                 .substring(0, 1),
                             style: TextStyle(
                                 fontSize: 18.0,
@@ -220,7 +266,8 @@ class ScanScreenView extends StatelessWidget {
                                 fontWeight: FontWeight.bold)),
                       )
                     : CachedNetworkImage(
-                        imageUrl: controller.profileBusiness.imagenPerfil,
+                        imageUrl:
+                            controller.getProfileAccountSelected.imagenPerfil,
                         placeholder: (context, url) => const CircleAvatar(
                           backgroundColor: Colors.grey,
                           radius: 18.0,

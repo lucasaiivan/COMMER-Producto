@@ -122,15 +122,16 @@ class LoginView extends GetView<LoginController> {
             flex: 2,
             child: loadAuth == false
                 ? loginButton(
-                    text: 'INICIAR SESIÓN CON GOOGLE',
-                    icon: FontAwesomeIcons.google,
-                    color: colorPrimary,
-                    colorbutton: Colors.transparent,
-                    onPressed: controller.login,
-                  )
-                : Center(
-                    child: CircularProgressIndicator(
-                        backgroundColor: Colors.white)),
+                  size: 30,
+                  text: 'INICIAR SESIÓN CON GOOGLE',
+                  icon: FontAwesomeIcons.google,
+                  color: colorPrimary,
+                  colorbutton: Colors.transparent,
+                  onPressed: controller.login,
+                )
+              : Center(
+                  child: CircularProgressIndicator(
+                      backgroundColor: Colors.white)),
           ),
           Flexible(
             flex: 1,
@@ -207,16 +208,17 @@ class LoginView extends GetView<LoginController> {
           Flexible(
             flex: 2,
             child: loadAuth == false
-                ? loginButton(
-                    text: 'INICIAR SESIÓN CON GOOGLE',
-                    icon: FontAwesomeIcons.google,
-                    color: colorPrimary,
-                    colorbutton: Colors.transparent,
-                    onPressed: controller.login,
-                  )
-                : Center(
-                    child: CircularProgressIndicator(
-                        backgroundColor: Colors.white)),
+              ? loginButton(
+                size: 30,
+                  text: '  INICIAR SESIÓN CON GOOGLE  ',
+                  icon: FontAwesomeIcons.google,
+                  color: colorPrimary,
+                  colorbutton: Colors.transparent,
+                  onPressed: controller.login,
+                )
+              : Center(
+                  child: CircularProgressIndicator(
+                      backgroundColor: Colors.white)),
           ),
           Flexible(
             flex: 1,
@@ -226,7 +228,7 @@ class LoginView extends GetView<LoginController> {
               children: <Widget>[
                 Text(
                   "Lógica Booleana",
-                  style: TextStyle(fontSize: 18.0, color: colorPrimary),
+                  style: TextStyle(fontSize: 14.0, color: colorPrimary.withOpacity(0.5)),
                 ),
               ],
             ),
@@ -241,24 +243,17 @@ class LoginView extends GetView<LoginController> {
       required IconData icon,
       required Color color,
       required Color colorbutton,
+      double size = 14.0,
       required Function onPressed}) {
         
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16),
-      child: ElevatedButton(
-        style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(colorbutton)),
-        child: Row(
-          children: [
-            Icon(icon),
-            SizedBox(width: 8.0,),
-            Text(
+      child:TextButton.icon(
+        onPressed: controller.login, 
+        icon: Icon(icon,size:size), label: Text(
               text,
-              style: TextStyle(fontSize: 18, color: color),
-            ),
-          ],
-        ),
-        onPressed: controller.login,
-      ),
+              style: TextStyle(color: color),
+            )),
     );
   }
 }

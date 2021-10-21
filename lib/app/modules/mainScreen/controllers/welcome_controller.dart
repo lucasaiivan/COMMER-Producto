@@ -14,85 +14,97 @@ class WelcomeController extends GetxController {
   SplashController homeController = Get.find<SplashController>();
 
   //  authentication account profile
-  static late User _userAccountAuth;
+  late User _userAccountAuth;
   User get getUserAccountAuth => _userAccountAuth;
   set setUserAccountAuth(User user) => _userAccountAuth = user;
 
   //  account profile
-  static Rx<UsersModel> _userAccount = UsersModel().obs;
+  Rx<UsersModel> _userAccount = UsersModel().obs;
   UsersModel get getUserAccount => _userAccount.value;
   set setUsetAccount(UsersModel user) => _userAccount.value = user;
 
-  //  business account profile
-  static Rx<ProfileBusinessModel> _businessAccount =
+  // profile of the selected account
+  RxString idAccountSelected = ''.obs;
+  set setIdAccountSelected(String value) {
+    idAccountSelected.value = value;
+    readProfileAccountStream(id: value);
+  }
+
+  String get getIdAccountSelecte => idAccountSelected.value;
+  Rx<ProfileBusinessModel> _profileAccount =
       ProfileBusinessModel().obs; // perfil del negocio
-  ProfileBusinessModel get profileBusiness => _businessAccount.value;
-  set setProfileBusiness(ProfileBusinessModel user) =>
-      _businessAccount.value = user;
+  ProfileBusinessModel get getProfileAccountSelected => _profileAccount.value;
+  set setProfileAccountSelected(ProfileBusinessModel user) =>
+      _profileAccount.value = user;
+  bool getSelected({required String id}) {
+    bool isSelected = false;
+    for (ProfileBusinessModel obj in getManagedAccountData) {
+      if (obj.id == getIdAccountSelecte) {
+        if (id == getIdAccountSelecte) {isSelected = true;}
+      }
+    }
+
+    return isSelected;
+  }
 
   // variable para comprobar cuando se han cargado los datos del perfil del usuario
-  static RxBool _loadDataProfileUser = false.obs;
+  RxBool _loadDataProfileUser = false.obs;
   bool get getLoadDataProfileUser => _loadDataProfileUser.value;
   set setLoadDataProfileUser(bool value) => _loadDataProfileUser.value = value;
 
   // variable para comprobar cuando se han cargado los datos del perfil de la cuenta
-  static RxBool _loadDataProfileBusiness = false.obs;
+  RxBool _loadDataProfileBusiness = false.obs;
   bool get loadProfileBusiness => _loadDataProfileBusiness.value;
   set setLoadProfileBusiness(bool value) =>
       _loadDataProfileBusiness.value = value;
 
-  // Si esta variable es diferente de 'vacía' mostrará el catálogo del id de la cuenta seleccionada
-  static RxString _selectBusinessId = ''.obs;
-  String get getSelectBusinessId => _selectBusinessId.value;
-  set setSelectBusinessId(String value) => _selectBusinessId.value = value;
-
   // catalog product list
-  static RxList<Producto> _listSuggestedProducts = <Producto>[].obs;
+  RxList<Producto> _listSuggestedProducts = <Producto>[].obs;
   List<Producto> get getListSuggestedProducts => _listSuggestedProducts;
   set setListSuggestedProducts(List<Producto> products) =>
       _listSuggestedProducts.value = products;
 
   // catalogue
-  static RxList<ProductoNegocio> _catalogueBusiness = <ProductoNegocio>[].obs;
+  RxList<ProductoNegocio> _catalogueBusiness = <ProductoNegocio>[].obs;
   List<ProductoNegocio> get getCatalogueBusiness => _catalogueBusiness;
   set setCatalogueBusiness(List<ProductoNegocio> products) =>
       _catalogueBusiness.value = products;
 
   // filter catalog
-  static RxList<ProductoNegocio> _catalogueFilter = <ProductoNegocio>[].obs;
+  RxList<ProductoNegocio> _catalogueFilter = <ProductoNegocio>[].obs;
   List<ProductoNegocio> get getCatalogueFilter => _catalogueFilter;
   set setCatalogueFilter(List<ProductoNegocio> products) =>
       _catalogueFilter.value = products;
 
   // load catalog
-  static List<ProductoNegocio> _catalogueLoad = <ProductoNegocio>[].obs;
+  List<ProductoNegocio> _catalogueLoad = <ProductoNegocio>[].obs;
   List<ProductoNegocio> get getCatalogueLoad => _catalogueLoad;
   set setCatalogueLoad(List<ProductoNegocio> products) =>
       _catalogueLoad = products;
 
   // variable para comprobar cuando se han cargado todos los productos del cátalogo
-  static RxBool _loadDataCatalogue = false.obs;
+  RxBool _loadDataCatalogue = false.obs;
   bool get getLoadDataCatalogue => _loadDataCatalogue.value;
   set setLoadDataCatalogue(bool value) => _loadDataCatalogue.value = value;
 
   // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa categoria
-  static RxString _selectCategoryId = ''.obs;
+  RxString _selectCategoryId = ''.obs;
   String get getSelectCategoryId => _selectCategoryId.value;
   set setSelectCategoryId(String value) => _selectCategoryId.value = value;
 
   // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa subcategoria
-  static RxString _selectSubcategoryId = ''.obs;
+  RxString _selectSubcategoryId = ''.obs;
   String get getSelectSubcategoryId => _selectSubcategoryId.value;
   set setSelectSubcategoryId(String value) =>
       _selectSubcategoryId.value = value;
 
   // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa categoría
-  static RxString _selectMarkId = ''.obs;
+  RxString _selectMarkId = ''.obs;
   String get getSelectMarkId => _selectMarkId.value;
   set setSelectMarkId(String value) => _selectMarkId.value = value;
 
   //  account profile
-  static Rx<Categoria> _categorySelect = Categoria().obs; // perfil del usuario
+  Rx<Categoria> _categorySelect = Categoria().obs; // perfil del usuario
   Categoria get getCategorySelect => _categorySelect.value;
   set setCategorySelect(Categoria value) => _categorySelect.value = value;
 
@@ -102,25 +114,70 @@ class WelcomeController extends GetxController {
   set setLoadGridCatalogueStatus(LoadStatus value) =>
       _loadGridCatalogueStatus.value = value;
 
-  // load catalog
-  static RxList<Marca> _marks = <Marca>[].obs;
+  // marks
+  RxList<Marca> _marks = <Marca>[].obs;
   List<Marca> get getCatalogueMarks => _marks;
   set setCatalogueMarks(List<Marca> value) => _marks.value = value;
   void addMark({required Marca markParam}) {
     // cada ves que se agrega un obj se asegura que en la lista no alla ninguno repetido
     bool repeated = false;
     for (Marca mark in getCatalogueMarks) {
-      if (mark.id == markParam.id) repeated=true ;
+      if (mark.id == markParam.id) repeated = true;
     }
     // si 'repeated' es falso procede a agregar a la lista
-    if(repeated==false)_marks.add(markParam);
+    if (repeated == false) _marks.add(markParam);
   }
+
+  // accounts reference identifiers
+  RxList<String> _accountsReferenceIdentifiers = <String>[].obs;
+  List<String> get getAccountsReferenceIdentifiers =>
+      _accountsReferenceIdentifiers;
+  set setAccountsReferenceIdentifiers(List<String> value) =>
+      _accountsReferenceIdentifiers.value = value;
+
+  // managed accounts data
+  RxList<ProfileBusinessModel> _managedAccountDataList =
+      <ProfileBusinessModel>[].obs;
+  List<ProfileBusinessModel> get getManagedAccountData =>
+      _managedAccountDataList;
+  set setManagedAccountData(List<ProfileBusinessModel> value) =>
+      _managedAccountDataList.value = value;
+  void addManagedAccount(
+      {required ProfileBusinessModel profileData,
+      required AdminUsuarioCuenta adminUsuarioCuentaData}) {
+    switch (adminUsuarioCuentaData.tipocuenta) {
+      case 0:
+        break;
+      case 1:
+        profileData.admin = 'Administrador';
+        break;
+      case 2:
+        profileData.admin = 'Estandar';
+        break;
+    }
+    return _managedAccountDataList.add(profileData);
+  }
+
+  // verifica si el usuario ya creo una cuenta
+  bool createCuentaEmpresa = false;
+  get getStateCreateCuentaEmpresa => createCuentaEmpresa;
+  set setStateCreateCuentaEmpresa(value) => createCuentaEmpresa = value;
 
   @override
   void onInit() async {
+    // obtenemos por parametro los datos de la cuenta de atentificaión
     setUserAccountAuth = Get.arguments['currentUser'];
-    if (getUserAccountAuth.uid != '')
+
+    // cargamos los datos de la cuenta de autentificación
+    if (getUserAccountAuth.uid != '') {
+      readManagedAccountsReference(idUser: _userAccountAuth.uid);
       readProfileUserStream(id: _userAccountAuth.uid);
+    }
+    // verificamos que el usuario ha seleccionado una cuenta
+    /* if (getIdAccountSelecte != '') {
+      readProfileAccountStream(id: getIdAccountSelecte);
+    } */
+    // cargamos los datos de la app desde la db
     readListSuggestedProductsFuture();
 
     super.onInit();
@@ -141,7 +198,8 @@ class WelcomeController extends GetxController {
   }
 
   void toProductView({required Producto porduct}) {
-    Get.toNamed(Routes.PRODUCT, arguments: {'product': porduct.convertProductCatalogue()});
+    Get.toNamed(Routes.PRODUCT,
+        arguments: {'product': porduct.convertProductCatalogue()});
   }
 
   int getNumeroDeProductosDeMarca({required String id}) {
@@ -156,14 +214,13 @@ class WelcomeController extends GetxController {
     return cantidad;
   }
 
-  void readProfileBursinesStream({required String id}) {
+  void readProfileAccountStream({required String id}) {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
-      setProfileBusiness =
+      setProfileAccountSelected =
           ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
-      setSelectBusinessId = profileBusiness.id;
       setLoadProfileBusiness = true;
-      readCatalogueListProductsStream(id: getSelectBusinessId);
+      readCatalogueListProductsStream(id: getIdAccountSelecte);
     }).onError((error) {
       print('######################## readProfileBursinesStreaml: ' +
           error.toString());
@@ -174,7 +231,9 @@ class WelcomeController extends GetxController {
   Future<Marca> readMark({required String id}) async {
     return Database.readMarkFuture(id: id)
         .then((value) => Marca.fromDocumentSnapshot(documentSnapshot: value))
-        .catchError((error) =>Marca(timestampActualizado: Timestamp.now(), timestampCreacion: Timestamp.now()));
+        .catchError((error) => Marca(
+            timestampActualizado: Timestamp.now(),
+            timestampCreacion: Timestamp.now()));
   }
 
   void readProfileBursinesFuture({required String id}) {
@@ -182,13 +241,55 @@ class WelcomeController extends GetxController {
     Database.readUserModelFuture(id).then((value) {
       // ignore: unused_local_variable \
       ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: value);
-      /* 
-      .
-      ..
-      ...
-      */
     }).catchError((error) {
       print('######################## readProfileBursinesFuture: ' +
+          error.toString());
+    });
+  }
+
+  void readManagedAccountsReference({required String idUser}) {
+    // obtenemos las cuentas adminitradas por este usuario
+    Database.readManagedAccountsQueryStream(id: idUser).listen((value) {
+      value.docs.forEach((element) => readManagedAccountsData(
+          idAccountUser: idUser, idAccountBussiness: element.id));
+    }).onError((error) {
+      print('######################## readManagedAccountsReference: ' +
+          error.toString());
+      setLoadDataProfileUser = false;
+    });
+  }
+
+  void readManagedAccountsData(
+      {required String idAccountBussiness, required String idAccountUser}) {
+    // obtenemos los datos dela cuenta adminitrada por este usuario
+    Database.readManagedAccounts(
+            idAccountBussiness: idAccountBussiness,
+            idAccountUser: idAccountUser)
+        .then((value) {
+      AdminUsuarioCuenta adminUsuarioCuenta =
+          AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
+
+      // obtenemos una sola ves el perfil de la cuenta de un negocio
+      Database.readProfileBusinessModelFuture(adminUsuarioCuenta.idAccount)
+          .then((value) {
+        ProfileBusinessModel profileAccount =
+            ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: value);
+
+        // verificamos si el usuario creo una ya una cuenta o no\
+        // verificamos si alguna cuenta esta seleccionada
+        if (getProfileAccountSelected.id == profileAccount.id) {
+          setStateCreateCuentaEmpresa = true;
+        }
+        //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
+        addManagedAccount(
+            profileData: profileAccount,
+            adminUsuarioCuentaData: adminUsuarioCuenta);
+      }).catchError((error) {
+        print('######################## readProfileBursinesFuture: ' +
+            error.toString());
+      });
+    }).catchError((error) {
+      print('######################## readManagedAccountsData: ' +
           error.toString());
     });
   }
@@ -198,7 +299,6 @@ class WelcomeController extends GetxController {
     Database.readUserModelStream(id).listen((event) {
       setUsetAccount = UsersModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadDataProfileUser = true;
-      readProfileBursinesStream(id: getUserAccount.idBusiness);
     }).onError((error) {
       print(
           '######################## readUserModelStream: ' + error.toString());
