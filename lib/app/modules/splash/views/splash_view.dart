@@ -3,66 +3,62 @@ import 'package:get/get.dart';
 import 'package:producto/app/modules/splash/controllers/splash_controller.dart';
 import 'package:shimmer/shimmer.dart';
 
-class HomeView extends GetView<SplashController>  {
-  
-
+class SplashInit extends GetView<SplashController> {
   @override
-  Widget build(BuildContext context) {
-    return LoadingInitView();
-  }
+  Widget build(BuildContext context) => LoadingInitView();
 }
-
 
 class LoadingInitView extends StatelessWidget {
   const LoadingInitView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext buildContext) {
-    
     Color color = Theme.of(buildContext).brightness == Brightness.dark
         ? Colors.white54
         : Colors.black38;
-    Color color1 = Colors.black12;//Theme.of(buildContext).canvasColor.withOpacity(0.50);
+    Color color1 =
+        Colors.black12; //Theme.of(buildContext).canvasColor.withOpacity(0.50);
     Color color2 = Colors.grey;
-    
+
     return Scaffold(
-      appBar:AppBar(
-              elevation: 0.0,
-              backgroundColor: Theme.of(buildContext).canvasColor,
-              iconTheme: Theme.of(buildContext).iconTheme.copyWith(
-                  color: Theme.of(buildContext).textTheme.bodyText1!.color),
-              title: InkWell(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                  child: Shimmer.fromColors(
-                    baseColor: color1,
-                    highlightColor: color2,
-                    child: Row(
-                      children: <Widget>[
-                        Text("Mi catálogo",
-                            style: TextStyle(
-                                color: Theme.of(buildContext)
-                                    .textTheme
-                                    .bodyText1!
-                                    .color),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: false),
-                        Icon(Icons.keyboard_arrow_down),
-                      ],
-                    ),
-                  ),
-                ),
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: Theme.of(buildContext).canvasColor,
+        iconTheme: Theme.of(buildContext)
+            .iconTheme
+            .copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
+        title: InkWell(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.0),
+            child: Shimmer.fromColors(
+              baseColor: color1,
+              highlightColor: color2,
+              child: Row(
+                children: <Widget>[
+                  Text("Mi catálogo",
+                      style: TextStyle(
+                          color: Theme.of(buildContext)
+                              .textTheme
+                              .bodyText1!
+                              .color),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false),
+                  Icon(Icons.keyboard_arrow_down),
+                ],
               ),
-              actions: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Shimmer.fromColors(
-                      baseColor: color1,
-                      highlightColor: color2,
-                      child: Icon(Icons.brightness_4)),
-                )
-              ],
             ),
+          ),
+        ),
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Shimmer.fromColors(
+                baseColor: color1,
+                highlightColor: color2,
+                child: Icon(Icons.brightness_4)),
+          )
+        ],
+      ),
       body: Shimmer.fromColors(
         baseColor: color1,
         highlightColor: color2,
@@ -116,6 +112,5 @@ class LoadingInitView extends StatelessWidget {
         ),
       ),
     );
-    
   }
 }

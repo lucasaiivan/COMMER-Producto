@@ -24,7 +24,7 @@ class AppPages {
     ),
     GetPage(
       name: INITIAL,
-      page: () => HomeView(),
+      page: () => SplashInit(),
       binding: HomeBinding(),
     ),
     GetPage(

@@ -12,13 +12,12 @@ import 'package:producto/app/modules/auth/controller/login_controller.dart';
 class LoginView extends GetView<LoginController> {
   
   /* Declarar variables */
-  int page = 0; /* Posición de la página */
-  bool enableSideReveal =
-      true; /* Controla el estado de la visibilidad de iconButton para deslizar la pantalla del lado izquierdo */
-  bool isDarkGlobal = false; /* Controla el brillo de la barra de estado */
-  late Size screenSize;
-  bool authState = false;
-  bool loadAuth = false;
+  final int page = 0; /* Posición de la página */
+  final bool enableSideReveal = true; /* Controla el estado de la visibilidad de iconButton para deslizar la pantalla del lado izquierdo */
+  final bool isDarkGlobal = false; /* Controla el brillo de la barra de estado */
+  late final Size screenSize;
+  final bool authState = false;
+  final bool loadAuth = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +51,7 @@ class LoginView extends GetView<LoginController> {
               color: Colors.orange,
               iconData: Icons.monetization_on,
               texto: "¿QUERES SABER EL PRECIO?",
-              descripcion:
-                  "Compara el precios de diferentes comerciantes o compartir el tuyo",
+              descripcion: "Compara el precios de diferentes comerciantes o compartir el tuyo",
               brightness: Brightness.light),
           componente(
               color: Colors.lightBlue,

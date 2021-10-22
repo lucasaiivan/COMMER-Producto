@@ -2,9 +2,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'app/modules/splash/bindings/splash_binding.dart';
 import 'app/routes/app_pages.dart';
+import 'app/utils/dynamicTheme_lb.dart';
 
 void main() async {
   
@@ -12,6 +14,7 @@ void main() async {
   MobileAds.instance.initialize();
   await Firebase.initializeApp();
   HomeBinding().dependencies(); 
+  await GetStorage.init();
   
 
   Color colorBlack =  Color.fromARGB(255,43, 45, 57);
@@ -23,7 +26,7 @@ void main() async {
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
+      themeMode: (GetStorage().read('isDarkMode')??false)?ThemeMode.dark:ThemeMode.light,
       theme: ThemeData(
         primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor:colorLight,

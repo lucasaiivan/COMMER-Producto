@@ -9,13 +9,17 @@ import 'catalogueScreen_view.dart';
 
 /*  DESCRIPCIÓN */
 /*  Pantalla principal de la aplicación */
-
-class PagePrincipal extends GetView<WelcomeController> {
+class PagePrincipal extends StatelessWidget {
   /* Declarar variables */
   double get randHeight => math.Random().nextInt(100).toDouble();
 
   @override
   Widget build(BuildContext buildContext) {
-    return Obx(() => controller.getIdAccountSelecte==""?ScanScreenView():CatalogueScreenView());
+    return GetBuilder<WelcomeController>(
+      id: 'accountUpdate',
+      builder: (controller) {
+        return Obx(() => controller.getIdAccountSelecte==""?ScanScreenView():CatalogueScreenView());
+      },
+    );
   }
 }

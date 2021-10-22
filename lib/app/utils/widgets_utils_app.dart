@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
@@ -14,7 +13,6 @@ import 'dynamicTheme_lb.dart';
 class WidgetsUtilsApp extends StatelessWidget {
   WidgetsUtilsApp({Key? key}) : super(key: key);
 
-  final appdata = GetStorage(); // instance of GetStorage
 
   Widget buttonThemeBrightness({required BuildContext context, Color? color}) {
     if (color == null)
@@ -462,7 +460,7 @@ class WidgetButtonListTile extends StatelessWidget {
             value: controller.getSelected(id:perfilNegocio.id ) ? 0 : 1,
             groupValue: 0,
             onChanged: (val) {
-              controller.setIdAccountSelected = perfilNegocio.id;
+              controller.accountChange(idAccount: perfilNegocio.id);
               /* Global.actualizarPerfilNegocio(
                     perfilNegocio: perfilNegocio);
                 Navigator.of(buildContext).pushNamedAndRemoveUntil(
@@ -470,7 +468,7 @@ class WidgetButtonListTile extends StatelessWidget {
             },
           ),
           onTap: () {
-            controller.setIdAccountSelected = perfilNegocio.id;
+            controller.accountChange(idAccount: perfilNegocio.id);
             /* if (perfilNegocio.id != "") {
                 Global.actualizarPerfilNegocio(
                     perfilNegocio: perfilNegocio);

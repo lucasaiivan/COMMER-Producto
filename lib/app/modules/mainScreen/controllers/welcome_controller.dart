@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:loadany/loadany_widget.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
@@ -27,7 +28,11 @@ class WelcomeController extends GetxController {
   RxString idAccountSelected = ''.obs;
   set setIdAccountSelected(String value) {
     idAccountSelected.value = value;
-    readProfileAccountStream(id: value);
+    if (value != '') {
+      readProfileAccountStream(id: value);
+    }
+    // actualizamos la vista completa
+    update(['accountUpdate']);
   }
 
   String get getIdAccountSelecte => idAccountSelected.value;
@@ -40,11 +45,26 @@ class WelcomeController extends GetxController {
     bool isSelected = false;
     for (ProfileBusinessModel obj in getManagedAccountData) {
       if (obj.id == getIdAccountSelecte) {
-        if (id == getIdAccountSelecte) {isSelected = true;}
+        if (id == getIdAccountSelecte) {
+          isSelected = true;
+        }
       }
     }
 
     return isSelected;
+  }
+
+  void accountChange({required String idAccount}) {
+
+    // save key/values Storage
+    if(idAccount!=''){
+      GetStorage().write('idAccount', idAccount);
+    }
+
+    Get.offAllNamed(Routes.WELCOME, arguments: {
+      'currentUser': getUserAccountAuth,
+      'idAccount': idAccount,
+    });
   }
 
   // variable para comprobar cuando se han cargado los datos del perfil del usuario
@@ -167,11 +187,20 @@ class WelcomeController extends GetxController {
   void onInit() async {
     // obtenemos por parametro los datos de la cuenta de atentificaión
     setUserAccountAuth = Get.arguments['currentUser'];
+    try {
+      setIdAccountSelected = Get.arguments['idAccount'];
+    } catch (e) {
+      setIdAccountSelected = '';
+    }
 
     // cargamos los datos de la cuenta de autentificación
     if (getUserAccountAuth.uid != '') {
-      readManagedAccountsReference(idUser: _userAccountAuth.uid);
       readProfileUserStream(id: _userAccountAuth.uid);
+      readManagedAccountsReference(idUser: _userAccountAuth.uid);
+    }
+    // verificamos si recibimos id de cuenta por parametro
+    if (getIdAccountSelecte != '') {
+      readProfileAccountStream(id: getIdAccountSelecte);
     }
     // verificamos que el usuario ha seleccionado una cuenta
     /* if (getIdAccountSelecte != '') {
