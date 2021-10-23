@@ -382,6 +382,13 @@ class CatalogueScreenView extends StatelessWidget {
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
+          leading: Icon(Icons.logout),
+          title: Text('Cerrar sesión'),
+          onTap:controller.showDialogCerrarSesion,
+        ),
+        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Get.theme.brightness != Brightness.light
               ? Icons.brightness_high
               : Icons.brightness_3),

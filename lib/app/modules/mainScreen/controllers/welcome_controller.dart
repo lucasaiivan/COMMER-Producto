@@ -1,14 +1,16 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:loadany/loadany_widget.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
+import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
 
 class WelcomeController extends GetxController {
@@ -55,11 +57,8 @@ class WelcomeController extends GetxController {
   }
 
   void accountChange({required String idAccount}) {
-
     // save key/values Storage
-    if(idAccount!=''){
-      GetStorage().write('idAccount', idAccount);
-    }
+    GetStorage().write('idAccount', idAccount);
 
     Get.offAllNamed(Routes.WELCOME, arguments: {
       'currentUser': getUserAccountAuth,
@@ -407,5 +406,43 @@ class WelcomeController extends GetxController {
           ? LoadStatus.completed
           : LoadStatus.normal;
     });
+  }
+
+  // cerrar sesión
+  void showDialogCerrarSesion() {
+    Widget widget = AlertDialog(
+      title: new Text("Cerrar sesión"),
+      content: new Text("¿Estás seguro de que quieres cerrar la sesión?"),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        new TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text('cancelar')),
+        new TextButton(
+            child: Text('si'),
+            onPressed: () async {
+              CustomFullScreenDialog.showDialog();
+              // instancias de GoogleSignIn para proceder a cerrar sesión en el proveedor de cuentas
+              late final GoogleSignIn googleSign = GoogleSignIn();
+              await googleSign.signIn().then((value) async{
+
+                // instancias de FirebaseAuth para proceder a cerrar sesión 
+                final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+                await firebaseAuth.signOut().then((value) {
+                  // value default
+                  GetStorage().write('idAccount', '');
+                  CustomFullScreenDialog.cancelDialog();
+              });
+              });
+              
+            }),
+      ],
+    );
+
+    Get.dialog(
+      widget,
+    );
   }
 }

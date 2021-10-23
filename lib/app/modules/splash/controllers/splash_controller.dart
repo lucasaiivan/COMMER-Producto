@@ -4,8 +4,7 @@ import 'package:producto/app/routes/app_pages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import '../../mainScreen/customFullScreenDialog.dart';
+import 'package:producto/app/utils/widgets_utils_app.dart';
 
 class SplashController extends GetxController {
   var isSignIn = false.obs;
@@ -25,9 +24,7 @@ class SplashController extends GetxController {
     // verificamos que alla un usaario autentificado
     isSignIn.value = firebaseAuth.currentUser != null;
     // escuchamos el cambio de estado de la autentifiación del usuario
-    firebaseAuth
-        .authStateChanges()
-        .listen((event) => isSignIn.value = event != null);
+    firebaseAuth.authStateChanges().listen((event) => isSignIn.value = event != null);
 
     try {
       idAccount = Get.arguments['idAccount'] as String;

@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import '../../mainScreen/customFullScreenDialog.dart';
+import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
 
 class LoginController extends GetxController {
@@ -29,14 +28,12 @@ class LoginController extends GetxController {
     CustomFullScreenDialog.showDialog();
 
     // Activar el flujo de autenticación
-    GoogleSignInAccount? googleSignInAccount =
-        await homeController.googleSign.signIn();
+    GoogleSignInAccount? googleSignInAccount = await homeController.googleSign.signIn();
     if (googleSignInAccount == null) {
       CustomFullScreenDialog.cancelDialog();
     } else {
       // Obtenga los detalles de autenticación de la solicitud
-      GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
+      GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
       // Crea una nueva credencial
       OAuthCredential oAuthCredential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,

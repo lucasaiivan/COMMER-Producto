@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -220,54 +222,49 @@ class WidgetContentInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(13), topRight: Radius.circular(13)),
-      child: Container(
-        color: Colors.black38,
-        child: ClipRect(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Column(
-                    children: <Widget>[
-                      producto.titulo != "" && producto.titulo != "default"
-                          ? Text(producto.titulo,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                              overflow: TextOverflow.fade,
-                              softWrap: false)
-                          : Container(),
-                      producto.descripcion != ""
-                          ? Text(producto.descripcion,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12.0,
-                                  color: Colors.white),
-                              overflow: TextOverflow.fade,
-                              softWrap: false)
-                          : Container(),
-                      producto.precioVenta != 0.0
-                          ? Text(
-                              Publicaciones.getFormatoPrecio(
-                                  monto: producto.precioVenta),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16.0,
-                                  color: Colors.white),
-                              overflow: TextOverflow.fade,
-                              softWrap: false)
-                          : Container(),
-                    ],
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.all( Radius.circular(12)),
+        child: Container(
+          color: Colors.black38,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 30.0,sigmaY: 30.0,tileMode: TileMode.decal),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Column(
+                      children: <Widget>[
+                        producto.descripcion != ""
+                            ? Text(producto.descripcion,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0,
+                                    color: Colors.white),
+                                overflow: TextOverflow.fade,
+                                softWrap: false)
+                            : Container(),
+                        producto.precioVenta != 0.0
+                            ? Text(
+                                Publicaciones.getFormatoPrecio(
+                                    monto: producto.precioVenta),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.0,
+                                    color: Colors.white),
+                                overflow: TextOverflow.fade,
+                                softWrap: false)
+                            : Container(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              // Text(topic.description)
-            ],
+                // Text(topic.description)
+              ],
+            ),
           ),
         ),
       ),
@@ -532,5 +529,36 @@ class WidgetButtonListTile extends StatelessWidget {
         }
       },
     ); */
+  }
+}
+
+
+// RELEASE
+// Mostrar un diálogo con Get.dialog()
+// Pero en esto, no tenemos parámetros como título y contenido, tenemos que construirlos manualmente desde cero.
+
+class CustomFullScreenDialog {
+  static void showDialog() {
+    Get.dialog(
+      WillPopScope(
+        //  WillPopScope - sirve para vetar los intentos del usuario de descartar la ModalRoute adjunta
+        child: Container(
+          child: Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(Colors.yellowAccent),
+            ),
+          ),
+        ),
+        // onWillPop - Se llama cada ves que el usuario intenta descartar el ModalRoute adjunta
+        onWillPop: () => Future.value( false), 
+      ),
+      barrierDismissible: false,
+      barrierColor: Color(0xff141A31).withOpacity(.3),
+      useSafeArea: true,
+    );
+  }
+
+  static void cancelDialog() {
+    Get.back();
   }
 }
