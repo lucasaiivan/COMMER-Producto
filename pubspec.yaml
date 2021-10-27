@@ -30,7 +30,7 @@ dependencies:
   firebase_auth: ^3.1.1
   firebase_analytics: ^8.0.3
   cloud_firestore: ^2.0.0
-  firebase_storage: ^8.0.5
+  firebase_storage: ^10.0.6
   #Google
   google_mobile_ads: ^0.13.4
   google_sign_in: ^5.1.0
@@ -51,7 +51,7 @@ dependencies:
   shimmer: ^2.0.0 # Un paquete proporciona una manera fácil de agregar un efecto de brillo en el proyecto Flutter
   expandable_bottom_sheet: ^1.1.1+1 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
   loadany: ^1.0.0 # Un nuevo Flutter carga más paquetes.
-
+  image_picker: ^0.8.4+3 # Un complemento de Flutter para iOS y Android para seleccionar imágenes de la biblioteca de imágenes y tomar nuevas fotografías con la cámara.
   
 flutter_icons:
   android: true

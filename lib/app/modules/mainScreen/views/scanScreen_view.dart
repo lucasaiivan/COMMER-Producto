@@ -24,6 +24,7 @@ class ScanScreenView extends StatelessWidget {
         : Colors.black38;
     bool accountsAvailables =
         controller.getManagedAccountData.length != 0 ? true : false;
+    
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -55,7 +56,51 @@ class ScanScreenView extends StatelessWidget {
         
         ),
         actions: <Widget>[
-          WidgetsUtilsApp().buttonThemeBrightness(context: buildContext),
+          Container(
+                  padding: EdgeInsets.all(12.0),
+                  child: InkWell(
+                    customBorder: new CircleBorder(),
+                    splashColor: Colors.red,
+                    onTap: () {
+                      showModalBottomSheetSetting(buildContext);
+                    },
+                    child: Hero(
+                      tag: "fotoperfiltoolbar",
+                      child: CircleAvatar(
+                        radius: 17,
+                        child: CircleAvatar(
+                          radius: 15,
+                          backgroundColor: Colors.white,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10000.0),
+                            child: CachedNetworkImage(
+                              width: 35.0,
+                              height: 35.0,
+                              fadeInDuration: Duration(milliseconds: 200),
+                              fit: BoxFit.cover,
+                              imageUrl: controller.getUserAccountAuth.photoURL??'https',
+                              placeholder: (context, url) => FadeInImage(
+                                  image: AssetImage("assets/loading.gif"),
+                                  placeholder:
+                                      AssetImage("assets/loading.gif")),
+                              errorWidget: (context, url, error) => Container(
+                                color: Colors.grey,
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: Text(
+                                    controller.getUserAccountAuth.displayName
+                                        .toString().substring(0, 1),style: TextStyle(fontSize: 16.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
         ],
       ),
       body: Center(
@@ -102,21 +147,13 @@ class ScanScreenView extends StatelessWidget {
 
   // BottomSheet - Getx
   void showModalBottomSheetSelectAccount(BuildContext buildContext) {
-    Widget widget = ListView.builder(
+    Widget widget = controller.getManagedAccountData.length == 0?
+    WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext):ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
       itemCount: controller.getManagedAccountData.length,
       itemBuilder: (BuildContext context, int index) {
-        if (controller.getManagedAccountData.length == 0) {
-          return Column(
-            children: [
-              controller.getStateCreateCuentaEmpresa? WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext): Container(),
-              WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid),
-            ],
-          );
-        } else {
-          return WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid);
-        }
+        return WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid);
       },
     );
 
@@ -243,131 +280,111 @@ class ScanScreenView extends StatelessWidget {
 
   // ShowModalBottomSheet
   void showModalBottomSheetSetting(BuildContext buildContext) {
-    showModalBottomSheet(
-        context: buildContext,
-        clipBehavior: Clip.antiAlias,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        builder: (context) {
-          return ListView(
-            children: <Widget>[
-              ListTile(
-                contentPadding: EdgeInsets.all(12.0),
-                leading: controller.getProfileAccountSelected.imagenPerfil == ""
-                    ? CircleAvatar(
-                        backgroundColor: Colors.black26,
-                        radius: 18.0,
-                        child: Text(
-                            controller.getProfileAccountSelected.nombreNegocio
-                                .substring(0, 1),
-                            style: TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                      )
-                    : CachedNetworkImage(
-                        imageUrl:
-                            controller.getProfileAccountSelected.imagenPerfil,
-                        placeholder: (context, url) => const CircleAvatar(
-                          backgroundColor: Colors.grey,
-                          radius: 18.0,
-                        ),
-                        imageBuilder: (context, image) => CircleAvatar(
-                          backgroundImage: image,
-                          radius: 18.0,
-                        ),
-                      ),
-                title: Text('Editar perfil'),
-                onTap: () {
-                  //Get.to(ProfileCuenta(perfilNegocio: Global.oPerfilNegocio));
-                },
+    Widget widget = ListView(
+      shrinkWrap: true,
+      padding: EdgeInsets.symmetric(vertical: 15.0),
+      children: <Widget>[
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Icon(Icons.logout),
+          title: Text('Cerrar sesión'),
+          onTap:controller.showDialogCerrarSesion,
+        ),
+        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Icon(Get.theme.brightness != Brightness.light
+              ? Icons.brightness_high
+              : Icons.brightness_3),
+          title: Text(Get.theme.brightness == Brightness.light
+              ? 'Aplicar de tema oscuro'
+              : 'Aplicar de tema claro'),
+          onTap: WidgetsUtilsApp().switchTheme(),
+        ),
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text("Contacto",
+                  style:
+                      TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+            ),
+            Expanded(
+              child: Divider(
+                endIndent: 12.0,
+                indent: 12.0,
+                height: 2.0,
+                thickness: 2.0,
               ),
-              Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-              ListTile(
-                contentPadding: EdgeInsets.all(12.0),
-                leading: Icon(Theme.of(context).brightness != Brightness.light
-                    ? Icons.brightness_high
-                    : Icons.brightness_3),
-                title: Text(Theme.of(context).brightness == Brightness.light
-                    ? 'Aplicar de tema oscuro'
-                    : 'Aplicar de tema claro'),
-                onTap: WidgetsUtilsApp().switchTheme(),
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text("Contacto",
-                        style: TextStyle(
-                            fontSize: 20.0, fontWeight: FontWeight.bold)),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      endIndent: 12.0,
-                      indent: 12.0,
-                      height: 2.0,
-                      thickness: 2.0,
-                    ),
-                  ),
-                ],
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.all(12.0),
-                leading: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6.0),
-                    child: FaIcon(FontAwesomeIcons.instagram)),
-                title: Text('Instagram'),
-                subtitle: Text('Contacta con el desarrollador 👨‍💻'),
-                onTap: () async {
-                  String url = "https://www.instagram.com/logica.booleana/";
-                  if (await canLaunch(url)) {
-                    await launch(url);
-                  } else {
-                    throw 'Could not launch $url';
-                  }
-                },
-              ),
-              Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-              ListTile(
-                contentPadding: EdgeInsets.all(12.0),
-                leading: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6.0),
-                    child: FaIcon(FontAwesomeIcons.googlePlay)),
-                title: Text(
-                  'Déjanos un comentario o sugerencia',
-                ),
-                onTap: () async {
-                  String url =
-                      "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
-                  if (await canLaunch(url)) {
-                    await launch(url);
-                  } else {
-                    throw 'Could not launch $url';
-                  }
-                },
-              ),
-              Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-              ListTile(
-                contentPadding: EdgeInsets.all(12.0),
-                leading: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6.0),
-                    child: FaIcon(FontAwesomeIcons.blogger)),
-                title: Text(
-                  'Más información',
-                ),
-                onTap: () async {
-                  String url = "https://logicabooleanaapps.blogspot.com/";
-                  /* if (await canLaunch(url)) {
+            ),
+          ],
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              child: FaIcon(FontAwesomeIcons.instagram)),
+          title: Text('Instagram'),
+          subtitle: Text('Contacta con el desarrollador 👨‍💻'),
+          onTap: () async {
+            String url = "https://www.instagram.com/logica.booleana/";
+            if (await canLaunch(url)) {
+              await launch(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+        ),
+        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              child: FaIcon(FontAwesomeIcons.googlePlay)),
+          title: Text(
+            'Déjanos un comentario o sugerencia',
+          ),
+          onTap: () async {
+            String url =
+                "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
+            if (await canLaunch(url)) {
+              await launch(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+        ),
+        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              child: FaIcon(FontAwesomeIcons.blogger)),
+          title: Text(
+            'Más información',
+          ),
+          onTap: () async {
+            String url = "https://logicabooleanaapps.blogspot.com/";
+            /* if (await canLaunch(url)) {
               await launch(url);
             } else {
               throw 'Could not launch $url';
             } */
-                },
-              ),
-              SizedBox(width: 50.0, height: 50.0),
-            ],
-          );
-        });
+          },
+        ),
+        SizedBox(width: 50.0, height: 50.0),
+      ],
+    );
+
+    // muestre la hoja inferior modal de getx
+    Get.bottomSheet(
+      widget,
+      ignoreSafeArea: true,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      enableDrag: true,
+      isDismissible: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+    );
   }
 
   showAlertDialog(BuildContext context) {

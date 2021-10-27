@@ -287,12 +287,13 @@ class WidgetButtonListTile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
       leading: CircleAvatar(
+        backgroundColor: Colors.black45,
         radius: 24.0,
-        child: Icon(Icons.add),
+        child: Icon(Icons.add,color: Colors.white,),
       ),
       dense: true,
       title:
-          Text("Crear cuenta para empresa", style: TextStyle(fontSize: 16.0)),
+          Text("Crear cuenta", style: TextStyle(fontSize: 16.0)),
       onTap: () {
         /* Navigator.of(context).push(
           MaterialPageRoute(
@@ -561,4 +562,14 @@ class CustomFullScreenDialog {
   static void cancelDialog() {
     Get.back();
   }
+}
+
+
+PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
+  return PreferredSize(
+      preferredSize: Size.fromHeight(0.0),
+      child: LinearProgressIndicator(
+          minHeight: 6.0,
+          backgroundColor: Colors.white.withOpacity(0.3),
+          valueColor: new AlwaysStoppedAnimation<Color>(color)));
 }

@@ -38,11 +38,9 @@ class WelcomeController extends GetxController {
   }
 
   String get getIdAccountSelecte => idAccountSelected.value;
-  Rx<ProfileBusinessModel> _profileAccount =
-      ProfileBusinessModel().obs; // perfil del negocio
+  Rx<ProfileBusinessModel> _profileAccount = ProfileBusinessModel().obs;
   ProfileBusinessModel get getProfileAccountSelected => _profileAccount.value;
-  set setProfileAccountSelected(ProfileBusinessModel user) =>
-      _profileAccount.value = user;
+  set setProfileAccountSelected(ProfileBusinessModel user) =>  _profileAccount.value = user;
   bool getSelected({required String id}) {
     bool isSelected = false;
     for (ProfileBusinessModel obj in getManagedAccountData) {
@@ -56,6 +54,7 @@ class WelcomeController extends GetxController {
     return isSelected;
   }
 
+  // Cambiar de cuenta
   void accountChange({required String idAccount}) {
     // save key/values Storage
     GetStorage().write('idAccount', idAccount);
@@ -178,9 +177,16 @@ class WelcomeController extends GetxController {
   }
 
   // verifica si el usuario ya creo una cuenta
-  bool createCuentaEmpresa = false;
-  get getStateCreateCuentaEmpresa => createCuentaEmpresa;
-  set setStateCreateCuentaEmpresa(value) => createCuentaEmpresa = value;
+  bool _isExistAccount = true;
+  get getIsExistAccount {
+    _isExistAccount = false;
+    for (ProfileBusinessModel obj in getManagedAccountData) {
+      if (getUserAccountAuth.uid == obj.id) {
+        _isExistAccount = false;
+      }
+    }
+    return _isExistAccount;
+  }
 
   @override
   void onInit() async {
@@ -302,12 +308,6 @@ class WelcomeController extends GetxController {
           .then((value) {
         ProfileBusinessModel profileAccount =
             ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: value);
-
-        // verificamos si el usuario creo una ya una cuenta o no\
-        // verificamos si alguna cuenta esta seleccionada
-        if (getProfileAccountSelected.id == profileAccount.id) {
-          setStateCreateCuentaEmpresa = true;
-        }
         //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
         addManagedAccount(
             profileData: profileAccount,
@@ -426,17 +426,15 @@ class WelcomeController extends GetxController {
               CustomFullScreenDialog.showDialog();
               // instancias de GoogleSignIn para proceder a cerrar sesión en el proveedor de cuentas
               late final GoogleSignIn googleSign = GoogleSignIn();
-              await googleSign.signIn().then((value) async{
-
-                // instancias de FirebaseAuth para proceder a cerrar sesión 
+              await googleSign.signIn().then((value) async {
+                // instancias de FirebaseAuth para proceder a cerrar sesión
                 final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
                 await firebaseAuth.signOut().then((value) {
                   // value default
                   GetStorage().write('idAccount', '');
                   CustomFullScreenDialog.cancelDialog();
+                });
               });
-              });
-              
             }),
       ],
     );

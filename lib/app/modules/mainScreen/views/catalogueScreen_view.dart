@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:loadany/loadany.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
+import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -300,36 +301,13 @@ class CatalogueScreenView extends StatelessWidget {
 
   // BottomSheet - Getx
   void showModalBottomSheetSelectAccount(BuildContext buildContext) {
-    Widget widget = ListView.builder(
+    Widget widget = controller.getManagedAccountData.length == 0?
+    WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext):ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
       itemCount: controller.getManagedAccountData.length,
       itemBuilder: (BuildContext context, int index) {
-        if (controller.getManagedAccountData.length == 0) {
-          return Column(
-            children: [
-              controller.getStateCreateCuentaEmpresa
-                  ? WidgetButtonListTile(buildContext: buildContext)
-                      .buttonListTileCrearCuenta(context: buildContext)
-                  : Container(),
-              WidgetButtonListTile(buildContext: buildContext)
-                  .buttonListTileItemCuenta(
-                      buildContext: buildContext,
-                      perfilNegocio: controller.getManagedAccountData[index],
-                      adminPropietario:
-                          controller.getManagedAccountData[index].id ==
-                              controller.getUserAccountAuth.uid),
-            ],
-          );
-        } else {
-          return WidgetButtonListTile(buildContext: buildContext)
-              .buttonListTileItemCuenta(
-                  buildContext: buildContext,
-                  perfilNegocio: controller.getManagedAccountData[index],
-                  adminPropietario:
-                      controller.getManagedAccountData[index].id ==
-                          controller.getUserAccountAuth.uid);
-        }
+        return WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid);
       },
     );
 
@@ -376,7 +354,7 @@ class CatalogueScreenView extends StatelessWidget {
                 ),
           title: Text('Editar perfil'),
           onTap: () {
-            //Get.to(ProfileCuenta(perfilNegocio: Global.oPerfilNegocio));
+            Get.toNamed(Routes.ACCOUNT);
           },
         ),
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),

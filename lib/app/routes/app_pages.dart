@@ -1,4 +1,6 @@
 
+import 'package:producto/app/modules/account/bindings/account_binding.dart';
+import 'package:producto/app/modules/account/views/account_view.dart';
 import 'package:producto/app/modules/auth/bindings/login_binding.dart';
 import 'package:producto/app/modules/auth/views/login_view.dart';
 import 'package:producto/app/modules/product/bindings/product_binding.dart';
@@ -36,6 +38,11 @@ class AppPages {
       name: Routes.PRODUCT,
       page: () => Product(),
       binding: ProductBinding(),
+    ),
+    GetPage(
+      name: Routes.ACCOUNT,
+      page: () => AccountView(),
+      binding: AccountBinding(),
     ),
   ];
 }
