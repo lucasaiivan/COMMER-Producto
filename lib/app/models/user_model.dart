@@ -248,4 +248,11 @@ class AdminUsuarioCuenta {
     tipocuenta = documentSnapshot['tipocuenta'] ?? '';
     propietarioCuenta = documentSnapshot['propietario_cuenta'] ?? '';
   }
+  Map<String, dynamic> toJson() => {
+        "idUser": idUser,
+        "idAccount": idAccount,
+        "estadoCuentaUsuario": estadoCuentaUsuario,
+        "tipocuenta": tipocuenta,
+        "propietarioCuenta": propietarioCuenta,
+    };
 }

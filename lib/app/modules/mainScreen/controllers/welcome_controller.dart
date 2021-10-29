@@ -297,8 +297,8 @@ class WelcomeController extends GetxController {
       {required String idAccountBussiness, required String idAccountUser}) {
     // obtenemos los datos dela cuenta adminitrada por este usuario
     Database.readManagedAccounts(
-            idAccountBussiness: idAccountBussiness,
-            idAccountUser: idAccountUser)
+            idAccount: idAccountBussiness,
+            idUser: idAccountUser)
         .then((value) {
       AdminUsuarioCuenta adminUsuarioCuenta =
           AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);

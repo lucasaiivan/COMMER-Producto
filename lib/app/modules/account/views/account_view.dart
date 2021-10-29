@@ -27,7 +27,6 @@ class AccountView extends GetView<AccountController> {
   late final WelcomeController welcomeController;
   late final ProfileBusinessModel perfilNegocio;
   final bool createCuenta = false;
-  final bool saveIndicador = false;
   late final TextEditingController controllerTextEdit_nombre;
   late final TextEditingController controllerTextEdit_descripcion;
   late final TextEditingController controllerTextEdit_categoria_nombre;
@@ -76,24 +75,7 @@ class AccountView extends GetView<AccountController> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(!saveIndicador
-            ? createCuenta
-                ? "Crear cuenta"
-                : "Editar"
-            : "Actualizando"),
-        actions: <Widget>[
-          Builder(builder: (contextBuilder) {
-            return IconButton(
-              icon: saveIndicador == false ? Icon(Icons.check) : Container(),
-              onPressed: () {
-                guardar(context: context, contextBuilder: contextBuilder);
-              },
-            );
-          }),
-        ],
-        bottom: saveIndicador ? linearProgressBarApp() : null,
-      ),
+      appBar: appBar(),
       body: ListView(
         padding: EdgeInsets.all(12.0),
         children: [
@@ -103,21 +85,50 @@ class AccountView extends GetView<AccountController> {
               SizedBox(
                 height: 24.0,
               ),
-              FlatButton(
-                onPressed: () {
-                  if (saveIndicador == false) {
-                    _showModalBottomSheetCambiarImagen(context: context);
-                  }
-                },
-                child: Text(
-                  "Cambiar imagen",
-                ),
-              ),
+              TextButton(
+                  onPressed: () {
+                    if (controller.getSavingIndicator == false) {
+                      _showModalBottomSheetCambiarImagen(context: context);
+                    }
+                  },
+                  child: Text("Cambiar imagen")),
               widgetFormEditText(),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  // WIDGET
+  PreferredSizeWidget appBar() {
+    return AppBar(
+      title: GetBuilder<AccountController>(
+        id: 'load',
+        builder: (_) {
+          return Text(
+              controller.getSavingIndicator ? 'Actualizando' : "Mi Perfil");
+        },
+      ),
+      actions: <Widget>[
+        GetBuilder<AccountController>(
+          id: 'load',
+          initState: (_) {},
+          builder: (_) {
+            return IconButton(
+                icon: controller.getSavingIndicator
+                    ? SizedBox(
+                        child: CircularProgressIndicator(),
+                        height: 24,
+                        width: 24,
+                      )
+                    : Icon(Icons.check),
+                onPressed: ()=>saveAccount(),
+                );
+          },
+        ),
+      ],
+      bottom: controller.getSavingIndicator ? linearProgressBarApp() : null,
     );
   }
 
@@ -133,7 +144,8 @@ class AccountView extends GetView<AccountController> {
                     title: new Text('Capturar una imagen'),
                     onTap: () {
                       Navigator.pop(bc);
-                      controller.setImageSource(imageSource: ImageSource.camera);
+                      controller.setImageSource(
+                          imageSource: ImageSource.camera);
                     }),
                 new ListTile(
                   leading: new Icon(Icons.image),
@@ -150,11 +162,14 @@ class AccountView extends GetView<AccountController> {
   }
 
   Widget widgetsImagen() {
-    return Container(
-      padding: EdgeInsets.all(12.0),
-      child: Column(
-        children: [
-          perfilNegocio.imagenPerfil != ""
+    return GetBuilder<AccountController>(
+      id: 'image',
+      builder: (_) {
+        return Container(
+          padding: EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              controller.getImageUpdate == false
                   ? CachedNetworkImage(
                       fit: BoxFit.cover,
                       imageUrl: perfilNegocio.imagenPerfil != ""
@@ -174,11 +189,15 @@ class AccountView extends GetView<AccountController> {
                       ),
                     )
                   : CircleAvatar(
-                      backgroundColor: Colors.grey,
                       radius: 100.0,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage:
+                          FileImage(File(controller.getxFile.path)),
                     )
-        ],
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -194,7 +213,7 @@ class AccountView extends GetView<AccountController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextField(
-            enabled: !saveIndicador,
+            enabled: !controller.getSavingIndicator,
             minLines: 1,
             maxLines: 5,
             keyboardType: TextInputType.multiline,
@@ -211,7 +230,7 @@ class AccountView extends GetView<AccountController> {
             },
           ),
           TextField(
-            enabled: !saveIndicador,
+            enabled: !controller.getSavingIndicator,
             minLines: 1,
             maxLines: 5,
             keyboardType: TextInputType.multiline,
@@ -246,7 +265,7 @@ class AccountView extends GetView<AccountController> {
           ),
           Text("Ubicación", style: TextStyle(fontSize: 24.0)),
           TextField(
-            enabled: !saveIndicador,
+            enabled: !controller.getSavingIndicator,
             onChanged: (value) => perfilNegocio.direccion = value,
             decoration: InputDecoration(
               labelText: "Dirección (ocional)",
@@ -260,7 +279,7 @@ class AccountView extends GetView<AccountController> {
             },
           ),
           TextField(
-            enabled: !saveIndicador,
+            enabled: !controller.getSavingIndicator,
             onChanged: (value) => perfilNegocio.ciudad = value,
             decoration: InputDecoration(labelText: "Ciudad (ocional)"),
             controller: controllerTextEdit_ciudad,
@@ -370,97 +389,31 @@ class AccountView extends GetView<AccountController> {
         });
   }
 
-  void guardar(
-      {required BuildContext contextBuilder,
-      required BuildContext context}) async {
-    /* perfilNegocio.provincia = controllerTextEdit_provincia.text;
+  void saveAccount() async {
+    perfilNegocio.provincia = controllerTextEdit_provincia.text;
     perfilNegocio.pais = controllerTextEdit_pais.text;
+    perfilNegocio.direccion = controllerTextEdit_direccion.text;
+
     if (perfilNegocio.id != "") {
       if (perfilNegocio.nombreNegocio != "") {
         if (perfilNegocio.ciudad != "") {
           if (perfilNegocio.provincia != "") {
             if (perfilNegocio.pais != "") {
-              perfilNegocio.direccion = controllerTextEdit_direccion.text;
-              // 
-
-              // Si la "PickedFile" es distinto nulo procede a guardar la imagen en la base de dato de almacenamiento
-              if (_imageFile != null) {
-                Reference ref = FirebaseStorage.instance
-                    .ref()
-                    .child("NEGOCIOS")
-                    .child(perfilNegocio.id)
-                    .child("PERFIL")
-                    .child("imagen_perfil");
-                UploadTask uploadTask = ref.putFile(File(_imageFile.path));
-                // obtenemos la url de la imagen guardada
-                String imageUrl = await (await uploadTask).ref.getDownloadURL().toString();
-                // TODO: Por el momento los datos del producto se guarda junto a la referencia de la cuenta del negocio
-                perfilNegocio.imagenPerfil = urlIamgen;
-              }
-
-              // Cuando se crea una cuenta , se copia referencias del id de usuario de la cuenta
-              if (this.createCuenta) {
-                // guarda un documento con la referencia del id de la cuenta en una lista en los datos del usuario
-                await Global.getDataReferenceCuentaUsuarioAministrador(
-                        idNegocio: perfilNegocio.id,
-                        idUsuario: firebaseUser.uid)
-                    .upSetDocument({'id': perfilNegocio.id});
-                // Guarda datos del usuario y la referencia del id de la cuenta
-                await Global.getDataUsuario(idUsuario: firebaseUser.uid)
-                    .upSetDocument(new Usuario(
-                            email: firebaseUser.email,
-                            id: firebaseUser.uid,
-                            id_cuenta_negocio: firebaseUser.uid,
-                            nombre: firebaseUser.displayName,
-                            urlfotoPerfil: firebaseUser.photoURL,
-                            timestamp_creation:
-                                Timestamp.fromDate(new DateTime.now()))
-                        .toJson());
-                // guarda un documento con la referencia del usuario, en la lista de administradores de la cuenta
-                await Global.getDataAsuarioAdministrador(
-                        idNegocio: perfilNegocio.id,
-                        idUsuario: firebaseUser.uid)
-                    .upSetDocument(new AsuarioAdministrador(
-                            id_usuario: firebaseUser.uid, tipocuenta: 0)
-                        .toJson());
-                Global.actualizarPerfilNegocio(perfilNegocio: perfilNegocio);
-                // guarda los datos de la cuenta
-                await Global.getNegocio(idNegocio: perfilNegocio.id)
-                    .upSetPerfilNegocio(perfilNegocio.toJson());
-                context.read<ProviderPerfilNegocio>().setCuentaNegocio =
-                    perfilNegocio;
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/page_principal', (Route<dynamic> route) => false);
-              } else {
-                // guarda los datos de la cuenta
-                await Global.getNegocio(idNegocio: perfilNegocio.id)
-                    .upSetPerfilNegocio(perfilNegocio.toJson());
-                context.read<ProviderPerfilNegocio>().setCuentaNegocio =
-                    perfilNegocio;
-                Navigator.pop(context);
-              }
+              controller.saveAccount(perfilNegocio: perfilNegocio);
             } else {
-              showSnackBar(
-                  context: contextBuilder,
-                  message: 'Debe proporcionar un pais de origen');
+              Get.snackbar('','Debe proporcionar un pais de origen');
             }
           } else {
-            showSnackBar(
-                context: contextBuilder,
-                message: 'Debe proporcionar una provincia');
+            Get.snackbar('','Debe proporcionar una provincia');
           }
         } else {
-          showSnackBar(
-              context: contextBuilder, message: 'Debe proporcionar una ciudad');
+          Get.snackbar('','Debe proporcionar una ciudad');
         }
       } else {
-        showSnackBar(
-            context: contextBuilder, message: 'Debe proporcionar un nombre');
+        Get.snackbar('','Debe proporcionar un nombre');
       }
     } else {
-      showSnackBar(
-          context: contextBuilder,
-          message: 'El ID del usuario de proveedor es NULO');
-    } */
+      Get.snackbar('','El ID del usuario de proveedor es NULO');
+    }
   }
 }

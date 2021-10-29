@@ -1,5 +1,6 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:producto/app/models/user_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 // operations of CRUD Firestore
 
@@ -49,7 +50,7 @@ class Database {
   static Future<DocumentSnapshot<Map<String, dynamic>>> readCategotyCatalogueFuture( { required String idBusiness,required String idCategory}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idBusiness/EXTENSION_CATALOGO_CATEGORIA/').doc(idCategory).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readSubcategotyCatalogueFuture( { required String idBusiness,required String idCategory,required String idSubcategory}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idBusiness/EXTENSION_CATALOGO_CATEGORIA/$idCategory/SUBCATEGORIA/').doc(idSubcategory).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readMarkFuture( { required String id}) => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS/').doc(id).get();
-  static Future<DocumentSnapshot<Map<String, dynamic>>> readManagedAccounts( { required String idAccountBussiness,required String idAccountUser}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccountBussiness/ADMINISTRADOR_NEGOCIOS/').doc(idAccountUser).get();
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readManagedAccounts( { required String idAccount,required String idUser}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/ADMINISTRADOR_NEGOCIOS/').doc(idUser).get();
   // stream - DocumentSnapshot
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readUserModelStream( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).snapshots();
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readProfileBusinessModelStream( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).snapshots();
@@ -57,6 +58,13 @@ class Database {
   static Stream<QuerySnapshot<Map<String, dynamic>>> readProductsCatalogueStream( { required String id}) => FirebaseFirestore.instance.collection('NEGOCIOS/$id/EXTENSION_CATALOGO').orderBy("timestamp_creation",descending: true).snapshots();
   static Stream<QuerySnapshot<Map<String, dynamic>>> readManagedAccountsQueryStream( { required String id}) => FirebaseFirestore.instance.collection('/USUARIOS/$id/ADMINISTRADOR_NEGOCIOS').snapshots();
   
+  // STORAGE reference
+  static Reference referenceStorageAccountImageProfile({required String id}) => FirebaseStorage.instance.ref().child("NEGOCIOS").child(id).child("PERFIL").child("imagen_perfil");
+  // Firestore reference
+  static CollectionReference  refFirestoreAccountAdmin({required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/ADMINISTRADOR_NEGOCIOS/');
+  static CollectionReference  refFirestoreUserAdmin({required String idUser}) => FirebaseFirestore.instance.collection('/USUARIOS/$idUser/ADMINISTRADOR_NEGOCIOS/');
+  static CollectionReference  refFirestoreAccount() => FirebaseFirestore.instance.collection('/NEGOCIOS/'); 
+
 
   //  update value
   //  Para actualizar los datos en la base de datos, puede usar el update()método en el documentReferencerobjeto pasando los nuevos datos como un mapa. Para actualizar un documento en particular de la base de datos, deberá usar su ID de documento único .
