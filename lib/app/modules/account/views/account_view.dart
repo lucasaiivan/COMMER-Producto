@@ -1,130 +1,92 @@
 import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/modules/account/controller/account_controller.dart';
-import 'package:producto/app/modules/auth/controller/login_controller.dart';
-import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 
 class AccountView extends GetView<AccountController> {
   // Image
   final String urlIamgen = "";
   late final PickedFile imageFile;
-  final ImagePicker _picker = ImagePicker();
-  late final User firebaseUser;
   final String titleAppBar = "Crear cuenta";
 
   // VAriables
   late final BuildContext context;
-  late final WelcomeController welcomeController;
-  late final ProfileBusinessModel perfilNegocio;
-  final bool createCuenta = false;
-  late final TextEditingController controllerTextEdit_nombre;
-  late final TextEditingController controllerTextEdit_descripcion;
-  late final TextEditingController controllerTextEdit_categoria_nombre;
-  late final TextEditingController controllerTextEdit_direccion;
-  late final TextEditingController controllerTextEdit_ciudad;
-  late final TextEditingController controllerTextEdit_provincia;
-  late final TextEditingController controllerTextEdit_pais;
-  late final TextEditingController controllerTextEdit_signo_moneda;
 
-  final FocusNode _focus_TextEdit_nombre = FocusNode();
-  final FocusNode _focus_TextEdit_descripcion = FocusNode();
-  final FocusNode _focus_TextEdit_categoria_nombre = FocusNode();
-  final FocusNode _focus_TextEdit_direccion = FocusNode();
-  final FocusNode _focus_TextEdit_ciudad = FocusNode();
-  final FocusNode _focus_TextEdit_provincia = FocusNode();
-  final FocusNode _focus_TextEdit_pais = FocusNode();
+
+  final FocusNode focusTextEdiNombre = FocusNode();
+  final FocusNode focusTextEditDescripcion = FocusNode();
+  final FocusNode focusTextEditCategoriaNombre = FocusNode();
+  final FocusNode focusTextEditDireccion = FocusNode();
+  final FocusNode focusTextEditCiudad = FocusNode();
+  final FocusNode focusTextEditProvincia = FocusNode();
+  final FocusNode focusTextEditPais = FocusNode();
 
   @override
   Widget build(BuildContext buildContext) {
     context = buildContext;
-    welcomeController = Get.find();
 
-    perfilNegocio = welcomeController.getProfileAccountSelected;
-    controllerTextEdit_nombre =
-        TextEditingController(text: perfilNegocio.nombreNegocio);
-    controllerTextEdit_descripcion =
-        TextEditingController(text: perfilNegocio.descripcion);
-    controllerTextEdit_ciudad =
-        TextEditingController(text: perfilNegocio.ciudad);
-    controllerTextEdit_categoria_nombre = TextEditingController();
-    controllerTextEdit_direccion =
-        TextEditingController(text: perfilNegocio.direccion);
-    controllerTextEdit_provincia =
-        TextEditingController(text: perfilNegocio.provincia);
-    controllerTextEdit_pais = TextEditingController(text: perfilNegocio.pais);
-    controllerTextEdit_signo_moneda = TextEditingController(text: "\$");
-
-    return scaffold(context: context);
+    return scaffold(buildContext: context);
   }
 
-  Widget scaffold({required BuildContext context}) {
-    // Proveedor de datoss del usuario autenticado
-    firebaseUser = welcomeController.getUserAccountAuth;
-    if (createCuenta) {
-      this.perfilNegocio.id = firebaseUser.uid;
-    }
+  Widget scaffold({required BuildContext buildContext}) {
+    
 
-    return Scaffold(
-      appBar: appBar(),
-      body: ListView(
-        padding: EdgeInsets.all(12.0),
-        children: [
-          Column(
-            children: <Widget>[
-              widgetsImagen(),
-              SizedBox(
-                height: 24.0,
-              ),
-              TextButton(
-                  onPressed: () {
-                    if (controller.getSavingIndicator == false) {
-                      _showModalBottomSheetCambiarImagen(context: context);
-                    }
-                  },
-                  child: Text("Cambiar imagen")),
-              widgetFormEditText(),
-            ],
-          ),
-        ],
-      ),
-    );
+    return GetBuilder<AccountController>(
+        id: 'load',
+        builder: (_) {
+          return Scaffold(
+            appBar: appBar(),
+            body: ListView(
+              padding: EdgeInsets.all(12.0),
+              children: [
+                Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 12.0,
+                    ),
+                    widgetsImagen(),
+                    controller.getSavingIndicator
+                        ? Container()
+                        : TextButton(
+                            onPressed: () {
+                              if (controller.getSavingIndicator == false) {
+                                _showModalBottomSheetCambiarImagen(
+                                    context: buildContext);
+                              }
+                            },
+                            child: Text("Cambiar imagen")),
+                    SizedBox(
+                      height: 24.0,
+                    ),
+                    widgetFormEditText(),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   // WIDGET
   PreferredSizeWidget appBar() {
     return AppBar(
-      title: GetBuilder<AccountController>(
-        id: 'load',
-        builder: (_) {
-          return Text(
-              controller.getSavingIndicator ? 'Actualizando' : "Mi Perfil");
-        },
-      ),
+      centerTitle: true,
+      title: Text(controller.getSavingIndicator ? 'Actualizando' : "Mi Perfil"),
       actions: <Widget>[
         GetBuilder<AccountController>(
           id: 'load',
           initState: (_) {},
           builder: (_) {
             return IconButton(
-                icon: controller.getSavingIndicator
-                    ? SizedBox(
-                        child: CircularProgressIndicator(),
-                        height: 24,
-                        width: 24,
-                      )
-                    : Icon(Icons.check),
-                onPressed: ()=>saveAccount(),
-                );
+              icon: controller.getSavingIndicator
+                  ? Container()
+                  : Icon(Icons.check),
+              onPressed: controller.saveAccount,
+            );
           },
         ),
       ],
@@ -172,24 +134,24 @@ class AccountView extends GetView<AccountController> {
               controller.getImageUpdate == false
                   ? CachedNetworkImage(
                       fit: BoxFit.cover,
-                      imageUrl: perfilNegocio.imagenPerfil != ""
-                          ? perfilNegocio.imagenPerfil
+                      imageUrl: controller.getProfileAccount.imagenPerfil != ""
+                          ? controller.getProfileAccount.imagenPerfil
                           : "default",
                       placeholder: (context, url) => CircleAvatar(
                         backgroundColor: Colors.grey,
-                        radius: 100.0,
+                        radius: 75.0,
                       ),
                       imageBuilder: (context, image) => CircleAvatar(
                         backgroundImage: image,
-                        radius: 100.0,
+                        radius: 75.0,
                       ),
                       errorWidget: (context, url, error) => CircleAvatar(
                         backgroundColor: Colors.grey,
-                        radius: 100.0,
+                        radius: 75.0,
                       ),
                     )
                   : CircleAvatar(
-                      radius: 100.0,
+                      radius: 75.0,
                       backgroundColor: Colors.transparent,
                       backgroundImage:
                           FileImage(File(controller.getxFile.path)),
@@ -208,212 +170,252 @@ class AccountView extends GetView<AccountController> {
   }
 
   Widget widgetFormEditText() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextField(
-            enabled: !controller.getSavingIndicator,
-            minLines: 1,
-            maxLines: 5,
-            keyboardType: TextInputType.multiline,
-            onChanged: (value) => perfilNegocio.nombreNegocio = value,
-            decoration: InputDecoration(
-              labelText: "Nombre",
-            ),
-            controller: controllerTextEdit_nombre,
-            textInputAction: TextInputAction.next,
-            focusNode: _focus_TextEdit_nombre,
-            onSubmitted: (term) {
-              _fieldFocusChange(
-                  context, _focus_TextEdit_nombre, _focus_TextEdit_descripcion);
-            },
+    return Obx(() => Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextField(
+                enabled: !controller.getSavingIndicator,
+                minLines: 1,
+                maxLines: 5,
+                keyboardType: TextInputType.multiline,
+                onChanged: (value) =>
+                    controller.getProfileAccount.nombreNegocio = value,
+                decoration: InputDecoration(
+                  filled: true,
+                  labelText: "Nombre",
+                ),
+                controller: TextEditingController(
+                    text: controller.getProfileAccount.nombreNegocio),
+                textInputAction: TextInputAction.next,
+                focusNode: focusTextEdiNombre,
+                onSubmitted: (term) {
+                  _fieldFocusChange(
+                      context, focusTextEdiNombre, focusTextEditDescripcion);
+                },
+              ),
+              Divider(color: Colors.transparent, thickness: 1),
+              TextField(
+                enabled: !controller.getSavingIndicator,
+                minLines: 1,
+                maxLines: 5,
+                keyboardType: TextInputType.multiline,
+                onChanged: (value) =>
+                    controller.getProfileAccount.descripcion = value,
+                decoration: InputDecoration(
+                  filled: true,
+                  labelText: "Descripción",
+                ),
+                controller: TextEditingController(
+                    text: controller.getProfileAccount.descripcion),
+                textInputAction: TextInputAction.next,
+                focusNode: focusTextEditDescripcion,
+                onSubmitted: (term) {
+                  _fieldFocusChange(context, focusTextEditDescripcion,
+                      focusTextEditDescripcion);
+                },
+              ),
+              Divider(color: Colors.transparent, thickness: 1),
+              InkWell(
+                onTap: () => _buildBottomPicker(
+                    listItems: [
+                      "\$",
+                    ],
+                    textEditingController: TextEditingController(
+                        text: controller.getProfileAccount.signoMoneda)),
+                child: TextField(
+                  minLines: 1,
+                  maxLines: 5,
+                  keyboardType: TextInputType.multiline,
+                  enabled: false,
+                  decoration: InputDecoration(
+                    labelText: "Signo de moneda",
+                    filled: true,
+                  ),
+                  controller: TextEditingController(
+                      text: controller.getProfileAccount.signoMoneda),
+                  onChanged: (value) =>
+                      controller.getProfileAccount.signoMoneda = value,
+                ),
+              ),
+              SizedBox(
+                height: 24.0,
+              ),
+              Text("Ubicación", style: TextStyle(fontSize: 24.0)),
+              SizedBox(
+                height: 24.0,
+              ),
+              TextField(
+                enabled: !controller.getSavingIndicator,
+                onChanged: (value) =>
+                    controller.getProfileAccount.direccion = value,
+                decoration: InputDecoration(
+                  labelText: "Dirección (ocional)",
+                  filled: true,
+                ),
+                controller: TextEditingController(
+                    text: controller.getProfileAccount.direccion),
+                textInputAction: TextInputAction.next,
+                focusNode: focusTextEditDireccion,
+                onSubmitted: (term) {
+                  _fieldFocusChange(
+                      context, focusTextEditDireccion, focusTextEditCiudad);
+                },
+              ),
+              Divider(color: Colors.transparent, thickness: 1),
+              TextField(
+                enabled: !controller.getSavingIndicator,
+                onChanged: (value) =>
+                    controller.getProfileAccount.ciudad = value,
+                decoration: InputDecoration(
+                  labelText: "Ciudad (ocional)",
+                  filled: true,
+                ),
+                controller: TextEditingController(
+                    text: controller.getProfileAccount.ciudad),
+              ),
+              Divider(color: Colors.transparent, thickness: 1),
+              InkWell(
+                onTap: () => _buildBottomPickerCities(),
+                child: TextField(
+                    minLines: 1,
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    enabled: false,
+                    decoration: InputDecoration(
+                      labelText: "Provincia",
+                      filled: true,
+                    ),
+                    controller: controller.getControllerTextEditProvincia,
+                    onChanged: (value) {
+                      controller.getProfileAccount.provincia = value;
+                    }),
+              ),
+              Divider(color: Colors.transparent, thickness: 1),
+              InkWell(
+                onTap: () => _buildBottomPicker(
+                    listItems:controller.getCountries,
+                    textEditingController: TextEditingController(
+                        text: controller.getProfileAccount.pais)),
+                child: TextField(
+                  minLines: 1,
+                  maxLines: 5,
+                  keyboardType: TextInputType.multiline,
+                  enabled: false,
+                  decoration: InputDecoration(
+                    labelText: "Pais",
+                    filled: true,
+                  ),
+                  controller: TextEditingController(
+                      text: controller.getProfileAccount.pais),
+                  onChanged: (value) =>
+                      controller.getProfileAccount.pais = value,
+                ),
+              ),
+              SizedBox(width: 50.0, height: 50.0),
+            ],
           ),
-          TextField(
-            enabled: !controller.getSavingIndicator,
-            minLines: 1,
-            maxLines: 5,
-            keyboardType: TextInputType.multiline,
-            onChanged: (value) => perfilNegocio.descripcion = value,
-            decoration: InputDecoration(
-              labelText: "Descripción",
-            ),
-            controller: controllerTextEdit_descripcion,
-            textInputAction: TextInputAction.next,
-            focusNode: _focus_TextEdit_descripcion,
-            onSubmitted: (term) {
-              _fieldFocusChange(context, _focus_TextEdit_descripcion,
-                  _focus_TextEdit_direccion);
-            },
-          ),
-          InkWell(
-            onTap: () => _buildBottomPicker(listItems: [
-              "\$",
-            ], textEditingController: controllerTextEdit_signo_moneda),
-            child: TextField(
-              minLines: 1,
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-              enabled: false,
-              decoration: InputDecoration(labelText: "Signo de moneda"),
-              controller: controllerTextEdit_signo_moneda,
-              onChanged: (value) => perfilNegocio.signoMoneda = value,
-            ),
-          ),
-          SizedBox(
-            height: 24.0,
-          ),
-          Text("Ubicación", style: TextStyle(fontSize: 24.0)),
-          TextField(
-            enabled: !controller.getSavingIndicator,
-            onChanged: (value) => perfilNegocio.direccion = value,
-            decoration: InputDecoration(
-              labelText: "Dirección (ocional)",
-            ),
-            controller: controllerTextEdit_direccion,
-            textInputAction: TextInputAction.next,
-            focusNode: _focus_TextEdit_direccion,
-            onSubmitted: (term) {
-              _fieldFocusChange(
-                  context, _focus_TextEdit_direccion, _focus_TextEdit_ciudad);
-            },
-          ),
-          TextField(
-            enabled: !controller.getSavingIndicator,
-            onChanged: (value) => perfilNegocio.ciudad = value,
-            decoration: InputDecoration(labelText: "Ciudad (ocional)"),
-            controller: controllerTextEdit_ciudad,
-          ),
-          InkWell(
-            onTap: () => _buildBottomPicker(listItems: [
-              'Buenos Aires',
-              'Catamarca',
-              'Chaco',
-              'Chubut',
-              'Córdoba',
-              'Corrientes',
-              'Entre Ríos',
-              'Formosa',
-              'Jujuy',
-              'La Pampa',
-              'La Rioja',
-              'Mendoza',
-              'Misiones',
-              'Neuquén',
-              'Río Negro',
-              'Salta',
-              'San Juan',
-              'San Luis',
-              'Santa Cruz',
-              'Santa Fe',
-              'Santiago del Estero',
-              'Tucumán',
-              'Tierra del Fuego',
-            ], textEditingController: controllerTextEdit_provincia),
-            child: TextField(
-              minLines: 1,
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-              enabled: false,
-              decoration: InputDecoration(labelText: "Provincia"),
-              controller: controllerTextEdit_provincia,
-              onChanged: (value) => perfilNegocio.provincia = value,
-            ),
-          ),
-          InkWell(
-            onTap: () => _buildBottomPicker(listItems: [
-              'Argentina',
-            ], textEditingController: controllerTextEdit_pais),
-            child: TextField(
-              minLines: 1,
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-              enabled: false,
-              decoration: InputDecoration(labelText: "Pais"),
-              controller: controllerTextEdit_pais,
-              onChanged: (value) => perfilNegocio.pais = value,
-            ),
-          ),
-          SizedBox(width: 50.0, height: 50.0),
-        ],
-      ),
-    );
+        ));
   }
 
-  void _buildBottomPicker(
-      {required TextEditingController textEditingController,
-      required List<String> listItems}) {
+  void _buildBottomPickerCities() {
+
     int _index = 0;
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 200.0,
-            color: Colors.white,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                CupertinoButton(
-                  child: Text("Cancel"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                Expanded(
-                  child: CupertinoPicker(
-                      scrollController: new FixedExtentScrollController(
-                        initialItem: 0,
-                      ),
-                      itemExtent: 32.0,
-                      backgroundColor: Colors.white,
-                      onSelectedItemChanged: (int index) {
-                        _index = index;
-                      },
-                      children: new List<Widget>.generate(listItems.length,
-                          (int index) {
-                        return new Center(
-                          child: new Text(listItems[index]),
-                        );
-                      })),
-                ),
-                CupertinoButton(
-                  child: Text("Ok"),
-                  onPressed: () {
-                    // textEditingController.text = listItems[_index];
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+
+    showModalBottomSheet<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        height: 200.0,
+        color: Colors.white,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            CupertinoButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-          );
-        });
+            Expanded(
+              child: CupertinoPicker(
+                  scrollController: new FixedExtentScrollController(
+                    initialItem: 0,
+                  ),
+                  itemExtent: 32.0,
+                  backgroundColor: Colors.white,
+                  onSelectedItemChanged: (int index) {
+                    _index = index;
+                  },
+                  children: new List<Widget>.generate(controller.getCities.length,
+                      (int index) {
+                    return new Center(
+                      child: new Text(controller.getCities[index]),
+                    );
+                  })),
+            ),
+            CupertinoButton(
+              child: Text("Ok"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+    ).whenComplete(() {
+      controller.getControllerTextEditProvincia.text = controller.getCities[_index];
+    });
   }
+  void _buildBottomPickerContruis() {
 
-  void saveAccount() async {
-    perfilNegocio.provincia = controllerTextEdit_provincia.text;
-    perfilNegocio.pais = controllerTextEdit_pais.text;
-    perfilNegocio.direccion = controllerTextEdit_direccion.text;
+    int _index = 0;
 
-    if (perfilNegocio.id != "") {
-      if (perfilNegocio.nombreNegocio != "") {
-        if (perfilNegocio.ciudad != "") {
-          if (perfilNegocio.provincia != "") {
-            if (perfilNegocio.pais != "") {
-              controller.saveAccount(perfilNegocio: perfilNegocio);
-            } else {
-              Get.snackbar('','Debe proporcionar un pais de origen');
-            }
-          } else {
-            Get.snackbar('','Debe proporcionar una provincia');
-          }
-        } else {
-          Get.snackbar('','Debe proporcionar una ciudad');
-        }
-      } else {
-        Get.snackbar('','Debe proporcionar un nombre');
-      }
-    } else {
-      Get.snackbar('','El ID del usuario de proveedor es NULO');
-    }
+    showModalBottomSheet<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        height: 200.0,
+        color: Colors.white,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            CupertinoButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            Expanded(
+              child: CupertinoPicker(
+                  scrollController: new FixedExtentScrollController(
+                    initialItem: 0,
+                  ),
+                  itemExtent: 32.0,
+                  backgroundColor: Colors.white,
+                  onSelectedItemChanged: (int index) {
+                    _index = index;
+                  },
+                  children: new List<Widget>.generate(controller.getCities.length,
+                      (int index) {
+                    return new Center(
+                      child: new Text(controller.getCities[index]),
+                    );
+                  })),
+            ),
+            CupertinoButton(
+              child: Text("Ok"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+    ).whenComplete(() {
+      controller.getControllerTextEditProvincia.text = controller.getCities[_index];
+    });
   }
 }
