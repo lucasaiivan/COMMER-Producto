@@ -354,6 +354,7 @@ class CatalogueScreenView extends StatelessWidget {
                 ),
           title: Text('Editar perfil'),
           onTap: () {
+            Navigator.pop(buildContext);
             Get.toNamed(Routes.ACCOUNT);
           },
         ),

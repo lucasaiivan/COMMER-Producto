@@ -16,7 +16,6 @@ class AccountView extends GetView<AccountController> {
   // VAriables
   late final BuildContext context;
 
-
   final FocusNode focusTextEdiNombre = FocusNode();
   final FocusNode focusTextEditDescripcion = FocusNode();
   final FocusNode focusTextEditCategoriaNombre = FocusNode();
@@ -33,8 +32,6 @@ class AccountView extends GetView<AccountController> {
   }
 
   Widget scaffold({required BuildContext buildContext}) {
-    
-
     return GetBuilder<AccountController>(
         id: 'load',
         builder: (_) {
@@ -217,12 +214,7 @@ class AccountView extends GetView<AccountController> {
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
-                onTap: () => _buildBottomPicker(
-                    listItems: [
-                      "\$",
-                    ],
-                    textEditingController: TextEditingController(
-                        text: controller.getProfileAccount.signoMoneda)),
+                onTap: () => _bottomPickerSelectCurreny(list: ["\$"]),
                 child: TextField(
                   minLines: 1,
                   maxLines: 5,
@@ -276,7 +268,8 @@ class AccountView extends GetView<AccountController> {
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
-                onTap: () => _buildBottomPickerCities(),
+                onTap: () =>
+                    _bottomPickerSelectCities(list: controller.getCities),
                 child: TextField(
                     minLines: 1,
                     maxLines: 5,
@@ -293,10 +286,8 @@ class AccountView extends GetView<AccountController> {
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
-                onTap: () => _buildBottomPicker(
-                    listItems:controller.getCountries,
-                    textEditingController: TextEditingController(
-                        text: controller.getProfileAccount.pais)),
+                onTap: () =>
+                    _bottomPickerSelectCountries(list: controller.getCountries),
                 child: TextField(
                   minLines: 1,
                   maxLines: 5,
@@ -318,104 +309,136 @@ class AccountView extends GetView<AccountController> {
         ));
   }
 
-  void _buildBottomPickerCities() {
-
+  void _bottomPickerSelectCities({required List list}) async {
+    //  el usuario va a seleccionar una opción
     int _index = 0;
-
+    //  Muestra una hoja inferior de diseño de material modal
     showModalBottomSheet<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return Container(
-        height: 200.0,
-        color: Colors.white,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            CupertinoButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            Expanded(
-              child: CupertinoPicker(
-                  scrollController: new FixedExtentScrollController(
-                    initialItem: 0,
-                  ),
-                  itemExtent: 32.0,
-                  backgroundColor: Colors.white,
-                  onSelectedItemChanged: (int index) {
-                    _index = index;
-                  },
-                  children: new List<Widget>.generate(controller.getCities.length,
-                      (int index) {
-                    return new Center(
-                      child: new Text(controller.getCities[index]),
-                    );
-                  })),
-            ),
-            CupertinoButton(
-              child: Text("Ok"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      );
-    },
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200.0,
+          color: Colors.white,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              CupertinoButton(
+                  child: Text("Cancel"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              Expanded(
+                child: CupertinoPicker(
+                    scrollController:
+                        new FixedExtentScrollController(initialItem: 0),
+                    itemExtent: 32.0,
+                    backgroundColor: Colors.white,
+                    onSelectedItemChanged: (int index) => _index = index,
+                    children: List<Widget>.generate(list.length,
+                        (int index) => Center(child: Text(list[index])))),
+              ),
+              CupertinoButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  controller.getControllerTextEditProvincia.text = list[_index];
+                  controller.getProfileAccount.signoMoneda = list[_index];
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     ).whenComplete(() {
-      controller.getControllerTextEditProvincia.text = controller.getCities[_index];
+      controller.getControllerTextEditProvincia.text = list[_index];
+      controller.getProfileAccount.signoMoneda = list[_index];
     });
   }
-  void _buildBottomPickerContruis() {
 
+  void _bottomPickerSelectCountries({required List list}) async {
+    //  el usuario va a seleccionar una opción
     int _index = 0;
-
+    //  Muestra una hoja inferior de diseño de material modal
     showModalBottomSheet<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return Container(
-        height: 200.0,
-        color: Colors.white,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            CupertinoButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            Expanded(
-              child: CupertinoPicker(
-                  scrollController: new FixedExtentScrollController(
-                    initialItem: 0,
-                  ),
-                  itemExtent: 32.0,
-                  backgroundColor: Colors.white,
-                  onSelectedItemChanged: (int index) {
-                    _index = index;
-                  },
-                  children: new List<Widget>.generate(controller.getCities.length,
-                      (int index) {
-                    return new Center(
-                      child: new Text(controller.getCities[index]),
-                    );
-                  })),
-            ),
-            CupertinoButton(
-              child: Text("Ok"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      );
-    },
-    ).whenComplete(() {
-      controller.getControllerTextEditProvincia.text = controller.getCities[_index];
-    });
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200.0,
+          color: Colors.white,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              CupertinoButton(
+                  child: Text("Cancel"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              Expanded(
+                child: CupertinoPicker(
+                    scrollController:
+                        new FixedExtentScrollController(initialItem: 0),
+                    itemExtent: 32.0,
+                    backgroundColor: Colors.white,
+                    onSelectedItemChanged: (int index) => _index = index,
+                    children: List<Widget>.generate(list.length,
+                        (int index) => Center(child: Text(list[index])))),
+              ),
+              CupertinoButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  controller.getControllerTextEditPais.text = list[_index];
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    ).whenComplete(
+        () => controller.getControllerTextEditPais.text = list[_index]);
+  }
+
+  void _bottomPickerSelectCurreny({required List list}) async {
+    //  el usuario va a seleccionar una opción
+    int _index = 0;
+    //  Muestra una hoja inferior de diseño de material modal
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200.0,
+          color: Colors.white,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              CupertinoButton(
+                  child: Text("Cancel"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              Expanded(
+                child: CupertinoPicker(
+                    scrollController:
+                        new FixedExtentScrollController(initialItem: 0),
+                    itemExtent: 32.0,
+                    backgroundColor: Colors.white,
+                    onSelectedItemChanged: (int index) => _index = index,
+                    children: List<Widget>.generate(list.length,
+                        (int index) => Center(child: Text(list[index])))),
+              ),
+              CupertinoButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  controller.getControllerTextEditSignoMoneda.text =
+                      list[_index];
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    ).whenComplete(
+        () => controller.getControllerTextEditSignoMoneda.text = list[_index]);
   }
 }

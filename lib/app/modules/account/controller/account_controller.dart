@@ -14,17 +14,26 @@ class AccountController extends GetxController {
 
   void refresh() => update(['load']);
 
-  late final Rx<TextEditingController> _controllerTextEditProvincia=TextEditingController().obs;
-  TextEditingController get getControllerTextEditProvincia => _controllerTextEditProvincia.value;
-  set setControllerTextEditProvincia(TextEditingController value) => _controllerTextEditProvincia.value = value;
+  late final Rx<TextEditingController> _controllerTextEditProvincia =
+      TextEditingController().obs;
+  TextEditingController get getControllerTextEditProvincia =>
+      _controllerTextEditProvincia.value;
+  set setControllerTextEditProvincia(TextEditingController value) =>
+      _controllerTextEditProvincia.value = value;
 
-  late final Rx<TextEditingController> controllerTextEditPais=TextEditingController().obs;
-  TextEditingController get getControllerTextEditPais => controllerTextEditPais.value;
-  set setControllerTextEditPais(TextEditingController value) => controllerTextEditPais.value = value;
+  late final Rx<TextEditingController> controllerTextEditPais =
+      TextEditingController().obs;
+  TextEditingController get getControllerTextEditPais =>
+      controllerTextEditPais.value;
+  set setControllerTextEditPais(TextEditingController value) =>
+      controllerTextEditPais.value = value;
 
-  late final Rx<TextEditingController> controllerTextEditSignoMoneda=TextEditingController().obs;
-  TextEditingController get getControllerTextEditSignoMoneda => controllerTextEditSignoMoneda.value;
-  set setControllerTextEditSignoMoneda(TextEditingController value) => controllerTextEditSignoMoneda.value = value;
+  late final Rx<TextEditingController> controllerTextEditSignoMoneda =
+      TextEditingController().obs;
+  TextEditingController get getControllerTextEditSignoMoneda =>
+      controllerTextEditSignoMoneda.value;
+  set setControllerTextEditSignoMoneda(TextEditingController value) =>
+      controllerTextEditSignoMoneda.value = value;
 
   // values
   final RxList<String> _listCities = [
@@ -61,7 +70,8 @@ class AccountController extends GetxController {
   // account profile
   Rx<ProfileBusinessModel> _profileAccount = ProfileBusinessModel().obs;
   ProfileBusinessModel get getProfileAccount => _profileAccount.value;
-  set setProfileAccount(ProfileBusinessModel user) => _profileAccount.value = user;
+  set setProfileAccount(ProfileBusinessModel user) =>
+      _profileAccount.value = user;
 
   // load save indicator
   final RxBool _savingIndicator = false.obs;
@@ -107,9 +117,12 @@ class AccountController extends GetxController {
     } */
     setProfileAccount = welcomeController.getProfileAccountSelected;
 
-    setControllerTextEditProvincia =TextEditingController(text: getProfileAccount.provincia);
-    setControllerTextEditPais = TextEditingController(text: getProfileAccount.pais);
-    setControllerTextEditSignoMoneda = TextEditingController(text: getProfileAccount.signoMoneda);
+    setControllerTextEditProvincia =
+        TextEditingController(text: getProfileAccount.provincia);
+    setControllerTextEditPais =
+        TextEditingController(text: getProfileAccount.pais);
+    setControllerTextEditSignoMoneda =
+        TextEditingController(text: getProfileAccount.signoMoneda);
 
     super.onInit();
   }
@@ -126,8 +139,11 @@ class AccountController extends GetxController {
     if (getProfileAccount.id != "") {
       if (getProfileAccount.nombreNegocio != "") {
         if (getProfileAccount.ciudad != "") {
-          if (getProfileAccount.provincia != "") {
-            if (getProfileAccount.pais != "") {
+          if (getControllerTextEditProvincia.text != "") {
+            if (getControllerTextEditPais.text != "") {
+              _profileAccount.value.provincia = getControllerTextEditProvincia.text;
+              _profileAccount.value.pais = getControllerTextEditPais.text;
+              _profileAccount.value.signoMoneda = getControllerTextEditSignoMoneda.text;
               setSavingIndicator = true;
               // si se cargo una nueva imagen procede a guardar la imagen en Storage
               if (getImageUpdate) {
@@ -240,7 +256,6 @@ class AccountController extends GetxController {
     // Esto guarda una referencia en los datos del usurio en los datos de la cuenta administrada por el mismo
     var documentReferencer = Database.refFirestoreAccount()
         .doc(welcomeController.getUserAccountAuth.uid);
-
     await documentReferencer.update(data).whenComplete(() {
       print("######################## FIREBASE saveAccount whenComplete");
     }).catchError((e) =>
