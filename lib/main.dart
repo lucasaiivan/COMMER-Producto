@@ -6,7 +6,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'app/modules/splash/bindings/splash_binding.dart';
 import 'app/routes/app_pages.dart';
-import 'app/utils/dynamicTheme_lb.dart';
 
 void main() async {
   

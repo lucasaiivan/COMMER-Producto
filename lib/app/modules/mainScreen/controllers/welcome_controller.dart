@@ -251,8 +251,7 @@ class WelcomeController extends GetxController {
   void readProfileAccountStream({required String id}) {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
-      setProfileAccountSelected =
-          ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+      setProfileAccountSelected = ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
       readCatalogueListProductsStream(id: getIdAccountSelecte);
     }).onError((error) {
@@ -348,8 +347,7 @@ class WelcomeController extends GetxController {
     // obtenemos los obj(productos) del catalogo de la cuenta del negocio
     Database.readProductsCatalogueStream(id: id).listen((value) {
       List<ProductoNegocio> list = [];
-      value.docs.forEach(
-          (element) => list.add(ProductoNegocio.fromMap(element.data())));
+      value.docs.forEach( (element) => list.add(ProductoNegocio.fromMap(element.data())));
       setCatalogueBusiness = list;
       setCatalogueFilter = list;
       getCatalogueMoreLoad();

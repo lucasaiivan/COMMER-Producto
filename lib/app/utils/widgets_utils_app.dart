@@ -159,9 +159,9 @@ class ProductoItem extends StatelessWidget {
       child: Hero(
         tag: producto.id,
         child: Card(
+          color: Color.fromARGB(255,43, 45, 57),
           elevation: 1,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () {
@@ -211,7 +211,7 @@ class WidgetImagenProducto extends StatelessWidget {
                 ),
               ),
             )
-          : Container(color: Colors.black26),
+          : Container(color: Color.fromARGB(255,43, 45, 57)),
     );
   }
 }
@@ -223,48 +223,36 @@ class WidgetContentInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(2.0),
+      padding: const EdgeInsets.all(1.0),
       child: ClipRRect(
-        borderRadius: BorderRadius.all( Radius.circular(12)),
+        borderRadius: BorderRadius.all( Radius.circular(5)),
         child: Container(
-          color: Colors.black38,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30.0,sigmaY: 30.0,tileMode: TileMode.decal),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Column(
-                      children: <Widget>[
-                        producto.descripcion != ""
-                            ? Text(producto.descripcion,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
-                                    color: Colors.white),
-                                overflow: TextOverflow.fade,
-                                softWrap: false)
-                            : Container(),
-                        producto.precioVenta != 0.0
-                            ? Text(
-                                Publicaciones.getFormatoPrecio(
-                                    monto: producto.precioVenta),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.0,
-                                    color: Colors.white),
-                                overflow: TextOverflow.fade,
-                                softWrap: false)
-                            : Container(),
-                      ],
-                    ),
-                  ),
-                ),
-                // Text(topic.description)
-              ],
-            ),
+          color: Color.fromARGB(255,43, 45, 57),
+          padding: EdgeInsets.all(5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              producto.descripcion != ""
+                  ? Text(producto.descripcion,
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 14.0,
+                          color: Colors.white),
+                      overflow: TextOverflow.fade,
+                      softWrap: false)
+                  : Container(),
+              producto.precioVenta != 0.0
+                  ? Text(
+                      Publicaciones.getFormatoPrecio(
+                          monto: producto.precioVenta),
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 14.0,
+                          color: Colors.white),
+                      overflow: TextOverflow.fade,
+                      softWrap: false)
+                  : Container(),
+            ],
           ),
         ),
       ),

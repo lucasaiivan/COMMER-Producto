@@ -141,26 +141,25 @@ class AccountController extends GetxController {
         if (getProfileAccount.ciudad != "") {
           if (getControllerTextEditProvincia.text != "") {
             if (getControllerTextEditPais.text != "") {
-              _profileAccount.value.provincia = getControllerTextEditProvincia.text;
+              // get
+              _profileAccount.value.provincia =
+                  getControllerTextEditProvincia.text;
               _profileAccount.value.pais = getControllerTextEditPais.text;
-              _profileAccount.value.signoMoneda = getControllerTextEditSignoMoneda.text;
+              _profileAccount.value.signoMoneda =
+                  getControllerTextEditSignoMoneda.text;
               setSavingIndicator = true;
               // si se cargo una nueva imagen procede a guardar la imagen en Storage
               if (getImageUpdate) {
-                UploadTask uploadTask =
-                    Database.referenceStorageAccountImageProfile(
-                            id: getProfileAccount.id)
-                        .putFile(File(getxFile.path));
+                UploadTask uploadTask =Database.referenceStorageAccountImageProfile(id: getProfileAccount.id==''?welcomeController.getUserAccountAuth.uid:getProfileAccount.id).putFile(File(getxFile.path));
                 // para obtener la URL de la imagen de firebase storage
-                getProfileAccount.imagenPerfil =
-                    await (await uploadTask).ref.getDownloadURL();
+                getProfileAccount.imagenPerfil =await (await uploadTask).ref.getDownloadURL();
               }
 
               // Cuando se crea una cuenta , se copia referencias del id de usuario de la cuenta
               if (getProfileAccount.id == '') {
+                getProfileAccount.id = welcomeController.getUserAccountAuth.uid;
                 // guarda un documento con la referencia del id de la cuenta en una lista en los datos del usuario
-                await saveIdAccountRefForUserData(
-                    data: {'id': getProfileAccount.id});
+                await saveIdAccountRefForUserData(data: {'id': getProfileAccount.id});
 
                 // TODO: (delete) por el momento vamos a probar omitir guardar los datos del usuario
                 /* // Guarda datos del usuario y la referencia del id de la cuenta
@@ -183,12 +182,11 @@ class AccountController extends GetxController {
                             tipocuenta: 0)
                         .toJson());
 
-                // crear cuenta
+                // crear una nueva cuenta
                 createAccount(data: getProfileAccount.toJson());
-                await Future.delayed(Duration(seconds: 2))
-                    .then((value) => setSavingIndicator = false);
+                await Future.delayed(Duration(seconds: 2)).then((value) => setSavingIndicator = false);
               } else {
-                // guarda los datos de la cuenta
+                // actualizar los datos
                 updateAccount(data: getProfileAccount.toJson());
                 await Future.delayed(Duration(seconds: 3)).then((value) {
                   setSavingIndicator = false;
@@ -216,7 +214,7 @@ class AccountController extends GetxController {
       {required Map<String, dynamic> data}) async {
     // Esto guarda una referencia en los datos de la cuenta
     var documentReferencer = Database.refFirestoreUserAdmin(idUser: data['id'])
-        .doc(welcomeController.getUserAccountAuth.uid);
+        .doc(getProfileAccount.id);
     await documentReferencer
         .update(data)
         .whenComplete(() => print(
@@ -241,8 +239,8 @@ class AccountController extends GetxController {
 
   Future<void> updateAccount({required Map<String, dynamic> data}) async {
     // Esto guarda una referencia en los datos del usurio en los datos de la cuenta administrada por el mismo
-    var documentReferencer = Database.refFirestoreAccount()
-        .doc(welcomeController.getUserAccountAuth.uid);
+    var documentReferencer =
+        Database.refFirestoreAccount().doc(getProfileAccount.id);
     // Actualizamos los datos de la cuenta
     documentReferencer
         .set(Map<String, dynamic>.from(data), SetOptions(merge: true))

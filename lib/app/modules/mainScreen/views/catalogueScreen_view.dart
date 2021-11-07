@@ -54,52 +54,56 @@ class CatalogueScreenView extends StatelessWidget {
           ),
         ),
         actions: <Widget>[
+          IconButton(onPressed: (){}, icon: Icon(Icons.add)),
+          IconButton(onPressed: (){
+            /* showSearch(
+                context: buildContext,
+                delegate: DataSearch(listOBJ: Global.listProudctosNegocio)); */
+          }, icon: Icon(Icons.search)),
           Obx(() => controller.getProfileAccountSelected.id == ''
               ? Container()
               : Container(
                   padding: EdgeInsets.all(12.0),
                   child: InkWell(
                     customBorder: new CircleBorder(),
-                    splashColor: Colors.red,
+                    splashColor: Colors.grey,
                     onTap: () {
                       showModalBottomSheetSetting(buildContext);
                     },
                     child: Hero(
                       tag: "fotoperfiltoolbar",
                       child: CircleAvatar(
-                        radius: 17,
-                        child: CircleAvatar(
-                          radius: 15,
-                          backgroundColor: Colors.white,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10000.0),
-                            child: CachedNetworkImage(
-                              width: 35.0,
-                              height: 35.0,
-                              fadeInDuration: Duration(milliseconds: 200),
-                              fit: BoxFit.cover,
-                              imageUrl: controller
-                                  .getProfileAccountSelected.imagenPerfil,
-                              placeholder: (context, url) => FadeInImage(
-                                  image: AssetImage("assets/loading.gif"),
-                                  placeholder:
-                                      AssetImage("assets/loading.gif")),
-                              errorWidget: (context, url, error) => Container(
-                                color: Colors.grey,
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.width,
-                                child: Center(
-                                  child: Text(
-                                    controller.getUserAccountAuth.displayName
-                                        .toString()
-                                        .substring(0, 1),
-                                    style: TextStyle(fontSize: 16.0),
-                                  ),
+                        radius: 24,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: CachedNetworkImageProvider(
+                          controller.getProfileAccountSelected.imagenPerfil,
+                        ),
+                        /* child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10000.0),
+                          child: CachedNetworkImage(
+                            width: 35.0,
+                            height: 35.0,
+                            fadeInDuration: Duration(milliseconds: 200),
+                            fit: BoxFit.cover,
+                            imageUrl: controller.getProfileAccountSelected.imagenPerfil,
+                            placeholder: (context, url) => FadeInImage(
+                                image: AssetImage("assets/loading.gif"),
+                                placeholder: AssetImage("assets/loading.gif")),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey,
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.width,
+                              child: Center(
+                                child: Text(
+                                  controller.getUserAccountAuth.displayName
+                                      .toString()
+                                      .substring(0, 1),
+                                  style: TextStyle(fontSize: 16.0),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                        ), */
                       ),
                     ),
                   ),
@@ -107,58 +111,14 @@ class CatalogueScreenView extends StatelessWidget {
         ],
       ),
       body: body(buildContext: buildContext),
-      /* new StreamBuilder(
-        stream: Global.getCatalogoNegocio(
-                idNegocio: Global.oPerfilNegocio.id ?? "")
-            .streamDataProductoAll(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            Global.listProudctosNegocio = snapshot.data;
-            buildContext.read<ProviderCatalogo>().setCatalogo =
-                snapshot.data;
-            return body(buildContext: buildContext);
-          } else {
-            return WidgetLoadingInit(appbar: false);
-          }
-        },
-      ), */
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 35.0),
-        child: Theme(
-          data: ThemeData.light(),
-          child: AnimatedFloatingActionButton(
-            colorEndAnimation: Colors.grey,
-            animatedIconData: AnimatedIcons.menu_close,
-            colorStartAnimation: Get.theme.primaryColor,
-            fabButtons: <Widget>[
-              FloatingActionButton(
-                  backgroundColor: Get.theme.primaryColor,
-                  heroTag: "Escanear codigo",
-                  child: Image(
-                      color: Colors.white,
-                      height: 30.0,
-                      width: 30.0,
-                      image: AssetImage('assets/barcode.png'),
-                      fit: BoxFit.contain),
-                  tooltip: 'Escanea el codigo del producto',
-                  onPressed: () {
-                    scanBarcodeNormal(context: buildContext);
-                  }),
-              FloatingActionButton(
-                  backgroundColor: Get.theme.primaryColor,
-                  heroTag: "Escribir codigo",
-                  child: Icon(Icons.edit, color: Colors.white),
-                  tooltip: 'Escribe el codigo del producto',
-                  onPressed: () {
-                    Navigator.of(buildContext).push(MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            Text('FloatingActionButton') //WidgetSeachProduct(),
-                        ));
-                  })
-            ],
-          ),
-        ),
-      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Get.theme.primaryColor,
+        heroTag: "Escanear codigo",
+        child: Image(color: Colors.white,height: 30.0,width: 30.0,image: AssetImage('assets/barcode.png'),fit: BoxFit.contain),
+        tooltip: 'Escanea el codigo del producto',
+        onPressed: () {
+          scanBarcodeNormal(context: buildContext);
+        }),
     );
   }
 
@@ -179,9 +139,6 @@ class CatalogueScreenView extends StatelessWidget {
                         : Container(),
                     controller.getCatalogueBusiness.length != 0
                         ? WidgetsListaHorizontalMarks()
-                        : Container(),
-                    controller.getCatalogueBusiness.length != 0
-                        ? widgetBuscadorView()
                         : Container(),
                     controller.getCatalogueBusiness.length != 0
                         ? SizedBox(height: 12.0)
@@ -216,9 +173,7 @@ class CatalogueScreenView extends StatelessWidget {
                         });
                   },
                   tabs: [
-                    Tab(
-                        text: controller.getSelectCategoryId +
-                            " (${controller.getSelectCategoryId != '' ? controller.getCatalogueFilter.length.toString() : controller.getCatalogueBusiness.length.toString()})")
+                    Tab(text: controller.getSelectCategoryId +"${controller.getSelectCategoryId != '' ? controller.getCatalogueFilter.length.toString() : 'Todos'}")
                   ],
                 ),
                 Divider(height: 0.0),
@@ -259,7 +214,7 @@ class CatalogueScreenView extends StatelessWidget {
     );
   }
 
-  Widget widgetBuscadorView() {
+  /* Widget widgetBuscadorView() {
     // variables
     Color colorCard = Get.isDarkMode
         ? Colors.white.withOpacity(0.08)
@@ -297,7 +252,7 @@ class CatalogueScreenView extends StatelessWidget {
         ),
       ),
     );
-  }
+  } */
 
   // BottomSheet - Getx
   void showModalBottomSheetSelectAccount(BuildContext buildContext) {
