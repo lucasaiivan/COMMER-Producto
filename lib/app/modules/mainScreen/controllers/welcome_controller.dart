@@ -40,7 +40,8 @@ class WelcomeController extends GetxController {
   String get getIdAccountSelecte => idAccountSelected.value;
   Rx<ProfileBusinessModel> _profileAccount = ProfileBusinessModel().obs;
   ProfileBusinessModel get getProfileAccountSelected => _profileAccount.value;
-  set setProfileAccountSelected(ProfileBusinessModel user) =>  _profileAccount.value = user;
+  set setProfileAccountSelected(ProfileBusinessModel user) =>
+      _profileAccount.value = user;
   bool getSelected({required String id}) {
     bool isSelected = false;
     for (ProfileBusinessModel obj in getManagedAccountData) {
@@ -105,6 +106,12 @@ class WelcomeController extends GetxController {
   bool get getLoadDataCatalogue => _loadDataCatalogue.value;
   set setLoadDataCatalogue(bool value) => _loadDataCatalogue.value = value;
 
+  // variable para comprobar cuando se han cargado todos las marcas para mostrar
+  RxBool _loadDataCatalogueMarks = false.obs;
+  bool get getLoadDataCatalogueMarks => _loadDataCatalogueMarks.value;
+  set setLoadDataCatalogueMarks(bool value) =>
+      _loadDataCatalogueMarks.value = value;
+
   // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa categoria
   RxString _selectCategoryId = ''.obs;
   String get getSelectCategoryId => _selectCategoryId.value;
@@ -121,10 +128,26 @@ class WelcomeController extends GetxController {
   String get getSelectMarkId => _selectMarkId.value;
   set setSelectMarkId(String value) => _selectMarkId.value = value;
 
-  //  account profile
-  Rx<Categoria> _categorySelect = Categoria().obs; // perfil del usuario
+  //  category selected
+  Rx<Categoria> _categorySelect = Categoria().obs;
   Categoria get getCategorySelect => _categorySelect.value;
   set setCategorySelect(Categoria value) => _categorySelect.value = value;
+
+  //  subCategory selected
+  Rx<Categoria> _subCategorySelect = Categoria().obs;
+  Categoria get getsubCategorySelect => _subCategorySelect.value;
+  set setsubCategorySelect(Categoria value) => _subCategorySelect.value = value;
+
+  // category list
+  RxList<Categoria> _categoryList = <Categoria>[].obs;
+  List<Categoria> get getCatalogueCategoryList => _categoryList;
+  set setCatalogueCategoryList(List<Categoria> value) => _categoryList.value = value;
+
+  // subcategory list selected
+  RxList<Categoria> _subCategoryList = <Categoria>[].obs;
+  List<Categoria> get getsubCatalogueCategoryList => _subCategoryList;
+  set setCataloguesubCategoryList(List<Categoria> value) =>
+      _subCategoryList.value = value;
 
   //  estado de la carga de obj en el grid del cátalogo
   Rx<LoadStatus> _loadGridCatalogueStatus = LoadStatus.normal.obs;
@@ -143,7 +166,10 @@ class WelcomeController extends GetxController {
       if (mark.id == markParam.id) repeated = true;
     }
     // si 'repeated' es falso procede a agregar a la lista
-    if (repeated == false) _marks.add(markParam);
+    if (repeated == false) {
+      _marks.add(markParam);
+      setLoadDataCatalogueMarks = true;
+    }
   }
 
   // accounts reference identifiers
@@ -251,9 +277,10 @@ class WelcomeController extends GetxController {
   void readProfileAccountStream({required String id}) {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
-      setProfileAccountSelected = ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+      setProfileAccountSelected =ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
       readCatalogueListProductsStream(id: getIdAccountSelecte);
+      readListCategoryListFuture();
     }).onError((error) {
       print('######################## readProfileBursinesStreaml: ' +
           error.toString());
@@ -296,8 +323,7 @@ class WelcomeController extends GetxController {
       {required String idAccountBussiness, required String idAccountUser}) {
     // obtenemos los datos dela cuenta adminitrada por este usuario
     Database.readManagedAccounts(
-            idAccount: idAccountBussiness,
-            idUser: idAccountUser)
+            idAccount: idAccountBussiness, idUser: idAccountUser)
         .then((value) {
       AdminUsuarioCuenta adminUsuarioCuenta =
           AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
@@ -333,6 +359,16 @@ class WelcomeController extends GetxController {
     });
   }
 
+  void readListCategoryListFuture() {
+    // obtenemos tres primeros obj(productos) desctacados para mostrarle al usuario
+    Database.readCategoryListFuture(idAccount: getProfileAccountSelected.id)
+        .then((value) {
+      List<Categoria> list = [];
+      value.docs.forEach((element) => list.add(Categoria.fromMap(element.data())));
+      setCatalogueCategoryList = list;
+    });
+  }
+
   void readListSuggestedProductsFuture() {
     // obtenemos tres primeros obj(productos) desctacados para mostrarle al usuario
     Database.readProductsFuture(limit: 3).then((value) {
@@ -347,7 +383,8 @@ class WelcomeController extends GetxController {
     // obtenemos los obj(productos) del catalogo de la cuenta del negocio
     Database.readProductsCatalogueStream(id: id).listen((value) {
       List<ProductoNegocio> list = [];
-      value.docs.forEach( (element) => list.add(ProductoNegocio.fromMap(element.data())));
+      value.docs.forEach(
+          (element) => list.add(ProductoNegocio.fromMap(element.data())));
       setCatalogueBusiness = list;
       setCatalogueFilter = list;
       getCatalogueMoreLoad();
@@ -366,9 +403,8 @@ class WelcomeController extends GetxController {
   // y lo guardamos en las lista para mostrar al usuario
   void _updateMarks({required List<ProductoNegocio> list}) {
     // recorremos las lista de los productos
-    // obtenemos de la db los datos de la marca
+    // obtenemos la marca de cada producto en un nueva lista
     // y finamente la agregamos con los datos cargados para mostrar al usuario
-
     for (var productoNegocio in list) {
       if (productoNegocio.idMarca != '')
         readMark(id: productoNegocio.idMarca)

@@ -13,20 +13,16 @@ class LoadingInitView extends StatelessWidget {
 
   @override
   Widget build(BuildContext buildContext) {
-    Color color = Theme.of(buildContext).brightness == Brightness.dark
-        ? Colors.white54
-        : Colors.black38;
-    Color color1 =
-        Colors.black12; //Theme.of(buildContext).canvasColor.withOpacity(0.50);
+    Color color = Get.theme.brightness == Brightness.dark?Get.theme.scaffoldBackgroundColor:Colors.white;
+    Color color1 =Colors.black12; 
     Color color2 = Colors.grey;
 
     return Scaffold(
+      backgroundColor: color,
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: Theme.of(buildContext).canvasColor,
-        iconTheme: Theme.of(buildContext)
-            .iconTheme
-            .copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
+        backgroundColor:color,
+        iconTheme: Theme.of(buildContext).iconTheme.copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
         title: InkWell(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 12.0),
@@ -96,17 +92,7 @@ class LoadingInitView extends StatelessWidget {
                         fontSize: 24.0),
                     textAlign: TextAlign.center),
               ),
-              RaisedButton(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                  color: Colors.deepPurple[200],
-                  child: Text("Buscar",
-                      style:
-                          TextStyle(fontSize: 24.0, color: Colors.deepPurple)),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      side: BorderSide(color: Colors.transparent)),
-                  onPressed: () {}),
+              OutlinedButton.icon(onPressed: () {},icon: Icon(Icons.search),label: Text("Buscar")),
             ],
           ),
         ),

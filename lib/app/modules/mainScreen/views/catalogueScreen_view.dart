@@ -1,5 +1,4 @@
-import 'package:animate_do/animate_do.dart';
-import 'package:animated_floating_buttons/animated_floating_buttons.dart';
+ import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,7 +8,10 @@ import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'widgets/showDialog.dart';
 
 class CatalogueScreenView extends StatelessWidget {
   CatalogueScreenView({Key? key}) : super(key: key);
@@ -134,15 +136,9 @@ class CatalogueScreenView extends StatelessWidget {
               return [
                 SliverList(
                   delegate: SliverChildListDelegate([
-                    controller.getCatalogueBusiness.length != 0
-                        ? SizedBox(height: 12.0)
-                        : Container(),
-                    controller.getCatalogueBusiness.length != 0
-                        ? WidgetsListaHorizontalMarks()
-                        : Container(),
-                    controller.getCatalogueBusiness.length != 0
-                        ? SizedBox(height: 12.0)
-                        : Container(),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 12,horizontal: 0),
+                    child:controller.getLoadDataCatalogueMarks? WidgetsListaHorizontalMarks(): WidgetsListaHorizontalMarksLoadAnim()),
                   ]),
                 ),
               ];
@@ -164,12 +160,7 @@ class CatalogueScreenView extends StatelessWidget {
                         backgroundColor: Theme.of(buildContext).canvasColor,
                         context: buildContext,
                         builder: (ctx) {
-                          return Text('showModalBottomSheet');
-                          /* return ClipRRect(
-                                    child: ViewCategoria(
-                                      buildContext: buildContext,
-                                    ),
-                                  ); */
+                          return ClipRRect(child: ViewCategoria(buildContext: buildContext));
                         });
                   },
                   tabs: [
@@ -611,10 +602,6 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
   // var
   final WelcomeController controller = Get.find();
   final List<Color> colorGradientInstagram = [
-    /* Color.fromRGBO(129, 52, 175, 1.0),
-    Color.fromRGBO(129, 52, 175, 1.0),
-    Color.fromRGBO(221, 42, 123, 1.0),
-    Color.fromRGBO(68, 0, 71, 1.0), */
     Get.theme.primaryColor,
     Get.theme.primaryColor,
     Get.theme.primaryColor,
@@ -678,6 +665,43 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
               ),
             );
           }),
+    );
+  }
+}
+class WidgetsListaHorizontalMarksLoadAnim extends StatelessWidget {
+  WidgetsListaHorizontalMarksLoadAnim({Key? key}) : super(key: key);
+
+  final Color color1 =Colors.black12; 
+  final Color color2 = Colors.grey;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 110.0,
+      child: Shimmer.fromColors(
+        baseColor: color1,
+        highlightColor: color2,
+        child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 7,
+            itemBuilder: (BuildContext c, int index) {
+              return Container(
+                width: 81.0,
+                height: 100.0,
+                padding: EdgeInsets.all(5.0),
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Column(
+                    children: <Widget>[
+                      CircleAvatar(backgroundColor: Colors.grey,radius: 30,),
+                      SizedBox(height: 8.0),
+                      Container(width: 30,height: 10,color: Colors.grey,),
+                    ],
+                  ),
+                ),
+              );
+            }),
+      ),
     );
   }
 }
