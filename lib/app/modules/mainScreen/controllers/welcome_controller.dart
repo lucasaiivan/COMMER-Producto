@@ -85,15 +85,61 @@ class WelcomeController extends GetxController {
 
   // catalogue
   RxList<ProductoNegocio> _catalogueBusiness = <ProductoNegocio>[].obs;
-  List<ProductoNegocio> get getCatalogueBusiness => _catalogueBusiness;
-  set setCatalogueBusiness(List<ProductoNegocio> products) =>
-      _catalogueBusiness.value = products;
+  List<ProductoNegocio> get getCataloProducts => _catalogueBusiness;
+  set setCatalogueProducts(List<ProductoNegocio> products) {
+    _catalogueBusiness.value = products;
+    catalogueFilter();
+  }
 
   // filter catalog
   RxList<ProductoNegocio> _catalogueFilter = <ProductoNegocio>[].obs;
   List<ProductoNegocio> get getCatalogueFilter => _catalogueFilter;
   set setCatalogueFilter(List<ProductoNegocio> products) =>
       _catalogueFilter.value = products;
+  void catalogueFilter() {
+    List<ProductoNegocio> list = [];
+    if (getMarkSelect.id == '' &&
+        getCategorySelect.id == '' &&
+        getsubCategorySelect.id == '') {
+      list = getCataloProducts;
+    }
+    // mark filter
+    if (getMarkSelect.id != '') {
+      getCataloProducts.forEach((element) {
+        if (getMarkSelect.id == element.idMarca) {
+          list.add(element);
+        }
+      });
+    }
+    //  category filter
+    if (getCategorySelect.id != '') {
+      getCataloProducts.forEach((element) {
+        if (getCategorySelect.id == element.categoria) {
+          list.add(element);
+        }
+      });
+    }
+    //  subcategory filter
+    if (getsubCategorySelect.id != '') {
+      getCataloProducts.forEach((element) {
+        if (getsubCategorySelect.id == element.subcategoria) {
+          list.add(element);
+        }
+      });
+    }
+    setCatalogueFilter = list;
+    setCatalogueLoad = [];
+  }
+
+  void catalogueFilterReset() {
+    // resetea los valores de los filtros para mostrar todos los productos
+    setMarkSelect = Marca(
+        timestampActualizado: Timestamp.now(),
+        timestampCreacion: Timestamp.now());
+    setCategorySelect = Categoria();
+    setsubCategorySelect = Categoria();
+    catalogueFilter();
+  }
 
   // load catalog
   List<ProductoNegocio> _catalogueLoad = <ProductoNegocio>[].obs;
@@ -112,48 +158,53 @@ class WelcomeController extends GetxController {
   set setLoadDataCatalogueMarks(bool value) =>
       _loadDataCatalogueMarks.value = value;
 
-  // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa categoria
-  RxString _selectCategoryId = ''.obs;
-  String get getSelectCategoryId => _selectCategoryId.value;
-  set setSelectCategoryId(String value) => _selectCategoryId.value = value;
-
-  // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa subcategoria
-  RxString _selectSubcategoryId = ''.obs;
-  String get getSelectSubcategoryId => _selectSubcategoryId.value;
-  set setSelectSubcategoryId(String value) =>
-      _selectSubcategoryId.value = value;
-
-  // Si esta variable es diferente de 'vacía' mostrará el catálogo solo los productos de esa categoría
-  RxString _selectMarkId = ''.obs;
-  String get getSelectMarkId => _selectMarkId.value;
-  set setSelectMarkId(String value) => _selectMarkId.value = value;
+  //  mark selected
+  Rx<Marca> _markSelect = Marca(
+          timestampActualizado: Timestamp.now(),
+          timestampCreacion: Timestamp.now())
+      .obs;
+  Marca get getMarkSelect => _markSelect.value;
+  set setMarkSelect(Marca value) {
+    _markSelect.value = value;
+    catalogueFilter();
+  }
 
   //  category selected
   Rx<Categoria> _categorySelect = Categoria().obs;
   Categoria get getCategorySelect => _categorySelect.value;
-  set setCategorySelect(Categoria value) => _categorySelect.value = value;
+  set setCategorySelect(Categoria value) {
+    _categorySelect.value = value;
+    catalogueFilter();
+  }
 
   //  subCategory selected
   Rx<Categoria> _subCategorySelect = Categoria().obs;
   Categoria get getsubCategorySelect => _subCategorySelect.value;
-  set setsubCategorySelect(Categoria value) => _subCategorySelect.value = value;
+  set setsubCategorySelect(Categoria value) {
+    _subCategorySelect.value = value;
+    catalogueFilter();
+  }
 
   // category list
   RxList<Categoria> _categoryList = <Categoria>[].obs;
   List<Categoria> get getCatalogueCategoryList => _categoryList;
-  set setCatalogueCategoryList(List<Categoria> value) => _categoryList.value = value;
+  set setCatalogueCategoryList(List<Categoria> value) {
+    _categoryList.value = value;
+  }
 
   // subcategory list selected
   RxList<Categoria> _subCategoryList = <Categoria>[].obs;
   List<Categoria> get getsubCatalogueCategoryList => _subCategoryList;
-  set setCataloguesubCategoryList(List<Categoria> value) =>
-      _subCategoryList.value = value;
+  set setCataloguesubCategoryList(List<Categoria> value) {
+    _subCategoryList.value = value;
+  }
 
   //  estado de la carga de obj en el grid del cátalogo
   Rx<LoadStatus> _loadGridCatalogueStatus = LoadStatus.normal.obs;
   LoadStatus get getLoadGridCatalogueStatus => _loadGridCatalogueStatus.value;
-  set setLoadGridCatalogueStatus(LoadStatus value) =>
-      _loadGridCatalogueStatus.value = value;
+  set setLoadGridCatalogueStatus(LoadStatus value) {
+    _loadGridCatalogueStatus.value = value;
+  }
 
   // marks
   RxList<Marca> _marks = <Marca>[].obs;
@@ -265,7 +316,7 @@ class WelcomeController extends GetxController {
   int getNumeroDeProductosDeMarca({required String id}) {
     int cantidad = 0;
 
-    for (ProductoNegocio item in getCatalogueBusiness) {
+    for (ProductoNegocio item in getCataloProducts) {
       if (item.idMarca == id) {
         cantidad++;
       }
@@ -277,7 +328,8 @@ class WelcomeController extends GetxController {
   void readProfileAccountStream({required String id}) {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
-      setProfileAccountSelected =ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+      setProfileAccountSelected =
+          ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
       readCatalogueListProductsStream(id: getIdAccountSelecte);
       readListCategoryListFuture();
@@ -364,7 +416,8 @@ class WelcomeController extends GetxController {
     Database.readCategoryListFuture(idAccount: getProfileAccountSelected.id)
         .then((value) {
       List<Categoria> list = [];
-      value.docs.forEach((element) => list.add(Categoria.fromMap(element.data())));
+      value.docs
+          .forEach((element) => list.add(Categoria.fromMap(element.data())));
       setCatalogueCategoryList = list;
     });
   }
@@ -385,7 +438,7 @@ class WelcomeController extends GetxController {
       List<ProductoNegocio> list = [];
       value.docs.forEach(
           (element) => list.add(ProductoNegocio.fromMap(element.data())));
-      setCatalogueBusiness = list;
+      setCatalogueProducts = list;
       setCatalogueFilter = list;
       getCatalogueMoreLoad();
       _updateMarks(list: list);
@@ -422,10 +475,14 @@ class WelcomeController extends GetxController {
     setLoadGridCatalogueStatus = LoadStatus.loading;
     // duración por defecto de la carga de datos
     Timer.periodic(Duration(milliseconds: 2000), (Timer timer) {
+
       timer.cancel();
+
+      // creamos una nueva variable con los datos ya mostrados al usuario
       List<ProductoNegocio> listLoad = getCatalogueLoad;
 
-      for (var i = 0; i < 15; ++i) {
+      // agregamos de a 15 elmentos
+      for (var i = 0; i < 15; ++i ) {
         // si nuestra carga es menor a una total  sigue agregando los elementos
         if (listLoad.length < getCatalogueFilter.length) {
           listLoad.add(getCatalogueFilter[listLoad.length + i]);

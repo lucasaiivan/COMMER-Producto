@@ -1,4 +1,4 @@
- import 'package:animate_do/animate_do.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -56,12 +56,14 @@ class CatalogueScreenView extends StatelessWidget {
           ),
         ),
         actions: <Widget>[
-          IconButton(onPressed: (){}, icon: Icon(Icons.add)),
-          IconButton(onPressed: (){
-            /* showSearch(
+          IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+          IconButton(
+              onPressed: () {
+                /* showSearch(
                 context: buildContext,
                 delegate: DataSearch(listOBJ: Global.listProudctosNegocio)); */
-          }, icon: Icon(Icons.search)),
+              },
+              icon: Icon(Icons.search)),
           Obx(() => controller.getProfileAccountSelected.id == ''
               ? Container()
               : Container(
@@ -114,13 +116,18 @@ class CatalogueScreenView extends StatelessWidget {
       ),
       body: body(buildContext: buildContext),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Get.theme.primaryColor,
-        heroTag: "Escanear codigo",
-        child: Image(color: Colors.white,height: 30.0,width: 30.0,image: AssetImage('assets/barcode.png'),fit: BoxFit.contain),
-        tooltip: 'Escanea el codigo del producto',
-        onPressed: () {
-          scanBarcodeNormal(context: buildContext);
-        }),
+          backgroundColor: Get.theme.primaryColor,
+          heroTag: "Escanear codigo",
+          child: Image(
+              color: Colors.white,
+              height: 30.0,
+              width: 30.0,
+              image: AssetImage('assets/barcode.png'),
+              fit: BoxFit.contain),
+          tooltip: 'Escanea el codigo del producto',
+          onPressed: () {
+            scanBarcodeNormal(context: buildContext);
+          }),
     );
   }
 
@@ -137,8 +144,11 @@ class CatalogueScreenView extends StatelessWidget {
                 SliverList(
                   delegate: SliverChildListDelegate([
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 12,horizontal: 0),
-                    child:controller.getLoadDataCatalogueMarks? WidgetsListaHorizontalMarks(): WidgetsListaHorizontalMarksLoadAnim()),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+                        child: controller.getLoadDataCatalogueMarks
+                            ? WidgetsListaHorizontalMarks()
+                            : WidgetsListaHorizontalMarksLoadAnim()),
                   ]),
                 ),
               ];
@@ -149,22 +159,14 @@ class CatalogueScreenView extends StatelessWidget {
                 TabBar(
                   indicatorColor: Theme.of(buildContext).primaryColor,
                   indicatorWeight: 5.0,
-                  labelColor:
-                      Theme.of(buildContext).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
-                  onTap: (value) {
-                    showModalBottomSheet(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        backgroundColor: Theme.of(buildContext).canvasColor,
-                        context: buildContext,
-                        builder: (ctx) {
-                          return ClipRRect(child: ViewCategoria(buildContext: buildContext));
-                        });
-                  },
+                  labelColor: Get.theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+                  onTap: (_) => ViewCategoria.show(buildContext: buildContext),
                   tabs: [
-                    Tab(text: controller.getSelectCategoryId +"${controller.getSelectCategoryId != '' ? controller.getCatalogueFilter.length.toString() : 'Todos'}")
+                    Tab(
+                        text: controller.getCategorySelect.nombre +
+                            "${controller.getCategorySelect.id != '' ? ' ('+controller.getCatalogueFilter.length.toString()+')': 'Todos'}")
                   ],
                 ),
                 Divider(height: 0.0),
@@ -190,12 +192,10 @@ class CatalogueScreenView extends StatelessWidget {
       child: CustomScrollView(
         slivers: <Widget>[
           SliverGrid(
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+            gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                return ProductoItem(
-                    producto: controller.getCatalogueLoad[index]);
+                return ProductoItem( producto: controller.getCatalogueLoad[index]);
               },
               childCount: controller.getCatalogueLoad.length,
             ),
@@ -247,15 +247,24 @@ class CatalogueScreenView extends StatelessWidget {
 
   // BottomSheet - Getx
   void showModalBottomSheetSelectAccount(BuildContext buildContext) {
-    Widget widget = controller.getManagedAccountData.length == 0?
-    WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext):ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 15.0),
-      shrinkWrap: true,
-      itemCount: controller.getManagedAccountData.length,
-      itemBuilder: (BuildContext context, int index) {
-        return WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid);
-      },
-    );
+    // muestra las cuentas en el que este usuario tiene acceso
+    Widget widget = controller.getManagedAccountData.length == 0
+        ? WidgetButtonListTile(buildContext: buildContext)
+            .buttonListTileCrearCuenta(context: buildContext)
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 15.0),
+            shrinkWrap: true,
+            itemCount: controller.getManagedAccountData.length,
+            itemBuilder: (BuildContext context, int index) {
+              return WidgetButtonListTile(buildContext: buildContext)
+                  .buttonListTileItemCuenta(
+                      buildContext: buildContext,
+                      perfilNegocio: controller.getManagedAccountData[index],
+                      adminPropietario:
+                          controller.getManagedAccountData[index].id ==
+                              controller.getUserAccountAuth.uid);
+            },
+          );
 
     // muestre la hoja inferior modal de getx
     Get.bottomSheet(
@@ -309,7 +318,7 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Icons.logout),
           title: Text('Cerrar sesión'),
-          onTap:controller.showDialogCerrarSesion,
+          onTap: controller.showDialogCerrarSesion,
         ),
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
@@ -627,11 +636,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
               padding: EdgeInsets.all(5.0),
               child: GestureDetector(
                 onTap: () {
-                  /* buildContext.read<ProviderCatalogo>()
-                              .setIdMarca = marca.id;
-                          buildContext
-                              .read<ProviderCatalogo>()
-                              .setNombreFiltro = marca.titulo; */
+                  controller.setMarkSelect = marca;
                 },
                 child: Column(
                   children: <Widget>[
@@ -652,10 +657,10 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
                     ),
                     Text(marca.titulo,
                         style: TextStyle(
-                            fontSize: controller.getSelectMarkId == marca.id
+                            fontSize: controller.getMarkSelect.id == marca.id
                                 ? 14
                                 : 12,
-                            fontWeight: controller.getSelectMarkId == marca.id
+                            fontWeight: controller.getMarkSelect.id == marca.id
                                 ? FontWeight.bold
                                 : FontWeight.normal),
                         overflow: TextOverflow.fade,
@@ -668,10 +673,11 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
     );
   }
 }
+
 class WidgetsListaHorizontalMarksLoadAnim extends StatelessWidget {
   WidgetsListaHorizontalMarksLoadAnim({Key? key}) : super(key: key);
 
-  final Color color1 =Colors.black12; 
+  final Color color1 = Colors.black12;
   final Color color2 = Colors.grey;
 
   @override
@@ -693,9 +699,16 @@ class WidgetsListaHorizontalMarksLoadAnim extends StatelessWidget {
                   onTap: () {},
                   child: Column(
                     children: <Widget>[
-                      CircleAvatar(backgroundColor: Colors.grey,radius: 30,),
+                      CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        radius: 30,
+                      ),
                       SizedBox(height: 8.0),
-                      Container(width: 30,height: 10,color: Colors.grey,),
+                      Container(
+                        width: 30,
+                        height: 10,
+                        color: Colors.grey,
+                      ),
                     ],
                   ),
                 ),

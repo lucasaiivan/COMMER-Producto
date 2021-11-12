@@ -10,6 +10,27 @@ class ViewCategoria extends StatefulWidget {
   @override
   _ViewCategoriaState createState() =>
       _ViewCategoriaState(buildContextPrincipal: buildContext);
+
+  static void show({required BuildContext buildContext}) {
+    /* showModalBottomSheet(
+        context: buildContext,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+        backgroundColor: Get.theme.canvasColor,
+        builder: (ctx) {
+          return ClipRRect(child: ViewCategoria(buildContext: buildContext));
+        });
+ */
+    Widget widget = ViewCategoria(buildContext: buildContext);
+    // muestre la hoja inferior modal de getx
+    Get.bottomSheet(
+      widget,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      enableDrag: true,
+      isDismissible: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+    );
+  }
 }
 
 class _ViewCategoriaState extends State<ViewCategoria> {
@@ -35,133 +56,112 @@ class _ViewCategoriaState extends State<ViewCategoria> {
 
   @override
   Widget build(BuildContext buildContext) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Categoria"),
-          actions: [
-            IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () {} //_showDialogSetCategoria(),
+    return Obx(
+      () => ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 15.0),
+        shrinkWrap: true,
+        itemCount: controller.getCatalogueCategoryList.length,
+        itemBuilder: (BuildContext context, int index) {
+          Categoria categoria = controller.getCatalogueCategoryList[index];
+          return index == 0
+              ? Column(
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        Expanded(
+                            child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child:
+                              Text('Categoría', style: TextStyle(fontSize: 18)),
+                        )),
+                        IconButton(
+                            icon: Icon(Icons.add),
+                            padding: const EdgeInsets.all(20.0),
+                            onPressed: () {} //_showDialogSetCategoria(),
+                            )
+                      ],
+                    ),
+                    controller.getCatalogueCategoryList.length != 0
+                        ? ListTile(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 12.0),
+                            leading: CircleAvatar(
+                              radius: 24.0,
+                              child: Icon(Icons.all_inclusive),
+                            ),
+                            dense: true,
+                            title: Text("Mostrar todos",
+                                style: TextStyle(fontSize: 16.0)),
+                            onTap: () {
+                              controller.catalogueFilterReset();
+                              Get.back();
+                              /* buildContext
+                                          .read<ProviderCatalogo>()
+                                          .setNombreFiltro = "Todos";
+                                      buildContext.read<ProviderCatalogo>()
+                                        )  .setCategoria = null;
+                                buildContext
+                                    .read<ProviderCatalogo>()
+                                    .setIdMarca = "";
+                                Navigator.pop(context,
+                                    Global.listCategoriasCatalogo[index]); */
+                            },
+                          )
+                        : Container(),
+                    Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+                    ListTile(
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.black26,
+                        radius: 24.0,
+                        child: Text(categoria.nombre.substring(0, 1),
+                            style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                      dense: true,
+                      title: Text(categoria.nombre),
+                      onTap: () {
+                        controller.setCategorySelect = categoria;
+                        Get.back();
+                      },
+                      trailing: popupMenuItemCategoria(categoria: categoria),
+                    ),
+                    Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+                  ],
                 )
-          ],
-        ),
-        body: Obx(
-          () => ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 15.0),
-            shrinkWrap: true,
-            itemCount: controller.getCatalogueCategoryList.length,
-            itemBuilder: (BuildContext context, int index) {
-              Categoria categoria = controller.getCatalogueCategoryList[index];
-              return index == 0
-                  ? Column(
-                      children: <Widget>[
-                        controller.getCatalogueCategoryList.length != 0
-                            ? ListTile(
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 12.0),
-                                leading: CircleAvatar(
-                                  radius: 24.0,
-                                  child: Icon(Icons.all_inclusive),
-                                ),
-                                dense: true,
-                                title: Text("Mostrar todos",
-                                    style: TextStyle(fontSize: 16.0)),
-                                onTap: () {
-                                  /* buildContext
-                                        .read<ProviderCatalogo>()
-                                        .setNombreFiltro = "Todos";
-                                    buildContext.read<ProviderCatalogo>()
-                                      )  .setCategoria = null;
-                              buildContext
-                                  .read<ProviderCatalogo>()
-                                  .setIdMarca = "";
-                              Navigator.pop(context,
-                                  Global.listCategoriasCatalogo[index]); */
-                                },
-                              )
-                            : Container(),
-                        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                        ListTile(
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 12.0),
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.black26,
-                            radius: 24.0,
-                            child: Text(categoria.nombre.substring(0, 1),
+              : Column(
+                  children: <Widget>[
+                    ListTile(
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.black26,
+                        radius: 24.0,
+                        child: categoria.nombre != ""
+                            ? Text(categoria.nombre.substring(0, 1),
                                 style: TextStyle(
                                     fontSize: 18.0,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                          dense: true,
-                          title: Text(categoria.nombre),
-                          onTap: () {
-                            /* buildContext.read<ProviderCatalogo>().setNombreFiltro = categoria.nombre;
-                        buildContext.read<ProviderCatalogo>().setCategoria = categoria;
-                        showModalBottomSheet(
-                            shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),
-                            backgroundColor:Theme.of(buildContext).canvasColor,
-                            context: buildContextPrincipal,
-                            builder: (ctx) {
-                              return ClipRRect(child: ViewSubCategoria(categoria: categoria,buildContextCategoria: buildContext));
-                            }
-                        ); */
-                          },
-                          trailing:
-                              popupMenuItemCategoria(categoria: categoria),
-                        ),
-                        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                      ],
-                    )
-                  : Column(
-                      children: <Widget>[
-                        ListTile(
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 12.0),
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.black26,
-                            radius: 24.0,
-                            child: categoria.nombre != ""
-                                ? Text(categoria.nombre.substring(0, 1),
-                                    style: TextStyle(
-                                        fontSize: 18.0,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold))
-                                : Text("C"),
-                          ),
-                          dense: true,
-                          title: Text(categoria.nombre),
-                          onTap: () {
-                            /* buildContext
-                            .read<ProviderCatalogo>()
-                            .setNombreFiltro = categoria.nombre;
-                        buildContext
-                            .read<ProviderCatalogo>()
-                            .setCategoria = categoria;
-                        showModalBottomSheet(
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(20.0)),
-                            backgroundColor:
-                                Theme.of(buildContext).canvasColor,
-                            context: buildContextPrincipal,
-                            builder: (ctx) {
-                              return ClipRRect(
-                                child: ViewSubCategoria(
-                                    categoria: categoria,
-                                    buildContextCategoria: buildContext),
-                              );
-                            }); */
-                          },
-                          trailing:
-                              popupMenuItemCategoria(categoria: categoria),
-                        ),
-                        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                      ],
-                    );
-            },
-          ),
-        ));
+                                    fontWeight: FontWeight.bold))
+                            : Text("C"),
+                      ),
+                      dense: true,
+                      title: Text(categoria.nombre),
+                      onTap: () {
+                        controller.setCategorySelect = categoria;
+                        Get.back();
+                      },
+                      trailing: popupMenuItemCategoria(categoria: categoria),
+                    ),
+                    Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+                  ],
+                );
+        },
+      ),
+    );
   }
 
   Widget popupMenuItemCategoria({required Categoria categoria}) {
