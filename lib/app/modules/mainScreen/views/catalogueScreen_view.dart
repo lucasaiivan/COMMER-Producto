@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -10,7 +11,6 @@ import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'widgets/showDialog.dart';
 
 class CatalogueScreenView extends StatelessWidget {
@@ -133,7 +133,7 @@ class CatalogueScreenView extends StatelessWidget {
 
   // Widgets
   Widget body({required BuildContext buildContext}) {
-    return Obx(() => DefaultTabController(
+    return DefaultTabController(
           length: 1,
           child: NestedScrollView(
             /* le permite crear una lista de elementos que se desplazarían hasta que el cuerpo alcanzara la parte superior */
@@ -141,15 +141,22 @@ class CatalogueScreenView extends StatelessWidget {
             physics: BouncingScrollPhysics(),
             headerSliverBuilder: (context, _) {
               return [
-                SliverList(
-                  delegate: SliverChildListDelegate([
-                    Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-                        child: controller.getLoadDataCatalogueMarks
-                            ? WidgetsListaHorizontalMarks()
-                            : WidgetsListaHorizontalMarksLoadAnim()),
-                  ]),
+                GetBuilder<WelcomeController>(
+                  id: 'marks',
+                  init: WelcomeController(),
+                  initState: (_) {},
+                  builder: (_) {
+                    return SliverList(
+                      delegate: SliverChildListDelegate([
+                        Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 0),
+                            child: controller.getLoadDataCatalogueMarks
+                                ? WidgetsListaHorizontalMarks()
+                                : WidgetsListaHorizontalMarksLoadAnim()),
+                      ]),
+                    );
+                  },
                 ),
               ];
             },
@@ -166,7 +173,7 @@ class CatalogueScreenView extends StatelessWidget {
                   tabs: [
                     Tab(
                         text: controller.getCategorySelect.nombre +
-                            "${controller.getCategorySelect.id != '' ? ' ('+controller.getCatalogueFilter.length.toString()+')': 'Todos'}")
+                            "${controller.getCategorySelect.id != '' ? ' (' + controller.getCatalogueFilter.length.toString() + ')' : 'Todos'}")
                   ],
                 ),
                 Divider(height: 0.0),
@@ -180,28 +187,37 @@ class CatalogueScreenView extends StatelessWidget {
               ],
             ),
           ),
-        ));
+        );
   }
 
   Widget gridViewLoadAny() {
-    return LoadAny(
-      onLoadMore: controller.getCatalogueMoreLoad,
-      status: controller.getLoadGridCatalogueStatus,
-      loadingMsg: 'Cargando...',
-      errorMsg: 'errorMsg',
-      child: CustomScrollView(
-        slivers: <Widget>[
-          SliverGrid(
-            gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return ProductoItem( producto: controller.getCatalogueLoad[index]);
-              },
-              childCount: controller.getCatalogueLoad.length,
-            ),
-          )
-        ],
-      ),
+    return GetBuilder<WelcomeController>(
+      id: 'catalogue',
+      builder: (controller) {
+        return LoadAny(
+          onLoadMore: controller.getCatalogueMoreLoad,
+          status: controller.getLoadGridCatalogueStatus,
+          loadingMsg: 'Cargando...',
+          errorMsg: 'errorMsg',
+          finishMsg:
+              controller.getCatalogueLoad.length.toString() + ' productos',
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return ProductoItem(
+                        producto: controller.getCatalogueLoad[index]);
+                  },
+                  childCount: controller.getCatalogueLoad.length,
+                ),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 

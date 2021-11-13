@@ -33,7 +33,7 @@ class WelcomeController extends GetxController {
     if (value != '') {
       readProfileAccountStream(id: value);
     }
-    // actualizamos la vista completa
+    // actualizamos la vista
     update(['accountUpdate']);
   }
 
@@ -97,7 +97,10 @@ class WelcomeController extends GetxController {
   set setCatalogueFilter(List<ProductoNegocio> products) =>
       _catalogueFilter.value = products;
   void catalogueFilter() {
+
     List<ProductoNegocio> list = [];
+
+
     if (getMarkSelect.id == '' &&
         getCategorySelect.id == '' &&
         getsubCategorySelect.id == '') {
@@ -128,7 +131,19 @@ class WelcomeController extends GetxController {
       });
     }
     setCatalogueFilter = list;
+
+    
+    // estado de nuestro widget 'LoadAny'
+    setLoadGridCatalogueStatus = LoadStatus.normal;
     setCatalogueLoad = [];
+    for (var i = 0; i < 15; ++i) {
+        if( getCatalogueLoad.length < getCatalogueFilter.length ){
+          getCatalogueLoad.add(getCatalogueFilter[i]);
+        }
+    }
+    
+    // actualizamos la vista del cátalogo
+    update(['catalogue']);
   }
 
   void catalogueFilterReset() {
@@ -221,6 +236,9 @@ class WelcomeController extends GetxController {
       _marks.add(markParam);
       setLoadDataCatalogueMarks = true;
     }
+
+    // actualizamos la vista
+    update(['marks']);
   }
 
   // accounts reference identifiers
@@ -473,19 +491,20 @@ class WelcomeController extends GetxController {
   Future<void> getCatalogueMoreLoad() async {
     // estado de nuestro widget 'LoadAny'
     setLoadGridCatalogueStatus = LoadStatus.loading;
+    update(['catalogue']);
     // duración por defecto de la carga de datos
     Timer.periodic(Duration(milliseconds: 2000), (Timer timer) {
 
       timer.cancel();
 
-      // creamos una nueva variable con los datos ya mostrados al usuario
+       // creamos una nueva variable con los datos ya mostrados al usuario
       List<ProductoNegocio> listLoad = getCatalogueLoad;
 
       // agregamos de a 15 elmentos
-      for (var i = 0; i < 15; ++i ) {
+      for (var i = 0; i < 15; ++i) {
         // si nuestra carga es menor a una total  sigue agregando los elementos
         if (listLoad.length < getCatalogueFilter.length) {
-          listLoad.add(getCatalogueFilter[listLoad.length + i]);
+          listLoad.add(getCatalogueFilter[listLoad.length ]);
         }
       }
 
@@ -493,9 +512,10 @@ class WelcomeController extends GetxController {
       setCatalogueLoad = listLoad;
 
       // tambien actualizamos el estado de nuestro widget 'LoadAny' para mostrar más elementos
-      setLoadGridCatalogueStatus = listLoad.length >= getCatalogueFilter.length
-          ? LoadStatus.completed
-          : LoadStatus.normal;
+      setLoadGridCatalogueStatus = listLoad.length < getCatalogueFilter.length
+          ? LoadStatus.normal
+          : LoadStatus.completed;
+      update(['catalogue']);
     });
   }
 
