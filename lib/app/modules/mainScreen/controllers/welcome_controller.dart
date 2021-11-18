@@ -16,6 +16,14 @@ import '../../splash/controllers/splash_controller.dart';
 class WelcomeController extends GetxController {
   SplashController homeController = Get.find<SplashController>();
 
+  // text tab
+  String _textTab = 'Todos';
+  String get getTextTab => _textTab;
+  set setTextTab(String text) {
+    _textTab = text;
+    update(['tab']);
+  }
+
   //  authentication account profile
   late User _userAccountAuth;
   User get getUserAccountAuth => _userAccountAuth;
@@ -97,10 +105,8 @@ class WelcomeController extends GetxController {
   set setCatalogueFilter(List<ProductoNegocio> products) =>
       _catalogueFilter.value = products;
   void catalogueFilter() {
-
     List<ProductoNegocio> list = [];
-
-
+    // si los filtros son nulos muestra todos los elemtos del cátalogo
     if (getMarkSelect.id == '' &&
         getCategorySelect.id == '' &&
         getsubCategorySelect.id == '') {
@@ -113,36 +119,41 @@ class WelcomeController extends GetxController {
           list.add(element);
         }
       });
+    } else {
+      //  category filter
+      if (getCategorySelect.id != '') {
+        getCataloProducts.forEach((element) {
+          if (getCategorySelect.id == element.categoria) {
+            list.add(element);
+          }
+        });
+      }
+      //  subcategory filter
+      if (getsubCategorySelect.id != '') {
+        getCataloProducts.forEach((element) {
+          if (getsubCategorySelect.id == element.subcategoria) {
+            list.add(element);
+          }
+        });
+      }
     }
-    //  category filter
-    if (getCategorySelect.id != '') {
-      getCataloProducts.forEach((element) {
-        if (getCategorySelect.id == element.categoria) {
-          list.add(element);
-        }
-      });
-    }
-    //  subcategory filter
-    if (getsubCategorySelect.id != '') {
-      getCataloProducts.forEach((element) {
-        if (getsubCategorySelect.id == element.subcategoria) {
-          list.add(element);
-        }
-      });
-    }
+    // set
     setCatalogueFilter = list;
-
-    
-    // estado de nuestro widget 'LoadAny'
+    // actualiza el estado del widget 'LoadAny'
     setLoadGridCatalogueStatus = LoadStatus.normal;
     setCatalogueLoad = [];
+    //  agrega los primeros 15 elementos
     for (var i = 0; i < 15; ++i) {
-        if( getCatalogueLoad.length < getCatalogueFilter.length ){
-          getCatalogueLoad.add(getCatalogueFilter[i]);
-        }
+      // agrega de a 15 elemntos hasta completar la lista filtrada
+      if (getCatalogueLoad.length < getCatalogueFilter.length) {
+        getCatalogueLoad.add(getCatalogueFilter[i]);
+      }
     }
-    
-    // actualizamos la vista del cátalogo
+
+    // actualizamos la vista del cátalogo y marcas
+    if (getMarkSelect.id == '') {
+      filterMarks(catalogueFilter: getCatalogueFilter);
+    }
     update(['catalogue']);
   }
 
@@ -154,6 +165,9 @@ class WelcomeController extends GetxController {
     setCategorySelect = Categoria();
     setsubCategorySelect = Categoria();
     catalogueFilter();
+    // actualiza el texto del 'TabBar'
+    setTextTab = 'Todos';
+    update(['tab']);
   }
 
   // load catalog
@@ -182,22 +196,41 @@ class WelcomeController extends GetxController {
   set setMarkSelect(Marca value) {
     _markSelect.value = value;
     catalogueFilter();
+    // actualiza el texto del 'TabBar'
+    setTextTab = _markSelect.value.titulo;
+    update(['tab']);
   }
 
   //  category selected
   Rx<Categoria> _categorySelect = Categoria().obs;
   Categoria get getCategorySelect => _categorySelect.value;
   set setCategorySelect(Categoria value) {
+    // default value
+    setMarkSelect = Marca(
+        timestampActualizado: Timestamp.now(),
+        timestampCreacion: Timestamp.now());
+    // set
     _categorySelect.value = value;
     catalogueFilter();
+    // actualiza el texto del 'TabBar'
+    setTextTab = _categorySelect.value.nombre;
+    update(['tab']);
   }
 
   //  subCategory selected
   Rx<Categoria> _subCategorySelect = Categoria().obs;
   Categoria get getsubCategorySelect => _subCategorySelect.value;
   set setsubCategorySelect(Categoria value) {
+    // default value
+    setMarkSelect = Marca(
+        timestampActualizado: Timestamp.now(),
+        timestampCreacion: Timestamp.now());
+    // set
     _subCategorySelect.value = value;
     catalogueFilter();
+    // actualiza el texto del 'TabBar'
+    setTextTab = _subCategorySelect.value.nombre;
+    update(['tab']);
   }
 
   // category list
@@ -236,10 +269,13 @@ class WelcomeController extends GetxController {
       _marks.add(markParam);
       setLoadDataCatalogueMarks = true;
     }
-
-    // actualizamos la vista
-    update(['marks']);
+    filterMarks(catalogueFilter: getCatalogueFilter);
   }
+
+  // marks filter
+  RxList<Marca> _marksFilter = <Marca>[].obs;
+  List<Marca> get getCatalogueMarksFilter => _marksFilter;
+  set setCatalogueMarksFilter(List<Marca> value) => _marksFilter.value = value;
 
   // accounts reference identifiers
   RxList<String> _accountsReferenceIdentifiers = <String>[].obs;
@@ -459,7 +495,7 @@ class WelcomeController extends GetxController {
       setCatalogueProducts = list;
       setCatalogueFilter = list;
       getCatalogueMoreLoad();
-      _updateMarks(list: list);
+      _loadMarksAll(list: list);
       setLoadDataCatalogue = true;
     }).onError((error) {
       print('######################## readCatalogueListProductsStream: ' +
@@ -472,7 +508,7 @@ class WelcomeController extends GetxController {
   // release
   // obtenemos un lista de las id de cada marca y procedemos a hacer una consulta en la db
   // y lo guardamos en las lista para mostrar al usuario
-  void _updateMarks({required List<ProductoNegocio> list}) {
+  void _loadMarksAll({required List<ProductoNegocio> list}) {
     // recorremos las lista de los productos
     // obtenemos la marca de cada producto en un nueva lista
     // y finamente la agregamos con los datos cargados para mostrar al usuario
@@ -481,6 +517,36 @@ class WelcomeController extends GetxController {
         readMark(id: productoNegocio.idMarca)
             .then((value) => addMark(markParam: value));
     }
+  }
+
+  void filterMarks({required List<ProductoNegocio> catalogueFilter}) {
+    // recorresmos las lista de elementos para mostras las marcas al usuario
+    List<String> idList = [];
+    // extraemos los ids de las marcas
+    for (var product in catalogueFilter) {
+      // asignamos un estado para saber si tenemos una id repetida
+      bool repeated = false;
+      // recorremos las lista de ids
+      for (String id in idList) {
+        if (id == product.idMarca) repeated = true;
+      }
+      // si no se repite se agrega a la lista
+      if (repeated == false) {
+        idList.add(product.idMarca);
+      }
+    }
+    // creamos una nueva lista con las marca y los datos ya cargados
+    List<Marca> markList = [];
+    for (var idMark in idList) {
+      for (var mark in getCatalogueMarks) {
+        if (mark.id == idMark) {
+          markList.add(mark);
+        }
+      }
+    }
+    // actaulizamos la vista del cátalogo para el usaurio
+    setCatalogueMarksFilter = markList;
+    update(['marks']);
   }
 
   //  Future - 'LoadAny' widget //
@@ -494,17 +560,16 @@ class WelcomeController extends GetxController {
     update(['catalogue']);
     // duración por defecto de la carga de datos
     Timer.periodic(Duration(milliseconds: 2000), (Timer timer) {
-
       timer.cancel();
 
-       // creamos una nueva variable con los datos ya mostrados al usuario
+      // creamos una nueva variable con los datos ya mostrados al usuario
       List<ProductoNegocio> listLoad = getCatalogueLoad;
 
       // agregamos de a 15 elmentos
       for (var i = 0; i < 15; ++i) {
         // si nuestra carga es menor a una total  sigue agregando los elementos
         if (listLoad.length < getCatalogueFilter.length) {
-          listLoad.add(getCatalogueFilter[listLoad.length ]);
+          listLoad.add(getCatalogueFilter[listLoad.length]);
         }
       }
 

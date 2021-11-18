@@ -263,22 +263,27 @@ class Precio {
       };
 }
 
+
 class Categoria {
-  String id = "";
-  String nombre = "";
+    String id="";
+    String nombre="";
+    Map<String, dynamic> subcategorias = Map<String, dynamic>();
 
   Categoria({
-    this.id = '',
-    this.nombre = '',
-  });
+    this.id="", 
+    this.nombre="",
+    this.subcategorias= const {},
+    });
   Map<String, dynamic> toJson() => {
         "id": id,
         "nombre": nombre,
-      };
+        "subcategorias": subcategorias,
+  };
   factory Categoria.fromMap(Map data) {
     return Categoria(
       id: data['id'] ?? '',
       nombre: data['nombre'] ?? '',
+      subcategorias: data['subcategorias'] ?? new Map<String, dynamic>(),
     );
   }
 }

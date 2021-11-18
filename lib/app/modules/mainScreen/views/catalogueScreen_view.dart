@@ -134,60 +134,62 @@ class CatalogueScreenView extends StatelessWidget {
   // Widgets
   Widget body({required BuildContext buildContext}) {
     return DefaultTabController(
-          length: 1,
-          child: NestedScrollView(
-            /* le permite crear una lista de elementos que se desplazarían hasta que el cuerpo alcanzara la parte superior */
-            floatHeaderSlivers: true,
-            physics: BouncingScrollPhysics(),
-            headerSliverBuilder: (context, _) {
-              return [
+      length: 1,
+      child: NestedScrollView(
+        /* le permite crear una lista de elementos que se desplazarían hasta que el cuerpo alcanzara la parte superior */
+        floatHeaderSlivers: true,
+        physics: BouncingScrollPhysics(),
+        headerSliverBuilder: (context, _) {
+          return [
+            GetBuilder<WelcomeController>(
+              id: 'marks',
+              init: WelcomeController(),
+              initState: (_) {},
+              builder: (_) {
+                return SliverList(
+                  delegate: SliverChildListDelegate([
+                    Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+                        child: controller.getLoadDataCatalogueMarks
+                            ? WidgetsListaHorizontalMarks()
+                            : WidgetsListaHorizontalMarksLoadAnim()),
+                  ]),
+                );
+              },
+            ),
+          ];
+        },
+        body: Column(
+          children: <Widget>[
+            Divider(height: 0.0),
+            TabBar(
+              indicatorColor: Theme.of(buildContext).primaryColor,
+              indicatorWeight: 5.0,
+              labelColor: Get.theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+              onTap: (_) => ViewCategoria.show(buildContext: buildContext),
+              tabs: [
                 GetBuilder<WelcomeController>(
-                  id: 'marks',
                   init: WelcomeController(),
-                  initState: (_) {},
-                  builder: (_) {
-                    return SliverList(
-                      delegate: SliverChildListDelegate([
-                        Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 0),
-                            child: controller.getLoadDataCatalogueMarks
-                                ? WidgetsListaHorizontalMarks()
-                                : WidgetsListaHorizontalMarksLoadAnim()),
-                      ]),
-                    );
-                  },
-                ),
-              ];
-            },
-            body: Column(
-              children: <Widget>[
-                Divider(height: 0.0),
-                TabBar(
-                  indicatorColor: Theme.of(buildContext).primaryColor,
-                  indicatorWeight: 5.0,
-                  labelColor: Get.theme.brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
-                  onTap: (_) => ViewCategoria.show(buildContext: buildContext),
-                  tabs: [
-                    Tab(
-                        text: controller.getCategorySelect.nombre +
-                            "${controller.getCategorySelect.id != '' ? ' (' + controller.getCatalogueFilter.length.toString() + ')' : 'Todos'}")
-                  ],
-                ),
-                Divider(height: 0.0),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      gridViewLoadAny(),
-                    ],
-                  ),
-                ),
+                  id: 'tab',
+                  builder: (_) => Tab( text: controller.getTextTab),
+                )
               ],
             ),
-          ),
-        );
+            Divider(height: 0.0),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  gridViewLoadAny(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget gridViewLoadAny() {
@@ -635,15 +637,15 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.getCatalogueMarks.length == 0) return Container();
+    if (controller.getCatalogueMarksFilter.length == 0) return Container();
     return SizedBox(
       height: 110.0,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: controller.getCatalogueMarks.length,
+          itemCount: controller.getCatalogueMarksFilter.length,
           itemBuilder: (BuildContext c, int index) {
             // get
-            Marca marca = controller.getCatalogueMarks[index];
+            Marca marca = controller.getCatalogueMarksFilter[index];
             if (marca.titulo == '') return Container();
 
             return Container(
