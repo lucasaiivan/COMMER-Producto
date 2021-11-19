@@ -213,8 +213,15 @@ class WelcomeController extends GetxController {
     setTextTab = _categorySelect.value.nombre;
     update(['tab']);
   }
-  Future<void> categoryDelete({required String idCategory}) async => await Database.docRefCategory(idAccount:getProfileAccountSelected.id, idCategory: idCategory).delete();
-  Future<void> categoryEdit({required Categoria categoria}) =>  Database.docRefCategory(idAccount:getProfileAccountSelected.id, idCategory: categoria.id).set(categoria.toJson(), SetOptions(merge: true));
+  Future<void> categoryDelete({required String idCategory}) async => await Database.refFirestoreCategory(idAccount:getProfileAccountSelected.id).doc(idCategory).delete();
+  Future<void> categoryEdit({required Categoria categoria}) async{
+    // ref
+    var documentReferencer = Database.refFirestoreCategory(idAccount:getProfileAccountSelected.id).doc(categoria.id);
+    // Actualizamos los datos
+    documentReferencer.set(Map<String, dynamic>.from({'nombre':categoria.nombre}), SetOptions(merge: true))
+        .whenComplete(() {print("######################## FIREBASE updateAccount whenComplete");
+    }).catchError((e) => print("######################## FIREBASE updateAccount catchError: $e"));
+  }
   //  subCategory selected
   Rx<Categoria> _subCategorySelect = Categoria().obs;
   Categoria get getsubCategorySelect => _subCategorySelect.value;

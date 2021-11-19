@@ -239,8 +239,7 @@ class AccountController extends GetxController {
 
   Future<void> updateAccount({required Map<String, dynamic> data}) async {
     // Esto guarda una referencia en los datos del usurio en los datos de la cuenta administrada por el mismo
-    var documentReferencer =
-        Database.refFirestoreAccount().doc(getProfileAccount.id);
+    var documentReferencer = Database.refFirestoreAccount().doc(getProfileAccount.id);
     // Actualizamos los datos de la cuenta
     documentReferencer
         .set(Map<String, dynamic>.from(data), SetOptions(merge: true))

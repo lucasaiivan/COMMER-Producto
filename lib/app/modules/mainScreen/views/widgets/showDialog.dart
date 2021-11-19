@@ -203,7 +203,8 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   _showDialogSetCategoria({required Categoria categoria}) async {
     bool loadSave = false;
     bool newProduct = false;
-    TextEditingController textEditingController =  TextEditingController(text: categoria.nombre);
+    TextEditingController textEditingController =
+        TextEditingController(text: categoria.nombre);
 
     await showDialog<String>(
       context: context,
@@ -232,9 +233,14 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                 child: loadSave == false
                     ? Text(newProduct ? 'GUARDAR' : "ACTUALIZAR")
                     : CircularProgressIndicator(),
-                onPressed: () async{
-                   await controller.categoryEdit(categoria: categoria);
-                   Get.back();
+                onPressed: () async {
+                  // set
+                  categoria.nombre = textEditingController.text;
+                  // save
+                  await controller
+                      .categoryEdit(categoria: categoria)
+                      .whenComplete(() => Get.back())
+                      .catchError((error, stackTrace) =>print('################# FIRESTORE ERROR : $error'));
                 })
           ],
         );

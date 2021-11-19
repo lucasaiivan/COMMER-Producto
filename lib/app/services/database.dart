@@ -4,10 +4,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 // operations of CRUD Firestore
 
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _mainCollection = _firestore.collection('USUARIOS');
 late final String userUid;
 
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 class Database {
 
   Database({required String id}) {
@@ -65,8 +65,7 @@ class Database {
   static CollectionReference  refFirestoreAccountAdmin({required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/ADMINISTRADOR_NEGOCIOS/');
   static CollectionReference  refFirestoreUserAdmin({required String idUser}) => FirebaseFirestore.instance.collection('/USUARIOS/$idUser/ADMINISTRADOR_NEGOCIOS/');
   static CollectionReference  refFirestoreAccount() => FirebaseFirestore.instance.collection('/NEGOCIOS/'); 
-  // Firestore - DocumentReference
-  static DocumentReference docRefCategory({ required String idAccount,required String idCategory}) => _firestore.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA/').doc(idCategory);
+  static CollectionReference  refFirestoreCategory({ required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA/');
 
 
   //  update value
