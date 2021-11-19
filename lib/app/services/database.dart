@@ -9,7 +9,6 @@ final CollectionReference _mainCollection = _firestore.collection('USUARIOS');
 late final String userUid;
 
 class Database {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Database({required String id}) {
     this.setUserUid = id;
@@ -47,24 +46,27 @@ class Database {
   // future - DocumentSnapshot
   static Future<DocumentSnapshot<Map<String, dynamic>>> readUserModelFuture( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readProfileBusinessModelFuture( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).get();
-  static Future<DocumentSnapshot<Map<String, dynamic>>> readProductCatalogueFuture( { required String idBusiness,required String idProduct}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idBusiness/EXTENSION_CATALOGO/').doc(idProduct).get();
-  static Future<DocumentSnapshot<Map<String, dynamic>>> readCategotyCatalogueFuture( { required String idBusiness,required String idCategory}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idBusiness/EXTENSION_CATALOGO_CATEGORIA/').doc(idCategory).get();
-  static Future<DocumentSnapshot<Map<String, dynamic>>> readSubcategotyCatalogueFuture( { required String idBusiness,required String idCategory,required String idSubcategory}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idBusiness/EXTENSION_CATALOGO_CATEGORIA/$idCategory/SUBCATEGORIA/').doc(idSubcategory).get();
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readProductCatalogueFuture( { required String idAccount,required String idProduct}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idAccount/EXTENSION_CATALOGO/').doc(idProduct).get();
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readCategotyCatalogueFuture( { required String idAccount,required String idCategory}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA/').doc(idCategory).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readMarkFuture( { required String id}) => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS/').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readManagedAccounts( { required String idAccount,required String idUser}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/ADMINISTRADOR_NEGOCIOS/').doc(idUser).get();
+  
   // stream - DocumentSnapshot
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readUserModelStream( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).snapshots();
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readProfileBusinessModelStream( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).snapshots();
   // stream - QuerySnapshot
   static Stream<QuerySnapshot<Map<String, dynamic>>> readProductsCatalogueStream( { required String id}) => FirebaseFirestore.instance.collection('NEGOCIOS/$id/EXTENSION_CATALOGO').orderBy("timestamp_creation",descending: true).snapshots();
   static Stream<QuerySnapshot<Map<String, dynamic>>> readManagedAccountsQueryStream( { required String id}) => FirebaseFirestore.instance.collection('/USUARIOS/$id/ADMINISTRADOR_NEGOCIOS').snapshots();
-  
+  static Stream<QuerySnapshot<Map<String, dynamic>>> readCategoriesQueryStream( {required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA').snapshots();
   // STORAGE reference
   static Reference referenceStorageAccountImageProfile({required String id}) => FirebaseStorage.instance.ref().child("NEGOCIOS").child(id).child("PERFIL").child("imagen_perfil");
-  // Firestore reference
+  
+  // Firestore - CollectionReference
   static CollectionReference  refFirestoreAccountAdmin({required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/ADMINISTRADOR_NEGOCIOS/');
   static CollectionReference  refFirestoreUserAdmin({required String idUser}) => FirebaseFirestore.instance.collection('/USUARIOS/$idUser/ADMINISTRADOR_NEGOCIOS/');
   static CollectionReference  refFirestoreAccount() => FirebaseFirestore.instance.collection('/NEGOCIOS/'); 
+  // Firestore - DocumentReference
+  static DocumentReference docRefCategory({ required String idAccount,required String idCategory}) => _firestore.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA/').doc(idCategory);
 
 
   //  update value

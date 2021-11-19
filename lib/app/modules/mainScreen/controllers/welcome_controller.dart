@@ -112,7 +112,7 @@ class WelcomeController extends GetxController {
         getsubCategorySelect.id == '') {
       list = getCataloProducts;
     }
-    // mark filter
+    //filter
     if (getMarkSelect.id != '') {
       getCataloProducts.forEach((element) {
         if (getMarkSelect.id == element.idMarca) {
@@ -120,18 +120,15 @@ class WelcomeController extends GetxController {
         }
       });
     } else {
-      //  category filter
-      if (getCategorySelect.id != '') {
-        getCataloProducts.forEach((element) {
-          if (getCategorySelect.id == element.categoria) {
-            list.add(element);
-          }
-        });
-      }
-      //  subcategory filter
       if (getsubCategorySelect.id != '') {
         getCataloProducts.forEach((element) {
           if (getsubCategorySelect.id == element.subcategoria) {
+            list.add(element);
+          }
+        });
+      } else if (getCategorySelect.id != '') {
+        getCataloProducts.forEach((element) {
+          if (getCategorySelect.id == element.categoria) {
             list.add(element);
           }
         });
@@ -150,7 +147,7 @@ class WelcomeController extends GetxController {
       }
     }
 
-    // actualizamos la vista del cátalogo y marcas
+    // update views
     if (getMarkSelect.id == '') {
       filterMarks(catalogueFilter: getCatalogueFilter);
     }
@@ -216,7 +213,8 @@ class WelcomeController extends GetxController {
     setTextTab = _categorySelect.value.nombre;
     update(['tab']);
   }
-
+  Future<void> categoryDelete({required String idCategory}) async => await Database.docRefCategory(idAccount:getProfileAccountSelected.id, idCategory: idCategory).delete();
+  Future<void> categoryEdit({required Categoria categoria}) =>  Database.docRefCategory(idAccount:getProfileAccountSelected.id, idCategory: categoria.id).set(categoria.toJson(), SetOptions(merge: true));
   //  subCategory selected
   Rx<Categoria> _subCategorySelect = Categoria().obs;
   Categoria get getsubCategorySelect => _subCategorySelect.value;
@@ -382,8 +380,7 @@ class WelcomeController extends GetxController {
   void readProfileAccountStream({required String id}) {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
-      setProfileAccountSelected =
-          ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+      setProfileAccountSelected =  ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
       readCatalogueListProductsStream(id: getIdAccountSelecte);
       readListCategoryListFuture();
@@ -466,12 +463,10 @@ class WelcomeController extends GetxController {
   }
 
   void readListCategoryListFuture() {
-    // obtenemos tres primeros obj(productos) desctacados para mostrarle al usuario
-    Database.readCategoryListFuture(idAccount: getProfileAccountSelected.id)
-        .then((value) {
+    // obtenemos la categorias creadas por el usuario
+    Database.readCategoriesQueryStream(idAccount: getProfileAccountSelected.id).listen((event) {
       List<Categoria> list = [];
-      value.docs
-          .forEach((element) => list.add(Categoria.fromMap(element.data())));
+      event.docs.forEach((element) => list.add(Categoria.fromMap(element.data())));
       setCatalogueCategoryList = list;
     });
   }
