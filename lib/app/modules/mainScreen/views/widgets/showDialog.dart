@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
-import 'package:producto/app/services/database.dart';
 
 class ViewCategoria extends StatefulWidget {
   final BuildContext buildContext;
@@ -69,8 +68,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                         IconButton(
                             icon: Icon(Icons.add),
                             padding: const EdgeInsets.all(20.0),
-                            onPressed: () {} //_showDialogSetCategoria(),
-                            )
+                            onPressed: () => showDialogSetCategoria(categoria: Categoria()))
                       ],
                     ),
                     controller.getCatalogueCategoryList.length != 0
@@ -151,6 +149,9 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   }
 
   Widget popupMenuItemCategoria({required Categoria categoria}) {
+
+    final WelcomeController controller = Get.find();
+
     return new PopupMenuButton(
       icon: Icon(Icons.more_vert),
       itemBuilder: (_) => <PopupMenuItem<String>>[
@@ -161,7 +162,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
       onSelected: (value) async {
         switch (value) {
           case "editar":
-            _showDialogSetCategoria(categoria: categoria);
+            showDialogSetCategoria(categoria: categoria);
             break;
           case "eliminar":
             await showDialog<String>(
@@ -200,11 +201,19 @@ class _ViewCategoriaState extends State<ViewCategoria> {
     );
   }
 
-  _showDialogSetCategoria({required Categoria categoria}) async {
+  showDialogSetCategoria({required Categoria categoria}) async {
+
+    final WelcomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
     TextEditingController textEditingController =
         TextEditingController(text: categoria.nombre);
+
+    if (categoria.id == '') {
+      newProduct = true;
+      categoria = new Categoria();
+      categoria.id = new DateTime.now().millisecondsSinceEpoch.toString();
+    }
 
     await showDialog<String>(
       context: context,
@@ -234,20 +243,23 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                     ? Text(newProduct ? 'GUARDAR' : "ACTUALIZAR")
                     : CircularProgressIndicator(),
                 onPressed: () async {
-                  // set
-                  categoria.nombre = textEditingController.text;
-                  // save
-                  await controller
-                      .categoryEdit(categoria: categoria)
-                      .whenComplete(() => Get.back())
-                      .catchError((error, stackTrace) =>print('################# FIRESTORE ERROR : $error'));
+                  if(textEditingController.text!=''){
+                    // set
+                    categoria.nombre = textEditingController.text;
+                    setState(() => loadSave = true);
+                    // save
+                    await controller.categoryUpdate(categoria: categoria).whenComplete(() => Get.back()).catchError((error, stackTrace) =>setState(() => loadSave = false));
+                  }
                 })
           ],
         );
       },
     );
   }
+  
 }
+
+
 
 class ViewSubCategoria extends StatefulWidget {
   final BuildContext buildContext;
@@ -324,7 +336,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                       IconButton(
                           icon: Icon(Icons.add),
                           padding: const EdgeInsets.all(20.0),
-                          onPressed: () {} //_showDialogSetCategoria(),
+                          onPressed: ()=>showDialogSetSubcategoria(subcategoria: Categoria())
                           )
                     ],
                   ),
@@ -364,7 +376,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                       controller.setsubCategorySelect = subcategoria;
                       Get.back();
                     },
-                    trailing: popupMenuItemCategoria(categoria: subcategoria),
+                    trailing: popupMenuItemSubcategoria(subcategoria: subcategoria),
                   ),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                 ],
@@ -391,7 +403,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                       controller.setsubCategorySelect = subcategoria;
                       Get.back();
                     },
-                    trailing: popupMenuItemCategoria(categoria: subcategoria),
+                    trailing: popupMenuItemSubcategoria(subcategoria: subcategoria),
                   ),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                 ],
@@ -400,7 +412,10 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
     );
   }
 
-  Widget popupMenuItemCategoria({required Categoria categoria}) {
+  Widget popupMenuItemSubcategoria({required Categoria subcategoria}) {
+
+    final WelcomeController controller = Get.find();
+
     return new PopupMenuButton(
       icon: Icon(Icons.more_vert),
       itemBuilder: (_) => <PopupMenuItem<String>>[
@@ -411,7 +426,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
       onSelected: (value) async {
         switch (value) {
           case "editar":
-            _showDialogSetCategoria(categoria: categoria);
+            showDialogSetSubcategoria(subcategoria: subcategoria);
             break;
           case "eliminar":
             await showDialog<String>(
@@ -438,21 +453,9 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                             ? Text("ELIMINAR")
                             : CircularProgressIndicator(),
                         onPressed: () async {
-                          /* await Global.getDataCatalogoCategoria(
-                                idNegocio: Global.oPerfilNegocio.id,
-                                idCategoria: categoria.id)
-                            .deleteDoc();
-                        setState(() {
-                          for (var i = 0;
-                              i < Global.listCategoriasCatalogo.length;
-                              i++) {
-                            if (Global.listCategoriasCatalogo[i].id ==
-                                categoria.id) {
-                              Global.listCategoriasCatalogo.remove(i);
-                            }
-                          }
-                          Navigator.pop(context);
-                        }); */
+                          controller.getCategorySelect.subcategorias.remove(subcategoria.id);
+                          // save
+                          await controller.categoryUpdate(categoria: controller.getCategorySelect).whenComplete(() => Get.back()).catchError((error, stackTrace) =>setState(() => loadSave = false));
                         })
                   ],
                 );
@@ -464,11 +467,19 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
     );
   }
 
-  _showDialogSetCategoria({required Categoria categoria}) async {
+  showDialogSetSubcategoria({required Categoria subcategoria}) async {
+
+    final WelcomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
-    TextEditingController controller =
-        TextEditingController(text: categoria.nombre);
+    TextEditingController textEditingController =
+        TextEditingController(text: subcategoria.nombre);
+
+    if (subcategoria.id == '') {
+      newProduct = true;
+      subcategoria = new Categoria();
+      subcategoria.id = new DateTime.now().millisecondsSinceEpoch.toString();
+    }
 
     await showDialog<String>(
       context: context,
@@ -479,10 +490,10 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
             children: <Widget>[
               new Expanded(
                 child: new TextField(
-                  controller: controller,
+                  controller: textEditingController,
                   autofocus: true,
                   decoration: new InputDecoration(
-                      labelText: 'Categoria', hintText: 'Ej. golosinas'),
+                      labelText: 'Subcategoría', hintText: 'Ej. golosinas'),
                 ),
               )
             ],
@@ -491,24 +502,21 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
             new TextButton(
                 child: const Text('CANCEL'),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Get.back();
                 }),
             new TextButton(
                 child: loadSave == false
                     ? Text(newProduct ? 'GUARDAR' : "ACTUALIZAR")
                     : CircularProgressIndicator(),
                 onPressed: () async {
-                  /* if (controller.text != "") {
-                  setState(() {
-                    loadSave = true;
-                  });
-                  categoria.nombre = controller.text;
-                  await Global.getDataCatalogoCategoria(
-                          idNegocio: Global.oPerfilNegocio.id,
-                          idCategoria: categoria.id)
-                      .upSetCategoria(categoria.toJson());
-                  Navigator.pop(context);
-                } else {} */
+                  if(textEditingController.text!=''){
+                    // set
+                    subcategoria.nombre = textEditingController.text;
+                    controller.getCategorySelect.subcategorias[subcategoria.id] = subcategoria.nombre;
+                    setState(() => loadSave = true);
+                    // save
+                    await controller.categoryUpdate(categoria: controller.getCategorySelect).whenComplete(() => Get.back()).catchError((error, stackTrace) =>setState(() => loadSave = false));
+                  }
                 })
           ],
         );
