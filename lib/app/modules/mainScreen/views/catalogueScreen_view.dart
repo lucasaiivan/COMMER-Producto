@@ -1,14 +1,19 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:loadany/loadany.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
+import 'package:producto/app/modules/product/views/product_add.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
+import 'package:search_page/search_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'widgets/showDialog.dart';
@@ -56,12 +61,45 @@ class CatalogueScreenView extends StatelessWidget {
           ),
         ),
         actions: <Widget>[
-          IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+          IconButton(onPressed: () {
+
+            // TODO > cambiar por get
+          Navigator.of(buildContext).push(MaterialPageRoute( builder: (BuildContext context) => WidgetSeachProduct(codigo:'')));
+
+          }, icon: Icon(Icons.add)),
           IconButton(
               onPressed: () {
-                /* showSearch(
-                context: buildContext,
-                delegate: DataSearch(listOBJ: Global.listProudctosNegocio)); */
+                showSearch(
+                  context: buildContext,
+                  delegate: SearchPage<ProductoNegocio>(
+                    items: controller.getCataloProducts,
+                    searchLabel: 'Buscar producto',
+                    suggestion: Center(
+                      child: Text('ej. alfajor'),
+                    ),
+                    failure: Center(
+                      child: Text('No se encontro :('),
+                    ),
+                    filter: (product) => [
+                      product.titulo,
+                      product.descripcion,
+                    ],
+                    builder: (product) => ListTile(
+                      leading: FadeInImage(
+                        image: NetworkImage(product.urlimagen),
+                        placeholder: AssetImage("assets/loading.gif"),
+                        fadeInDuration: Duration(milliseconds: 200),
+                        fit: BoxFit.cover,
+                        width: 50.0,
+                      ),
+                      title: Text(product.titulo),
+                      subtitle: Text(product.descripcion),
+                      onTap: () {
+                        Get.toNamed(Routes.PRODUCT, arguments: {'product': product});
+                      },
+                    ),
+                  ),
+                );
               },
               icon: Icon(Icons.search)),
           Obx(() => controller.getProfileAccountSelected.id == ''
@@ -82,32 +120,6 @@ class CatalogueScreenView extends StatelessWidget {
                         backgroundImage: CachedNetworkImageProvider(
                           controller.getProfileAccountSelected.imagenPerfil,
                         ),
-                        /* child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10000.0),
-                          child: CachedNetworkImage(
-                            width: 35.0,
-                            height: 35.0,
-                            fadeInDuration: Duration(milliseconds: 200),
-                            fit: BoxFit.cover,
-                            imageUrl: controller.getProfileAccountSelected.imagenPerfil,
-                            placeholder: (context, url) => FadeInImage(
-                                image: AssetImage("assets/loading.gif"),
-                                placeholder: AssetImage("assets/loading.gif")),
-                            errorWidget: (context, url, error) => Container(
-                              color: Colors.grey,
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.width,
-                              child: Center(
-                                child: Text(
-                                  controller.getUserAccountAuth.displayName
-                                      .toString()
-                                      .substring(0, 1),
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ), */
                       ),
                     ),
                   ),
@@ -174,7 +186,7 @@ class CatalogueScreenView extends StatelessWidget {
                 GetBuilder<WelcomeController>(
                   init: WelcomeController(),
                   id: 'tab',
-                  builder: (_) => Tab( text: controller.getTextTab),
+                  builder: (_) => Tab(text: controller.getTextTab),
                 )
               ],
             ),
@@ -222,46 +234,6 @@ class CatalogueScreenView extends StatelessWidget {
       },
     );
   }
-
-  /* Widget widgetBuscadorView() {
-    // variables
-    Color colorCard = Get.isDarkMode
-        ? Colors.white.withOpacity(0.08)
-        : Colors.black.withOpacity(0.08);
-    Color colorTextIcon = Get.isDarkMode ? Colors.white54 : Colors.black54;
-
-    return Padding(
-      padding: EdgeInsets.all(12.0),
-      child: Card(
-        color: colorCard,
-        semanticContainer: true,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-        elevation: 0,
-        margin: EdgeInsets.all(0.0),
-        child: InkWell(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Row(
-              children: <Widget>[
-                Icon(Icons.search, color: colorTextIcon),
-                SizedBox(width: 12.0),
-                Text('Buscar',
-                    style: TextStyle(
-                        fontWeight: FontWeight.normal, color: colorTextIcon)),
-              ],
-            ),
-          ),
-          onTap: () {
-            /* showSearch(
-                context: buildContext,
-                delegate: DataSearch(listOBJ: Global.listProudctosNegocio)); */
-          },
-        ),
-      ),
-    );
-  } */
 
   // BottomSheet - Getx
   void showModalBottomSheetSelectAccount(BuildContext buildContext) {
@@ -459,7 +431,7 @@ class CatalogueScreenView extends StatelessWidget {
 
     String barcodeScanRes = "";
     // Platform messages may fail, so we use a try/catch PlatformException.
-    /* try {
+    try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           "#ff6666", "Cancel", true, ScanMode.BARCODE);
     } on PlatformException {
@@ -471,10 +443,10 @@ class CatalogueScreenView extends StatelessWidget {
     // setState to update our non-existent appearance.
     //if (!mounted) return;
     bool coincidencia = false;
-    ProductoNegocio productoSelected;
+    late ProductoNegocio productoSelected;
 
-    if (Global.listProudctosNegocio.length != 0) {
-      for (ProductoNegocio producto in Global.listProudctosNegocio) {
+    if (controller.getCataloProducts.length != 0) {
+      for (ProductoNegocio producto in controller.getCataloProducts) {
         if (producto.codigo == barcodeScanRes) {
           productoSelected = producto;
           coincidencia = true;
@@ -484,18 +456,16 @@ class CatalogueScreenView extends StatelessWidget {
     }
 
     if (coincidencia) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (BuildContext context) =>
-              ProductScreen(producto: productoSelected)));
+      Get.toNamed(Routes.PRODUCT, arguments: {'product': productoSelected});
     } else {
       if (barcodeScanRes.toString() != "") {
         if (barcodeScanRes.toString() != "-1") {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) =>
-                  WidgetSeachProduct(codigo: barcodeScanRes)));
+
+          // TODO > cambiar por get
+          Navigator.of(context).push(MaterialPageRoute( builder: (BuildContext context) => WidgetSeachProduct(codigo: barcodeScanRes)));
         }
       }
-    } */
+    }
   }
 }
 
