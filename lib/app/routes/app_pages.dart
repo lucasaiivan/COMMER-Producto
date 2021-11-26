@@ -47,7 +47,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.PRODUCTS_SEARCH,
-      page: () => WidgetProductsSearch(),
+      page: () => ProductsSearch(),
       binding: ProductsSarchBinding(),
     ),
   ];

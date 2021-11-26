@@ -62,8 +62,7 @@ class ProductController extends GetxController {
   void onClose() {}
 
   void readMarkProducts() {
-    Database.readMarkFuture(id: getProduct.idMarca).then((value) =>
-        setMark = Marca.fromDocumentSnapshot(documentSnapshot: value));
+    Database.readMarkFuture(id: getProduct.idMarca).then((value) => setMark = Marca.fromDocumentSnapshot(documentSnapshot: value));
   }
   void readProfileBusiness({required String id}) {
     Database.readProfileBusinessModelFuture(id).then((value) =>setProfileBusiness = ProfileBusinessModel.fromMap(  value.data() as Map  ) );

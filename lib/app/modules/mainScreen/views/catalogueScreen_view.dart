@@ -61,12 +61,7 @@ class CatalogueScreenView extends StatelessWidget {
           ),
         ),
         actions: <Widget>[
-          IconButton(onPressed: () {
-
-            // TODO > cambiar por get
-          Navigator.of(buildContext).push(MaterialPageRoute( builder: (BuildContext context) => ProductsSearch()));
-
-          }, icon: Icon(Icons.add)),
+          IconButton(onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'idProduct': ''}), icon: Icon(Icons.add)),
           IconButton(
               onPressed: () {
                 showSearch(
@@ -460,9 +455,7 @@ class CatalogueScreenView extends StatelessWidget {
     } else {
       if (barcodeScanRes.toString() != "") {
         if (barcodeScanRes.toString() != "-1") {
-
-          // TODO > cambiar por get
-          Navigator.of(context).push(MaterialPageRoute( builder: (BuildContext context) => ProductsSearch()));
+          Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'idProduct':barcodeScanRes});
         }
       }
     }

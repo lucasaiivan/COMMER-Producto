@@ -369,8 +369,7 @@ class WelcomeController extends GetxController {
   }
 
   void toProductView({required Producto porduct}) {
-    Get.toNamed(Routes.PRODUCT,
-        arguments: {'product': porduct.convertProductCatalogue()});
+    Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct.convertProductCatalogue()});
   }
 
   int getNumeroDeProductosDeMarca({required String id}) {

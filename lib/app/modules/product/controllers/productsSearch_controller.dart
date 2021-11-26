@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:producto/app/models/catalogo_model.dart';
+import 'package:producto/app/routes/app_pages.dart';
+import 'package:producto/app/services/database.dart';
 
 class ControllerProductsSearch extends GetxController {
   @override
   void onInit() {
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi();
-    _textEditingController.text = Get.arguments['idProduct'];
+    setCodeBar = Get.arguments['idProduct'];
     super.onInit();
   }
 
@@ -21,38 +24,66 @@ class ControllerProductsSearch extends GetxController {
     super.onClose();
   }
 
+  // result text
+  RxString _codeBar = "".obs;
+  set setCodeBar(String text) => _codeBar.value = text;
+  get getCodeBar => _codeBar.value;
+
   // Color de fondo
-  Color _colorFondo = Colors.deepPurple;
-  set setColorFondo( Color color) => _colorFondo = color;
-  get getColorFondo => _colorFondo;
+  Rx<Color> _colorFondo = Colors.deepPurple.obs;
+  set setColorFondo(Color color) => _colorFondo.value = color;
+  get getColorFondo => _colorFondo.value;
 
   // color text button
-  Color _colorTextButton = Colors.white;
-  set setColorTextButton(Color color) => _colorTextButton = color;
-  get getColorTextButton => _colorTextButton;
+  Rx<Color> _colorTextButton = Colors.white.obs;
+  set setColorTextButton(Color color) => _colorTextButton.value = color;
+  get getColorTextButton => _colorTextButton.value;
 
   // TextEditingController
-  TextEditingController _textEditingController = new TextEditingController();
-  set setTextEditingController( TextEditingController editingController) => _textEditingController = editingController;
-  get getTextEditingController => _textEditingController;
+  Rx<TextEditingController> textEditingController =
+      new TextEditingController().obs;
+  set setTextEditingController(TextEditingController editingController) =>
+      textEditingController.value = editingController;
+  get getTextEditingController => textEditingController.value;
 
   // state search
-  var _buscando = false;
-  set setStateSearch(bool state) => _buscando = state;
-  get getStateSearch => _buscando;
+  RxBool _buscando = false.obs;
+  set setStateSearch(bool state) => _buscando.value = state;
+  get getStateSearch => _buscando.value;
 
   // visibility button add
-  var _buttonAddVisivility = false;
-  set setButtonAddVisivility(bool state) => _buttonAddVisivility = state;
-  get getButtonAddVisivility => _buttonAddVisivility;
+  RxBool _buttonAddVisivility = false.obs;
+  set setButtonAddVisivility(bool state) => _buttonAddVisivility.value = state;
+  get getButtonAddVisivility => _buttonAddVisivility.value;
 
   // state result
-  var _resultState = true;
-  set setResultState(bool state) => _resultState = state;
-  get getResultState => _resultState;
+  RxBool _resultState = true.obs;
+  set setResultState(bool state) => _resultState.value = state;
+  get getResultState => _resultState.value;
 
   // result text
-  String _textResult = "";
-  set setTextResult(String text) => _textResult = text;
-  get getTextResult => _textResult;
+  RxString _textResult = "".obs;
+  set setTextResult(String text) => _textResult.value = text;
+  get getTextResult => _textResult.value;
+
+  // FUCTIONS
+  void getProduct({required String id}) {
+    if (id != '') {
+      // set
+      setStateSearch = true;
+      setButtonAddVisivility = false;
+      // query
+        Database.readProductGlobalFuture(id: id).then((value) {
+        Producto productoNegocio = Producto.fromMap(value.data() as Map);
+        Get.back();
+        Get.toNamed(Routes.PRODUCT,arguments: {'product': productoNegocio.convertProductCatalogue()});
+      }).onError((error, stackTrace) {
+        // set
+        setStateSearch = false;
+        setButtonAddVisivility = true;
+        setColorFondo = Colors.red;
+        setResultState = false;
+      });
+    }
+  }
 }

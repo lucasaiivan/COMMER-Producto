@@ -44,6 +44,7 @@ class Database {
   static Future<QuerySnapshot<Map<String, dynamic>>> readListPricesProductFuture( {required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis').get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readCategoryListFuture( {required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA').get();
   // future - DocumentSnapshot
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readProductGlobalFuture( { required String id}) => FirebaseFirestore.instance.collection('/APP/ARG/PRODUCTOS/').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readUserModelFuture( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readProfileBusinessModelFuture( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readProductCatalogueFuture( { required String idAccount,required String idProduct}) => FirebaseFirestore.instance.collection('NEGOCIOS/$idAccount/EXTENSION_CATALOGO/').doc(idProduct).get();

@@ -12,16 +12,17 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
 
   @override
   Widget build(BuildContext context) {
-    controller.setColorFondo = controller.getResultState() == true
-        ? Get.theme.primaryColor
-        : Colors.red;
+    controller.setColorFondo =
+        controller.getResultState == true ? Get.theme.primaryColor : Colors.red;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: controller.getColorFondo,
-      appBar: appbar(),
-      body: _body(),
-    );
+    // TODO: cambiar el manejador de estado por un 'GetBuilder' y  quitrar en el controlador
+    // todos los obs y manejar por key
+    return Obx(() => Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: controller.getColorFondo,
+          appBar: appbar(),
+          body: _body(),
+        ));
   }
 
   /* WIDGETS */
@@ -57,72 +58,65 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                 onPressed: () {
                   FlutterClipboard.paste().then((value) {
                     // Do what ever you want with the value.
-                    controller.getTextEditingController;
-                    setState(() {
-                      textEditingController.text = value;
-                      buttonAddProduct = false;
-                      codigoBar = value;
-                      resultState = true;
-                    });
+                    controller.textEditingController.value.text = value;
+                    controller.setCodeBar = value;
+                    controller.setButtonAddVisivility = false;
+                    controller.setResultState = true;
                   });
                 },
               ),
               SizedBox(height: 12.0),
-              !buscando
+              !controller.getStateSearch
                   ? FadeInRight(
                       child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (textEditingController.text != "") {
-                            setState(() {
-                              getIdProducto(id: codigoBar ?? "");
-                            });
-                          }
-                        },
+                        onPressed: () => controller.getProduct(id: controller.textEditingController.value.text),
                         style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(12.0),
-                            primary: colorTextButton,
+                            primary: controller.getColorTextButton,
                             onPrimary: Colors.purple,
                             textStyle: TextStyle(color: Colors.black)),
                         icon: Icon(Icons.search,
-                            color: Theme.of(context).primaryColorLight),
+                            color: Get.theme.primaryColorLight),
                         label: Text("Buscar",
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColorLight)),
+                            style:
+                                TextStyle(color: Get.theme.primaryColorLight)),
                       ),
                     ))
                   : Container(),
-              !buscando ? SizedBox(width: 12.0, height: 12.0) : Container(),
-              !buscando
+              !controller.getStateSearch
+                  ? SizedBox(width: 12.0, height: 12.0)
+                  : Container(),
+              !controller.getStateSearch
                   ? FadeInLeft(
                       child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          scanBarcodeNormal(context: context);
+                          scanBarcodeNormal();
                         },
                         style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(12.0),
-                            primary: colorTextButton,
+                            primary: controller.getColorTextButton,
                             onPrimary: Colors.purple,
                             textStyle: TextStyle(color: Colors.black)),
                         icon: Image(
-                            color: Theme.of(context).primaryColorLight,
+                            color: Get.theme.primaryColorLight,
                             height: 20.0,
                             width: 20.0,
                             image: AssetImage('assets/barcode.png'),
                             fit: BoxFit.contain),
                         label: Text("Escanear código",
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColorLight)),
+                            style:
+                                TextStyle(color: Get.theme.primaryColorLight)),
                       ),
                     ))
                   : Container(),
-              buttonAddProduct
+              controller.getButtonAddVisivility
                   ? SizedBox(width: 12.0, height: 12.0)
                   : Container(),
-              buttonAddProduct
+              controller.getButtonAddVisivility
                   ? Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
@@ -132,7 +126,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                       ),
                     )
                   : Container(),
-              buttonAddProduct
+              controller.getButtonAddVisivility
                   ? SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
@@ -141,14 +135,14 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         },
                         style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(12.0),
-                            primary: colorTextButton,
+                            primary: controller.getColorTextButton,
                             onPrimary: Colors.purple,
                             textStyle: TextStyle(color: Colors.black)),
-                        icon: Icon(Icons.add,
-                            color: Theme.of(context).primaryColorLight),
+                        icon:
+                            Icon(Icons.add, color: Get.theme.primaryColorLight),
                         label: Text("Agregar nuevo producto",
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColorLight)),
+                            style:
+                                TextStyle(color: Get.theme.primaryColorLight)),
                       ),
                     )
                   : Container(),
@@ -164,89 +158,46 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
   /* WIDGETS COMPONENT */
   Widget textField() {
     return TextField(
-      controller: textEditingController,
+      controller: controller.textEditingController.value,
       keyboardType: TextInputType.numberWithOptions(decimal: false),
       inputFormatters: [
         FilteringTextInputFormatter.allow(new RegExp('[1234567890]'))
       ],
       onChanged: (value) {
-        setState(() {
-          codigoBar = value;
-          buttonAddProduct = false;
-        });
+        controller.setCodeBar = value;
+        controller.setButtonAddVisivility = true;
       },
       decoration: InputDecoration(
           suffixIcon: IconButton(
             onPressed: () {
-              setState(() {
-                textEditingController.clear();
-                buttonAddProduct = false;
-                resultState = true;
-              });
+              controller.textEditingController.value.clear();
+              controller.setButtonAddVisivility = false;
+              controller.setResultState = true;
             },
-            icon: textEditingController.text != ""
-                ? Icon(Icons.clear, color: colorTextButton)
+            icon: controller.textEditingController.value.text != ""
+                ? Icon(Icons.clear, color: controller.getColorTextButton)
                 : Container(),
           ),
           enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: colorTextButton)),
+              borderSide: BorderSide(color: controller.getColorTextButton)),
           border: OutlineInputBorder(
-              borderSide: BorderSide(color: colorTextButton)),
+              borderSide: BorderSide(color: controller.getColorTextButton)),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: colorTextButton)),
-          labelStyle: TextStyle(color: colorTextButton),
+              borderSide: BorderSide(color: controller.getColorTextButton)),
+          labelStyle: TextStyle(color: controller.getColorTextButton),
           labelText: "Escribe el código",
-          suffixStyle: TextStyle(color: colorTextButton)),
-      style: TextStyle(fontSize: 30.0, color: colorTextButton),
+          suffixStyle: TextStyle(color: controller.getColorTextButton)),
+      style: TextStyle(fontSize: 30.0, color: controller.getColorTextButton),
       textInputAction: TextInputAction.search,
       onSubmitted: (value) {
-        if (textEditingController.text != "") {
-          setState(() {
-            getIdProducto(id: codigoBar);
-          });
-        }
+        controller.getProduct(id: controller.textEditingController.value.text);
       },
     );
   }
   /* FUNCTIONS */
 
-  void getIdProducto({required String id}) {
-    buscando = true;
-    buttonAddProduct = false;
-    if (id == "") {
-      id = "null";
-    }
-
-    /* Global.getProductosPrecargado(idProducto: id)
-        .getDataProductoGlobal()
-        .then((product) {
-      if (product != null) {
-        if (product.convertProductoNegocio() != null) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (BuildContext context) =>
-                  ProductScreen(producto: product.convertProductoNegocio()),
-            ),
-          );
-        } else {
-          buscando = false;
-          buttonAddProduct = true;
-          colorFondo = Colors.red[400];
-          resultState = false;
-          setState(() {});
-        }
-      } else {
-        buttonAddProduct = true;
-        buscando = false;
-        colorFondo = Colors.red[400];
-        resultState = false;
-        setState(() {});
-      }
-    }); */
-  }
-
   // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> scanBarcodeNormal({required BuildContext context}) async {
+  Future<void> scanBarcodeNormal() async {
     String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
@@ -256,13 +207,12 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
       barcodeScanRes = 'Failed to get platform version.';
     }
 
-    setState(() {
-      textEditingController.text = barcodeScanRes;
-      codigoBar = barcodeScanRes;
-      buscando = true;
-      buttonAddProduct = false;
-      getIdProducto(id: barcodeScanRes);
-    });
+    // set
+    controller.textEditingController.value.text = barcodeScanRes;
+    controller.setCodeBar = barcodeScanRes;
+    controller.setStateSearch = false;
+    controller.setButtonAddVisivility = false;
+    controller.getProduct(id: barcodeScanRes);
   }
 }
 
