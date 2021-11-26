@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:loadany/loadany.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
-import 'package:producto/app/modules/product/views/product_add.dart';
+import 'package:producto/app/modules/product/views/productsSearch_view.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:search_page/search_page.dart';
@@ -64,7 +64,7 @@ class CatalogueScreenView extends StatelessWidget {
           IconButton(onPressed: () {
 
             // TODO > cambiar por get
-          Navigator.of(buildContext).push(MaterialPageRoute( builder: (BuildContext context) => WidgetSeachProduct(codigo:'')));
+          Navigator.of(buildContext).push(MaterialPageRoute( builder: (BuildContext context) => ProductsSearch()));
 
           }, icon: Icon(Icons.add)),
           IconButton(
@@ -462,7 +462,7 @@ class CatalogueScreenView extends StatelessWidget {
         if (barcodeScanRes.toString() != "-1") {
 
           // TODO > cambiar por get
-          Navigator.of(context).push(MaterialPageRoute( builder: (BuildContext context) => WidgetSeachProduct(codigo: barcodeScanRes)));
+          Navigator.of(context).push(MaterialPageRoute( builder: (BuildContext context) => ProductsSearch()));
         }
       }
     }

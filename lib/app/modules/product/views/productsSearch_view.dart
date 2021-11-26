@@ -1,55 +1,24 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:clipboard/clipboard.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:get/get.dart';
+import 'package:producto/app/modules/product/controllers/productsSearch_controller.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 
-class WidgetSeachProduct extends StatefulWidget {
-  final String codigo;
-  WidgetSeachProduct({required this.codigo});
-
-  @override
-  _WidgetSeachProductState createState() =>
-      _WidgetSeachProductState(codigoBar: codigo);
-}
-
-class _WidgetSeachProductState extends State<WidgetSeachProduct> {
-  Color colorFondo = Colors.deepPurple;
-  Color colorTextButton = Colors.white;
-  TextEditingController textEditingController = new TextEditingController();
-  String codigoBar = "";
-  bool buscando = false;
-  String textoTextResult = "";
-  bool buttonAddProduct = false;
-  bool resultState = true;
-
-  _WidgetSeachProductState({this.codigoBar = ""});
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    if (codigoBar != null) {
-      getIdProducto(id: codigoBar);
-    }
-    textEditingController = TextEditingController(text: codigoBar);
-    super.initState();
-  }
+class ProductsSearch extends GetView<ControllerProductsSearch> {
+  const ProductsSearch({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    colorFondo =
-        (resultState == true ? Get.theme.primaryColor : Colors.red[400])!;
+    controller.setColorFondo = controller.getResultState() == true
+        ? Get.theme.primaryColor
+        : Colors.red;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: colorFondo,
+      backgroundColor: controller.getColorFondo,
       appBar: appbar(),
       body: _body(),
     );
@@ -59,9 +28,11 @@ class _WidgetSeachProductState extends State<WidgetSeachProduct> {
   PreferredSizeWidget appbar() {
     return AppBar(
       elevation: 0.0,
-      backgroundColor: colorFondo,
-      title: Text(resultState ? "Buscar" : "Sin resultados"),
-      bottom: buscando ? linearProgressBarApp(color: colorTextButton) : null,
+      backgroundColor: controller.getColorFondo,
+      title: Text(controller.getResultState ? "Buscar" : "Sin resultados"),
+      bottom: controller.getStateSearch
+          ? linearProgressBarApp(color: controller.getColorTextButton)
+          : null,
     );
   }
 
@@ -70,7 +41,9 @@ class _WidgetSeachProductState extends State<WidgetSeachProduct> {
       child:
           ListView(padding: EdgeInsets.all(0.0), shrinkWrap: true, children: [
         FadeInRight(
-          child: buttonAddProduct ? Container() : WidgetOtrosProductosGlobal(),
+          child: controller.getButtonAddVisivility
+              ? Container()
+              : WidgetOtrosProductosGlobal(),
         ),
         Padding(
           padding: const EdgeInsets.all(20.0),
@@ -79,10 +52,12 @@ class _WidgetSeachProductState extends State<WidgetSeachProduct> {
               textField(),
               IconButton(
                 padding: EdgeInsets.all(12.0),
-                icon: Icon(Icons.content_copy, color: colorTextButton),
+                icon: Icon(Icons.content_copy,
+                    color: controller.getColorTextButton),
                 onPressed: () {
                   FlutterClipboard.paste().then((value) {
                     // Do what ever you want with the value.
+                    controller.getTextEditingController;
                     setState(() {
                       textEditingController.text = value;
                       buttonAddProduct = false;
