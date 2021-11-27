@@ -71,7 +71,8 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                       child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () => controller.getProduct(id: controller.textEditingController.value.text),
+                        onPressed: () => controller.queryProduct(
+                            id: controller.textEditingController.value.text),
                         style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(12.0),
                             primary: controller.getColorTextButton,
@@ -93,9 +94,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                       child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          scanBarcodeNormal();
-                        },
+                        onPressed: scanBarcodeNormal,
                         style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(12.0),
                             primary: controller.getColorTextButton,
@@ -165,7 +164,6 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
       ],
       onChanged: (value) {
         controller.setCodeBar = value;
-        controller.setButtonAddVisivility = true;
       },
       decoration: InputDecoration(
           suffixIcon: IconButton(
@@ -190,29 +188,22 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
       style: TextStyle(fontSize: 30.0, color: controller.getColorTextButton),
       textInputAction: TextInputAction.search,
       onSubmitted: (value) {
-        controller.getProduct(id: controller.textEditingController.value.text);
+        //  Se llama cuando el usuario indica que ha terminado de editar el texto en el campo
+        //controller.getProduct(id: controller.textEditingController.value.text);
       },
     );
   }
   /* FUNCTIONS */
-
-  // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> scanBarcodeNormal() async {
-    String barcodeScanRes;
+    // Escanner Code - Abre en pantalla completa la camara para escanear
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          "#ff6666", "Cancel", true, ScanMode.BARCODE);
+      late String barcodeScanRes;
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", true, ScanMode.BARCODE);
+      controller.barCode(barcodeScannes: barcodeScanRes);
     } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version.';
+      Get.snackbar('scanBarcode', 'Failed to get platform version');
     }
-
-    // set
-    controller.textEditingController.value.text = barcodeScanRes;
-    controller.setCodeBar = barcodeScanRes;
-    controller.setStateSearch = false;
-    controller.setButtonAddVisivility = false;
-    controller.getProduct(id: barcodeScanRes);
   }
 }
 
