@@ -12,17 +12,25 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
 
   @override
   Widget build(BuildContext context) {
-    controller.setColorFondo =
-        controller.getResultState == true ? Get.theme.primaryColor : Colors.red;
+    controller.setColorFondo = controller.getproductDoesNotExist == true
+        ? Get.theme.primaryColor
+        : Colors.red;
 
     // TODO: cambiar el manejador de estado por un 'GetBuilder' y  quitrar en el controlador
     // todos los obs y manejar por key
-    return Obx(() => Scaffold(
+    return GetBuilder<ControllerProductsSearch>(
+      id: 'updateAll',
+      init: ControllerProductsSearch(),
+      initState: (_) {},
+      builder: (_) {
+        return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: controller.getColorFondo,
           appBar: appbar(),
           body: _body(),
-        ));
+        );
+      },
+    );
   }
 
   /* WIDGETS */
@@ -30,9 +38,10 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
     return AppBar(
       elevation: 0.0,
       backgroundColor: controller.getColorFondo,
-      title: Text(controller.getResultState ? "Buscar" : "Sin resultados"),
+      title:
+          Text(controller.getproductDoesNotExist ? "Sin resultados" : "Buscar"),
       bottom: controller.getStateSearch
-          ? linearProgressBarApp(color: controller.getColorTextButton)
+          ? linearProgressBarApp(color: Get.theme.primaryColor)
           : null,
     );
   }
@@ -42,7 +51,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
       child:
           ListView(padding: EdgeInsets.all(0.0), shrinkWrap: true, children: [
         FadeInRight(
-          child: controller.getButtonAddVisivility
+          child: controller.getproductDoesNotExist
               ? Container()
               : WidgetOtrosProductosGlobal(),
         ),
@@ -53,15 +62,12 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
               textField(),
               IconButton(
                 padding: EdgeInsets.all(12.0),
-                icon: Icon(Icons.content_copy,
-                    color: controller.getColorTextButton),
+                icon: Icon(Icons.content_copy),
                 onPressed: () {
                   FlutterClipboard.paste().then((value) {
                     // Do what ever you want with the value.
-                    controller.textEditingController.value.text = value;
-                    controller.setCodeBar = value;
-                    controller.setButtonAddVisivility = false;
-                    controller.setResultState = true;
+                    controller.textEditingController.text = value;
+                    controller.queryProduct(id: value);
                   });
                 },
               ),
@@ -75,7 +81,6 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                             id: controller.textEditingController.value.text),
                         style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(12.0),
-                            primary: controller.getColorTextButton,
                             onPrimary: Colors.purple,
                             textStyle: TextStyle(color: Colors.black)),
                         icon: Icon(Icons.search,
@@ -97,7 +102,6 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         onPressed: scanBarcodeNormal,
                         style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(12.0),
-                            primary: controller.getColorTextButton,
                             onPrimary: Colors.purple,
                             textStyle: TextStyle(color: Colors.black)),
                         icon: Image(
@@ -112,21 +116,22 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                       ),
                     ))
                   : Container(),
-              controller.getButtonAddVisivility
-                  ? SizedBox(width: 12.0, height: 12.0)
-                  : Container(),
-              controller.getButtonAddVisivility
-                  ? Padding(
+              controller.getproductDoesNotExist
+                  ? Container()
+                  : SizedBox(width: 12.0, height: 12.0),
+              controller.getproductDoesNotExist
+                  ?Container()
+                  : Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         "Si el producto aún no existe, ayúdenos con contribuciones de contenido para que esta aplicación sea aún más útil para la comunidad 💪",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 18.0),
                       ),
-                    )
-                  : Container(),
-              controller.getButtonAddVisivility
-                  ? SizedBox(
+                    ),
+              controller.getproductDoesNotExist
+                  ?Container()
+                  : SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
@@ -134,7 +139,6 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         },
                         style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(12.0),
-                            primary: controller.getColorTextButton,
                             onPrimary: Colors.purple,
                             textStyle: TextStyle(color: Colors.black)),
                         icon:
@@ -143,8 +147,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                             style:
                                 TextStyle(color: Get.theme.primaryColorLight)),
                       ),
-                    )
-                  : Container(),
+                    ),
               SizedBox(width: 50.0, height: 50.0),
             ],
           ),
@@ -157,35 +160,33 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
   /* WIDGETS COMPONENT */
   Widget textField() {
     return TextField(
-      controller: controller.textEditingController.value,
+      controller: controller.textEditingController,
       keyboardType: TextInputType.numberWithOptions(decimal: false),
       inputFormatters: [
         FilteringTextInputFormatter.allow(new RegExp('[1234567890]'))
       ],
       onChanged: (value) {
-        controller.setCodeBar = value;
+        //controller.setCodeBar = value;
       },
       decoration: InputDecoration(
           suffixIcon: IconButton(
             onPressed: () {
-              controller.textEditingController.value.clear();
-              controller.setButtonAddVisivility = false;
-              controller.setResultState = true;
+              controller.clean();
             },
             icon: controller.textEditingController.value.text != ""
-                ? Icon(Icons.clear, color: controller.getColorTextButton)
+                ? Icon(Icons.clear, color: controller.getTextEditingColor)
                 : Container(),
           ),
           enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: controller.getColorTextButton)),
+              borderSide: BorderSide(color: controller.getTextEditingColor)),
           border: OutlineInputBorder(
-              borderSide: BorderSide(color: controller.getColorTextButton)),
+              borderSide: BorderSide(color: controller.getTextEditingColor)),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: controller.getColorTextButton)),
-          labelStyle: TextStyle(color: controller.getColorTextButton),
+              borderSide: BorderSide(color: controller.getTextEditingColor)),
+          labelStyle: TextStyle(color: controller.getTextEditingColor),
           labelText: "Escribe el código",
-          suffixStyle: TextStyle(color: controller.getColorTextButton)),
-      style: TextStyle(fontSize: 30.0, color: controller.getColorTextButton),
+          suffixStyle: TextStyle(color: controller.getTextEditingColor)),
+      style: TextStyle(fontSize: 30.0, color: controller.getTextEditingColor),
       textInputAction: TextInputAction.search,
       onSubmitted: (value) {
         //  Se llama cuando el usuario indica que ha terminado de editar el texto en el campo
@@ -193,14 +194,16 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
       },
     );
   }
+
   /* FUNCTIONS */
   Future<void> scanBarcodeNormal() async {
     // Escanner Code - Abre en pantalla completa la camara para escanear
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       late String barcodeScanRes;
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", true, ScanMode.BARCODE);
-      controller.barCode(barcodeScannes: barcodeScanRes);
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancel", true, ScanMode.BARCODE);
+      controller.queryProduct(id: barcodeScanRes);
     } on PlatformException {
       Get.snackbar('scanBarcode', 'Failed to get platform version');
     }

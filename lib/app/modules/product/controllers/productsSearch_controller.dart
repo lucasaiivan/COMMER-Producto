@@ -13,7 +13,8 @@ class ControllerProductsSearch extends GetxController {
     // obtenemos los datos del controlador principal
     welcomeController = Get.find();
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi();
-    setCodeBar = Get.arguments['idProduct'];
+    _codeBarParameter = Get.arguments['idProduct']??'';
+    if(_codeBarParameter!=''){queryProduct(id: _codeBarParameter);}
     super.onInit();
   }
 
@@ -30,69 +31,70 @@ class ControllerProductsSearch extends GetxController {
   }
 
   // result text
-  RxString _codeBar = "".obs;
-  set setCodeBar(String text) => _codeBar.value = text;
-  get getCodeBar => _codeBar.value;
+  String _codeBarParameter = "";
 
   // Color de fondo
-  Rx<Color> _colorFondo = Colors.deepPurple.obs;
-  set setColorFondo(Color color) => _colorFondo.value = color;
-  get getColorFondo => _colorFondo.value;
-
-  // color text button
-  Rx<Color> _colorTextButton = Colors.white.obs;
-  set setColorTextButton(Color color) => _colorTextButton.value = color;
-  get getColorTextButton => _colorTextButton.value;
+  Color _colorFondo = Colors.deepPurple;
+  set setColorFondo(Color color) => _colorFondo = color;
+  get getColorFondo => _colorFondo;
 
   // TextEditingController
-  Rx<TextEditingController> textEditingController =
-      new TextEditingController().obs;
+  TextEditingController textEditingController = new TextEditingController();
   set setTextEditingController(TextEditingController editingController) =>
-      textEditingController.value = editingController;
-  get getTextEditingController => textEditingController.value;
+      textEditingController = editingController;
+  get getTextEditingController => textEditingController;
+
+  // color component textfield
+  Color _textEditingColor = Colors.deepPurple;
+  set setTextEditingColor(Color color) => _textEditingColor = color;
+  get getTextEditingColor => _textEditingColor;
 
   // state search
-  RxBool _buscando = false.obs;
-  set setStateSearch(bool state) => _buscando.value = state;
-  get getStateSearch => _buscando.value;
-
-  // visibility button add
-  RxBool _buttonAddVisivility = false.obs;
-  set setButtonAddVisivility(bool state) => _buttonAddVisivility.value = state;
-  get getButtonAddVisivility => _buttonAddVisivility.value;
+  bool _stateSearch = false;
+  set setStateSearch(bool state) => _stateSearch = state;
+  get getStateSearch => _stateSearch;
 
   // state result
-  RxBool _resultState = true.obs;
-  set setResultState(bool state) => _resultState.value = state;
-  get getResultState => _resultState.value;
+  bool _productDoesNotExist = true;
+  set setproductDoesNotExist(bool state) {
+    setColorFondo = Colors.red;
+    setTextEditingColor = Colors.white;
+    _productDoesNotExist = state;
+  }
 
-  // result text
-  RxString _textResult = "".obs;
-  set setTextResult(String text) => _textResult.value = text;
-  get getTextResult => _textResult.value;
+  get getproductDoesNotExist => _productDoesNotExist;
 
   // FUCTIONS
   void queryProduct({required String id}) {
     if (id != '') {
       // set
       setStateSearch = true;
-      setButtonAddVisivility = false;
+      clean();
+      update(['updateAll']);
       // query
       Database.readProductGlobalFuture(id: id).then((value) {
         Producto productoNegocio = Producto.fromMap(value.data() as Map);
         Get.back();
-        Get.toNamed(Routes.PRODUCT, arguments: {'product': productoNegocio.convertProductCatalogue()});
+        Get.toNamed(Routes.PRODUCT,
+            arguments: {'product': productoNegocio.convertProductCatalogue()});
       }).onError((error, stackTrace) {
-        // set
+        setproductDoesNotExist = false;
         setStateSearch = false;
-        setButtonAddVisivility = true;
-        setColorFondo = Colors.red;
-        setResultState = false;
+        update(['updateAll']);
+      }).catchError((error) {
+        setproductDoesNotExist = false;
+        setStateSearch = false;
+        update(['updateAll']);
       });
     }
   }
 
- /*  Future<bool> queryExistProductCatalogue({required String id}) async {
+  void clean() {
+    textEditingController.clear();
+    setproductDoesNotExist = false;
+  }
+
+  /*  Future<bool> queryExistProductCatalogue({required String id}) async {
     // Va a comprobar si el producto ya existe en el cátalogo de la cuenta
     bool state = false;
     welcomeController.getCataloProducts.forEach((element) {
@@ -102,12 +104,4 @@ class ControllerProductsSearch extends GetxController {
     });
     return state;
   } */
-
-  void barCode({required String barcodeScannes}) {
-    textEditingController.value.text = barcodeScannes;
-    setCodeBar = barcodeScannes;
-    setStateSearch = false;
-    setButtonAddVisivility = false;
-    queryProduct(id: barcodeScannes);
-  }
 }
