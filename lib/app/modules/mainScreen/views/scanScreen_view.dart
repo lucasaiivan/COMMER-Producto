@@ -137,8 +137,7 @@ class ScanScreenView extends StatelessWidget {
                       fontSize: 24.0),
                   textAlign: TextAlign.center),
             ),
-            Obx(() =>
-                widgetSuggestions(list: controller.getListSuggestedProducts)),
+            Obx(() => widgetSuggestions(list: controller.getListSuggestedProducts)),
           ],
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:diacritic/diacritic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:loadany/loadany.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
-import 'package:producto/app/modules/product/views/productsSearch_view.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:search_page/search_page.dart';

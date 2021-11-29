@@ -80,6 +80,25 @@ class Producto {
       timestampCreation: data['timestamp_creation'],
     );
   }
+  Producto.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+    id = documentSnapshot['id'] ?? '';
+    id = documentSnapshot['id'] ?? '';
+    verificado = documentSnapshot['verificado'] ?? false;
+    favorite = documentSnapshot['favorite'] ?? false;
+    idMarca = documentSnapshot['id_marca'] ?? '';
+    idNegocio = documentSnapshot['id_negocio'] ?? '';
+    urlImagen = documentSnapshot['urlimagen'] ?? 'https://default';
+    titulo = documentSnapshot['titulo'] ?? '';
+    descripcion = documentSnapshot['descripcion'] ?? '';
+    precioVenta = documentSnapshot['precio_venta'] ?? 0.0;
+    precioCompra = documentSnapshot['precio_compra'] ?? 0.0;
+    precioComparacion = documentSnapshot['precio_comparacion'] ?? 0.0;
+    codigo = documentSnapshot['codigo'] ?? '';
+    categoria = documentSnapshot['categoria'] ?? '';
+    subcategoria = documentSnapshot['subcategoria'] ?? '';
+    timestampActualizacion = documentSnapshot['timestamp_actualizacion'];
+    timestampCreation = documentSnapshot['timestamp_creation'];
+  }
   ProductoNegocio convertProductCatalogue() {
     ProductoNegocio productoNegocio = new ProductoNegocio();
     productoNegocio.id = this.id;
@@ -226,7 +245,7 @@ class ProductoNegocio {
   }
 }
 
-DateTime  date = Timestamp.now() as DateTime;
+DateTime date = Timestamp.now() as DateTime;
 
 class Precio {
   String idNegocio = "";
@@ -237,12 +256,12 @@ class Precio {
   String ciudad = "";
 
   Precio({
-    required this.idNegocio ,
-    required this.precio ,
+    required this.idNegocio,
+    required this.precio,
     required this.timestamp,
     required this.moneda,
-    this.provincia='',
-    this.ciudad='',
+    this.provincia = '',
+    this.ciudad = '',
   });
 
   Precio.fromMap(Map data) {
@@ -263,22 +282,21 @@ class Precio {
       };
 }
 
-
 class Categoria {
-    String id="";
-    String nombre="";
-    Map<String, dynamic> subcategorias = Map<String, dynamic>();
+  String id = "";
+  String nombre = "";
+  Map<String, dynamic> subcategorias = Map<String, dynamic>();
 
   Categoria({
-    this.id="", 
-    this.nombre="",
-    this.subcategorias= const {},
-    });
+    this.id = "",
+    this.nombre = "",
+    this.subcategorias = const {},
+  });
   Map<String, dynamic> toJson() => {
         "id": id,
         "nombre": nombre,
         "subcategorias": subcategorias,
-  };
+      };
   factory Categoria.fromMap(Map data) {
     return Categoria(
       id: data['id'] ?? '',
@@ -293,24 +311,26 @@ class Marca {
   String titulo = "";
   String descripcion = "";
   String urlImagen = "";
-  bool verificado=false;
+  bool verificado = false;
 
   // Datos de la creación
   String idUsuarioCreador = ""; // ID el usuaruio que creo el productos
-  late Timestamp timestampCreacion; // Marca de tiempo de la creacion del documento
+  late Timestamp
+      timestampCreacion; // Marca de tiempo de la creacion del documento
   String idUsuarioActualizado = ""; // ID el usuaruio que actualizo el productos
-  late Timestamp timestampActualizado; // Marca de tiempo de la ultima actualizacion
-  
+  late Timestamp
+      timestampActualizado; // Marca de tiempo de la ultima actualizacion
+
   Marca({
     this.id = "",
     this.titulo = "",
     this.descripcion = "",
     this.urlImagen = "",
-    this.verificado=false,
+    this.verificado = false,
     required this.timestampActualizado,
     required this.timestampCreacion,
   });
-  Marca.fromDocumentSnapshot( {required DocumentSnapshot documentSnapshot}) {
+  Marca.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     id = documentSnapshot['id'] ?? '';
     titulo = documentSnapshot['titulo'] ?? '';
     descripcion = documentSnapshot['descripcion'] ?? '';
@@ -333,7 +353,7 @@ class Marca {
     timestampActualizado = data['timestamp_actualizado'];
   }
   Map<String, dynamic> toJson() => {
-        "id": id ,
+        "id": id,
         "titulo": titulo,
         "descripcion": descripcion,
         "urlImagen": urlImagen,

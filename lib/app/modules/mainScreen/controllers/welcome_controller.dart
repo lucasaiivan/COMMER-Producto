@@ -482,8 +482,7 @@ class WelcomeController extends GetxController {
     // obtenemos tres primeros obj(productos) desctacados para mostrarle al usuario
     Database.readProductsFuture(limit: 3).then((value) {
       List<Producto> list = [];
-      value.docs
-          .forEach((element) => list.add(Producto.fromMap(element.data())));
+      value.docs.forEach((element) => list.add(Producto.fromMap(element.data())));
       setListSuggestedProducts = list;
     });
   }

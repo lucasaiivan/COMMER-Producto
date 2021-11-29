@@ -5,6 +5,15 @@ import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.d
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 
+class ButtonData {
+  Color colorButton = Colors.purple;
+  Color colorText = Colors.white;
+  ButtonData({required Color colorButton, required Color colorText}) {
+    this.colorButton = colorButton;
+    this.colorText = colorText;
+  }
+}
+
 class ControllerProductsSearch extends GetxController {
   late final WelcomeController welcomeController;
 
@@ -13,8 +22,12 @@ class ControllerProductsSearch extends GetxController {
     // obtenemos los datos del controlador principal
     welcomeController = Get.find();
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi();
-    _codeBarParameter = Get.arguments['idProduct']??'';
-    if(_codeBarParameter!=''){queryProduct(id: _codeBarParameter);}
+    _codeBarParameter = Get.arguments['idProduct'] ?? '';
+    if (_codeBarParameter != '') {
+      queryProduct(id: _codeBarParameter);
+    }
+    queryProductSuggestion();
+
     super.onInit();
   }
 
@@ -34,9 +47,14 @@ class ControllerProductsSearch extends GetxController {
   String _codeBarParameter = "";
 
   // Color de fondo
-  Color _colorFondo = Colors.deepPurple;
+  Color _colorFondo = Get.theme.scaffoldBackgroundColor;
   set setColorFondo(Color color) => _colorFondo = color;
   get getColorFondo => _colorFondo;
+
+  // Color de icono y texto de appbar y textfield
+  Color? _colorTextField = Get.theme.textTheme.bodyText1!.color;
+  set setColorTextField(Color color) => _colorTextField = color;
+  get getColorTextField => _colorTextField;
 
   // TextEditingController
   TextEditingController textEditingController = new TextEditingController();
@@ -45,9 +63,11 @@ class ControllerProductsSearch extends GetxController {
   get getTextEditingController => textEditingController;
 
   // color component textfield
-  Color _textEditingColor = Colors.deepPurple;
-  set setTextEditingColor(Color color) => _textEditingColor = color;
-  get getTextEditingColor => _textEditingColor;
+  ButtonData _buttonData =
+      ButtonData(colorButton: Get.theme.primaryColor, colorText: Colors.white);
+  setButtonData({required Color colorButton, required Color colorText}) =>
+      _buttonData = ButtonData(colorButton: colorButton, colorText: colorText);
+  ButtonData get getButtonData => _buttonData;
 
   // state search
   bool _stateSearch = false;
@@ -55,12 +75,23 @@ class ControllerProductsSearch extends GetxController {
   get getStateSearch => _stateSearch;
 
   // state result
-  bool _productDoesNotExist = true;
+  bool _productDoesNotExist = false;
   set setproductDoesNotExist(bool state) {
-    setColorFondo = Colors.red;
-    setTextEditingColor = Colors.white;
-    _productDoesNotExist = state;
+    if (state) {
+      setColorFondo = Colors.red;
+      setColorTextField = Colors.white;
+      setButtonData(colorButton: Colors.white, colorText: Colors.black);
+      _productDoesNotExist = state;
+    } else {
+      _productDoesNotExist = false;
+    }
   }
+
+  // list productos sujeridos
+  List<Producto> _listProductsSuggestion = [];
+  set setListProductsSuggestions(List<Producto> list) =>
+      _listProductsSuggestion = list;
+  List<Producto> get getListProductsSuggestions => _listProductsSuggestion;
 
   get getproductDoesNotExist => _productDoesNotExist;
 
@@ -69,7 +100,6 @@ class ControllerProductsSearch extends GetxController {
     if (id != '') {
       // set
       setStateSearch = true;
-      clean();
       update(['updateAll']);
       // query
       Database.readProductGlobalFuture(id: id).then((value) {
@@ -78,30 +108,50 @@ class ControllerProductsSearch extends GetxController {
         Get.toNamed(Routes.PRODUCT,
             arguments: {'product': productoNegocio.convertProductCatalogue()});
       }).onError((error, stackTrace) {
-        setproductDoesNotExist = false;
+        setproductDoesNotExist = true;
         setStateSearch = false;
         update(['updateAll']);
       }).catchError((error) {
-        setproductDoesNotExist = false;
+        setproductDoesNotExist = true;
         setStateSearch = false;
         update(['updateAll']);
       });
     }
   }
 
-  void clean() {
-    textEditingController.clear();
-    setproductDoesNotExist = false;
+  void updateAll() => update(['updateAll']);
+  bool verifyIsNumber({required dynamic value}) {
+    //  Verificamos que el dato ingresado por el usuario sea un número válido
+    try {
+      int.parse(value);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
-  /*  Future<bool> queryExistProductCatalogue({required String id}) async {
-    // Va a comprobar si el producto ya existe en el cátalogo de la cuenta
-    bool state = false;
-    welcomeController.getCataloProducts.forEach((element) {
-      if (element.id == id) {
-        state = true;
-      }
+  void clean() {
+    textEditingController.clear();
+    _productDoesNotExist = false;
+    setButtonData(colorButton: Get.theme.primaryColor, colorText: Colors.white);
+    setColorFondo = Get.theme.scaffoldBackgroundColor;
+    setColorTextField =
+        Get.theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+    update(['updateAll']);
+  }
+
+  void queryProductSuggestion() {
+    Database.readProductsFuture(limit: 4).then((value) {
+      List<Producto> newList = [];
+      value.docs
+          .forEach((element) => newList.add(Producto.fromMap(element.data())));
+      setListProductsSuggestions = newList;
+      update(['updateAll']);
     });
-    return state;
-  } */
+  }
+
+  void toProductView({required Producto porduct}) {
+    Get.toNamed(Routes.PRODUCT,
+        arguments: {'product': porduct.convertProductCatalogue()});
+  }
 }
