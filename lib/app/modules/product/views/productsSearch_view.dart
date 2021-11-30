@@ -138,7 +138,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                       icon: Icon(Icons.add,
                           color: controller.getButtonData.colorText),
                       onPressed: () {
-                        // Navigator.of(context).pushReplacement( MaterialPageRoute( builder: (BuildContext context) => ProductNew(id: this.codigoBar)));
+                        controller.toProductNew(id: controller.textEditingController.text);
                       },
                       text: "Agregar nuevo producto",
                       colorAccent: controller.getButtonData.colorText,
@@ -218,6 +218,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
       },
     );
   }
+
   Widget widgetSuggestions({required List<Producto> list}) {
     if (list.length == 0) return Container();
     return Column(
@@ -299,7 +300,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                 ),
               ),
             ),
-           Padding(
+            Padding(
               padding: const EdgeInsets.only(left: 120),
               child: InkWell(
                 onTap: () => controller.toProductView(porduct: list[3]),
@@ -336,10 +337,10 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
       late String barcodeScanRes;
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           "#ff6666", "Cancel", true, ScanMode.BARCODE);
+      controller.textEditingController.text = barcodeScanRes;
       controller.queryProduct(id: barcodeScanRes);
     } on PlatformException {
       Get.snackbar('scanBarcode', 'Failed to get platform version');
     }
   }
 }
-

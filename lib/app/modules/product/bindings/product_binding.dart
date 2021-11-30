@@ -1,6 +1,7 @@
 
 import 'package:get/get.dart';
 import 'package:producto/app/modules/product/controllers/product_controller.dart';
+import 'package:producto/app/modules/product/controllers/product_edit_controller.dart';
 import 'package:producto/app/modules/product/controllers/productsSearch_controller.dart';
 
 class ProductBinding extends Bindings {
@@ -14,5 +15,12 @@ class ProductsSarchBinding extends Bindings {
   @override
   void dependencies() {
     Get.put<ControllerProductsSearch>(ControllerProductsSearch());
+  }
+}
+
+class ProductsEditBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put<ControllerProductsEdit>(ControllerProductsEdit());
   }
 }
