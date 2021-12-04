@@ -150,10 +150,10 @@ class ControllerProductsSearch extends GetxController {
     });
   }
 
-  void toProductView({required Producto porduct}) {
-    Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct.convertProductCatalogue()});
+  void toProductView({required ProductoNegocio porduct}) {
+    Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct});
   }
   void toProductNew({required String id}) {
-    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'idNew': id});
+    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': ProductoNegocio(id: id,codigo: id)});
   }
 }

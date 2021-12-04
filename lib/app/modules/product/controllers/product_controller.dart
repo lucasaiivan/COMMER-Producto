@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
+import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 import '../../splash/controllers/splash_controller.dart';
 
@@ -86,5 +87,9 @@ class ProductController extends GetxController {
       });
       setListPricesForProduct = list.cast<Precio>();
     });
+  }
+
+  void toProductEdit() {
+    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': getProduct});
   }
 }

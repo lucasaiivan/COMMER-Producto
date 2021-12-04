@@ -51,7 +51,7 @@ dependencies:
   shimmer: ^2.0.0 # Un paquete proporciona una manera fácil de agregar un efecto de brillo en el proyecto Flutter
   expandable_bottom_sheet: ^1.1.1+1 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
   loadany: ^1.0.0 # Un nuevo Flutter carga más paquetes.
-  image_picker: ^0.8.4+3 # Un complemento de Flutter para iOS y Android para seleccionar imágenes de la biblioteca de imágenes y tomar nuevas fotografías con la cámara.
+  image_picker: ^0.8.3+2 # Un complemento de Flutter para iOS y Android para seleccionar imágenes de la biblioteca de imágenes y tomar nuevas fotografías con la cámara.
   search_page: ^2.0.0+1 # Una forma rápida y sencilla de crear una experiencia de búsqueda personalizada en su aplicación.
   diacritic: ^0.1.3 # Elimina los acentos comunes y los signos diacríticos de una cadena reemplazándolos por un carácter equivalente.
   flutter_barcode_scanner: ^2.0.0 # Un complemento para las aplicaciones Flutter que agrega compatibilidad con el escaneo de códigos de barras tanto en Android como en iOS.

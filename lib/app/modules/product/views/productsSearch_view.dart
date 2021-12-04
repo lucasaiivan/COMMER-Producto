@@ -234,7 +234,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
             Padding(
               padding: const EdgeInsets.only(left: 0),
               child: InkWell(
-                onTap: () => controller.toProductView(porduct: list[0]),
+                onTap: () => controller.toProductView(porduct: list[0].convertProductCatalogue()),
                 borderRadius: BorderRadius.circular(50),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -257,7 +257,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
             Padding(
               padding: const EdgeInsets.only(left: 40),
               child: InkWell(
-                onTap: () => controller.toProductView(porduct: list[1]),
+                onTap: () => controller.toProductView(porduct: list[1].convertProductCatalogue()),
                 borderRadius: BorderRadius.circular(50),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -280,7 +280,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
             Padding(
               padding: const EdgeInsets.only(left: 80),
               child: InkWell(
-                onTap: () => controller.toProductView(porduct: list[2]),
+                onTap: () => controller.toProductView(porduct: list[2].convertProductCatalogue()),
                 borderRadius: BorderRadius.circular(50),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -303,7 +303,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
             Padding(
               padding: const EdgeInsets.only(left: 120),
               child: InkWell(
-                onTap: () => controller.toProductView(porduct: list[3]),
+                onTap: () => controller.toProductView(porduct: list[3].convertProductCatalogue()),
                 borderRadius: BorderRadius.circular(50),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),

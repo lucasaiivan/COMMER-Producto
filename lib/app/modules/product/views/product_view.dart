@@ -98,15 +98,9 @@ class Product extends GetView<ProductController> {
         ),
         IconButton(
           padding: EdgeInsets.all(12.0),
-          icon: Icon(false ? Icons.edit : Icons.add_box),
+          icon: Icon(true ? Icons.edit : Icons.add_box),
           onPressed: () {
-            /* bannerAd?.dispose();
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (BuildContext context) => widget.producto != null
-                  ? ProductEdit(producto: widget.producto)
-                  : Scaffold(
-                      body: Center(child: Text("Se produjo un Error!"))),
-            )); */
+            controller.toProductEdit();
           },
         ),
         IconButton(
@@ -176,11 +170,9 @@ class Product extends GetView<ProductController> {
     return ExpandableBottomSheet(
       background: background(),
       persistentHeader: persistentHeader(
-          colorBackground: Get.theme.cardColor,
-          colorText: Colors.white),
+          colorBackground: Get.theme.cardColor, colorText: Colors.white),
       expandableContent: expandableContent(
-          colorBackground: Get.theme.cardColor,
-          colorText: Colors.white),
+          colorBackground: Get.theme.cardColor, colorText: Colors.white),
     );
   }
 
@@ -250,16 +242,18 @@ class Product extends GetView<ProductController> {
                   style: TextStyle(
                       height: 1, fontSize: 16, fontWeight: FontWeight.normal))
               : Container(),
-          controller.getProduct.codigo != ""?SizedBox(height:5):Container(),   
+          controller.getProduct.codigo != ""
+              ? SizedBox(height: 5)
+              : Container(),
           controller.getProduct.codigo != ""
               ? Opacity(
-                opacity: 0.8,
-                child: Text(controller.getProduct.codigo,
-                  style: TextStyle(
-                      height: 1,
-                      fontSize: 12,
-                      fontWeight: FontWeight.normal)),
-              )
+                  opacity: 0.8,
+                  child: Text(controller.getProduct.codigo,
+                      style: TextStyle(
+                          height: 1,
+                          fontSize: 12,
+                          fontWeight: FontWeight.normal)),
+                )
               : Container(),
         ],
       ),
@@ -295,13 +289,15 @@ class Product extends GetView<ProductController> {
     });
   }
 
-  Widget persistentHeader({required Color colorBackground, required Color colorText}) {
-
+  Widget persistentHeader(
+      {required Color colorBackground, required Color colorText}) {
     return ClipRRect(
-      borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20), topRight: Radius.circular(20)),
       child: Container(
         color: colorBackground,
-        padding:EdgeInsets.only(bottom: 50.0, left: 12.0, right: 12.0, top: 12.0),
+        padding:
+            EdgeInsets.only(bottom: 50.0, left: 12.0, right: 12.0, top: 12.0),
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -313,12 +309,15 @@ class Product extends GetView<ProductController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       textDirection: TextDirection.ltr,
                       children: [
-                        controller.getProduct.precioVenta != 0.0 ? Padding(
+                        controller.getProduct.precioVenta != 0.0
+                            ? Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: [
                                     Text(
-                                        Publicaciones.getFormatoPrecio(monto:controller.getProduct.precioVenta),
+                                        Publicaciones.getFormatoPrecio(
+                                            monto: controller
+                                                .getProduct.precioVenta),
                                         style: TextStyle(
                                             color: colorText,
                                             fontSize: 30,
@@ -328,13 +327,26 @@ class Product extends GetView<ProductController> {
                                       children: [
                                         controller.getProduct.precioCompra !=
                                                 0.0
-                                            ? Text(' ${Publicaciones.getFormatoPrecio(monto:controller.getProduct.precioCompra)} ',
-                                                style: TextStyle(fontSize: 12.0))
-                                            : Container(),
-                                        controller.getProduct.precioCompra != 0.0
                                             ? Text(
-                                                sProcentaje(precioCompra: controller.getProduct.precioCompra,precioVenta: controller.getProduct.precioVenta),
-                                                style: TextStyle(color: Colors.green,fontSize: 12.0,fontWeight:FontWeight.bold))
+                                                ' ${Publicaciones.getFormatoPrecio(monto: controller.getProduct.precioCompra)} ',
+                                                style:
+                                                    TextStyle(fontSize: 12.0))
+                                            : Container(),
+                                        controller.getProduct.precioCompra !=
+                                                0.0
+                                            ? Text(
+                                                sProcentaje(
+                                                    precioCompra: controller
+                                                        .getProduct
+                                                        .precioCompra,
+                                                    precioVenta: controller
+                                                        .getProduct
+                                                        .precioVenta),
+                                                style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontSize: 12.0,
+                                                    fontWeight:
+                                                        FontWeight.bold))
                                             : Container(),
                                         controller.getProduct.precioCompra !=
                                                 0.0
@@ -343,13 +355,22 @@ class Product extends GetView<ProductController> {
                                                     color: Colors.green,
                                                     fontSize: 12.0))
                                             : Container(),
-                                        controller.getProduct.precioCompra != 0.0
+                                        controller.getProduct.precioCompra !=
+                                                0.0
                                             ? Text(
                                                 Publicaciones.sGanancia(
-                                                    precioCompra: controller.getProduct.precioCompra,
-                                                    precioVenta: controller.getProduct.precioVenta),
+                                                    precioCompra: controller
+                                                        .getProduct
+                                                        .precioCompra,
+                                                    precioVenta: controller
+                                                        .getProduct
+                                                        .precioVenta),
                                                 style: TextStyle(
-                                                    color: controller.getProduct.precioCompra <controller.getProduct.precioVenta
+                                                    color: controller.getProduct
+                                                                .precioCompra <
+                                                            controller
+                                                                .getProduct
+                                                                .precioVenta
                                                         ? Colors.green
                                                         : Colors.red,
                                                     fontSize: 12.0,
@@ -599,15 +620,19 @@ class Product extends GetView<ProductController> {
               ),
             ),
             Obx(() => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CircleAvatar(radius: 30,
-                backgroundColor: Get.theme.scaffoldBackgroundColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: utilsWidget.viewCircleImage(size: 60,url: controller.getMark.urlImagen,texto: controller.getMark.titulo),
-                ),
-              ),
-            )),
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Get.theme.scaffoldBackgroundColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: utilsWidget.viewCircleImage(
+                          size: 60,
+                          url: controller.getMark.urlImagen,
+                          texto: controller.getMark.titulo),
+                    ),
+                  ),
+                )),
           ],
         ),
       ),

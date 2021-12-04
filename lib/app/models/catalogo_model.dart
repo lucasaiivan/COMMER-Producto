@@ -11,7 +11,6 @@ class Producto {
   String descripcion = ""; // Informacion
   double precioVenta = 0.0;
   double precioCompra = 0.0;
-  double precioComparacion = 0.0;
   String codigo = "";
   String categoria = ""; // ID de la categoria del producto
   String subcategoria = ""; // ID de la subcategoria del producto
@@ -31,7 +30,6 @@ class Producto {
     this.descripcion = "",
     this.precioVenta = 0.0,
     this.precioCompra = 0.0,
-    this.precioComparacion = 0.0,
     this.codigo = "",
     this.categoria = "",
     this.subcategoria = "",
@@ -52,7 +50,6 @@ class Producto {
         "descripcion": descripcion,
         "precio_venta": precioVenta,
         "precio_compra": precioCompra,
-        "precio_comparacion": precioComparacion,
         "codigo": codigo,
         "categoria": categoria,
         "subcategoria": subcategoria,
@@ -72,7 +69,6 @@ class Producto {
       descripcion: data['descripcion'] ?? '',
       precioVenta: data['precio_venta'] ?? 0.0,
       precioCompra: data['precio_compra'] ?? 0.0,
-      precioComparacion: data['precio_comparacion'] ?? 0.0,
       codigo: data['codigo'] ?? '',
       categoria: data['categoria'] ?? '',
       subcategoria: data['subcategoria'] ?? '',
@@ -92,7 +88,6 @@ class Producto {
     descripcion = documentSnapshot['descripcion'] ?? '';
     precioVenta = documentSnapshot['precio_venta'] ?? 0.0;
     precioCompra = documentSnapshot['precio_compra'] ?? 0.0;
-    precioComparacion = documentSnapshot['precio_comparacion'] ?? 0.0;
     codigo = documentSnapshot['codigo'] ?? '';
     categoria = documentSnapshot['categoria'] ?? '';
     subcategoria = documentSnapshot['subcategoria'] ?? '';
@@ -112,6 +107,8 @@ class Producto {
     productoNegocio.codigo = this.codigo;
     productoNegocio.categoria = this.categoria;
     productoNegocio.subcategoria = this.subcategoria;
+    //productoNegocio.precioCompra = this.precioCompra;
+    //productoNegocio.precioVenta = this.precioVenta;
     //productoNegocio.timestampActualizacion=this.timestampActualizacion;
     //productoNegocio.timestampCreation=this.timestampCreation;
 
@@ -146,7 +143,6 @@ class ProductoNegocio {
   bool habilitado = true;
   double precioVenta = 0.0;
   double precioCompra = 0.0;
-  double precioComparacion = 0.0;
 
   late Timestamp
       timestampCompra; // Marca de tiempo ( hora en que se compro el producto )
@@ -172,7 +168,6 @@ class ProductoNegocio {
     this.habilitado = false,
     this.precioVenta = 0.0,
     this.precioCompra = 0.0,
-    this.precioComparacion = 0.0,
     this.productoPrecargado = false,
     timestampCompra,
     this.signoMoneda = "",
@@ -199,7 +194,6 @@ class ProductoNegocio {
       habilitado: data['habilitado'] ?? true,
       precioVenta: data['precio_venta'] ?? 0.0,
       precioCompra: data['precio_compra'] ?? 0.0,
-      precioComparacion: data['precio_comparacion'] ?? 0.0,
       timestampCompra: data['timestamp_compra'] ?? null,
       signoMoneda: data['signo_moneda'] ?? '',
     );
@@ -220,7 +214,6 @@ class ProductoNegocio {
         "habilitado": habilitado,
         "precio_venta": precioVenta,
         "precio_compra": precioCompra,
-        "precio_comparacion": precioComparacion,
         "timestamp_compra": timestampCompra,
         "timestamp_creation": timestampCreation,
         "timestamp_actualizacion": timestampActualizacion,
@@ -248,6 +241,7 @@ class ProductoNegocio {
 DateTime date = Timestamp.now() as DateTime;
 
 class Precio {
+  
   String idNegocio = "";
   double precio = 0.0;
   late Timestamp timestamp;
