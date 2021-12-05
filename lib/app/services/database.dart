@@ -67,7 +67,7 @@ class Database {
   static CollectionReference  refFirestoreUserAdmin({required String idUser}) => FirebaseFirestore.instance.collection('/USUARIOS/$idUser/ADMINISTRADOR_NEGOCIOS/');
   static CollectionReference  refFirestoreAccount() => FirebaseFirestore.instance.collection('/NEGOCIOS/'); 
   static CollectionReference  refFirestoreCategory({ required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA/');
-
+  static CollectionReference refFirestoreCatalogueProduct( {required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA');  
 
   //  update value
   //  Para actualizar los datos en la base de datos, puede usar el update()método en el documentReferencerobjeto pasando los nuevos datos como un mapa. Para actualizar un documento en particular de la base de datos, deberá usar su ID de documento único .
@@ -91,8 +91,8 @@ class Database {
 
   //  dalete value
   //  Para eliminar una nota de la base de datos, puede usar su ID de documento particular y eliminarlo usando el delete()método en el documentReferencerobjeto.
-  static Future<void> deleteItem({ required String docId }) async {
+  /* static Future<void> deleteItem({ required String docId }) async {
     DocumentReference documentReferencer =_mainCollection.doc(userUid).collection('items').doc(docId);
     await documentReferencer.delete().whenComplete(() => print('Note item deleted from the database')).catchError((e) => print(e));
-  }
+  } */
 }

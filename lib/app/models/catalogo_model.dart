@@ -14,10 +14,11 @@ class Producto {
   String codigo = "";
   String categoria = ""; // ID de la categoria del producto
   String subcategoria = ""; // ID de la subcategoria del producto
-  late Timestamp
-      timestampCreation; // Marca de tiempo ( hora en que se creo el producto )
-  late Timestamp
-      timestampActualizacion; // Marca de tiempo ( hora en que se edito el producto )
+  bool enabled = true;
+  Timestamp
+      timestampCreation = Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
+  Timestamp
+      timestampActualizacion= Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
   Producto({
     this.id = "",
@@ -33,10 +34,9 @@ class Producto {
     this.codigo = "",
     this.categoria = "",
     this.subcategoria = "",
+    this.enabled=true,
     timestampActualizacion,
     timestampCreation,
-    //this.timestampCreation,
-    //this.timestamp_actualizacion,
   });
 
   Map<String, dynamic> toJson() => {
@@ -55,6 +55,7 @@ class Producto {
         "subcategoria": subcategoria,
         "timestamp_creation": timestampCreation,
         "timestamp_actualizacion": timestampActualizacion,
+        "enabled": enabled,
       };
 
   factory Producto.fromMap(Map data) {
@@ -74,6 +75,7 @@ class Producto {
       subcategoria: data['subcategoria'] ?? '',
       timestampActualizacion: data['timestamp_actualizacion'],
       timestampCreation: data['timestamp_creation'],
+      enabled: data['enabled']??true,
     );
   }
   Producto.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
@@ -93,6 +95,7 @@ class Producto {
     subcategoria = documentSnapshot['subcategoria'] ?? '';
     timestampActualizacion = documentSnapshot['timestamp_actualizacion'];
     timestampCreation = documentSnapshot['timestamp_creation'];
+    enabled = documentSnapshot['enabled']??true;
   }
   ProductoNegocio convertProductCatalogue() {
     ProductoNegocio productoNegocio = new ProductoNegocio();
@@ -107,10 +110,7 @@ class Producto {
     productoNegocio.codigo = this.codigo;
     productoNegocio.categoria = this.categoria;
     productoNegocio.subcategoria = this.subcategoria;
-    //productoNegocio.precioCompra = this.precioCompra;
-    //productoNegocio.precioVenta = this.precioVenta;
-    //productoNegocio.timestampActualizacion=this.timestampActualizacion;
-    //productoNegocio.timestampCreation=this.timestampCreation;
+    productoNegocio.enabled = this.enabled;
 
     return productoNegocio;
   }
@@ -121,34 +121,31 @@ class ProductoNegocio {
   String id = "";
   bool favorite = false;
   String idMarca = ""; // ID de la marca por defecto esta vacia
+  String nameMark = ''; // nombre de la marca
   String urlimagen = "https://default"; // URL imagen
   String titulo = ""; // Titulo
   String descripcion = ""; // Información
   String codigo = "";
   String categoria = ""; // ID de la categoria del producto
+  String categoriaName = ""; // name category
   String subcategoria = ""; // ID de la subcategoria del producto
-  late Timestamp
-      timestampCreation; // Marca de tiempo ( hora en que se creo el producto )
-  late Timestamp
-      timestampActualizacion; // Marca de tiempo ( hora en que se edito el producto )
+  String subcategoriaName = ""; // name subcategory
+  Timestamp timestampCreation =
+      Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
+  Timestamp timestampActualizacion =
+      Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
   // Datos de publicacion
   String idNegocio = ""; // ID del negocios
   String idUsuario = ""; // ID del usuario quien creo la publicacion
 
   // Datos del producto
+  bool enabled = true;
   bool verificado = false; // estado de verificación por un moderador
-  bool productoPrecargado = false;
   // Variables
-  bool habilitado = true;
   double precioVenta = 0.0;
   double precioCompra = 0.0;
-
-  late Timestamp
-      timestampCompra; // Marca de tiempo ( hora en que se compro el producto )
   String signoMoneda;
-  //Map<String,bool> mg=new Map();    // <ID,(true=me gusta | false=no me gusta)>
-  int cantidad = 1;
 
   ProductoNegocio({
     // Valores del producto
@@ -160,18 +157,19 @@ class ProductoNegocio {
     this.descripcion = "",
     this.codigo = "",
     this.categoria = "",
+    this.categoriaName = '',
     this.subcategoria = "",
+    this.subcategoriaName = '',
     timestampCreation,
     timestampActualizacion,
+    this.enabled = true,
 
     // valores de la cuenta
-    this.habilitado = false,
     this.precioVenta = 0.0,
     this.precioCompra = 0.0,
-    this.productoPrecargado = false,
-    timestampCompra,
     this.signoMoneda = "",
     this.idMarca = '',
+    this.nameMark = '',
   });
 
   factory ProductoNegocio.fromMap(Map data) {
@@ -181,20 +179,22 @@ class ProductoNegocio {
       verificado: data['verificado'] ?? false,
       favorite: data['favorite'] ?? false,
       idMarca: data['id_marca'] ?? '',
+      nameMark: data['nameMark'] ?? '',
       urlimagen: data['urlimagen'] ?? 'https://default',
       titulo: data['titulo'] ?? '',
       descripcion: data['descripcion'] ?? '',
       codigo: data['codigo'] ?? '',
       categoria: data['categoria'] ?? '',
+      categoriaName: data['categoriaName'] ?? '',
       subcategoria: data['subcategoria'] ?? '',
-      timestampActualizacion: data['timestamp_actualizacion'],
-      timestampCreation: data['timestamp_creation'],
+      subcategoriaName: data['subcategoriaName'] ?? '',
+      timestampActualizacion:
+          data['timestamp_actualizacion'] ?? Timestamp.now(),
+      timestampCreation: data['timestamp_creation'] ?? Timestamp.now(),
+      enabled: data['enabled'] ?? true,
       // valores de la cuenta
-      productoPrecargado: data['producto_precargado'] ?? true,
-      habilitado: data['habilitado'] ?? true,
       precioVenta: data['precio_venta'] ?? 0.0,
       precioCompra: data['precio_compra'] ?? 0.0,
-      timestampCompra: data['timestamp_compra'] ?? null,
       signoMoneda: data['signo_moneda'] ?? '',
     );
   }
@@ -204,24 +204,25 @@ class ProductoNegocio {
         "verificado": verificado,
         "favorite": verificado,
         "id_marca": idMarca,
+        "nameMark": nameMark,
         "urlimagen": urlimagen,
         "titulo": titulo,
         "descripcion": descripcion,
         "codigo": codigo,
         "categoria": categoria,
+        "categoriaName": categoriaName,
         "subcategoria": subcategoria,
-        "producto_precargado": productoPrecargado,
-        "habilitado": habilitado,
+        "subcategoriaName": subcategoriaName,
+        "enabled": enabled,
         "precio_venta": precioVenta,
         "precio_compra": precioCompra,
-        "timestamp_compra": timestampCompra,
         "timestamp_creation": timestampCreation,
         "timestamp_actualizacion": timestampActualizacion,
         "signo_moneda": signoMoneda,
-        "cantidad": cantidad,
       };
 
   Producto convertProductoDefault() {
+    // convertimos en el modelo para producto global
     Producto productoDefault = new Producto();
     productoDefault.id = this.id;
     productoDefault.urlImagen = this.urlimagen;
@@ -233,6 +234,7 @@ class ProductoNegocio {
     productoDefault.codigo = this.codigo;
     productoDefault.timestampActualizacion = this.timestampActualizacion;
     productoDefault.timestampCreation = this.timestampCreation;
+    productoDefault.enabled = this.enabled;
 
     return productoDefault;
   }
@@ -241,7 +243,6 @@ class ProductoNegocio {
 DateTime date = Timestamp.now() as DateTime;
 
 class Precio {
-  
   String idNegocio = "";
   double precio = 0.0;
   late Timestamp timestamp;
@@ -291,12 +292,18 @@ class Categoria {
         "nombre": nombre,
         "subcategorias": subcategorias,
       };
-  factory Categoria.fromMap(Map data) {
+  factory Categoria.fromMap(Map<String, dynamic> data) {
     return Categoria(
       id: data['id'] ?? '',
       nombre: data['nombre'] ?? '',
       subcategorias: data['subcategorias'] ?? new Map<String, dynamic>(),
     );
+  }
+  Categoria.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+    id = documentSnapshot['id'] ?? '';
+    nombre = documentSnapshot['nombre'] ?? '';
+    subcategorias =
+        documentSnapshot['subcategorias'] ?? new Map<String, dynamic>();
   }
 }
 

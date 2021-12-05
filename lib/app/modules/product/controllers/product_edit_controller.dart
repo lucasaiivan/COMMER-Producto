@@ -1,13 +1,26 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:producto/app/models/catalogo_model.dart';
+import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
+import 'package:producto/app/modules/splash/controllers/splash_controller.dart';
+import 'package:producto/app/services/database.dart';
 
 class ControllerProductsEdit extends GetxController {
+  // others controllers
+  SplashController homeController = Get.find<SplashController>();
+  final WelcomeController welcomeController = Get.find();
+
+  // variable para saber si el producto ya esta o no en el cátalogo
+  bool _inCatalogue = false;
+  set setIsCatalogue(bool value) => _inCatalogue = value;
+  bool get getIsCatalogue => _inCatalogue;
+
   // variable para mostrar al usaurio una viste para editar o crear un nuevo producto
   bool _newProduct = true;
   set setNewProduct(bool value) => _newProduct = value;
@@ -35,11 +48,38 @@ class ControllerProductsEdit extends GetxController {
   Marca _markSelected = Marca(
       timestampActualizado: Timestamp.now(),
       timestampCreacion: Timestamp.now());
-  set setMarkSelected(Marca value) => _markSelected = value;
+  set setMarkSelected(Marca value) {
+    _markSelected = value;
+    getProduct.idMarca = value.id;
+    getProduct.nameMark = value.titulo;
+    update(['updateAll']);
+  }
+
   Marca get getMarkSelected => _markSelected;
 
-  // imagen
+  //  category
+  Categoria _category = Categoria();
+  set setCategory(Categoria value) {
+    _category = value;
+    getProduct.categoria = value.id;
+    getProduct.categoriaName = value.nombre;
+    update(['updateAll']);
+  }
 
+  Categoria get getCategory => _category;
+
+  //  subcategory
+  Categoria _subcategory = Categoria();
+  set setSubcategory(Categoria value) {
+    _subcategory = value;
+    getProduct.subcategoria = value.id;
+    getProduct.subcategoriaName = value.nombre;
+    update(['updateAll']);
+  }
+
+  Categoria get getSubcategory => _subcategory;
+
+  // imagen
   ImagePicker _picker = ImagePicker();
   XFile _xFileImage = XFile('');
   set setXFileImage(XFile value) => _xFileImage = value;
@@ -61,8 +101,12 @@ class ControllerProductsEdit extends GetxController {
     } else {
       setNewProduct = false;
     }
-    // load data
-    if (getNewProduct == false) loadDataProduct();
+    // load data product
+    if (getNewProduct == false) {
+      // el documento existe
+      loadDataProduct();
+      isCatalogue();
+    }
 
     super.onInit();
   }
@@ -79,15 +123,95 @@ class ControllerProductsEdit extends GetxController {
     super.onClose();
   }
 
+  updateAll() => update(['updateAll']);
+  back() => Get.back();
+
+  isCatalogue() {
+    welcomeController.getCataloProducts.forEach((element) {
+      if (element.id == getProduct.id) {
+        setIsCatalogue = true;
+        update(['updateAll']);
+      }
+    });
+  }
+
+  void save() {
+    if (getProduct.id != '') {
+      if (getCategory.id != '') {
+        if (getProduct.descripcion != '') {
+          if (getMarkSelected.id != '') {
+            // activate indicator load
+            setSaveIndicator = true;
+            updateAll();
+
+            Database.refFirestoreCatalogueProduct(
+                    idAccount: homeController.idAccount)
+                .doc(getProduct.id)
+                .update(getProduct.toJson())
+                .whenComplete(() async {
+                  await Future.delayed(Duration(seconds: 3)).then((value) {
+                    setSaveIndicator = false;
+                    Get.back();
+                  });
+                })
+                .onError((error, stackTrace) => setSaveIndicator = false)
+                .catchError((_) => setSaveIndicator = false);
+          } else {
+            Get.snackbar(
+                'No se puedo continuar 😐', 'debes seleccionar una marca');
+          }
+        } else {
+          Get.snackbar('No se puedo continuar 👎',
+              'debes escribir una descripción del producto');
+        }
+      } else {
+        Get.snackbar(
+            'No se puedo guardar los datos', 'debes seleccionar una categoría');
+      }
+    }
+  }
+
   void loadDataProduct() {
+    // set
     controllerTextEdit_descripcion =
         TextEditingController(text: getProduct.descripcion);
     controllerTextEdit_precio_venta =
         MoneyMaskedTextController(initialValue: getProduct.precioVenta);
     controllerTextEdit_precio_compra =
         MoneyMaskedTextController(initialValue: getProduct.precioCompra);
+
+    // primero verificamos que no tenga el metadato del dato de la marca para hacer un consulta inecesaria
+    if (getProduct.idMarca != '') readMarkProducts();
+    if (getProduct.categoria != '') readCategory();
   }
 
+  void readMarkProducts() {
+    Database.readMarkFuture(id: getProduct.idMarca).then((value) {
+      setMarkSelected = Marca.fromDocumentSnapshot(documentSnapshot: value);
+      getProduct.nameMark = getMarkSelected.titulo; // guardamos un metadato
+      update(['updateAll']);
+    });
+  }
+
+  void readCategory() {
+    Database.readCategotyCatalogueFuture(
+            idAccount: homeController.idAccount,
+            idCategory: getProduct.categoria)
+        .then((value) {
+      setCategory = Categoria.fromDocumentSnapshot(documentSnapshot: value);
+      if (getProduct.subcategoria != '') readSubcategory();
+    });
+  }
+
+  void readSubcategory() {
+    getCategory.subcategorias.forEach((key, value) {
+      if (key == getProduct.subcategoria) {
+        setSubcategory = Categoria(id: key, nombre: value.toString());
+      }
+    });
+  }
+
+  // read imput image
   void getLoadImageGalery() {
     _picker
         .pickImage(
@@ -116,13 +240,6 @@ class ControllerProductsEdit extends GetxController {
     });
   }
 
-  /* Widget loadImage() {
-    if (getXFileImage.path != '') {
-      return Image.file(File(getXFileImage.path));
-    } else {
-      return Container();
-    }
-  } */
   Widget loadImage() {
     if (getXFileImage.path != '') {
       // el usuario cargo un nueva imagen externa
@@ -133,7 +250,24 @@ class ControllerProductsEdit extends GetxController {
     } else if (getProduct.urlimagen != '') {
       // se visualiza la imagen del producto
       return AspectRatio(
-        child: Image.network(getProduct.urlimagen),
+        //child: Image.network(getProduct.urlimagen),
+        child: CachedNetworkImage(
+          fit: BoxFit.cover,
+          imageUrl: getProduct.urlimagen,
+          placeholder: (context, url) => Container(
+            color: Colors.grey,
+            child: Center(child: Icon(Icons.cloud, color: Colors.white)),
+          ),
+          imageBuilder: (context, image) => Container(
+            child: Image(image: image, fit: BoxFit.cover),
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: Colors.black54,
+            child: Center(
+              child: Icon(Icons.error, color: Colors.white),
+            ),
+          ),
+        ),
         aspectRatio: 100 / 100,
       );
     } else {
@@ -141,7 +275,7 @@ class ControllerProductsEdit extends GetxController {
       return AspectRatio(
         aspectRatio: 100 / 100,
         child: Container(
-          color: Colors.grey,
+          color: Colors.black54,
           child: Center(
             child: Icon(
               Icons.image,
@@ -153,34 +287,63 @@ class ControllerProductsEdit extends GetxController {
     }
   }
 
-  void showDialogDelete({required BuildContext buildContext}) {
-    showDialog(
-      context: buildContext,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text(
-              "¿Seguro que quieres eliminar este producto de tu catálogo?"),
-          content: new Text(
-              "El producto será eliminado de tu catálogo y toda la información acumulada"),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Cancelar"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            new FlatButton(
-              child: new Text("Borrar"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                //deleteProduct(context: buildContext);
-              },
-            ),
-          ],
-        );
-      },
+  void showDialogDelete() {
+    Widget widget = AlertDialog(
+      title: new Text(
+          "¿Seguro que quieres eliminar este producto de tu catálogo?"),
+      content: new Text(
+          "El producto será eliminado de tu catálogo y toda la información acumulada"),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        TextButton(
+          child: const Text('Cancelar'),
+          onPressed: () {
+            Get.back();
+            back();
+          },
+        ),
+        TextButton(
+          child: const Text('Si, eliminar'),
+          onPressed: () {
+            Database.refFirestoreCatalogueProduct(idAccount:homeController.idAccount)
+                .doc(getProduct.id)
+                .delete()
+                .whenComplete(() {
+                  Get.back();
+                  back();
+                  back();
+                })
+                .onError((error, stackTrace) => Get.back())
+                .catchError((ex) => Get.back());
+          },
+        ),
+      ],
+    );
+
+    Get.dialog(widget);
+  }
+
+  showModalSelectCategory() {
+    Widget widget = Scaffold();
+    // muestre la hoja inferior modal de getx
+    Get.bottomSheet(
+      widget,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      enableDrag: true,
+      isDismissible: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+    );
+  }
+
+  showModalSelectSubcategory() {
+    Widget widget = Scaffold();
+    // muestre la hoja inferior modal de getx
+    Get.bottomSheet(
+      widget,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      enableDrag: true,
+      isDismissible: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
     );
   }
 
