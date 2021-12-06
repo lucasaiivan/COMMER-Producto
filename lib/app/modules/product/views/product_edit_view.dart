@@ -125,7 +125,7 @@ class ProductEdit extends StatelessWidget {
             child: OutlinedButton(
               onPressed: controller.getMarkSelected.id == ''
                   ? controller.showModalSelectMarca
-                  : null,
+                  : controller.getNewProduct?controller.showModalSelectMarca:null,
               child: controller.getMarkSelected.id == ''?
                 Text("Seleccionar marca")
                 :Row(
@@ -136,7 +136,7 @@ class ProductEdit extends StatelessWidget {
                         url: controller.getMarkSelected.urlImagen,
                         texto: controller.getMarkSelected.titulo),
                     SizedBox(width: 5),
-                    Text(controller.getMarkSelected.titulo,style: TextStyle(color:Colors.grey))
+                    Text(controller.getMarkSelected.titulo,style: TextStyle(color:controller.getNewProduct?null:Colors.grey))
                   ],
                 ), 
               style: ButtonStyle(

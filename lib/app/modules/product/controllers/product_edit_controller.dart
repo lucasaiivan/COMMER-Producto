@@ -9,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/services/database.dart';
+import 'package:producto/app/utils/widgets_utils_app.dart';
+import 'package:search_page/search_page.dart';
 
 class ControllerProductsEdit extends GetxController {
   // others controllers
@@ -54,6 +56,11 @@ class ControllerProductsEdit extends GetxController {
   }
 
   Marca get getMarkSelected => _markSelected;
+
+  // marcas
+  List<Marca> _marks = [];
+  set setMarks(List<Marca> value) => _marks = value;
+  List<Marca> get getMarks => _marks;
 
   //  category
   Categoria _category = Categoria();
@@ -189,11 +196,20 @@ class ControllerProductsEdit extends GetxController {
       getProduct.nameMark = getMarkSelected.titulo; // guardamos un metadato
       update(['updateAll']);
     }).onError((error, stackTrace) {
-          setMarkSelected = Marca(timestampActualizado: Timestamp.now(),timestampCreacion: Timestamp.now(),titulo: '',id: '0000',urlImagen: 'default');
-        })
-        .catchError((_) {
-          setMarkSelected = Marca(timestampActualizado: Timestamp.now(),timestampCreacion: Timestamp.now(),titulo: '',id: '0000',urlImagen: 'default');
-        });
+      setMarkSelected = Marca(
+          timestampActualizado: Timestamp.now(),
+          timestampCreacion: Timestamp.now(),
+          titulo: '',
+          id: '0000',
+          urlImagen: 'default');
+    }).catchError((_) {
+      setMarkSelected = Marca(
+          timestampActualizado: Timestamp.now(),
+          timestampCreacion: Timestamp.now(),
+          titulo: '',
+          id: '0000',
+          urlImagen: 'default');
+    });
   }
 
   void readCategory() {
@@ -201,17 +217,15 @@ class ControllerProductsEdit extends GetxController {
             idAccount: welcomeController.getProfileAccountSelected.id,
             idCategory: getProduct.categoria)
         .then((value) {
-          setCategory = Categoria.fromDocumentSnapshot(documentSnapshot: value);
-          if (getProduct.subcategoria != '') readSubcategory();
-        })
-        .onError((error, stackTrace) {
-          setCategory = Categoria(id: '0000',nombre: '');
-          setSubcategory = Categoria(id: '0000',nombre: '');
-        })
-        .catchError((_) {
-          setCategory = Categoria(id: '0000',nombre: '');
-          setSubcategory = Categoria(id: '0000',nombre: '');
-        });
+      setCategory = Categoria.fromDocumentSnapshot(documentSnapshot: value);
+      if (getProduct.subcategoria != '') readSubcategory();
+    }).onError((error, stackTrace) {
+      setCategory = Categoria(id: '0000', nombre: '');
+      setSubcategory = Categoria(id: '0000', nombre: '');
+    }).catchError((_) {
+      setCategory = Categoria(id: '0000', nombre: '');
+      setSubcategory = Categoria(id: '0000', nombre: '');
+    });
   }
 
   void readSubcategory() {
@@ -333,32 +347,8 @@ class ControllerProductsEdit extends GetxController {
     Get.dialog(widget);
   }
 
-  showModalSelectCategory() {
-    Widget widget = Scaffold();
-    // muestre la hoja inferior modal de getx
-    Get.bottomSheet(
-      widget,
-      backgroundColor: Get.theme.scaffoldBackgroundColor,
-      enableDrag: true,
-      isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-    );
-  }
-
-  showModalSelectSubcategory() {
-    Widget widget = Scaffold();
-    // muestre la hoja inferior modal de getx
-    Get.bottomSheet(
-      widget,
-      backgroundColor: Get.theme.scaffoldBackgroundColor,
-      enableDrag: true,
-      isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-    );
-  }
-
   showModalSelectMarca() {
-    Widget widget = Scaffold();
+    Widget widget = SelectMark();
     // muestre la hoja inferior modal de getx
     Get.bottomSheet(
       widget,
@@ -367,117 +357,248 @@ class ControllerProductsEdit extends GetxController {
       isDismissible: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
     );
+  }
+}
 
-    /* showModalBottomSheet(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        backgroundColor: Theme.of(buildContext).canvasColor,
-        context: buildContext,
-        builder: (_) {
-          // Variables
-          listMarcasAll = new List<Marca>();
-          return Scaffold(
-            appBar: AppBar(
-              title: Text("Marcas"),
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.of(buildContext).push(MaterialPageRoute(builder: (BuildContext context) =>PageCreateMarca()))
-                        .then((value) {
-                      setState(() {
-                        Navigator.of(buildContext).pop();
-                        this.marca = value;
-                        this.producto.titulo = this.marca.titulo;
-                      });
-                    });
-                  },
+class SelectMark extends StatefulWidget {
+  SelectMark({Key? key}) : super(key: key);
+
+  @override
+  _SelectMarkState createState() => _SelectMarkState();
+}
+
+class _SelectMarkState extends State<SelectMark> {
+  // var
+  ControllerProductsEdit controllerProductsEdit = Get.find();
+  List<Marca> list = [];
+
+  @override
+  void initState() {
+    loadMarks();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return scaffold();
+  }
+
+  /* IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              Get.back();
+              showSearch(
+                context: context,
+                delegate: SearchPage<Marca>(
+                  items: list,
+                  searchLabel: 'Buscar marca',
+                  suggestion: Center(
+                    child: Text('ej. Miller'),
+                  ),
+                  failure: Center(
+                    child: Text('No se encontro :('),
+                  ),
+                  filter: (product) => [
+                    product.titulo,
+                    product.descripcion,
+                  ],
+                  builder: (mark) => ListTile(
+                    leading: FadeInImage(
+                      image: NetworkImage(mark.urlImagen),
+                      placeholder: AssetImage("assets/loading.gif"),
+                      fadeInDuration: Duration(milliseconds: 200),
+                      fit: BoxFit.cover,
+                      width: 50.0,
+                    ),
+                    title: Text(mark.titulo),
+                    subtitle: Text(mark.descripcion),
+                    onTap: () {
+                      controllerProductsEdit.setMarkSelected = mark;
+                      Get.back();
+                    },
+                  ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () async {
-                    if (listMarcasAll.length != 0) {
-                      // Muestra un "showSearch" y espera ah revolver un resultado
-                      showSearch(
-                              context: buildContext,
-                              delegate: DataSearchMarcaProduct(
-                                  listMarcas: listMarcasAll))
-                          .then((value) {
-                        if (value != null) {
-                          setState(() {
-                            Navigator.of(buildContext).pop();
-                            this.marca = value;
-                            this.producto.titulo = this.marca.titulo;
-                          });
-                        }
-                      });
-                    }
-                  },
-                ),
-              ],
-            ),
-            body: FutureBuilder(
-              future: Global.getMarcasAll().getDataMarca(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  listMarcasAll = snapshot.data;
-                  if (listMarcasAll.length != 0) {
-                    return ListView.builder(
-                      padding: EdgeInsets.symmetric(vertical: 15.0),
-                      shrinkWrap: true,
-                      itemCount: listMarcasAll.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        Marca marcaSelect = listMarcasAll[index];
-                        return Column(
-                          children: <Widget>[
-                            ListTile(
-                              leading: viewCircleImage(texto: marcaSelect.titulo,url: marcaSelect.url_imagen,size: 50.0),
-                              dense: true,
-                              title: Row(
-                                children: <Widget>[
-                                  marcaSelect.verificado == true
-                                      ? Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: new Image.asset(
-                                              'assets/icon_verificado.png',
-                                              width: 16.0,
-                                              height: 16.0))
-                                      : new Container(),
-                                  Expanded(
-                                    child: Text(marcaSelect.titulo,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 16.0,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1
-                                                .color)),
-                                  ),
+              );
+            },
+          ) */
+
+  Widget scaffold() {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(vertical: 15.0),
+      shrinkWrap: true,
+      itemCount: list.length,
+      itemBuilder: (BuildContext context, int index) {
+        Marca marcaSelect = list[index];
+        if (index == 0) {
+          return Column(
+            children: [
+              Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12,left: 12,right: 12),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
+                        IconButton(
+                          icon: Icon(Icons.search),
+                          onPressed: () {
+                            Get.back();
+                            showSearch(
+                              context: context,
+                              delegate: SearchPage<Marca>(
+                                items: list,
+                                searchLabel: 'Buscar marca',
+                                suggestion: Center(
+                                  child: Text('ej. Miller'),
+                                ),
+                                failure: Center(
+                                  child: Text('No se encontro :('),
+                                ),
+                                filter: (product) => [
+                                  product.titulo,
+                                  product.descripcion,
                                 ],
+                                builder: (mark) => ListTile(
+                                  leading: FadeInImage(
+                                    image: NetworkImage(mark.urlImagen),
+                                    placeholder: AssetImage("assets/loading.gif"),
+                                    fadeInDuration: Duration(milliseconds: 200),
+                                    fit: BoxFit.cover,
+                                    width: 50.0,
+                                  ),
+                                  title: Text(mark.titulo),
+                                  subtitle: Text(mark.descripcion),
+                                  onTap: () {
+                                    controllerProductsEdit.setMarkSelected = mark;
+                                    Get.back();
+                                  },
+                                ),
                               ),
-                              onTap: () {
-                                setState(() {
-                                  this.marca = marcaSelect;
-                                  this.producto.titulo = this.marca.titulo;
-                                  Navigator.pop(buildContext);
-                                });
-                              },
-                              trailing:popupMenuItemCategoria(marca:marcaSelect ),
-                            ),
-                            Divider(endIndent: 12.0, indent: 12.0),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    return Center(child: Text("Cargando..."));
-                  }
-                } else {
-                  return Center(child: Text("Cargando..."));
-                }
-              },
-            ),
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.black26,
+                      radius: 24.0,
+                      child: Text(marcaSelect.titulo.substring(0, 1),
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    dense: true,
+                    title: Text(marcaSelect.titulo),
+                    onTap: () {
+                      controllerProductsEdit.setMarkSelected = marcaSelect;
+                      Get.back();
+                    },
+                  ),
+                  Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+                ],
+              ),
+              ListTile(
+                leading: viewCircleImage(
+                    texto: marcaSelect.titulo,
+                    url: marcaSelect.urlImagen,
+                    size: 50.0),
+                dense: true,
+                title: Row(
+                  children: <Widget>[
+                    marcaSelect.verificado == true
+                        ? Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: new Image.asset('assets/icon_verificado.png',
+                                width: 16.0, height: 16.0))
+                        : new Container(),
+                    Expanded(
+                      child: Text(marcaSelect.titulo,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .color)),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  controllerProductsEdit.setMarkSelected = marcaSelect;
+                  Get.back();
+                },
+                //trailing:popupMenuItemCategoria(marca:marcaSelect ),
+              ),
+              Divider(endIndent: 12.0, indent: 12.0),
+            ],
           );
-        }); */
+        }
+        return Column(
+          children: <Widget>[
+            ListTile(
+              leading: viewCircleImage(
+                  texto: marcaSelect.titulo,
+                  url: marcaSelect.urlImagen,
+                  size: 50.0),
+              dense: true,
+              title: Row(
+                children: <Widget>[
+                  marcaSelect.verificado == true
+                      ? Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: new Image.asset('assets/icon_verificado.png',
+                              width: 16.0, height: 16.0))
+                      : new Container(),
+                  Expanded(
+                    child: Text(marcaSelect.titulo,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            color:
+                                Theme.of(context).textTheme.bodyText1!.color)),
+                  ),
+                ],
+              ),
+              onTap: () {
+                controllerProductsEdit.setMarkSelected = marcaSelect;
+                Get.back();
+              },
+              //trailing:popupMenuItemCategoria(marca:marcaSelect ),
+            ),
+            Divider(endIndent: 12.0, indent: 12.0),
+          ],
+        );
+      },
+    );
+  }
+
+  // functions
+  loadMarks() async {
+    if (controllerProductsEdit.getMarks.length == 0) {
+      await Database.readListMarksFuture()
+          .then((value) {
+            setState(() {
+              value.docs.forEach((element) => list
+                  .add(Marca.fromDocumentSnapshot(documentSnapshot: element)));
+              controllerProductsEdit.setMarks = list;
+            });
+          })
+          .onError((error, stackTrace) {})
+          .catchError((_) {});
+    } else {
+      // datos ya descargados
+      list = controllerProductsEdit.getMarks;
+      setState(() => list = controllerProductsEdit.getMarks);
+    }
   }
 }
