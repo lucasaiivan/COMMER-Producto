@@ -8,12 +8,10 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
-import 'package:producto/app/modules/splash/controllers/splash_controller.dart';
 import 'package:producto/app/services/database.dart';
 
 class ControllerProductsEdit extends GetxController {
   // others controllers
-  SplashController homeController = Get.find<SplashController>();
   final WelcomeController welcomeController = Get.find();
 
   // variable para saber si el producto ya esta o no en el cátalogo
@@ -145,7 +143,7 @@ class ControllerProductsEdit extends GetxController {
             updateAll();
 
             Database.refFirestoreCatalogueProduct(
-                    idAccount: homeController.idAccount)
+                    idAccount: welcomeController.getProfileAccountSelected.id)
                 .doc(getProduct.id)
                 .update(getProduct.toJson())
                 .whenComplete(() async {
@@ -190,17 +188,30 @@ class ControllerProductsEdit extends GetxController {
       setMarkSelected = Marca.fromDocumentSnapshot(documentSnapshot: value);
       getProduct.nameMark = getMarkSelected.titulo; // guardamos un metadato
       update(['updateAll']);
-    });
+    }).onError((error, stackTrace) {
+          setMarkSelected = Marca(timestampActualizado: Timestamp.now(),timestampCreacion: Timestamp.now(),titulo: '',id: '0000',urlImagen: 'default');
+        })
+        .catchError((_) {
+          setMarkSelected = Marca(timestampActualizado: Timestamp.now(),timestampCreacion: Timestamp.now(),titulo: '',id: '0000',urlImagen: 'default');
+        });
   }
 
   void readCategory() {
     Database.readCategotyCatalogueFuture(
-            idAccount: homeController.idAccount,
+            idAccount: welcomeController.getProfileAccountSelected.id,
             idCategory: getProduct.categoria)
         .then((value) {
-      setCategory = Categoria.fromDocumentSnapshot(documentSnapshot: value);
-      if (getProduct.subcategoria != '') readSubcategory();
-    });
+          setCategory = Categoria.fromDocumentSnapshot(documentSnapshot: value);
+          if (getProduct.subcategoria != '') readSubcategory();
+        })
+        .onError((error, stackTrace) {
+          setCategory = Categoria(id: '0000',nombre: '');
+          setSubcategory = Categoria(id: '0000',nombre: '');
+        })
+        .catchError((_) {
+          setCategory = Categoria(id: '0000',nombre: '');
+          setSubcategory = Categoria(id: '0000',nombre: '');
+        });
   }
 
   void readSubcategory() {
@@ -245,37 +256,36 @@ class ControllerProductsEdit extends GetxController {
       // el usuario cargo un nueva imagen externa
       return AspectRatio(
         child: Image.file(File(getXFileImage.path), fit: BoxFit.cover),
-        aspectRatio: 100 / 100,
+        aspectRatio: 1 / 1,
       );
     } else if (getProduct.urlimagen != '') {
       // se visualiza la imagen del producto
       return AspectRatio(
-        //child: Image.network(getProduct.urlimagen),
+        aspectRatio: 1 / 1,
         child: CachedNetworkImage(
           fit: BoxFit.cover,
           imageUrl: getProduct.urlimagen,
           placeholder: (context, url) => Container(
-            color: Colors.grey,
+            color: Colors.grey.withOpacity(0.3),
             child: Center(child: Icon(Icons.cloud, color: Colors.white)),
           ),
           imageBuilder: (context, image) => Container(
             child: Image(image: image, fit: BoxFit.cover),
           ),
           errorWidget: (context, url, error) => Container(
-            color: Colors.black54,
+            color: Colors.grey.withOpacity(0.3),
             child: Center(
               child: Icon(Icons.error, color: Colors.white),
             ),
           ),
         ),
-        aspectRatio: 100 / 100,
       );
     } else {
       // muestra un fondo gris por defecto
       return AspectRatio(
-        aspectRatio: 100 / 100,
+        aspectRatio: 1 / 1,
         child: Container(
-          color: Colors.black54,
+          color: Colors.grey.withOpacity(0.3),
           child: Center(
             child: Icon(
               Icons.image,
@@ -299,13 +309,13 @@ class ControllerProductsEdit extends GetxController {
           child: const Text('Cancelar'),
           onPressed: () {
             Get.back();
-            back();
           },
         ),
         TextButton(
           child: const Text('Si, eliminar'),
           onPressed: () {
-            Database.refFirestoreCatalogueProduct(idAccount:homeController.idAccount)
+            Database.refFirestoreCatalogueProduct(
+                    idAccount: welcomeController.getProfileAccountSelected.id)
                 .doc(getProduct.id)
                 .delete()
                 .whenComplete(() {

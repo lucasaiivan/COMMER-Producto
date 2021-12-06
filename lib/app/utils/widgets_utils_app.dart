@@ -15,7 +15,6 @@ import 'dynamicTheme_lb.dart';
 class WidgetsUtilsApp extends StatelessWidget {
   WidgetsUtilsApp({Key? key}) : super(key: key);
 
-
   Widget buttonThemeBrightness({required BuildContext context, Color? color}) {
     if (color == null)
       color = Theme.of(context).brightness == Brightness.dark
@@ -149,38 +148,34 @@ Widget viewCircleImage(
 
 class ProductoItem extends StatelessWidget {
   final ProductoNegocio producto;
-  final double width;
-  ProductoItem({required this.producto, this.width = double.infinity});
+  ProductoItem({required this.producto});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      child: Hero(
-        tag: producto.id,
-        child: Card(
-          color: Color.fromARGB(255,43, 45, 57),
-          elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: () {
-              Get.toNamed(Routes.PRODUCT, arguments: {'product': producto});
-            },
-            child: Column(
+    return Hero(
+      tag: producto.id,
+      child: Card(
+        elevation: 2,
+        shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: <Widget>[
-                    WidgetImagenProducto(producto: producto),
-                    WidgetContentInfo(producto: producto),
-                  ],
-                ),
+                Expanded(child: WidgetImagenProducto(producto: producto)),
+                WidgetContentInfo(producto: producto),
               ],
             ),
-          ),
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Get.toNamed(Routes.PRODUCT, arguments: {'product': producto}),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -193,10 +188,11 @@ class WidgetImagenProducto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 100 / 100,
-      child: producto.urlimagen != ""
-          ? CachedNetworkImage(
+    return producto.urlimagen != ""
+        ? Container(
+          width: double.infinity,
+
+          child: CachedNetworkImage(
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
               imageUrl: producto.urlimagen,
@@ -210,9 +206,9 @@ class WidgetImagenProducto extends StatelessWidget {
                   style: TextStyle(fontSize: 24.0),
                 ),
               ),
-            )
-          : Container(color: Color.fromARGB(255,43, 45, 57)),
-    );
+            ),
+        )
+        : Container(color: Color.fromARGB(255, 43, 45, 57));
   }
 }
 
@@ -222,39 +218,34 @@ class WidgetContentInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(1.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.all( Radius.circular(5)),
-        child: Container(
-          color: Color.fromARGB(255,43, 45, 57),
-          padding: EdgeInsets.all(5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              producto.descripcion != ""
-                  ? Text(producto.descripcion,
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14.0,
-                          color: Colors.white),
-                      overflow: TextOverflow.fade,
-                      softWrap: false)
-                  : Container(),
-              producto.precioVenta != 0.0
-                  ? Text(
-                      Publicaciones.getFormatoPrecio(
-                          monto: producto.precioVenta),
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14.0,
-                          color: Colors.white),
-                      overflow: TextOverflow.fade,
-                      softWrap: false)
-                  : Container(),
-            ],
-          ),
-        ),
+    return Container(
+      width: double.infinity,
+      color:Get.theme.scaffoldBackgroundColor,// Color.fromARGB(255, 43, 45, 57),
+      padding: EdgeInsets.all(5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          producto.descripcion != ""
+              ? Text(producto.descripcion,
+                  style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 14.0,
+                      color:Get.theme.textTheme.headline1!.color),
+                  overflow: TextOverflow.fade,
+                  softWrap: false)
+              : Container(),
+          producto.precioVenta != 0.0
+              ? Text(
+                  Publicaciones.getFormatoPrecio(
+                      monto: producto.precioVenta),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.0,
+                      color: Get.theme.textTheme.bodyText1!.color),
+                  overflow: TextOverflow.fade,
+                  softWrap: false)
+              : Container(),
+        ],
       ),
     );
   }
@@ -277,11 +268,13 @@ class WidgetButtonListTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundColor: Colors.black45,
         radius: 24.0,
-        child: Icon(Icons.add,color: Colors.white,),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
       dense: true,
-      title:
-          Text("Crear cuenta", style: TextStyle(fontSize: 16.0)),
+      title: Text("Crear cuenta", style: TextStyle(fontSize: 16.0)),
       onTap: () {
         /* Navigator.of(context).push(
           MaterialPageRoute(
@@ -443,7 +436,7 @@ class WidgetButtonListTile extends StatelessWidget {
                 ),
           trailing: Radio(
             activeColor: Get.theme.primaryColor,
-            value: controller.getSelected(id:perfilNegocio.id ) ? 0 : 1,
+            value: controller.getSelected(id: perfilNegocio.id) ? 0 : 1,
             groupValue: 0,
             onChanged: (val) {
               controller.accountChange(idAccount: perfilNegocio.id);
@@ -521,7 +514,6 @@ class WidgetButtonListTile extends StatelessWidget {
   }
 }
 
-
 // RELEASE
 // Mostrar un diálogo con Get.dialog()
 // Pero en esto, no tenemos parámetros como título y contenido, tenemos que construirlos manualmente desde cero.
@@ -539,7 +531,7 @@ class CustomFullScreenDialog {
           ),
         ),
         // onWillPop - Se llama cada ves que el usuario intenta descartar el ModalRoute adjunta
-        onWillPop: () => Future.value( false), 
+        onWillPop: () => Future.value(false),
       ),
       barrierDismissible: false,
       barrierColor: Color(0xff141A31).withOpacity(.3),
@@ -551,7 +543,6 @@ class CustomFullScreenDialog {
     Get.back();
   }
 }
-
 
 PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
   return PreferredSize(

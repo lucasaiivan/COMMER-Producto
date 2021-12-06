@@ -5,6 +5,7 @@ import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/modules/product/controllers/product_edit_controller.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
+import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 
 class ProductEdit extends StatelessWidget {
   ProductEdit({Key? key}) : super(key: key);
@@ -47,26 +48,9 @@ class ProductEdit extends StatelessWidget {
               style: TextStyle(
                   fontSize: 18.0,
                   color: Theme.of(contextPrincipal).textTheme.bodyText1!.color))
-          : Row(
-              children: <Widget>[
-                controller.getProduct.verificado == true
-                    ? Padding(
-                        padding: EdgeInsets.only(right: 5.0),
-                        child: new Image.asset('assets/icon_verificado.png',
-                            width: 16.0, height: 16.0))
-                    : new Container(),
-                Text(
-                    controller.getProduct.nameMark == ''
-                        ? controller.getProduct.idMarca
-                        : controller.getProduct.nameMark,
-                    style: TextStyle(
-                        fontSize: 18.0,
-                        color: Theme.of(contextPrincipal)
-                            .textTheme
-                            .bodyText1!
-                            .color)),
-              ],
-            ),
+          : Text(controller.getIsCatalogue?'Editar':'Nuevo',style: TextStyle(
+                  fontSize: 18.0,
+                  color: Theme.of(contextPrincipal).textTheme.bodyText1!.color)),
       actions: <Widget>[
         IconButton(
             icon: controller.getSaveIndicator
@@ -81,7 +65,10 @@ class ProductEdit extends StatelessWidget {
   Widget widgetsImagen() {
     return Column(
       children: [
-        controller.loadImage(),
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: controller.loadImage(),
+        ),
         controller.getNewProduct
             ? Row(
                 children: [
@@ -139,15 +126,19 @@ class ProductEdit extends StatelessWidget {
               onPressed: controller.getMarkSelected.id == ''
                   ? controller.showModalSelectMarca
                   : null,
-              child: Text(
-                controller.getMarkSelected.id == ''
-                    ? "Seleccionar marca"
-                    : controller.getMarkSelected.titulo,
-                style: TextStyle(
-                    color: controller.getMarkSelected.id == ''
-                        ? null
-                        : Colors.grey),
-              ),
+              child: controller.getMarkSelected.id == ''?
+                Text("Seleccionar marca")
+                :Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    utilsWidget.viewCircleImage(
+                        size: 25,
+                        url: controller.getMarkSelected.urlImagen,
+                        texto: controller.getMarkSelected.titulo),
+                    SizedBox(width: 5),
+                    Text(controller.getMarkSelected.titulo,style: TextStyle(color:Colors.grey))
+                  ],
+                ), 
               style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(
                       EdgeInsets.all(16))),
@@ -155,6 +146,7 @@ class ProductEdit extends StatelessWidget {
           ),
           space,
           TextField(
+            enabled: !controller.getSaveIndicator,
             minLines: 1,
             maxLines: 5,
             keyboardType: TextInputType.multiline,
@@ -162,18 +154,13 @@ class ProductEdit extends StatelessWidget {
             onChanged: (value) => controller.getProduct.descripcion = value,
             decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                disabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: controller.getEditable
-                            ? Colors.grey
-                            : Colors.transparent,
-                        width: 2)),
                 labelText: "Descripción"),
             //style: controller.getProduct.verificado ? textStyle_disabled : textStyle,
             controller: controller.controllerTextEdit_descripcion,
           ),
           space,
           TextField(
+            enabled: !controller.getSaveIndicator,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
             onChanged: (value) => controller.getProduct.precioCompra =
                 controller.controllerTextEdit_precio_compra.numberValue,
@@ -184,6 +171,7 @@ class ProductEdit extends StatelessWidget {
           ),
           space,
           TextField(
+            enabled: !controller.getSaveIndicator,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
             onChanged: (value) => controller.getProduct.precioVenta =
                 controller.controllerTextEdit_precio_venta.numberValue,
@@ -192,11 +180,17 @@ class ProductEdit extends StatelessWidget {
             //style: textStyle,
             controller: controller.controllerTextEdit_precio_venta,
           ),
+          !controller.getNewProduct?Container():space,
+          !controller.getNewProduct?Container():Center(child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Text(controller.getProduct.codigo,style:TextStyle(color: Get.theme.textTheme.headline1!.color,fontWeight: FontWeight.bold)),
+          ),),
           space,
           controller.getIsCatalogue
-              ? SizedBox(
+              ? Container(
                   width: double.infinity,
-                  child: button(
+                  padding: EdgeInsets.only(bottom: 12,top: 40,left: 0,right: 0),
+                  child: button(padding: 0,
                       colorAccent: Colors.white,
                       colorButton: Colors.red,
                       icon: Icon(Icons.delete),
@@ -229,14 +223,12 @@ class ProductEdit extends StatelessWidget {
         controller.getCategory.id == ''
             ? 'Categoría'
             : controller.getCategory.nombre,
-        style: TextStyle(
-            color: controller.getCategory.id == '' ? Colors.grey : null));
+        style: TextStyle(color: controller.getCategory.id == '' ?null:Colors.grey ));
     Text textSubcategory = Text(
       controller.getSubcategory.id == ''
           ? 'Subcategoría'
           : controller.getSubcategory.nombre,
-      style: TextStyle(
-          color: controller.getSubcategory.id == '' ? Colors.grey : null),
+      style: TextStyle(color: controller.getSubcategory.id == '' ? null:Colors.grey )
     );
 
     return Row(

@@ -514,9 +514,10 @@ class WelcomeController extends GetxController {
     // obtenemos la marca de cada producto en un nueva lista
     // y finamente la agregamos con los datos cargados para mostrar al usuario
     for (var productoNegocio in list) {
-      if (productoNegocio.idMarca != '')
-        readMark(id: productoNegocio.idMarca)
-            .then((value) => addMark(markParam: value));
+      if (productoNegocio.idMarca != ''){
+        readMark(id: productoNegocio.idMarca).then((value) => addMark(markParam: value));
+      }
+        
     }
   }
 

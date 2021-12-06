@@ -211,16 +211,17 @@ class CatalogueScreenView extends StatelessWidget {
           child: CustomScrollView(
             slivers: <Widget>[
               SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 150,
+                  childAspectRatio: 1/1.4,
+                ),
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
-                    return ProductoItem(
-                        producto: controller.getCatalogueLoad[index]);
+                    return ProductoItem(producto: controller.getCatalogueLoad[index]);
                   },
                   childCount: controller.getCatalogueLoad.length,
                 ),
-              )
+              ),
             ],
           ),
         );
