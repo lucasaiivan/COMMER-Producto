@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:get/get.dart';
@@ -140,7 +141,7 @@ class ControllerProductsEdit extends GetxController {
     });
   }
 
-  void save() {
+  Future<void> save() async {
     if (getProduct.id != '') {
       if (getCategory.id != '') {
         if (getProduct.descripcion != '') {
@@ -149,6 +150,25 @@ class ControllerProductsEdit extends GetxController {
             setSaveIndicator = true;
             updateAll();
 
+            // image
+            // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
+            if (getXFileImage.path != '') {
+              Reference ref = FirebaseStorage.instance
+                  .ref()
+                  .child("APP")
+                  .child("ARG")
+                  .child("PRODUCTOS")
+                  .child(getProduct.id);
+              UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
+              await uploadTask;
+              // obtenemos la url de la imagen guardada
+              await ref
+                  .getDownloadURL()
+                  .then((value) => getProduct.urlimagen = value);
+            }
+            // save data product global
+            savevProductoGlobal(); // TODO: delete for release
+            // add/update data product in catalogue
             Database.refFirestoreCatalogueProduct(
                     idAccount: welcomeController.getProfileAccountSelected.id)
                 .doc(getProduct.id)
@@ -174,6 +194,33 @@ class ControllerProductsEdit extends GetxController {
             'No se puedo guardar los datos', 'debes seleccionar una categoría');
       }
     }
+  }
+
+  void savevProductoGlobal() async {
+    // set
+    getProduct.timestampActualizacion = Timestamp.fromDate(new DateTime.now());
+    // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+    getProduct.verificado = true;
+    // Valores para registrar el precio
+    if (welcomeController.getProfileAccountSelected.id != "") {
+      Precio precio = new Precio(
+          idNegocio: welcomeController.getProfileAccountSelected.id,
+          precio: getProduct.precioVenta,
+          moneda: getProduct.signoMoneda,
+          provincia: welcomeController.getProfileAccountSelected.provincia,
+          ciudad: welcomeController.getProfileAccountSelected.ciudad,
+          timestamp: Timestamp.fromDate(new DateTime.now()));
+      // Firebase set
+      await Database.refFirestoreRegisterPrice(
+              id: getProduct.id, isoPAis: 'ARG')
+          .doc()
+          .update(precio.toJson());
+    }
+    // save in firestore
+    await Database.refFirestoreCatalogueProduct(
+            idAccount: welcomeController.getProfileAccountSelected.id)
+        .doc(getProduct.id)
+        .update(getProduct.toJson());
   }
 
   void loadDataProduct() {
@@ -385,49 +432,10 @@ class _SelectMarkState extends State<SelectMark> {
 
   @override
   Widget build(BuildContext context) {
-    return scaffold();
+    return widgetView();
   }
 
-  /* IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              Get.back();
-              showSearch(
-                context: context,
-                delegate: SearchPage<Marca>(
-                  items: list,
-                  searchLabel: 'Buscar marca',
-                  suggestion: Center(
-                    child: Text('ej. Miller'),
-                  ),
-                  failure: Center(
-                    child: Text('No se encontro :('),
-                  ),
-                  filter: (product) => [
-                    product.titulo,
-                    product.descripcion,
-                  ],
-                  builder: (mark) => ListTile(
-                    leading: FadeInImage(
-                      image: NetworkImage(mark.urlImagen),
-                      placeholder: AssetImage("assets/loading.gif"),
-                      fadeInDuration: Duration(milliseconds: 200),
-                      fit: BoxFit.cover,
-                      width: 50.0,
-                    ),
-                    title: Text(mark.titulo),
-                    subtitle: Text(mark.descripcion),
-                    onTap: () {
-                      controllerProductsEdit.setMarkSelected = mark;
-                      Get.back();
-                    },
-                  ),
-                ),
-              );
-            },
-          ) */
-
-  Widget scaffold() {
+  Widget widgetView() {
     return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
@@ -440,10 +448,13 @@ class _SelectMarkState extends State<SelectMark> {
               Column(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 12,left: 12,right: 12),
+                    padding:
+                        const EdgeInsets.only(bottom: 12, left: 12, right: 12),
                     child: Row(
                       children: [
-                        Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
+                        Expanded(
+                            child:
+                                Text('Marcas', style: TextStyle(fontSize: 18))),
                         IconButton(
                           icon: Icon(Icons.search),
                           onPressed: () {
@@ -466,7 +477,8 @@ class _SelectMarkState extends State<SelectMark> {
                                 builder: (mark) => ListTile(
                                   leading: FadeInImage(
                                     image: NetworkImage(mark.urlImagen),
-                                    placeholder: AssetImage("assets/loading.gif"),
+                                    placeholder:
+                                        AssetImage("assets/loading.gif"),
                                     fadeInDuration: Duration(milliseconds: 200),
                                     fit: BoxFit.cover,
                                     width: 50.0,
@@ -474,7 +486,8 @@ class _SelectMarkState extends State<SelectMark> {
                                   title: Text(mark.titulo),
                                   subtitle: Text(mark.descripcion),
                                   onTap: () {
-                                    controllerProductsEdit.setMarkSelected = mark;
+                                    controllerProductsEdit.setMarkSelected =
+                                        mark;
                                     Get.back();
                                   },
                                 ),
