@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Producto {
   String id = "";
+  String idAccount = '';
   bool verificado = false; // estado de verificación  al un moderador
   bool favorite = false;
   String idMarca = ""; // ID de la marca por defecto esta vacia
@@ -15,13 +16,14 @@ class Producto {
   String categoria = ""; // ID de la categoria del producto
   String subcategoria = ""; // ID de la subcategoria del producto
   bool enabled = true;
-  Timestamp
-      timestampCreation = Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
-  Timestamp
-      timestampActualizacion= Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
+  Timestamp timestampCreation =
+      Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
+  Timestamp timestampActualizacion =
+      Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
   Producto({
     this.id = "",
+    this.idAccount='',
     this.verificado = false,
     this.favorite = false,
     this.idMarca = "",
@@ -34,13 +36,14 @@ class Producto {
     this.codigo = "",
     this.categoria = "",
     this.subcategoria = "",
-    this.enabled=true,
+    this.enabled = true,
     timestampActualizacion,
     timestampCreation,
   });
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        'idAccount':idAccount,
         "verificado": verificado,
         "favorite": verificado,
         "id_marca": idMarca,
@@ -61,6 +64,7 @@ class Producto {
   factory Producto.fromMap(Map data) {
     return Producto(
       id: data['id'] ?? '',
+      idAccount:data['idAccount']??'',
       verificado: data['verificado'] ?? false,
       favorite: data['favorite'] ?? false,
       idMarca: data['id_marca'] ?? '',
@@ -75,12 +79,12 @@ class Producto {
       subcategoria: data['subcategoria'] ?? '',
       timestampActualizacion: data['timestamp_actualizacion'],
       timestampCreation: data['timestamp_creation'],
-      enabled: data['enabled']??true,
+      enabled: data['enabled'] ?? true,
     );
   }
   Producto.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     id = documentSnapshot['id'] ?? '';
-    id = documentSnapshot['id'] ?? '';
+    idAccount = documentSnapshot['idAccount'] ?? '';
     verificado = documentSnapshot['verificado'] ?? false;
     favorite = documentSnapshot['favorite'] ?? false;
     idMarca = documentSnapshot['id_marca'] ?? '';
@@ -95,13 +99,12 @@ class Producto {
     subcategoria = documentSnapshot['subcategoria'] ?? '';
     timestampActualizacion = documentSnapshot['timestamp_actualizacion'];
     timestampCreation = documentSnapshot['timestamp_creation'];
-    enabled = documentSnapshot['enabled']??true;
+    enabled = documentSnapshot['enabled'] ?? true;
   }
   ProductoNegocio convertProductCatalogue() {
     ProductoNegocio productoNegocio = new ProductoNegocio();
     productoNegocio.id = this.id;
     productoNegocio.urlimagen = this.urlImagen;
-    productoNegocio.idNegocio = this.idNegocio;
     productoNegocio.verificado = this.verificado;
     productoNegocio.favorite = this.favorite;
     productoNegocio.idMarca = this.idMarca;
@@ -134,10 +137,6 @@ class ProductoNegocio {
       Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
   Timestamp timestampActualizacion =
       Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
-
-  // Datos de publicacion
-  String idNegocio = ""; // ID del negocios
-  String idUsuario = ""; // ID del usuario quien creo la publicacion
 
   // Datos del producto
   bool enabled = true;

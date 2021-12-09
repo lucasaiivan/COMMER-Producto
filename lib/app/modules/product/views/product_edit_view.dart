@@ -44,18 +44,18 @@ class ProductEdit extends StatelessWidget {
       iconTheme: Theme.of(contextPrincipal).iconTheme.copyWith(
           color: Theme.of(contextPrincipal).textTheme.bodyText1!.color),
       title: controller.getSaveIndicator
-          ? Text("Actualizando...",
+          ? Text(controller.getTextAppBar,
               style: TextStyle(
                   fontSize: 18.0,
                   color: Theme.of(contextPrincipal).textTheme.bodyText1!.color))
-          : Text(controller.getIsCatalogue?'Editar':'Nuevo',style: TextStyle(
+          : Text(controller.getIsCatalogue ? 'Editar' : 'Nuevo',
+              style: TextStyle(
                   fontSize: 18.0,
-                  color: Theme.of(contextPrincipal).textTheme.bodyText1!.color)),
+                  color:
+                      Theme.of(contextPrincipal).textTheme.bodyText1!.color)),
       actions: <Widget>[
         IconButton(
-            icon: controller.getSaveIndicator
-                ? Container()
-                : Icon(Icons.check),
+            icon: controller.getSaveIndicator ? Container() : Icon(Icons.check),
             onPressed: controller.save),
       ],
       bottom: controller.getSaveIndicator ? linearProgressBarApp() : null,
@@ -69,40 +69,42 @@ class ProductEdit extends StatelessWidget {
           padding: const EdgeInsets.all(24.0),
           child: controller.loadImage(),
         ),
-        controller.getNewProduct
-            ? Row(
-                children: [
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: FloatingActionButton.extended(
-                      heroTag: '',
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      backgroundColor: Get.theme.primaryColor,
-                      foregroundColor: Colors.white,
-                      onPressed: controller.getLoadImageGalery,
-                      icon: Icon(Icons.photo_library, color: Colors.white),
-                      label: Text('Galeria',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  )),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: FloatingActionButton(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      backgroundColor: Get.theme.primaryColor,
-                      foregroundColor: Colors.white,
-                      onPressed: controller.getLoadImageCamera,
-                      child: Icon(Icons.camera_alt, color: Colors.white),
-                    ),
-                  ),
-                ],
-              )
-            : Container(),
+        controller.getSaveIndicator
+            ? Container()
+            : controller.getNewProduct
+                ? Row(
+                    children: [
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: FloatingActionButton.extended(
+                          heroTag: '',
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          backgroundColor: Get.theme.primaryColor,
+                          foregroundColor: Colors.white,
+                          onPressed: controller.getLoadImageGalery,
+                          icon: Icon(Icons.photo_library, color: Colors.white),
+                          label: Text('Galeria',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      )),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: FloatingActionButton(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          backgroundColor: Get.theme.primaryColor,
+                          foregroundColor: Colors.white,
+                          onPressed: controller.getLoadImageCamera,
+                          child: Icon(Icons.camera_alt, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  )
+                : Container(),
       ],
     );
   }
@@ -125,20 +127,26 @@ class ProductEdit extends StatelessWidget {
             child: OutlinedButton(
               onPressed: controller.getMarkSelected.id == ''
                   ? controller.showModalSelectMarca
-                  : controller.getNewProduct?controller.showModalSelectMarca:null,
-              child: controller.getMarkSelected.id == ''?
-                Text("Seleccionar marca")
-                :Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    utilsWidget.viewCircleImage(
-                        size: 25,
-                        url: controller.getMarkSelected.urlImagen,
-                        texto: controller.getMarkSelected.titulo),
-                    SizedBox(width: 5),
-                    Text(controller.getMarkSelected.titulo,style: TextStyle(color:controller.getNewProduct?null:Colors.grey))
-                  ],
-                ), 
+                  : controller.getNewProduct
+                      ? controller.showModalSelectMarca
+                      : null,
+              child: controller.getMarkSelected.id == ''
+                  ? Text("Seleccionar marca")
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        utilsWidget.viewCircleImage(
+                            size: 25,
+                            url: controller.getMarkSelected.urlImagen,
+                            texto: controller.getMarkSelected.titulo),
+                        SizedBox(width: 5),
+                        Text(controller.getMarkSelected.titulo,
+                            style: TextStyle(
+                                color: controller.getNewProduct
+                                    ? null
+                                    : Colors.grey))
+                      ],
+                    ),
               style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(
                       EdgeInsets.all(16))),
@@ -153,8 +161,7 @@ class ProductEdit extends StatelessWidget {
             //enabled: !producto.verificado,
             onChanged: (value) => controller.getProduct.descripcion = value,
             decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Descripción"),
+                border: OutlineInputBorder(), labelText: "Descripción"),
             //style: controller.getProduct.verificado ? textStyle_disabled : textStyle,
             controller: controller.controllerTextEdit_descripcion,
           ),
@@ -180,37 +187,62 @@ class ProductEdit extends StatelessWidget {
             //style: textStyle,
             controller: controller.controllerTextEdit_precio_venta,
           ),
-          !controller.getNewProduct?Container():space,
-          !controller.getNewProduct?Container():Center(child: Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Text(controller.getProduct.codigo,style:TextStyle(color: Get.theme.textTheme.headline1!.color,fontWeight: FontWeight.bold)),
-          ),),
+          !controller.getNewProduct ? Container() : space,
+          !controller.getNewProduct
+              ? Container()
+              : Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: Text(controller.getProduct.codigo,
+                        style: TextStyle(
+                            color: Get.theme.textTheme.headline1!.color,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                ),
           space,
-          controller.getIsCatalogue
-              ? Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.only(bottom: 12,top: 40,left: 0,right: 0),
-                  child: button(padding: 0,
-                      colorAccent: Colors.white,
-                      colorButton: Colors.red,
-                      icon: Icon(Icons.delete),
-                      text: 'Eliminar de mi catálogo',
-                      onPressed: controller.showDialogDelete),
-                )
-              : Container(),
-          /* SizedBox(height: 25.0),
-          enCatalogo?saveIndicador == false ? buttonDeleteProducto(context: builderContext):Container():Container(),
-          SizedBox(height: 20.0),
+          controller.getSaveIndicator
+              ? Container()
+              : controller.getIsCatalogue
+                  ? Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.only(
+                          bottom: 12, top: 40, left: 0, right: 0),
+                      child: button(
+                          padding: 0,
+                          colorAccent: Colors.white,
+                          colorButton: Colors.red,
+                          icon: Icon(Icons.delete),
+                          text: 'Eliminar de mi catálogo',
+                          onPressed: controller.showDialogDelete),
+                    )
+                  : Container(),
+
           /* OPCIONES PARA DESARROLLADOR - ELIMINAR ESTE CÓDIGO PARA PRODUCCION */
           SizedBox(height: 20.0),
-          Row(children: [Expanded(child: Divider(height:2.0,endIndent:12.0,indent: 12.0,)),Text("Opciones para desarrollador"),Expanded(child: Divider(height:1.0,endIndent:12.0,indent: 12.0))],),
+          Row(
+            children: [
+              Expanded(
+                  child: Divider(
+                height: 2.0,
+                endIndent: 12.0,
+                indent: 12.0,
+              )),
+              Text("Opciones para desarrollador"),
+              Expanded(
+                  child: Divider(height: 1.0, endIndent: 12.0, indent: 12.0))
+            ],
+          ),
+          //SizedBox(height: 20.0),
+          //buttonAddFavorite(context: builderContext),
+          SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
+          controller.getSaveIndicator
+              ? Container()
+              : buttonEditProductoOPTDeveloper(),
           SizedBox(height: 20.0),
-          buttonAddFavorite(context: builderContext),
-          SizedBox(height: !editable?20.0:0.0),
-          !editable?buttonEditProductoOPTDeveloper(context:builderContext ):Container(),
-          SizedBox(height: 20.0),
-          editable?buttonDeleteProductoOPTDeveloper(context:builderContext):Container(),
-          SizedBox(height: 50.0),  */
+          controller.getSaveIndicator
+              ? Container()
+              : buttonDeleteProductoOPTDeveloper(),
+          SizedBox(height: 50.0),
         ],
       ),
     );
@@ -223,13 +255,18 @@ class ProductEdit extends StatelessWidget {
         controller.getCategory.id == ''
             ? 'Categoría'
             : controller.getCategory.nombre,
-        style: TextStyle(color: controller.getCategory.id == '' ?null:Colors.grey ));
+        maxLines: 1,
+        style: TextStyle(
+            color: controller.getCategory.id == '' ? null : Colors.grey,
+            overflow: TextOverflow.ellipsis));
     Text textSubcategory = Text(
-      controller.getSubcategory.id == ''
-          ? 'Subcategoría'
-          : controller.getSubcategory.nombre,
-      style: TextStyle(color: controller.getSubcategory.id == '' ? null:Colors.grey )
-    );
+        controller.getSubcategory.id == ''
+            ? 'Subcategoría'
+            : controller.getSubcategory.nombre,
+        maxLines: 1,
+        style: TextStyle(
+            color: controller.getSubcategory.id == '' ? null : Colors.grey,
+            overflow: TextOverflow.ellipsis));
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -239,7 +276,7 @@ class ProductEdit extends StatelessWidget {
         Expanded(
           flex: 1,
           child: OutlinedButton(
-            onPressed: SelectCategory.show,
+            onPressed: controller.getSaveIndicator ? null : SelectCategory.show,
             child: textCategory,
             style: ButtonStyle(
                 padding:
@@ -250,7 +287,8 @@ class ProductEdit extends StatelessWidget {
         Expanded(
           flex: 1,
           child: OutlinedButton(
-            onPressed: SelectSubCategoria.show,
+            onPressed:
+                controller.getSaveIndicator ? null : SelectSubCategoria.show,
             child: textSubcategory,
             style: ButtonStyle(
                 padding:
@@ -309,136 +347,85 @@ class ProductEdit extends StatelessWidget {
             ),
           );
   } */
-  Widget buttonEditProductoOPTDeveloper({required BuildContext context}) {
-    return Container();
-    /* return editable == false? deleteIndicador == false ?SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {setState(() { editable = true;producto.verificado = false; });},
-            style: ElevatedButton.styleFrom(padding:EdgeInsets.all(12.0),primary:editable ? Colors.green[400] : Colors.orange[400],onPrimary: Colors.white30,textStyle: TextStyle(color: Colors.black)),
-            icon: Icon(Icons.security, color: Colors.white),
-            label: Text("Editar",style: TextStyle( color: Colors.white)),
-          ),
-        ):Container():Container(); */
-  }
-
-  Widget buttonDeleteProductoOPTDeveloper({required BuildContext context}) {
-    return Container();
-    /* return deleteIndicador == false
-        ? SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                showDialogDeleteOPTDeveloper(buildContext: context);
-              },
-              style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(12.0),
-                  primary: Colors.red[400],
-                  onPrimary: Colors.white30,
-                  textStyle: TextStyle(color: Colors.black)),
-              icon: Icon(Icons.security, color: Colors.white),
-              label: Text("Borrar producto (Moderador)",
-                  style: TextStyle(color: Colors.white)),
-            ),
-          )
-        : Container(); */
-  }
-
-  void showDialogDeleteOPTDeveloper({required BuildContext buildContext}) {
-    showDialog(
-      context: buildContext,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text(
-              "¿Seguro que quieres eliminar este producto definitivamente? (Desarrollador)"),
-          content: new Text(
-              "El producto será eliminado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Cancelar"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            new FlatButton(
-              child: new Text("Borrar"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                deleteProductOPTDeveloper(context: buildContext);
-              },
-            ),
-          ],
-        );
-      },
+  Widget buttonEditProductoOPTDeveloper() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: controller.saveProductGlobal,
+        style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.all(12.0),
+            primary: Colors.orange[400],
+            onPrimary: Colors.white30,
+            textStyle: TextStyle(color: Colors.black)),
+        icon: Icon(Icons.security, color: Colors.white),
+        label: Text("Editar", style: TextStyle(color: Colors.white)),
+      ),
     );
   }
 
-  void deleteProductOPTDeveloper({required BuildContext context}) async {
-    /* setState(() {
-      deleteIndicador = true;
-    });
-    // Storage ( delete )
-    if (producto.urlimagen != "") {
-      StorageReference ref = FirebaseStorage.instance
-          .ref()
-          .child("APP")
-          .child("ARG")
-          .child("PRODUCTOS")
-          .child(producto.id);
-      await ref.delete(); // Procede a eliminar el archivo de la base de datos
-    }
-    // Firebase ( delete )
-    await Global.getDataProductoNegocio(
-            idNegocio: Global.prefs.getIdNegocio, idProducto: producto.id)
-        .deleteDoc(); // Procede a eliminar el documento de la base de datos del catalogo de la cuenta
-    await Global.getProductosPrecargado(idProducto: producto.id)
-        .deleteDoc(); // Procede a eliminar el documento de la base de datos del catalogo de la cuenta
-    // Emula un retardo de 2 segundos
-    Future.delayed(const Duration(milliseconds: 5000), () {
-      Navigator.pop(context);
-    }); */
+  Widget buttonDeleteProductoOPTDeveloper() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          showDialogDeleteOPTDeveloper();
+        },
+        style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.all(12.0),
+            primary: Colors.red[400],
+            onPrimary: Colors.white30,
+            textStyle: TextStyle(color: Colors.black)),
+        icon: Icon(Icons.security, color: Colors.white),
+        label: Text("Borrar producto (Moderador)",
+            style: TextStyle(color: Colors.white)),
+      ),
+    );
   }
 
-  void guardarDeveloper({required BuildContext buildContext}) async {
-    /* if (this.categoria != null) {
-      if (this.subcategoria != null) {
-        if (controllerTextEdit_descripcion.text != "") {
-          if (this.marca != null) {
-            if (controllerTextEdit_precio_venta.numberValue != 0.0) {
-              // Firebase set
-              updateProductoGlobalDeveloper();
-              guardar(buildContext: buildContext);
-            } else {
-              showSnackBar(
-                  context: buildContext, message: 'Asigne un precio de venta');
-            }
-          } else {
-            showSnackBar(
-                context: buildContext, message: 'Debe seleccionar una marca');
-          }
-        } else {
-          showSnackBar(
-              context: buildContext, message: 'Debe elegir una descripción');
-        }
-      } else {
-        showSnackBar(
-            context: buildContext, message: 'Debe elegir una subcategoría');
-      }
-    } else {
-      showSnackBar(context: buildContext, message: 'Debe elegir una categoría');
-    } */
+  void showDialogDeleteOPTDeveloper() {
+    Get.dialog(AlertDialog(
+      title: new Text(
+          "¿Seguro que quieres eliminar este producto definitivamente? (Desarrollador)"),
+      content: new Text(
+          "El producto será eliminado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        new TextButton(
+          child: new Text("Cancelar"),
+          onPressed: () =>Get.back(),
+        ),
+        new TextButton(
+          child: new Text("Borrar"),
+          onPressed: () {
+            Get.back();
+            controller.deleteProducGlobal();
+          },
+        ),
+      ],
+    ));
   }
 
-  void updateProductoGlobalDeveloper() async {
-    // set ( id del usuario que actualizo el producto )
-    /* producto.id_negocio = Global.oPerfilNegocio.id;
-    producto.timestamp_actualizacion = Timestamp.fromDate(new DateTime.now());
-    producto.verificado = true;
-    // Firebase set
-    await Global.getProductosPrecargado(idProducto: producto.id)
-        .upSetPrecioProducto(producto.convertProductoDefault().toJson()); */
+  void showDialogSaveOPTDeveloper() {
+    Get.dialog(AlertDialog(
+      title: new Text(
+          "¿Seguro que quieres actualizar este producto? (Desarrollador)"),
+      content: new Text(
+          "El producto será actualizado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        new TextButton(
+          child: new Text("Cancelar"),
+          onPressed: () => Get.back(),
+        ),
+        new TextButton(
+          child: new Text("Borrar"),
+          onPressed: () {
+            Get.back();
+            controller.saveProductGlobal();
+          },
+        ),
+      ],
+    ));
   }
 }
 

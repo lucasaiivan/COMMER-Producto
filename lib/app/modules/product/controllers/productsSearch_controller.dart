@@ -22,8 +22,9 @@ class ControllerProductsSearch extends GetxController {
     // obtenemos los datos del controlador principal
     welcomeController = Get.find();
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi();
-    _codeBarParameter = Get.arguments['idProduct'] ?? '';
+    _codeBarParameter = Get.arguments['id'] ?? '';
     if (_codeBarParameter != '') {
+      getTextEditingController.text = _codeBarParameter;
       queryProduct(id: _codeBarParameter);
     }
     queryProductSuggestion();
@@ -58,9 +59,8 @@ class ControllerProductsSearch extends GetxController {
 
   // TextEditingController
   TextEditingController textEditingController = new TextEditingController();
-  set setTextEditingController(TextEditingController editingController) =>
-      textEditingController = editingController;
-  get getTextEditingController => textEditingController;
+  set setTextEditingController(TextEditingController editingController) =>  textEditingController = editingController;
+  TextEditingController get getTextEditingController => textEditingController;
 
   // color component textfield
   ButtonData _buttonData =

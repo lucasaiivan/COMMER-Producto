@@ -454,7 +454,7 @@ class CatalogueScreenView extends StatelessWidget {
     } else {
       if (barcodeScanRes.toString() != "") {
         if (barcodeScanRes.toString() != "-1") {
-          Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'idProduct':barcodeScanRes});
+          Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id':barcodeScanRes});
         }
       }
     }

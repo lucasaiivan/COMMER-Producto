@@ -69,6 +69,7 @@ class Database {
   static CollectionReference  refFirestoreAccount() => FirebaseFirestore.instance.collection('/NEGOCIOS/'); 
   static CollectionReference  refFirestoreCategory({ required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA/');
   static CollectionReference  refFirestoreCatalogueProduct({ required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO/');
+  static CollectionReference  refFirestoreCatalogueProductGlobal() => FirebaseFirestore.instance.collection('/APP/ARG/PRODUCTOS/');
   static CollectionReference  refFirestoreRegisterPrice({required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('/APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis/'); 
 
   //  update value

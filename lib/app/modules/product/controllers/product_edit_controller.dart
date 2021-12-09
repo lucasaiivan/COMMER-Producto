@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
+import 'package:producto/app/modules/product/views/product_view.dart';
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:search_page/search_page.dart';
@@ -16,6 +17,11 @@ import 'package:search_page/search_page.dart';
 class ControllerProductsEdit extends GetxController {
   // others controllers
   final WelcomeController welcomeController = Get.find();
+
+  // text appbar
+  String _textAppbar = 'Editar';
+  set setTextAppBar(String value) => _textAppbar = value;
+  String get getTextAppBar => _textAppbar;
 
   // variable para saber si el producto ya esta o no en el cátalogo
   bool _inCatalogue = false;
@@ -39,11 +45,6 @@ class ControllerProductsEdit extends GetxController {
       MoneyMaskedTextController();
   MoneyMaskedTextController controllerTextEdit_precio_compra =
       MoneyMaskedTextController();
-
-  // editable
-  bool _editable = true;
-  set setEditable(bool value) => _editable = value;
-  bool get getEditable => _editable;
 
   // marca
   Marca _markSelected = Marca(
@@ -148,6 +149,7 @@ class ControllerProductsEdit extends GetxController {
           if (getMarkSelected.id != '') {
             // activate indicator load
             setSaveIndicator = true;
+            setTextAppBar = 'Actualizando...';
             updateAll();
 
             // image
@@ -167,15 +169,37 @@ class ControllerProductsEdit extends GetxController {
                   .then((value) => getProduct.urlimagen = value);
             }
             // save data product global
-            savevProductoGlobal(); // TODO: delete for release
+            if (getNewProduct) {
+              getProduct.verificado =
+                  true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+              savevProductoGlobal();
+            }
+
+            // Valores para registrar el precio
+            if (welcomeController.getProfileAccountSelected.id != "") {
+              Precio precio = new Precio(
+                  idNegocio: welcomeController.getProfileAccountSelected.id,
+                  precio: getProduct.precioVenta,
+                  moneda: getProduct.signoMoneda,
+                  provincia:
+                      welcomeController.getProfileAccountSelected.provincia,
+                  ciudad: welcomeController.getProfileAccountSelected.ciudad,
+                  timestamp: Timestamp.fromDate(new DateTime.now()));
+              // Firebase set
+              await Database.refFirestoreRegisterPrice(
+                      id: getProduct.id, isoPAis: 'ARG')
+                  .doc()
+                  .set(precio.toJson());
+            }
             // add/update data product in catalogue
             Database.refFirestoreCatalogueProduct(
                     idAccount: welcomeController.getProfileAccountSelected.id)
                 .doc(getProduct.id)
-                .update(getProduct.toJson())
+                .set(getProduct.toJson())
                 .whenComplete(() async {
                   await Future.delayed(Duration(seconds: 3)).then((value) {
                     setSaveIndicator = false;
+                    Get.back();
                     Get.back();
                   });
                 })
@@ -198,29 +222,81 @@ class ControllerProductsEdit extends GetxController {
 
   void savevProductoGlobal() async {
     // set
-    getProduct.timestampActualizacion = Timestamp.fromDate(new DateTime.now());
-    // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
-    getProduct.verificado = true;
-    // Valores para registrar el precio
-    if (welcomeController.getProfileAccountSelected.id != "") {
-      Precio precio = new Precio(
-          idNegocio: welcomeController.getProfileAccountSelected.id,
-          precio: getProduct.precioVenta,
-          moneda: getProduct.signoMoneda,
-          provincia: welcomeController.getProfileAccountSelected.provincia,
-          ciudad: welcomeController.getProfileAccountSelected.ciudad,
-          timestamp: Timestamp.fromDate(new DateTime.now()));
-      // Firebase set
-      await Database.refFirestoreRegisterPrice(
-              id: getProduct.id, isoPAis: 'ARG')
-          .doc()
-          .update(precio.toJson());
-    }
+    Producto newProduct = getProduct.convertProductoDefault();
+    newProduct.idAccount = welcomeController.getProfileAccountSelected.id;
+    newProduct.timestampActualizacion = Timestamp.fromDate(new DateTime.now());
+
     // save in firestore
+    await Database.refFirestoreCatalogueProductGlobal()
+        .doc(newProduct.id)
+        .set(newProduct.toJson());
+  }
+
+  // DEVELOPER OPTIONS
+  Future<void> saveProductGlobal() async {
+    if (getProduct.id != '') {
+      if (getCategory.id != '') {
+        if (getProduct.descripcion != '') {
+          if (getMarkSelected.id != '') {
+            // activate indicator load
+            setSaveIndicator = true;
+            setTextAppBar = 'Actualizando...';
+            updateAll();
+
+            // set
+            Producto newProduct = getProduct.convertProductoDefault();
+            newProduct.idAccount =
+                welcomeController.getProfileAccountSelected.id;
+            newProduct.timestampActualizacion =
+                Timestamp.fromDate(new DateTime.now());
+
+            // save in firestore
+            await Database.refFirestoreCatalogueProductGlobal()
+                .doc(newProduct.id)
+                .set(newProduct.toJson())
+                .whenComplete(() {
+              Get.back();Get.back();
+            });
+          } else {
+            Get.snackbar(
+                'No se puedo continuar 😐', 'debes seleccionar una marca');
+          }
+        } else {
+          Get.snackbar('No se puedo continuar 👎',
+              'debes escribir una descripción del producto');
+        }
+      } else {
+        Get.snackbar(
+            'No se puedo guardar los datos', 'debes seleccionar una categoría');
+      }
+    }
+  }
+
+  void deleteProducGlobal() async {
+    // activate indicator load
+    setSaveIndicator = true;
+    setTextAppBar = 'Eliminando...';
+    updateAll();
+
+    // delecte doc product in catalogue account
     await Database.refFirestoreCatalogueProduct(
             idAccount: welcomeController.getProfileAccountSelected.id)
         .doc(getProduct.id)
-        .update(getProduct.toJson());
+        .delete();
+
+    // delete doc price
+    await Database.refFirestoreRegisterPrice(id: getProduct.id, isoPAis: 'ARG')
+        .doc(getProduct.id)
+        .delete();
+    // delete doc product
+    await Database.refFirestoreCatalogueProduct(
+            idAccount: welcomeController.getProfileAccountSelected.id)
+        .doc(getProduct.id)
+        .delete()
+        .whenComplete(() {
+      Get.back();
+      Get.back();
+    });
   }
 
   void loadDataProduct() {
