@@ -157,7 +157,7 @@ class WelcomeController extends GetxController {
   void catalogueFilterReset() {
     // resetea los valores de los filtros para mostrar todos los productos
     setMarkSelect = Marca(
-        timestampActualizado: Timestamp.now(),
+        timestampUpdate: Timestamp.now(),
         timestampCreacion: Timestamp.now());
     setCategorySelect = Categoria();
     setsubCategorySelect = Categoria();
@@ -186,7 +186,7 @@ class WelcomeController extends GetxController {
 
   //  mark selected
   Rx<Marca> _markSelect = Marca(
-          timestampActualizado: Timestamp.now(),
+          timestampUpdate: Timestamp.now(),
           timestampCreacion: Timestamp.now())
       .obs;
   Marca get getMarkSelect => _markSelect.value;
@@ -194,7 +194,7 @@ class WelcomeController extends GetxController {
     _markSelect.value = value;
     catalogueFilter();
     // actualiza el texto del 'TabBar'
-    setTextTab = _markSelect.value.titulo;
+    setTextTab = _markSelect.value.name;
     update(['tab']);
   }
 
@@ -204,7 +204,7 @@ class WelcomeController extends GetxController {
   set setCategorySelect(Categoria value) {
     // default value
     setMarkSelect = Marca(
-        timestampActualizado: Timestamp.now(),
+        timestampUpdate: Timestamp.now(),
         timestampCreacion: Timestamp.now());
     // set
     _categorySelect.value = value;
@@ -229,7 +229,7 @@ class WelcomeController extends GetxController {
   set setsubCategorySelect(Categoria value) {
     // default value
     setMarkSelect = Marca(
-        timestampActualizado: Timestamp.now(),
+        timestampUpdate: Timestamp.now(),
         timestampCreacion: Timestamp.now());
     // set
     _subCategorySelect.value = value;
@@ -402,7 +402,7 @@ class WelcomeController extends GetxController {
     return Database.readMarkFuture(id: id)
         .then((value) => Marca.fromDocumentSnapshot(documentSnapshot: value))
         .catchError((error) => Marca(
-            timestampActualizado: Timestamp.now(),
+            timestampUpdate: Timestamp.now(),
             timestampCreacion: Timestamp.now()));
   }
 

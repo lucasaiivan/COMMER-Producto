@@ -43,7 +43,7 @@ class Database {
   static Future<QuerySnapshot<Map<String, dynamic>>> readProductsForMakFuture( {required String idMark,int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("id_marca",isEqualTo: idMark).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("id_marca",isEqualTo: idMark).get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readListPricesProductFuture( {required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis').get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readCategoryListFuture( {required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA').get();
-  static Future<QuerySnapshot<Map<String, dynamic>>> readListMarksFuture() => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS/').get();
+  static Future<QuerySnapshot<Map<String, dynamic>>> readListMarksFuture() => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS').get();
   // future - DocumentSnapshot
   static Future<DocumentSnapshot<Map<String, dynamic>>> readProductGlobalFuture( { required String id}) => FirebaseFirestore.instance.collection('/APP/ARG/PRODUCTOS/').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readUserModelFuture( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).get();
@@ -71,6 +71,7 @@ class Database {
   static CollectionReference  refFirestoreCatalogueProduct({ required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO/');
   static CollectionReference  refFirestoreCatalogueProductGlobal() => FirebaseFirestore.instance.collection('/APP/ARG/PRODUCTOS/');
   static CollectionReference  refFirestoreRegisterPrice({required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('/APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis/'); 
+  static CollectionReference  refFirestoreMark() => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS/');
 
   //  update value
   //  Para actualizar los datos en la base de datos, puede usar el update()método en el documentReferencerobjeto pasando los nuevos datos como un mapa. Para actualizar un documento en particular de la base de datos, deberá usar su ID de documento único .

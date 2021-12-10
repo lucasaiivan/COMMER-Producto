@@ -19,7 +19,7 @@ class ProductController extends GetxController {
       listSuggestedProducts.value = product;
 
   static Rx<Marca> mark = Marca(
-          timestampActualizado: Timestamp.now(),
+          timestampUpdate: Timestamp.now(),
           timestampCreacion: Timestamp.now())
       .obs;
   Marca get getMark => mark.value;

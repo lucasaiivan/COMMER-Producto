@@ -155,23 +155,27 @@ class ProductoItem extends StatelessWidget {
     return Hero(
       tag: producto.id,
       child: Card(
-        elevation: 2,
-        shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+        color: Get.theme.brightness == Brightness.dark
+            ? Get.theme.scaffoldBackgroundColor
+            : Colors.white,
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: WidgetImagenProducto(producto: producto)),
-                WidgetContentInfo(producto: producto),
+                Expanded(child: contentImage()),
+                contentInfo(),
               ],
             ),
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Get.toNamed(Routes.PRODUCT, arguments: {'product': producto}),
+                  onTap: () => Get.toNamed(Routes.PRODUCT,
+                      arguments: {'product': producto}),
                 ),
               ),
             ),
@@ -180,19 +184,11 @@ class ProductoItem extends StatelessWidget {
       ),
     );
   }
-}
-
-class WidgetImagenProducto extends StatelessWidget {
-  const WidgetImagenProducto({required this.producto});
-  final ProductoNegocio producto;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget contentImage() {
     return producto.urlimagen != ""
         ? Container(
-          width: double.infinity,
-
-          child: CachedNetworkImage(
+            width: double.infinity,
+            child: CachedNetworkImage(
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
               imageUrl: producto.urlimagen,
@@ -207,49 +203,36 @@ class WidgetImagenProducto extends StatelessWidget {
                 ),
               ),
             ),
-        )
+          )
         : Container(color: Color.fromARGB(255, 43, 45, 57));
   }
-}
 
-class WidgetContentInfo extends StatelessWidget {
-  const WidgetContentInfo({required this.producto});
-  final ProductoNegocio producto;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      color:Get.theme.scaffoldBackgroundColor,// Color.fromARGB(255, 43, 45, 57),
-      padding: EdgeInsets.all(5.0),
+  Widget contentInfo() {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          producto.descripcion != ""
-              ? Text(producto.descripcion,
-                  style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: 14.0,
-                      color:Get.theme.textTheme.headline1!.color),
-                  overflow: TextOverflow.fade,
-                  softWrap: false)
-              : Container(),
-          producto.precioVenta != 0.0
-              ? Text(
-                  Publicaciones.getFormatoPrecio(
-                      monto: producto.precioVenta),
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14.0,
-                      color: Get.theme.textTheme.bodyText1!.color),
-                  overflow: TextOverflow.fade,
-                  softWrap: false)
-              : Container(),
+          Text(producto.descripcion,
+              style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14.0,
+                  color: Get.theme.textTheme.headline1!.color),
+              overflow: TextOverflow.fade,
+              softWrap: false),
+          Text(Publicaciones.getFormatoPrecio(monto: producto.precioVenta),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
+                  color: Get.theme.textTheme.bodyText1!.color),
+              overflow: TextOverflow.fade,
+              softWrap: false),
         ],
       ),
     );
   }
 }
+
 
 class WidgetButtonListTile extends StatelessWidget {
   final BuildContext buildContext;

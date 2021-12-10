@@ -608,7 +608,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
           itemBuilder: (BuildContext c, int index) {
             // get
             Marca marca = controller.getCatalogueMarksFilter[index];
-            if (marca.titulo == '') return Container();
+            if (marca.name == '') return Container();
 
             return Container(
               width: 81.0,
@@ -627,15 +627,15 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.all(5.0),
                         child: viewCircleImage(
-                            url: marca.urlImagen,
-                            texto: marca.titulo,
+                            url: marca.urlImage,
+                            texto: marca.name,
                             size: 50),
                       ),
                     ),
                     SizedBox(
                       height: 8.0,
                     ),
-                    Text(marca.titulo,
+                    Text(marca.name,
                         style: TextStyle(
                             fontSize: controller.getMarkSelect.id == marca.id
                                 ? 14

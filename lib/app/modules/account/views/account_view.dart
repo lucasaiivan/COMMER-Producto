@@ -150,8 +150,7 @@ class AccountView extends GetView<AccountController> {
                   : CircleAvatar(
                       radius: 75.0,
                       backgroundColor: Colors.transparent,
-                      backgroundImage:
-                          FileImage(File(controller.getxFile.path)),
+                      backgroundImage:FileImage(File(controller.getxFile.path)),
                     )
             ],
           ),

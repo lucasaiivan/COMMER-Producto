@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
-import 'package:producto/app/modules/product/views/product_view.dart';
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:search_page/search_page.dart';
@@ -48,12 +47,11 @@ class ControllerProductsEdit extends GetxController {
 
   // marca
   Marca _markSelected = Marca(
-      timestampActualizado: Timestamp.now(),
-      timestampCreacion: Timestamp.now());
+      timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
   set setMarkSelected(Marca value) {
     _markSelected = value;
     getProduct.idMarca = value.id;
-    getProduct.nameMark = value.titulo;
+    getProduct.nameMark = value.name;
     update(['updateAll']);
   }
 
@@ -255,7 +253,8 @@ class ControllerProductsEdit extends GetxController {
                 .doc(newProduct.id)
                 .set(newProduct.toJson())
                 .whenComplete(() {
-              Get.back();Get.back();
+              Get.back();
+              Get.back();
             });
           } else {
             Get.snackbar(
@@ -316,22 +315,22 @@ class ControllerProductsEdit extends GetxController {
   void readMarkProducts() {
     Database.readMarkFuture(id: getProduct.idMarca).then((value) {
       setMarkSelected = Marca.fromDocumentSnapshot(documentSnapshot: value);
-      getProduct.nameMark = getMarkSelected.titulo; // guardamos un metadato
+      getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
       update(['updateAll']);
     }).onError((error, stackTrace) {
       setMarkSelected = Marca(
-          timestampActualizado: Timestamp.now(),
+          timestampUpdate: Timestamp.now(),
           timestampCreacion: Timestamp.now(),
-          titulo: '',
+          name: '',
           id: '0000',
-          urlImagen: 'default');
+          urlImage: 'default');
     }).catchError((_) {
       setMarkSelected = Marca(
-          timestampActualizado: Timestamp.now(),
+          timestampUpdate: Timestamp.now(),
           timestampCreacion: Timestamp.now(),
-          titulo: '',
+          name: '',
           id: '0000',
-          urlImagen: 'default');
+          urlImage: 'default');
     });
   }
 
@@ -483,6 +482,156 @@ class ControllerProductsEdit extends GetxController {
   }
 }
 
+class CreateMark extends StatefulWidget {
+  CreateMark({Key? key}) : super(key: key);
+
+  @override
+  _CreateMarkState createState() => _CreateMarkState();
+}
+
+class _CreateMarkState extends State<CreateMark> {
+  // others controllers
+  final ControllerProductsEdit controllerProductsEdit = Get.find();
+
+  //var
+  String title = 'Crear nueva marca';
+  bool load = false;
+  TextStyle textStyle = new TextStyle(fontSize: 24.0);
+  Marca mark = Marca(
+      timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
+  ImagePicker _picker = ImagePicker();
+  XFile xFile = XFile('');
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: appbar(),
+      body: body(),
+    );
+  }
+
+  PreferredSizeWidget appbar() {
+    return AppBar(
+      title: Text(title),
+      actions: [
+        load ? Container() : Icon(Icons.check),
+      ],
+      bottom: load ? linearProgressBarApp() : null,
+    );
+  }
+
+  Widget body() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              xFile.path != ''
+                  ? CircleAvatar(
+                      backgroundImage: FileImage(File(xFile.path)),
+                      radius: 76,
+                    )
+                  : CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      child: Icon(Icons.add, color: Colors.white),
+                      radius: 76),
+              load
+                  ? Container()
+                  : TextButton(
+                      onPressed: getLoadImageMark,
+                      child: Text("Cambiar imagen")),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: TextField(
+            controller: new TextEditingController(text: mark.name),
+            onChanged: (value) => mark.name = value,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(), labelText: "Nombre de la marca"),
+            style: textStyle,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: TextField(
+            controller: new TextEditingController(text: mark.description),
+            onChanged: (value) => mark.description = value,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Descripción (opcional)"),
+            style: textStyle,
+          ),
+        ),
+      ],
+    );
+  }
+
+  //  MARK CREATE
+  void getLoadImageMark() {
+    _picker
+        .pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 720.0,
+      maxHeight: 720.0,
+      imageQuality: 55,
+    )
+        .then((value) {
+      setState(() => xFile = value!);
+    });
+  }
+
+  void save() async {
+    setState(() {
+      load = true;
+      title = 'Actualizando...';
+    });
+    if (mark.id == '')
+      mark.id = new DateTime.now().millisecondsSinceEpoch.toString();
+    if (mark.name != '') {
+      // image save
+      // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
+      if (xFile.path != '') {
+        Reference ref = FirebaseStorage.instance
+            .ref()
+            .child("APP")
+            .child("ARG")
+            .child("MARCAS")
+            .child(mark.id);
+        // referencia de la imagen
+        UploadTask uploadTask = ref.putFile(File(xFile.path));
+        // cargamos la imagen a storage
+        await uploadTask;
+        // obtenemos la url de la imagen guardada
+        await ref
+            .getDownloadURL()
+            .then((value) async {
+              // set
+              mark.urlImage = value;
+              // mark save
+              await Database.refFirestoreMark()
+                  .doc()
+                  .set(mark.toJson())
+                  .whenComplete(() {
+                    controllerProductsEdit.setMarkSelected = mark;
+                    Get.back();
+                  });
+            })
+            .onError((error, stackTrace) {})
+            .catchError((_) {});
+      } else {
+        Get.snackbar('', 'Carga una imagen');
+      }
+    } else {
+      Get.snackbar('', 'Debes escribir un nombre de la marca');
+    }
+  }
+}
+
 class SelectMark extends StatefulWidget {
   SelectMark({Key? key}) : super(key: key);
 
@@ -532,6 +681,9 @@ class _SelectMarkState extends State<SelectMark> {
                             child:
                                 Text('Marcas', style: TextStyle(fontSize: 18))),
                         IconButton(
+                            onPressed: () => Get.to(CreateMark()),
+                            icon: Icon(Icons.add)),
+                        IconButton(
                           icon: Icon(Icons.search),
                           onPressed: () {
                             Get.back();
@@ -547,20 +699,20 @@ class _SelectMarkState extends State<SelectMark> {
                                   child: Text('No se encontro :('),
                                 ),
                                 filter: (product) => [
-                                  product.titulo,
-                                  product.descripcion,
+                                  product.name,
+                                  product.description,
                                 ],
                                 builder: (mark) => ListTile(
                                   leading: FadeInImage(
-                                    image: NetworkImage(mark.urlImagen),
+                                    image: NetworkImage(mark.urlImage),
                                     placeholder:
                                         AssetImage("assets/loading.gif"),
                                     fadeInDuration: Duration(milliseconds: 200),
                                     fit: BoxFit.cover,
                                     width: 50.0,
                                   ),
-                                  title: Text(mark.titulo),
-                                  subtitle: Text(mark.descripcion),
+                                  title: Text(mark.name),
+                                  subtitle: Text(mark.description),
                                   onTap: () {
                                     controllerProductsEdit.setMarkSelected =
                                         mark;
@@ -580,14 +732,14 @@ class _SelectMarkState extends State<SelectMark> {
                     leading: CircleAvatar(
                       backgroundColor: Colors.black26,
                       radius: 24.0,
-                      child: Text(marcaSelect.titulo.substring(0, 1),
+                      child: Text(marcaSelect.name.substring(0, 1),
                           style: TextStyle(
                               fontSize: 18.0,
                               color: Colors.white,
                               fontWeight: FontWeight.bold)),
                     ),
                     dense: true,
-                    title: Text(marcaSelect.titulo),
+                    title: Text(marcaSelect.name),
                     onTap: () {
                       controllerProductsEdit.setMarkSelected = marcaSelect;
                       Get.back();
@@ -598,20 +750,20 @@ class _SelectMarkState extends State<SelectMark> {
               ),
               ListTile(
                 leading: viewCircleImage(
-                    texto: marcaSelect.titulo,
-                    url: marcaSelect.urlImagen,
+                    texto: marcaSelect.name,
+                    url: marcaSelect.urlImage,
                     size: 50.0),
                 dense: true,
                 title: Row(
                   children: <Widget>[
-                    marcaSelect.verificado == true
+                    marcaSelect.verified == true
                         ? Padding(
                             padding: EdgeInsets.all(5.0),
                             child: new Image.asset('assets/icon_verificado.png',
                                 width: 16.0, height: 16.0))
                         : new Container(),
                     Expanded(
-                      child: Text(marcaSelect.titulo,
+                      child: Text(marcaSelect.name,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               fontSize: 16.0,
@@ -636,20 +788,20 @@ class _SelectMarkState extends State<SelectMark> {
           children: <Widget>[
             ListTile(
               leading: viewCircleImage(
-                  texto: marcaSelect.titulo,
-                  url: marcaSelect.urlImagen,
+                  texto: marcaSelect.name,
+                  url: marcaSelect.urlImage,
                   size: 50.0),
               dense: true,
               title: Row(
                 children: <Widget>[
-                  marcaSelect.verificado == true
+                  marcaSelect.verified == true
                       ? Padding(
                           padding: EdgeInsets.all(5.0),
                           child: new Image.asset('assets/icon_verificado.png',
                               width: 16.0, height: 16.0))
                       : new Container(),
                   Expanded(
-                    child: Text(marcaSelect.titulo,
+                    child: Text(marcaSelect.name,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             fontSize: 16.0,
@@ -674,16 +826,13 @@ class _SelectMarkState extends State<SelectMark> {
   // functions
   loadMarks() async {
     if (controllerProductsEdit.getMarks.length == 0) {
-      await Database.readListMarksFuture()
-          .then((value) {
-            setState(() {
-              value.docs.forEach((element) => list
-                  .add(Marca.fromDocumentSnapshot(documentSnapshot: element)));
-              controllerProductsEdit.setMarks = list;
-            });
-          })
-          .onError((error, stackTrace) {})
-          .catchError((_) {});
+      await Database.readListMarksFuture().then((value) {
+        setState(() {
+          value.docs.forEach((element) =>
+              list.add(Marca.fromDocumentSnapshot(documentSnapshot: element)));
+          controllerProductsEdit.setMarks = list;
+        });
+      }).onError((error, stackTrace) =>null);
     } else {
       // datos ya descargados
       list = controllerProductsEdit.getMarks;

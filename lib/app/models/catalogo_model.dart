@@ -308,58 +308,52 @@ class Categoria {
 
 class Marca {
   String id = "";
-  String titulo = "";
-  String descripcion = "";
-  String urlImagen = "";
-  bool verificado = false;
+  String name = "";
+  String description = "";
+  String urlImage = "";
+  bool verified = false;
 
   // Datos de la creación
   String idUsuarioCreador = ""; // ID el usuaruio que creo el productos
   late Timestamp
       timestampCreacion; // Marca de tiempo de la creacion del documento
-  String idUsuarioActualizado = ""; // ID el usuaruio que actualizo el productos
   late Timestamp
-      timestampActualizado; // Marca de tiempo de la ultima actualizacion
+      timestampUpdate; // Marca de tiempo de la ultima actualizacion
 
   Marca({
     this.id = "",
-    this.titulo = "",
-    this.descripcion = "",
-    this.urlImagen = "",
-    this.verificado = false,
-    required this.timestampActualizado,
+    this.name = "",
+    this.description = "",
+    this.urlImage = "",
+    this.verified = false,
+    required this.timestampUpdate,
     required this.timestampCreacion,
   });
   Marca.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     id = documentSnapshot['id'] ?? '';
-    titulo = documentSnapshot['titulo'] ?? '';
-    descripcion = documentSnapshot['descripcion'] ?? '';
-    urlImagen = documentSnapshot['url_imagen'] ?? 'default';
-    //verificado = documentSnapshot['verificado']??'' ;
-    //idUsuarioCreador = documentSnapshot['id_usuario_creador'] ?? '';
-    //idUsuarioActualizado = documentSnapshot['id_usuario_actualizado'] ?? '';
-    //timestampCreacion = documentSnapshot['timestamp_creacion'];
-    //timestampActualizado = documentSnapshot['timestamp_actualizado'];
+    name = documentSnapshot['name'] ?? documentSnapshot['titulo']??'';
+    description = documentSnapshot['description'] ?? documentSnapshot['descripcion']??'';
+    urlImage = documentSnapshot['urlImage'] ?? documentSnapshot['url_imagen'] ?? '';
+    verified = documentSnapshot['verified']??documentSnapshot['verificado']??false;
+    timestampCreacion = documentSnapshot['timestampCreacion']??Timestamp.now();
+    timestampUpdate = documentSnapshot['timestampUpdate']??Timestamp.now();
   }
   Marca.fromMap(Map data) {
     id = data['id'] ?? '';
-    titulo = data['titulo'] ?? '';
-    descripcion = data['descripcion'] ?? '';
-    urlImagen = data['url_imagen'] ?? 'default';
-    verificado = data['verificado'] ?? false;
-    idUsuarioCreador = data['id_usuario_creador'] ?? '';
-    idUsuarioActualizado = data['id_usuario_actualizado'] ?? '';
-    timestampCreacion = data['timestamp_creacion'];
-    timestampActualizado = data['timestamp_actualizado'];
+    name = data['name'] ?? '';
+    description = data['description'] ?? (data['descripcion']??'');
+    urlImage = data['urlImage'] ?? (data['url_imagen'] ?? '');
+    verified = data['verified'] ?? (data['verificado'] ?? false);
+    timestampCreacion = data['timestampCreacion']??Timestamp.now();
+    timestampUpdate = data['timestampUpdate']??Timestamp.now();
   }
   Map<String, dynamic> toJson() => {
         "id": id,
-        "titulo": titulo,
-        "descripcion": descripcion,
-        "urlImagen": urlImagen,
-        "verificado": verificado,
-        "idUsuarioActualizado": idUsuarioActualizado,
+        "name": name,
+        "description": description,
+        "urlImage": urlImage,
+        "verified": verified,
         "timestampCreacion": timestampCreacion,
-        "timestampActualizado": timestampActualizado,
+        "timestampUpdate": timestampUpdate,
       };
 }

@@ -50,7 +50,7 @@ class Product extends GetView<ProductController> {
                             width: 14.0, height: 14.0))
                     : new Container(),
                 Expanded(
-                  child: Text(controller.getMark.titulo,
+                  child: Text(controller.getMark.name,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 18.0,
@@ -628,8 +628,8 @@ class Product extends GetView<ProductController> {
                       padding: const EdgeInsets.all(2.0),
                       child: utilsWidget.viewCircleImage(
                           size: 60,
-                          url: controller.getMark.urlImagen,
-                          texto: controller.getMark.titulo),
+                          url: controller.getMark.urlImage,
+                          texto: controller.getMark.name),
                     ),
                   ),
                 )),
@@ -655,10 +655,10 @@ class Product extends GetView<ProductController> {
                             elevation: 5,
                             backgroundColor: Get.theme.backgroundColor,
                             avatar: utilsWidget.viewCircleImage(
-                                url: controller.getMark.urlImagen,
-                                texto: controller.getMark.titulo,
+                                url: controller.getMark.urlImage,
+                                texto: controller.getMark.name,
                                 size: 20),
-                            label: Text(controller.getMark.titulo),
+                            label: Text(controller.getMark.name),
                           ),
                         )
                       : Container(),

@@ -137,10 +137,10 @@ class ProductEdit extends StatelessWidget {
                       children: [
                         utilsWidget.viewCircleImage(
                             size: 25,
-                            url: controller.getMarkSelected.urlImagen,
-                            texto: controller.getMarkSelected.titulo),
+                            url: controller.getMarkSelected.urlImage,
+                            texto: controller.getMarkSelected.name),
                         SizedBox(width: 5),
-                        Text(controller.getMarkSelected.titulo,
+                        Text(controller.getMarkSelected.name,
                             style: TextStyle(
                                 color: controller.getNewProduct
                                     ? null
