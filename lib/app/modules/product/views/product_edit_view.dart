@@ -55,6 +55,9 @@ class ProductEdit extends StatelessWidget {
                       Theme.of(contextPrincipal).textTheme.bodyText1!.color)),
       actions: <Widget>[
         IconButton(
+            icon: controller.getSaveIndicator ? Container() : Icon(Icons.delete),
+            onPressed: controller.delete),
+        IconButton(
             icon: controller.getSaveIndicator ? Container() : Icon(Icons.check),
             onPressed: controller.save),
       ],
