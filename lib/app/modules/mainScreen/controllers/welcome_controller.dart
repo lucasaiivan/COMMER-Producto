@@ -400,7 +400,7 @@ class WelcomeController extends GetxController {
 
   Future<Marca> readMark({required String id}) async {
     return Database.readMarkFuture(id: id)
-        .then((value) => Marca.fromDocumentSnapshot(documentSnapshot: value))
+        .then((value) => Marca.fromMap(value.data() as Map ))
         .catchError((error) => Marca(
             timestampUpdate: Timestamp.now(),
             timestampCreacion: Timestamp.now()));

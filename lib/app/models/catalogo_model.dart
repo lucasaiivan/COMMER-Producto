@@ -329,21 +329,12 @@ class Marca {
     required this.timestampUpdate,
     required this.timestampCreacion,
   });
-  Marca.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
-    id = documentSnapshot['id'] ?? '';
-    name = documentSnapshot['name'] ?? documentSnapshot['titulo']??'';
-    description = documentSnapshot['description'] ?? documentSnapshot['descripcion']??'';
-    urlImage = documentSnapshot['urlImage'] ?? documentSnapshot['url_imagen'] ?? '';
-    verified = documentSnapshot['verified']??documentSnapshot['verificado']??false;
-    timestampCreacion = documentSnapshot['timestampCreacion']??Timestamp.now();
-    timestampUpdate = documentSnapshot['timestampUpdate']??Timestamp.now();
-  }
   Marca.fromMap(Map data) {
     id = data['id'] ?? '';
-    name = data['name'] ?? '';
-    description = data['description'] ?? (data['descripcion']??'');
-    urlImage = data['urlImage'] ?? (data['url_imagen'] ?? '');
-    verified = data['verified'] ?? (data['verificado'] ?? false);
+    name = data['name'] ??  data['titulo']??'';
+    description = data['description'] ?? data['descripcion']??'';
+    urlImage = data['urlImage'] ?? data['url_imagen']??'';
+    verified = data['verified'] ?? data['verificado']??false;
     timestampCreacion = data['timestampCreacion']??Timestamp.now();
     timestampUpdate = data['timestampUpdate']??Timestamp.now();
   }

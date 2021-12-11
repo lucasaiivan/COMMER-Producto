@@ -314,7 +314,7 @@ class ControllerProductsEdit extends GetxController {
 
   void readMarkProducts() {
     Database.readMarkFuture(id: getProduct.idMarca).then((value) {
-      setMarkSelected = Marca.fromDocumentSnapshot(documentSnapshot: value);
+      setMarkSelected = Marca.fromMap(value.data() as Map);
       getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
       update(['updateAll']);
     }).onError((error, stackTrace) {
@@ -514,7 +514,7 @@ class _CreateMarkState extends State<CreateMark> {
     return AppBar(
       title: Text(title),
       actions: [
-        load ? Container() : Icon(Icons.check),
+        load ? Container() : IconButton(icon: Icon(Icons.check),onPressed: save,),
       ],
       bottom: load ? linearProgressBarApp() : null,
     );
@@ -681,7 +681,10 @@ class _SelectMarkState extends State<SelectMark> {
                             child:
                                 Text('Marcas', style: TextStyle(fontSize: 18))),
                         IconButton(
-                            onPressed: () => Get.to(CreateMark()),
+                            onPressed: () {
+                              Get.back();
+                              Get.to(CreateMark());
+                            },
                             icon: Icon(Icons.add)),
                         IconButton(
                           icon: Icon(Icons.search),
@@ -703,16 +706,13 @@ class _SelectMarkState extends State<SelectMark> {
                                   product.description,
                                 ],
                                 builder: (mark) => ListTile(
-                                  leading: FadeInImage(
-                                    image: NetworkImage(mark.urlImage),
-                                    placeholder:
-                                        AssetImage("assets/loading.gif"),
-                                    fadeInDuration: Duration(milliseconds: 200),
-                                    fit: BoxFit.cover,
-                                    width: 50.0,
+                                  leading: CircleAvatar(
+                                    radius: 24,
+                                    backgroundColor: Colors.grey,
+                                    backgroundImage: mark.urlImage==''?null:CachedNetworkImageProvider(mark.urlImage),
                                   ),
                                   title: Text(mark.name),
-                                  subtitle: Text(mark.description),
+                                  subtitle: mark.description==''?null:Text(mark.description,maxLines: 1,overflow: TextOverflow.ellipsis,),
                                   onTap: () {
                                     controllerProductsEdit.setMarkSelected =
                                         mark;
@@ -726,60 +726,38 @@ class _SelectMarkState extends State<SelectMark> {
                       ],
                     ),
                   ),
-                  ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.black26,
-                      radius: 24.0,
-                      child: Text(marcaSelect.name.substring(0, 1),
-                          style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)),
-                    ),
-                    dense: true,
-                    title: Text(marcaSelect.name),
-                    onTap: () {
-                      controllerProductsEdit.setMarkSelected = marcaSelect;
-                      Get.back();
-                    },
-                  ),
-                  Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                 ],
               ),
               ListTile(
-                leading: viewCircleImage(
-                    texto: marcaSelect.name,
-                    url: marcaSelect.urlImage,
-                    size: 50.0),
-                dense: true,
-                title: Row(
-                  children: <Widget>[
-                    marcaSelect.verified == true
-                        ? Padding(
-                            padding: EdgeInsets.all(5.0),
-                            child: new Image.asset('assets/icon_verificado.png',
-                                width: 16.0, height: 16.0))
-                        : new Container(),
-                    Expanded(
-                      child: Text(marcaSelect.name,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 16.0,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .color)),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  controllerProductsEdit.setMarkSelected = marcaSelect;
-                  Get.back();
-                },
-                //trailing:popupMenuItemCategoria(marca:marcaSelect ),
+              leading: viewCircleImage(
+                  texto: marcaSelect.name,
+                  url: marcaSelect.urlImage,
+                  size: 50.0),
+              dense: true,
+              title: Row(
+                children: <Widget>[
+                  marcaSelect.verified == true
+                      ? Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: new Image.asset('assets/icon_verificado.png',
+                              width: 16.0, height: 16.0))
+                      : new Container(),
+                  Expanded(
+                    child: Text(marcaSelect.name,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            color:
+                                Theme.of(context).textTheme.bodyText1!.color)),
+                  ),
+                ],
               ),
+              onTap: () {
+                controllerProductsEdit.setMarkSelected = marcaSelect;
+                Get.back();
+              },
+              //trailing:popupMenuItemCategoria(marca:marcaSelect ),
+            ),
               Divider(endIndent: 12.0, indent: 12.0),
             ],
           );
@@ -829,10 +807,10 @@ class _SelectMarkState extends State<SelectMark> {
       await Database.readListMarksFuture().then((value) {
         setState(() {
           value.docs.forEach((element) =>
-              list.add(Marca.fromDocumentSnapshot(documentSnapshot: element)));
+              list.add(Marca.fromMap(element.data())));
           controllerProductsEdit.setMarks = list;
         });
-      }).onError((error, stackTrace) =>null);
+      });
     } else {
       // datos ya descargados
       list = controllerProductsEdit.getMarks;
