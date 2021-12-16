@@ -919,8 +919,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                   if (textEditingController.text != '') {
                     // set
                     subcategoria.nombre = textEditingController.text;
-                    controller.getCategorySelect
-                        .subcategorias[subcategoria.id] = subcategoria.nombre;
+                    controllerProductsEdit.getCategory.subcategorias[subcategoria.id] = subcategoria.nombre;
                     setState(() => loadSave = true);
                     // save
                     await controller
@@ -1110,7 +1109,8 @@ class _CreateMarkState extends State<CreateMark> {
     });
     if (widget.mark.id == '')
       widget.mark.id = new DateTime.now().millisecondsSinceEpoch.toString();
-    if (widget.mark.name != '') {
+    if (widget.mark.name != '') { 
+      
       // image save
       // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
       if (xFile.path != '') {
@@ -1272,7 +1272,7 @@ class _SelectMarkState extends State<SelectMark> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                     fontSize: 16.0,
-                    color: Theme.of(context).textTheme.bodyText1!.color)),
+                    color: Get.theme.textTheme.bodyText1!.color)),
           ),
         ],
       ),
