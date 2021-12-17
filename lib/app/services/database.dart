@@ -41,7 +41,7 @@ class Database {
   // future - QuerySnapshot
   static Future<QuerySnapshot<Map<String, dynamic>>> readProductsFuture( {int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readProductsForMakFuture( {required String idMark,int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("id_marca",isEqualTo: idMark).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("id_marca",isEqualTo: idMark).get();
-  static Future<QuerySnapshot<Map<String, dynamic>>> readListPricesProductFuture( {required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis').get();
+  static Future<QuerySnapshot<Map<String, dynamic>>> readListPricesProductFuture( {required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis').orderBy("timestamp",descending: true).get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readCategoryListFuture( {required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA').get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readListMarksFuture() => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS').get();
   // future - DocumentSnapshot
@@ -70,7 +70,7 @@ class Database {
   static CollectionReference  refFirestoreCategory({ required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA/');
   static CollectionReference  refFirestoreCatalogueProduct({ required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO/');
   static CollectionReference  refFirestoreCatalogueProductGlobal() => FirebaseFirestore.instance.collection('/APP/ARG/PRODUCTOS/');
-  static CollectionReference  refFirestoreRegisterPrice({required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('/APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis/'); 
+  static CollectionReference  refFirestoreRegisterPrice({required String idProducto,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('/APP/$isoPAis/PRODUCTOS/$idProducto/REGISTRO_PRECIOS_$isoPAis/'); 
   static CollectionReference  refFirestoreMark() => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS/');
 
   //  update value

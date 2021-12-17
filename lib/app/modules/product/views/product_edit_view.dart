@@ -216,7 +216,7 @@ class ProductEdit extends StatelessWidget {
                       padding: EdgeInsets.only(
                           bottom: 12, top: 40, left: 0, right: 0),
                       child: button(
-                          padding: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 0,vertical:5),
                           colorAccent: Colors.white,
                           colorButton: Colors.red,
                           icon: Icon(Icons.delete),
@@ -239,7 +239,7 @@ class ProductEdit extends StatelessWidget {
                           endIndent: 12.0,
                           indent: 12.0,
                         )),
-                        Text("Opciones para desarrollador"),
+                        Text("Opciones para moderador"),
                         Expanded(
                             child: Divider(
                                 height: 1.0, endIndent: 12.0, indent: 12.0))
@@ -250,11 +250,25 @@ class ProductEdit extends StatelessWidget {
                     SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
                     controller.getSaveIndicator
                         ? Container()
-                        : buttonEditProductoOPTDeveloper(),
+                        : button(
+                          padding: const EdgeInsets.symmetric(horizontal: 0,vertical:5),
+                          icon: Icon(Icons.security, color: Colors.white),
+                          onPressed: showDialogSaveOPTDeveloper,
+                          colorAccent: Colors.white,
+                          colorButton: Colors.orange,
+                          text: "Editar documento",
+                          ),
                     SizedBox(height: 20.0),
                     controller.getSaveIndicator
                         ? Container()
-                        : buttonDeleteProductoOPTDeveloper(),
+                        : button(
+                          padding: const EdgeInsets.symmetric(horizontal: 0,vertical:5),
+                          icon: Icon(Icons.security, color: Colors.white),
+                          onPressed: showDialogDeleteOPTDeveloper,
+                          colorAccent: Colors.white,
+                          colorButton: Colors.red,
+                          text: "Eliminar documento",
+                        ),
                     SizedBox(height: 50.0),
                   ],
                 ),
@@ -315,25 +329,30 @@ class ProductEdit extends StatelessWidget {
   }
 
   Widget button(
-      {required Widget icon,
+      {
+      double width = double.infinity,
+      required Widget icon,
       String text = '',
       required dynamic onPressed,
-      double padding = 12.0,
+      EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
       Color colorButton = Colors.purple,
       Color colorAccent = Colors.white}) {
     return FadeInRight(
         child: Padding(
-      padding: EdgeInsets.all(padding),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            padding: EdgeInsets.all(12.0),
-            primary: colorButton,
-            textStyle: TextStyle(color: colorAccent)),
-        icon: icon,
-        label: Text(text, style: TextStyle(color: colorAccent)),
+      padding: padding,
+      child: Container(
+        width: width,
+        child: ElevatedButton.icon(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+              padding: EdgeInsets.all(12.0),
+              primary: colorButton,
+              textStyle: TextStyle(color: colorAccent)),
+          icon: icon,
+          label: Text(text, style: TextStyle(color: colorAccent)),
+        ),
       ),
     ));
   }
@@ -362,45 +381,12 @@ class ProductEdit extends StatelessWidget {
             ),
           );
   } */
-  Widget buttonEditProductoOPTDeveloper() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: controller.saveProductGlobal,
-        style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.all(12.0),
-            primary: Colors.orange[400],
-            onPrimary: Colors.white30,
-            textStyle: TextStyle(color: Colors.black)),
-        icon: Icon(Icons.security, color: Colors.white),
-        label: Text("Editar", style: TextStyle(color: Colors.white)),
-      ),
-    );
-  }
 
-  Widget buttonDeleteProductoOPTDeveloper() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          showDialogDeleteOPTDeveloper();
-        },
-        style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.all(12.0),
-            primary: Colors.red[400],
-            onPrimary: Colors.white30,
-            textStyle: TextStyle(color: Colors.black)),
-        icon: Icon(Icons.security, color: Colors.white),
-        label: Text("Borrar producto (Moderador)",
-            style: TextStyle(color: Colors.white)),
-      ),
-    );
-  }
 
   void showDialogDeleteOPTDeveloper() {
     Get.dialog(AlertDialog(
       title: new Text(
-          "¿Seguro que quieres eliminar este producto definitivamente? (Desarrollador)"),
+          "¿Seguro que quieres eliminar este documento definitivamente? (Mods)"),
       content: new Text(
           "El producto será eliminado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
       actions: <Widget>[
@@ -423,7 +409,7 @@ class ProductEdit extends StatelessWidget {
   void showDialogSaveOPTDeveloper() {
     Get.dialog(AlertDialog(
       title: new Text(
-          "¿Seguro que quieres actualizar este producto? (Desarrollador)"),
+          "¿Seguro que quieres actualizar este docuemnto? (Mods)"),
       content: new Text(
           "El producto será actualizado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
       actions: <Widget>[
@@ -839,7 +825,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                     children: <Widget>[
                       new Expanded(
                         child: new Text(
-                            "¿Desea continuar eliminando esta categoría?"),
+                            "¿Desea continuar eliminando esta subategoría?"),
                       )
                     ],
                   ),
@@ -919,11 +905,13 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                   if (textEditingController.text != '') {
                     // set
                     subcategoria.nombre = textEditingController.text;
-                    controllerProductsEdit.getCategory.subcategorias[subcategoria.id] = subcategoria.nombre;
+                    controllerProductsEdit.getCategory
+                        .subcategorias[subcategoria.id] = subcategoria.nombre;
                     setState(() => loadSave = true);
                     // save
                     await controller
-                        .categoryUpdate(categoria: controller.getCategorySelect)
+                        .categoryUpdate(
+                            categoria: controllerProductsEdit.getCategory)
                         .whenComplete(() => Get.back())
                         .catchError((error, stackTrace) =>
                             setState(() => loadSave = false));
@@ -1109,8 +1097,7 @@ class _CreateMarkState extends State<CreateMark> {
     });
     if (widget.mark.id == '')
       widget.mark.id = new DateTime.now().millisecondsSinceEpoch.toString();
-    if (widget.mark.name != '') { 
-      
+    if (widget.mark.name != '') {
       // image save
       // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
       if (xFile.path != '') {

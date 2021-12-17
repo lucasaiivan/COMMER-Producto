@@ -462,7 +462,6 @@ class Product extends GetView<ProductController> {
                 )
               : Container(),
           ListView.builder(
-            //physics: const AlwaysScrollableScrollPhysics(),
             physics: const NeverScrollableScrollPhysics(),
             padding: EdgeInsets.symmetric(vertical: 0.16),
             shrinkWrap: true,
@@ -507,6 +506,10 @@ class Product extends GetView<ProductController> {
                                     imageBuilder: (context, image) =>
                                         CircleAvatar(
                                       backgroundImage: image,
+                                      radius: 24.0,
+                                    ),
+                                    errorWidget: (context, url, error) => const CircleAvatar(
+                                      backgroundColor: Colors.grey,
                                       radius: 24.0,
                                     ),
                                   ),

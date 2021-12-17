@@ -168,26 +168,23 @@ class ControllerProductsEdit extends GetxController {
             }
             // save data product global
             if (getNewProduct) {
-              getProduct.verificado =
-                  true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+              getProduct.verificado = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
               savevProductoGlobal();
             }
 
-            // Valores para registrar el precio
+            // registra el precio en una colección publica para todos los usuarios
             if (welcomeController.getProfileAccountSelected.id != "") {
               Precio precio = new Precio(
-                  idNegocio: welcomeController.getProfileAccountSelected.id,
-                  precio: getProduct.precioVenta,
-                  moneda: getProduct.signoMoneda,
-                  provincia:
-                      welcomeController.getProfileAccountSelected.provincia,
-                  ciudad: welcomeController.getProfileAccountSelected.ciudad,
-                  timestamp: Timestamp.fromDate(new DateTime.now()));
+                id: welcomeController.getProfileAccountSelected.id,
+                idNegocio: welcomeController.getProfileAccountSelected.id,
+                precio: getProduct.precioVenta,
+                moneda: getProduct.signoMoneda,
+                provincia:welcomeController.getProfileAccountSelected.provincia,
+                ciudad: welcomeController.getProfileAccountSelected.ciudad,
+                timestamp: Timestamp.fromDate(new DateTime.now()),
+              );
               // Firebase set
-              await Database.refFirestoreRegisterPrice(
-                      id: getProduct.id, isoPAis: 'ARG')
-                  .doc()
-                  .set(precio.toJson());
+              await Database.refFirestoreRegisterPrice(idProducto: getProduct.id, isoPAis: 'ARG').doc(precio.id).set(precio.toJson());
             }
             // add/update data product in catalogue
             Database.refFirestoreCatalogueProduct(
@@ -284,8 +281,8 @@ class ControllerProductsEdit extends GetxController {
         .delete();
 
     // delete doc price
-    await Database.refFirestoreRegisterPrice(id: getProduct.id, isoPAis: 'ARG')
-        .doc(getProduct.id)
+    await Database.refFirestoreRegisterPrice(idProducto: getProduct.id, isoPAis: 'ARG')
+        .doc(welcomeController.getProfileAccountSelected.id)
         .delete();
     // delete doc product
     await Database.refFirestoreCatalogueProduct(

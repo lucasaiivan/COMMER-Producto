@@ -23,7 +23,7 @@ class Producto {
 
   Producto({
     this.id = "",
-    this.idAccount='',
+    this.idAccount = '',
     this.verificado = false,
     this.favorite = false,
     this.idMarca = "",
@@ -43,7 +43,7 @@ class Producto {
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        'idAccount':idAccount,
+        'idAccount': idAccount,
         "verificado": verificado,
         "favorite": verificado,
         "id_marca": idMarca,
@@ -64,7 +64,7 @@ class Producto {
   factory Producto.fromMap(Map data) {
     return Producto(
       id: data['id'] ?? '',
-      idAccount:data['idAccount']??'',
+      idAccount: data['idAccount'] ?? '',
       verificado: data['verificado'] ?? false,
       favorite: data['favorite'] ?? false,
       idMarca: data['id_marca'] ?? '',
@@ -242,6 +242,7 @@ class ProductoNegocio {
 DateTime date = Timestamp.now() as DateTime;
 
 class Precio {
+  String id = '';
   String idNegocio = "";
   double precio = 0.0;
   late Timestamp timestamp;
@@ -250,6 +251,7 @@ class Precio {
   String ciudad = "";
 
   Precio({
+    required this.id,
     required this.idNegocio,
     required this.precio,
     required this.timestamp,
@@ -259,6 +261,7 @@ class Precio {
   });
 
   Precio.fromMap(Map data) {
+    id = data['id'] ?? '';
     idNegocio = data['id_negocio'] ?? '';
     precio = data['precio'] ?? 0.0;
     timestamp = data['timestamp'];
@@ -267,13 +270,14 @@ class Precio {
     ciudad = data['ciudad'] ?? '';
   }
   Map<String, dynamic> toJson() => {
-        "id_negocio": idNegocio,
-        "precio": precio,
-        "timestamp": timestamp,
-        "moneda": moneda,
-        "provincia": provincia,
-        "ciudad": ciudad,
-      };
+    'id':id,
+    "id_negocio": idNegocio,
+    "precio": precio,
+    "timestamp": timestamp,
+    "moneda": moneda,
+    "provincia": provincia,
+    "ciudad": ciudad,
+  };
 }
 
 class Categoria {
@@ -317,8 +321,7 @@ class Marca {
   String idUsuarioCreador = ""; // ID el usuaruio que creo el productos
   late Timestamp
       timestampCreacion; // Marca de tiempo de la creacion del documento
-  late Timestamp
-      timestampUpdate; // Marca de tiempo de la ultima actualizacion
+  late Timestamp timestampUpdate; // Marca de tiempo de la ultima actualizacion
 
   Marca({
     this.id = "",
@@ -331,12 +334,12 @@ class Marca {
   });
   Marca.fromMap(Map data) {
     id = data['id'] ?? '';
-    name = data['name'] ??  data['titulo']??'';
-    description = data['description'] ?? data['descripcion']??'';
-    urlImage = data['urlImage'] ?? data['url_imagen']??'';
-    verified = data['verified'] ?? data['verificado']??false;
-    timestampCreacion = data['timestampCreacion']??Timestamp.now();
-    timestampUpdate = data['timestampUpdate']??Timestamp.now();
+    name = data['name'] ?? data['titulo'] ?? '';
+    description = data['description'] ?? data['descripcion'] ?? '';
+    urlImage = data['urlImage'] ?? data['url_imagen'] ?? '';
+    verified = data['verified'] ?? data['verificado'] ?? false;
+    timestampCreacion = data['timestampCreacion'] ?? Timestamp.now();
+    timestampUpdate = data['timestampUpdate'] ?? Timestamp.now();
   }
   Map<String, dynamic> toJson() => {
         "id": id,
