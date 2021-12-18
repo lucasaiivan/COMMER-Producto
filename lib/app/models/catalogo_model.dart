@@ -114,6 +114,8 @@ class Producto {
     productoNegocio.categoria = this.categoria;
     productoNegocio.subcategoria = this.subcategoria;
     productoNegocio.enabled = this.enabled;
+    productoNegocio.precioVenta= this.precioVenta;
+    productoNegocio.precioCompra= this.precioCompra;
 
     return productoNegocio;
   }

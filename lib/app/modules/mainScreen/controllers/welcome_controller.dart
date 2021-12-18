@@ -157,8 +157,7 @@ class WelcomeController extends GetxController {
   void catalogueFilterReset() {
     // resetea los valores de los filtros para mostrar todos los productos
     setMarkSelect = Marca(
-        timestampUpdate: Timestamp.now(),
-        timestampCreacion: Timestamp.now());
+        timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     setCategorySelect = Categoria();
     setsubCategorySelect = Categoria();
     catalogueFilter();
@@ -186,8 +185,7 @@ class WelcomeController extends GetxController {
 
   //  mark selected
   Rx<Marca> _markSelect = Marca(
-          timestampUpdate: Timestamp.now(),
-          timestampCreacion: Timestamp.now())
+          timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now())
       .obs;
   Marca get getMarkSelect => _markSelect.value;
   set setMarkSelect(Marca value) {
@@ -204,8 +202,7 @@ class WelcomeController extends GetxController {
   set setCategorySelect(Categoria value) {
     // default value
     setMarkSelect = Marca(
-        timestampUpdate: Timestamp.now(),
-        timestampCreacion: Timestamp.now());
+        timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     // set
     _categorySelect.value = value;
     catalogueFilter();
@@ -213,24 +210,34 @@ class WelcomeController extends GetxController {
     setTextTab = _categorySelect.value.nombre;
     update(['tab']);
   }
-  Future<void> categoryDelete({required String idCategory}) async => await Database.refFirestoreCategory(idAccount:getProfileAccountSelected.id).doc(idCategory).delete();
-  Future<void> categoryUpdate({required Categoria categoria}) async{
+
+  Future<void> categoryDelete({required String idCategory}) async =>
+      await Database.refFirestoreCategory(
+              idAccount: getProfileAccountSelected.id)
+          .doc(idCategory)
+          .delete();
+  Future<void> categoryUpdate({required Categoria categoria}) async {
     // ref
-    var documentReferencer = Database.refFirestoreCategory(idAccount:getProfileAccountSelected.id).doc(categoria.id);
+    var documentReferencer =
+        Database.refFirestoreCategory(idAccount: getProfileAccountSelected.id)
+            .doc(categoria.id);
     // Actualizamos los datos
-    documentReferencer.set(Map<String, dynamic>.from(categoria.toJson()), SetOptions(merge: true))
-        .whenComplete(() {print("######################## FIREBASE updateAccount whenComplete");
-    }).catchError((e) => print("######################## FIREBASE updateAccount catchError: $e"));
+    documentReferencer
+        .set(Map<String, dynamic>.from(categoria.toJson()),
+            SetOptions(merge: true))
+        .whenComplete(() {
+      print("######################## FIREBASE updateAccount whenComplete");
+    }).catchError((e) => print(
+            "######################## FIREBASE updateAccount catchError: $e"));
   }
-  
+
   //  subCategory selected
   Rx<Categoria> _subCategorySelect = Categoria().obs;
   Categoria get getsubCategorySelect => _subCategorySelect.value;
   set setsubCategorySelect(Categoria value) {
     // default value
     setMarkSelect = Marca(
-        timestampUpdate: Timestamp.now(),
-        timestampCreacion: Timestamp.now());
+        timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     // set
     _subCategorySelect.value = value;
     catalogueFilter();
@@ -369,7 +376,8 @@ class WelcomeController extends GetxController {
   }
 
   void toProductView({required Producto porduct}) {
-    Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct.convertProductCatalogue()});
+    Get.toNamed(Routes.PRODUCT,
+        arguments: {'product': porduct.convertProductCatalogue()});
   }
 
   int getNumeroDeProductosDeMarca({required String id}) {
@@ -387,7 +395,8 @@ class WelcomeController extends GetxController {
   void readProfileAccountStream({required String id}) {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
-      setProfileAccountSelected =  ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+      setProfileAccountSelected =
+          ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
       readCatalogueListProductsStream(id: getIdAccountSelecte);
       readListCategoryListFuture();
@@ -400,7 +409,7 @@ class WelcomeController extends GetxController {
 
   Future<Marca> readMark({required String id}) async {
     return Database.readMarkFuture(id: id)
-        .then((value) => Marca.fromMap(value.data() as Map ))
+        .then((value) => Marca.fromMap(value.data() as Map))
         .catchError((error) => Marca(
             timestampUpdate: Timestamp.now(),
             timestampCreacion: Timestamp.now()));
@@ -471,9 +480,11 @@ class WelcomeController extends GetxController {
 
   void readListCategoryListFuture() {
     // obtenemos la categorias creadas por el usuario
-    Database.readCategoriesQueryStream(idAccount: getProfileAccountSelected.id).listen((event) {
+    Database.readCategoriesQueryStream(idAccount: getProfileAccountSelected.id)
+        .listen((event) {
       List<Categoria> list = [];
-      event.docs.forEach((element) => list.add(Categoria.fromMap(element.data())));
+      event.docs
+          .forEach((element) => list.add(Categoria.fromMap(element.data())));
       setCatalogueCategoryList = list;
     });
   }
@@ -482,7 +493,8 @@ class WelcomeController extends GetxController {
     // obtenemos tres primeros obj(productos) desctacados para mostrarle al usuario
     Database.readProductsFuture(limit: 3).then((value) {
       List<Producto> list = [];
-      value.docs.forEach((element) => list.add(Producto.fromMap(element.data())));
+      value.docs
+          .forEach((element) => list.add(Producto.fromMap(element.data())));
       setListSuggestedProducts = list;
     });
   }
@@ -514,10 +526,10 @@ class WelcomeController extends GetxController {
     // obtenemos la marca de cada producto en un nueva lista
     // y finamente la agregamos con los datos cargados para mostrar al usuario
     for (var productoNegocio in list) {
-      if (productoNegocio.idMarca != ''){
-        readMark(id: productoNegocio.idMarca).then((value) => addMark(markParam: value));
+      if (productoNegocio.idMarca != '') {
+        readMark(id: productoNegocio.idMarca)
+            .then((value) => addMark(markParam: value));
       }
-        
     }
   }
 
@@ -620,5 +632,16 @@ class WelcomeController extends GetxController {
     Get.dialog(
       widget,
     );
+  }
+
+  // Fuctions
+  bool isCatalogue({required String id}) {
+    bool iscatalogue = false;
+    getCataloProducts.forEach((element) {
+      if (element.id == id) {
+        iscatalogue = true;
+      }
+    });
+    return iscatalogue;
   }
 }

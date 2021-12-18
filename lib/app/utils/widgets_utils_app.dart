@@ -174,8 +174,7 @@ class ProductoItem extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Get.toNamed(Routes.PRODUCT,
-                      arguments: {'product': producto}),
+                  onTap: () => Get.toNamed(Routes.PRODUCT, arguments: {'product': producto}),
                 ),
               ),
             ),

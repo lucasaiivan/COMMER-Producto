@@ -4,14 +4,16 @@ import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
-import '../../splash/controllers/splash_controller.dart';
+import '../../mainScreen/controllers/welcome_controller.dart';
 
 class ProductController extends GetxController {
-  SplashController homeController = Get.find<SplashController>();
+  WelcomeController welcomeController = Get.find<WelcomeController>();
 
-  static Rx<ProfileBusinessModel> profileBusinessModel = ProfileBusinessModel().obs;
+  static Rx<ProfileBusinessModel> profileBusinessModel =
+      ProfileBusinessModel().obs;
   ProfileBusinessModel get getProfileBusiness => profileBusinessModel.value;
-  set setProfileBusiness(ProfileBusinessModel model) => profileBusinessModel.value = model;
+  set setProfileBusiness(ProfileBusinessModel model) =>
+      profileBusinessModel.value = model;
 
   static Rx<ProductoNegocio> listSuggestedProducts = ProductoNegocio().obs;
   ProductoNegocio get getProduct => listSuggestedProducts.value;
@@ -19,26 +21,32 @@ class ProductController extends GetxController {
       listSuggestedProducts.value = product;
 
   static Rx<Marca> mark = Marca(
-          timestampUpdate: Timestamp.now(),
-          timestampCreacion: Timestamp.now())
+          timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now())
       .obs;
   Marca get getMark => mark.value;
   set setMark(Marca value) => mark.value = value;
 
-  static Rx<Categoria> category =
-      Categoria(id: '', nombre: '').obs;
+  static Rx<Categoria> category = Categoria(id: '', nombre: '').obs;
   Categoria get getCategoty => category.value;
   set setCategoty(Categoria value) => category.value = value;
 
-  static Rx<Categoria> subcategory =
-      Categoria(id: '', nombre: '').obs;
+  static Rx<Categoria> subcategory = Categoria(id: '', nombre: '').obs;
   Categoria get getSubcategoty => subcategory.value;
   set setSubcategoty(Categoria value) => subcategory.value = value;
 
+  // otros productos de la misma marca
   static RxList<Producto> listOthersProductsForMark = <Producto>[].obs;
   List<Producto> get getListOthersProductsForMark => listOthersProductsForMark;
   set setListOthersProductsForMark(List<Producto> value) =>
       listOthersProductsForMark.value = value;
+
+  // otros productos de la misma categoria del cátalogo
+  static RxList<ProductoNegocio> listOthersProductsForCategoryCatalogue =
+      <ProductoNegocio>[].obs;
+  List<ProductoNegocio> get getListOthersProductsForCategoryCatalogue =>
+      listOthersProductsForCategoryCatalogue;
+  set setListOthersProductsForCategoryCatalogue(List<ProductoNegocio> value) =>
+      listOthersProductsForCategoryCatalogue.value = value;
 
   static RxList<Precio> listPricesForProduct = <Precio>[].obs;
   List<Precio> get getListPricesForProduct => listPricesForProduct;
@@ -48,8 +56,10 @@ class ProductController extends GetxController {
   @override
   void onInit() async {
     setProduct = Get.arguments['product'];
+    readCategory();
     readMarkProducts();
     readOthersProductsMark();
+    readOthersProductsCategoryCatalogue();
     readListPricesForProduct();
     super.onInit();
   }
@@ -62,11 +72,31 @@ class ProductController extends GetxController {
   @override
   void onClose() {}
 
-  void readMarkProducts() {
-    Database.readMarkFuture(id: getProduct.idMarca).then((value) => setMark = Marca.fromMap(value.data() as Map));
+  void readCategory() {
+    welcomeController.getCatalogueCategoryList.forEach((element) {
+      if (getProduct.categoria == element.id) setCategoty = element;
+    });
   }
+
+  void readMarkProducts() {
+    Database.readMarkFuture(id: getProduct.idMarca)
+        .then((value) => setMark = Marca.fromMap(value.data() as Map));
+  }
+
   void readProfileBusiness({required String id}) {
-    Database.readProfileBusinessModelFuture(id).then((value) =>setProfileBusiness = ProfileBusinessModel.fromMap(  value.data() as Map  ) );
+    Database.readProfileBusinessModelFuture(id).then((value) =>
+        setProfileBusiness = ProfileBusinessModel.fromMap(value.data() as Map));
+  }
+
+  void readOthersProductsCategoryCatalogue() {
+    List<ProductoNegocio> list = [];
+    welcomeController.getCataloProducts.forEach((element) {
+      if (getCategoty.id == element.categoria ||
+          getSubcategoty.id == element.subcategoria) {
+        list.add(element);
+      }
+    });
+    setListOthersProductsForCategoryCatalogue = list.cast<ProductoNegocio>();
   }
 
   void readOthersProductsMark() {
@@ -89,7 +119,10 @@ class ProductController extends GetxController {
     });
   }
 
+
+
+  // navigator
   void toProductEdit() {
-    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': getProduct});
+    Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {'product': getProduct});
   }
 }
