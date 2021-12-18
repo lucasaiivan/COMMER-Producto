@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
@@ -10,14 +14,17 @@ import 'package:producto/app/modules/product/controllers/product_controller.dart
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/functions.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../routes/app_pages.dart';
 
 class Product extends GetView<ProductController> {
   Product({Key? key}) : super(key: key);
 
-  // controllers 
+  // controllers
   final WelcomeController welcomeController = Get.find<WelcomeController>();
+  final ScreenshotController screenshotController = ScreenshotController();
 
   @override
   Widget build(BuildContext context) {
@@ -78,32 +85,45 @@ class Product extends GetView<ProductController> {
                 transitionDuration: const Duration(milliseconds: 200),
                 pageBuilder: (BuildContext buildContext, Animation animation,
                     Animation secondaryAnimation) {
-                  return Container();
-                  /* Timer(Duration(seconds: 1), () {
-                      // Captura de widgets
-                      screenshotController.capture().then((File image) {
-                        Navigator.pop(buildContext);
-                        //share
-                        Share.shareFiles(['${image.path}']);
-                      }).catchError((onError) {
-                        print(onError);
-                      });
-                    });
+                  Timer(Duration(seconds: 1), () async {
+                    // note: La imagen capturada puede verse pixelada. Puede solucionar este problema configurando el valor de pixelRatio
+                    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+                    // Captura de widgets
+                    await screenshotController
+                        .capture(
+                            delay: const Duration(milliseconds: 1),
+                            pixelRatio: pixelRatio)
+                        .then((image) async {
+                          if (image != null) {
+                            final directory =
+                                await getApplicationDocumentsDirectory();
+                            final imagePath =
+                                await File('${directory.path}/image.png').create();
+                            await imagePath.writeAsBytes(image);
 
-                    // Get available height and width of the build area of this widget. Make a choice depending on the size.
-                    var height = MediaQuery.of(buildContext).size.height;
-                    var width = MediaQuery.of(buildContext).size.width;
-                    
-                    return Screenshot(
-                      controller: screenshotController,
-                      child: viewProducto(height: height, width: width),
-                    ); */
+                            /// Share Plugin
+                            await Share.shareFiles([imagePath.path]);
+                            Get.back();
+                          }
+                        });
+                  });
+
+                  // Get available height and width of the build area of this widget. Make a choice depending on the size.
+                  var height = MediaQuery.of(buildContext).size.height;
+                  var width = MediaQuery.of(buildContext).size.width;
+
+                  return Screenshot(
+                    controller: screenshotController,
+                    child: viewProducto(height: height, width: width),
+                  );
                 });
           },
         ),
         IconButton(
           padding: EdgeInsets.all(12.0),
-          icon: Icon(welcomeController.isCatalogue(id:controller.getProduct.id) ? Icons.edit : Icons.add_box),
+          icon: Icon(welcomeController.isCatalogue(id: controller.getProduct.id)
+              ? Icons.edit
+              : Icons.add_box),
           onPressed: () {
             controller.toProductEdit();
           },
@@ -182,70 +202,180 @@ class Product extends GetView<ProductController> {
   }
 
   // WIDGETS VIEWS
+  Widget viewProducto({required double height, required double width}) {
+    Color colorText = Get.theme.brightness == Brightness.dark
+        ? Colors.white.withOpacity(0.90)
+        : Colors.black.withOpacity(0.90);
+    Color colorCard = Get.theme.brightness == Brightness.dark
+        ? Get.theme.primaryColorDark
+        : Colors.white;
+    return Scaffold(
+        body: Container(
+      color: Get.theme.scaffoldBackgroundColor,
+      child: Column(
+        children: [
+          Expanded(
+              child: Center(
+                  child: Text(
+                      welcomeController.getProfileAccountSelected.nombreNegocio,
+                      style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 30,
+                          fontWeight: FontWeight.w900,
+                          color: Get.theme.brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.90)
+                              : Colors.black.withOpacity(0.90))))),
+          Card(
+            color: colorCard,
+            clipBehavior: Clip.antiAlias,
+            margin: EdgeInsets.only(
+                left: width * 0.20,
+                right: width * 0.20,
+                bottom: height * 0.05,
+                top: height * 0.05),
+            elevation: 20,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32)), //<--custom shape
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                    height: width * 0.60,
+                    width: width * 0.60,
+                    child: WidgetImagen(
+                        producto: controller.getProduct,
+                        marca: controller.getMark,
+                        borderRadius: 30.0)),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      controller.getProduct.descripcion != ""
+                          ? Text(
+                              controller.getProduct.descripcion,
+                              style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.bold,
+                                color: colorText,
+                                height: 1,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            )
+                          : Container(),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            controller.getProduct.precioVenta != 0.0
+                                ? Text(
+                                    Publicaciones.getFormatoPrecio(
+                                        monto:
+                                            controller.getProduct.precioVenta),
+                                    style: TextStyle(
+                                        color: Get.theme.primaryColor
+                                            .withOpacity(0.50),
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.w900),
+                                    textAlign: TextAlign.end)
+                                : Container(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+              child: Center(
+                  child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset("assets/barcode.png",
+                    color: Colors.black.withOpacity(0.50),
+                    width: 50,
+                    height: 50.0),
+              ),
+              Text(
+                "Producto",
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black.withOpacity(0.50)),
+              )
+            ],
+          ))),
+        ],
+      ),
+    ));
+  }
+
   Widget widgetDescripcion(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12, right: 12, left: 12, top: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          true
+          welcomeController.isCatalogue(id: controller.getProduct.id)
               ? Wrap(
-                  spacing: 8.0, // gap between adjacent chips
+                  spacing: 4.0, // gap between adjacent chips
                   runSpacing: 4.0, // gap between lines
                   direction: Axis.horizontal, // main axis (rows or columns)
                   children: <Widget>[
-                    /* this.categoria != null && this.categoria.nombre != ""
-                        ? Chip(
-                            materialTapTargetSize:MaterialTapTargetSize.shrinkWrap,
-                            avatar: CircleAvatar(
-                              backgroundColor: Colors.grey.shade800,
-                              child: Text(
-                                  this.categoria.nombre.substring(0, 1) ?? "C",
-                                  style: TextStyle(color: Colors.grey)),
-                            ),
-                            label: Text(
-                              this.categoria.nombre,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                        : Container(),
-                    this.subcategoria != null && this.subcategoria.nombre != ""
+                    controller.getCategory.nombre != ""
                         ? Chip(
                             materialTapTargetSize:
                                 MaterialTapTargetSize.shrinkWrap,
                             avatar: CircleAvatar(
                               backgroundColor: Colors.grey.shade800,
                               child: Text(
-                                  this.subcategoria.nombre.substring(0, 1) ??
-                                      "C",
+                                  controller.getCategory.nombre.substring(0, 1),
                                   style: TextStyle(color: Colors.grey)),
                             ),
                             label: Text(
-                              this.subcategoria.nombre,
+                              controller.getCategory.nombre,
                               overflow: TextOverflow.ellipsis,
                             ),
                           )
-                        : Container(), */
+                        : Container(),
+                    controller.getSubcategory.nombre != ""
+                        ? Chip(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            avatar: CircleAvatar(
+                              backgroundColor: Colors.grey.shade800,
+                              child: Text(
+                                  controller.getSubcategory.nombre
+                                      .substring(0, 1),
+                                  style: TextStyle(color: Colors.grey)),
+                            ),
+                            label: Text(
+                              controller.getSubcategory.nombre,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        : Container(),
                   ],
                 )
               : Container(),
-          /* controller.getProduct.titulo != ""
-              ? Container(
-                  child: Text(controller.getProduct.titulo,
-                      style: TextStyle(
-                          height: 2, fontSize: 30, fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.fade,
-                      softWrap: false),
-                )
-              : Container(),
-          SizedBox(
-            height: 8.0,
-            width: 8.0,
-          ), */
           controller.getProduct.descripcion != ""
-              ? Text(controller.getProduct.descripcion,
-                  style: TextStyle(
-                      height: 1, fontSize: 20, fontWeight: FontWeight.bold))
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(controller.getProduct.descripcion,
+                      style: TextStyle(
+                          height: 1,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold)),
+                )
               : Container(),
           controller.getProduct.codigo != ""
               ? SizedBox(height: 5)
@@ -279,7 +409,7 @@ class Product extends GetView<ProductController> {
               children: [
                 widgetDescripcion(contextBuilder),
                 otrosProductosEnCategoriaDeCatalogo(),
-                otrosProductosViewList(),
+                controller.getListOthersProductsForMark.length==0?Container():otrosProductosViewList(),
                 const SizedBox(height: 200.0, width: 120.0),
               ],
             ),
@@ -303,119 +433,79 @@ class Product extends GetView<ProductController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              true
+              welcomeController.isCatalogue(id: controller.getProduct.id)
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       textDirection: TextDirection.ltr,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         controller.getProduct.precioVenta != 0.0
-                            ? Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                        Publicaciones.getFormatoPrecio(
-                                            monto: controller
-                                                .getProduct.precioVenta),
-                                        style: TextStyle(
-                                            color: colorText,
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.end),
-                                    Row(
-                                      children: [
-                                        controller.getProduct.precioCompra !=
-                                                0.0
-                                            ? Text(
-                                                ' ${Publicaciones.getFormatoPrecio(monto: controller.getProduct.precioCompra)} ',
-                                                style:
-                                                    TextStyle(fontSize: 12.0))
-                                            : Container(),
-                                        controller.getProduct.precioCompra !=
-                                                0.0
-                                            ? Text(
-                                                sProcentaje(
-                                                    precioCompra: controller
-                                                        .getProduct
-                                                        .precioCompra,
-                                                    precioVenta: controller
-                                                        .getProduct
-                                                        .precioVenta),
-                                                style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontSize: 12.0,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                            : Container(),
-                                        controller.getProduct.precioCompra !=
-                                                0.0
-                                            ? Text(" > ",
-                                                style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontSize: 12.0))
-                                            : Container(),
-                                        controller.getProduct.precioCompra !=
-                                                0.0
-                                            ? Text(
-                                                Publicaciones.sGanancia(
-                                                    precioCompra: controller
-                                                        .getProduct
-                                                        .precioCompra,
-                                                    precioVenta: controller
-                                                        .getProduct
-                                                        .precioVenta),
-                                                style: TextStyle(
-                                                    color: controller.getProduct
-                                                                .precioCompra <
-                                                            controller
-                                                                .getProduct
-                                                                .precioVenta
-                                                        ? Colors.green
-                                                        : Colors.red,
-                                                    fontSize: 12.0,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                            : Container(),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                            ? Column(
+                                children: [
+                                  Text(
+                                      Publicaciones.getFormatoPrecio(
+                                          monto: controller
+                                              .getProduct.precioVenta),
+                                      style: TextStyle(
+                                          color: colorText,
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.end),
+                                  Row(
+                                    children: [
+                                      controller.getProduct.precioCompra != 0.0
+                                          ? Text(
+                                              sProcentaje(
+                                                  precioCompra: controller
+                                                      .getProduct.precioCompra,
+                                                  precioVenta: controller
+                                                      .getProduct.precioVenta),
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontSize: 12.0,
+                                                  fontWeight: FontWeight.bold))
+                                          : Container(),
+                                      controller.getProduct.precioCompra != 0.0
+                                          ? Text(" > ",
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontSize: 12.0))
+                                          : Container(),
+                                      controller.getProduct.precioCompra != 0.0
+                                          ? Text(
+                                              Publicaciones.sGanancia(
+                                                  precioCompra: controller
+                                                      .getProduct.precioCompra,
+                                                  precioVenta: controller
+                                                      .getProduct.precioVenta),
+                                              style: TextStyle(
+                                                  color: controller.getProduct
+                                                              .precioCompra <
+                                                          controller.getProduct
+                                                              .precioVenta
+                                                      ? Colors.green
+                                                      : Colors.red,
+                                                  fontSize: 12.0,
+                                                  fontWeight: FontWeight.bold))
+                                          : Container(),
+                                    ],
+                                  ),
+                                ],
                               )
                             : Container(),
-                        /* controller.getProduct.precioComparacion != null &&
-                                controller.getProduct.precioComparacion != 0.0
-                            ? Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  Publicaciones.getFormatoPrecio(
-                                      monto:
-                                          widget.producto.precio_comparacion),
-                                  style: TextStyle(
-                                      color: colorText,
-                                      decoration: TextDecoration.lineThrough,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.end,
-                                ),
-                              )
-                            : Container(), */
-                        /* controller.getProduct.timestampActualizacion != null
-                            ? Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  Publicaciones.getFechaPublicacion(
-                                          widget
-                                              .producto.timestamp_actualizacion
-                                              .toDate(),
-                                          new DateTime.now())
-                                      .toLowerCase(),
-                                  style: TextStyle(
-                                      fontStyle: FontStyle.normal,
-                                      color: colorText),
-                                ),
-                              )
-                            : Container(), */
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            Publicaciones.getFechaPublicacion(
+                                    controller.getProduct.timestampActualizacion
+                                        .toDate(),
+                                    Timestamp.now().toDate())
+                                .toLowerCase(),
+                            style: TextStyle(
+                                fontStyle: FontStyle.normal, color: colorText),
+                          ),
+                        ),
                       ],
                     )
                   : Container(),
@@ -645,25 +735,33 @@ class Product extends GetView<ProductController> {
 
   Widget otrosProductosViewList() {
     return Obx(() => Column(
-      mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Divider(endIndent: 12.0, indent: 12.0),
             Padding(
-              child: Text("Otros", style: TextStyle(fontSize: 16.0)),
-              padding: const EdgeInsets.all(12),
+              child: Text("Otros", style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.normal)),
+              padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
             ),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 20.0),
-              height:220,
+              height: 220,
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 itemCount: controller.getListOthersProductsForMark.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: EdgeInsets.only(left: index==0?12:0,right: controller.getListOthersProductsForMark.length==(index+1)?12:0),
-                    child: ProductoItem(producto: controller.getListOthersProductsForMark[index].convertProductCatalogue()),
+                    padding: EdgeInsets.only(
+                        bottom: 8,
+                        top: 8,
+                        left: index == 0 ? 12 : 0,
+                        right: controller.getListOthersProductsForMark.length ==
+                                (index + 1)
+                            ? 12
+                            : 0),
+                    child: ProductoItem(
+                        producto: controller.getListOthersProductsForMark[index]
+                            .convertProductCatalogue()),
                   );
                 },
               ),
@@ -674,25 +772,37 @@ class Product extends GetView<ProductController> {
 
   Widget otrosProductosEnCategoriaDeCatalogo() {
     return Obx(() => Column(
-      mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Divider(endIndent: 12.0, indent: 12.0),
             Padding(
-              child: Text(controller.getCategoty.nombre, style: TextStyle(fontSize: 16.0)),
-              padding: const EdgeInsets.all(12),
+              child: Text(controller.getCategory.nombre,
+                  style: TextStyle(fontSize: 16.0)),
+              padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
             ),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 20.0),
-              height:220,
+              height: 250,
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: controller.getListOthersProductsForCategoryCatalogue.length,
+                itemCount:
+                    controller.getListOthersProductsForCategoryCatalogue.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: EdgeInsets.only(left: index==0?12:0,right: controller.getListOthersProductsForCategoryCatalogue.length==(index+1)?12:0),
-                    child: ProductoCatalogueItem(producto: controller.getListOthersProductsForCategoryCatalogue[index]),
+                    padding: EdgeInsets.only(
+                        bottom: 8,
+                        top: 8,
+                        left: index == 0 ? 12 : 0,
+                        right: controller
+                                    .getListOthersProductsForCategoryCatalogue
+                                    .length ==
+                                (index + 1)
+                            ? 12
+                            : 0),
+                    child: ProductoCatalogueItem(
+                        producto: controller
+                            .getListOthersProductsForCategoryCatalogue[index]),
                   );
                 },
               ),
@@ -847,32 +957,34 @@ class ProductoCatalogueItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 160.0,
+    return Expanded(
       child: Card(
-        color:Colors.white,
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+        color: Colors.white,
+        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
         clipBehavior: Clip.antiAlias,
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                contentImage(),
-                contentInfo(),
-              ],
-            ),
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => Get.offNamed(Routes.PRODUCT,
-                      arguments: {'product': producto}),
+        child: Container(
+          width: 160,
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: contentImage()),
+                  contentInfo(),
+                ],
+              ),
+              Positioned.fill(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => Get.offNamed(Routes.PRODUCT,
+                        arguments: {'product': producto}),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -880,21 +992,18 @@ class ProductoCatalogueItem extends StatelessWidget {
 
   Widget contentImage() {
     return producto.urlimagen != ""
-        ? AspectRatio(
-            aspectRatio: 1 / 1,
-            child: CachedNetworkImage(
-              fadeInDuration: Duration(milliseconds: 200),
-              fit: BoxFit.cover,
-              imageUrl: producto.urlimagen,
-              placeholder: (context, url) => FadeInImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage("assets/loading.gif"),
-                  placeholder: AssetImage("assets/loading.gif")),
-              errorWidget: (context, url, error) => Center(
-                child: Text(
-                  producto.titulo.substring(0, 3),
-                  style: TextStyle(fontSize: 24.0),
-                ),
+        ? CachedNetworkImage(
+            fadeInDuration: Duration(milliseconds: 200),
+            fit: BoxFit.cover,
+            imageUrl: producto.urlimagen,
+            placeholder: (context, url) => FadeInImage(
+                fit: BoxFit.cover,
+                image: AssetImage("assets/loading.gif"),
+                placeholder: AssetImage("assets/loading.gif")),
+            errorWidget: (context, url, error) => Center(
+              child: Text(
+                producto.titulo.substring(0, 3),
+                style: TextStyle(fontSize: 24.0),
               ),
             ),
           )
@@ -926,37 +1035,41 @@ class ProductoCatalogueItem extends StatelessWidget {
     );
   }
 }
+
 class ProductoItem extends StatelessWidget {
-
-
   final ProductoNegocio producto;
   ProductoItem({required this.producto});
 
-  // controllers 
+  // controllers
   final WelcomeController welcomeController = Get.find<WelcomeController>();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 160.0,
-      child: Card(
-        color:Colors.white,
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
-        clipBehavior: Clip.antiAlias,
+    return Card(
+      color: Colors.white,
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        width: 160.0,
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                contentImage(),
+                Expanded(child: contentImage()),
                 contentInfo(),
               ],
             ),
-            welcomeController.isCatalogue(id: producto.id)?Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(alignment: Alignment.topRight,child: Icon(Icons.check_circle_rounded,color: Colors.green)),
-            ):Container(),
+            welcomeController.isCatalogue(id: producto.id)
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                        alignment: Alignment.topRight,
+                        child: Icon(Icons.check_circle_rounded,
+                            color: Colors.green)),
+                  )
+                : Container(),
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
@@ -974,21 +1087,18 @@ class ProductoItem extends StatelessWidget {
 
   Widget contentImage() {
     return producto.urlimagen != ""
-        ? AspectRatio(
-            aspectRatio: 1 / 1,
-            child: CachedNetworkImage(
-              fadeInDuration: Duration(milliseconds: 200),
-              fit: BoxFit.cover,
-              imageUrl: producto.urlimagen,
-              placeholder: (context, url) => FadeInImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage("assets/loading.gif"),
-                  placeholder: AssetImage("assets/loading.gif")),
-              errorWidget: (context, url, error) => Center(
-                child: Text(
-                  producto.titulo.substring(0, 3),
-                  style: TextStyle(fontSize: 24.0),
-                ),
+        ? CachedNetworkImage(
+            fadeInDuration: Duration(milliseconds: 200),
+            fit: BoxFit.cover,
+            imageUrl: producto.urlimagen,
+            placeholder: (context, url) => FadeInImage(
+                fit: BoxFit.cover,
+                image: AssetImage("assets/loading.gif"),
+                placeholder: AssetImage("assets/loading.gif")),
+            errorWidget: (context, url, error) => Center(
+              child: Text(
+                producto.titulo.substring(0, 3),
+                style: TextStyle(fontSize: 24.0),
               ),
             ),
           )
@@ -1010,6 +1120,103 @@ class ProductoItem extends StatelessWidget {
               softWrap: false),
         ],
       ),
+    );
+  }
+}
+
+class WidgetImagen extends StatelessWidget {
+  const WidgetImagen({
+    required this.producto,
+    required this.marca,
+    this.borderRadius = 20.0,
+  });
+
+  final ProductoNegocio producto;
+  final Marca marca;
+  final double borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(0.0),
+      elevation: 0.0,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius)),
+      child: Hero(
+        tag: producto.id,
+        child: Stack(
+          children: [
+            CachedNetworkImage(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.width,
+              fadeInDuration: Duration(milliseconds: 200),
+              fit: BoxFit.cover,
+              imageUrl: producto.urlimagen,
+              placeholder: (context, url) => FadeInImage(
+                image: AssetImage("assets/loading.gif"),
+                placeholder: AssetImage("assets/loading.gif"),
+                fit: BoxFit.cover,
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: Colors.grey,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: Text(
+                    producto.titulo.substring(0, 3),
+                    style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width * 0.25),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Chip(
+                avatar: viewCircleImage(
+                    url: marca.urlImage, texto: marca.name, size: 20),
+                label: Text(marca.name),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget viewCircleImage(
+      {required String url, required String texto, double size = 85.0}) {
+    return Container(
+      width: size,
+      height: size,
+      child: url == "" || url == "default"
+          ? CircleAvatar(
+              backgroundColor: Colors.black26,
+              radius: size,
+              child: Text(texto.substring(0, 1),
+                  style: TextStyle(
+                      fontSize: size / 2,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+            )
+          : CachedNetworkImage(
+              imageUrl: url,
+              placeholder: (context, url) => CircleAvatar(
+                backgroundColor: Colors.black26,
+                radius: size,
+                child: Text(texto.substring(0, 1),
+                    style: TextStyle(
+                        fontSize: size / 2,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold)),
+              ),
+              imageBuilder: (context, image) => CircleAvatar(
+                backgroundImage: image,
+                radius: size,
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
     );
   }
 }

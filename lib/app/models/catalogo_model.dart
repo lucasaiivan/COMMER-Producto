@@ -37,8 +37,8 @@ class Producto {
     this.categoria = "",
     this.subcategoria = "",
     this.enabled = true,
-    timestampActualizacion,
-    timestampCreation,
+    required this.timestampActualizacion,
+    required this.timestampCreation,
   });
 
   Map<String, dynamic> toJson() => {
@@ -69,7 +69,7 @@ class Producto {
       favorite: data['favorite'] ?? false,
       idMarca: data['id_marca'] ?? '',
       idNegocio: data['id_negocio'] ?? '',
-      urlImagen: data['urlimagen'] ?? 'https://default',
+      urlImagen: data['urlimagen'],
       titulo: data['titulo'] ?? '',
       descripcion: data['descripcion'] ?? '',
       precioVenta: data['precio_venta'] ?? 0.0,
@@ -77,8 +77,8 @@ class Producto {
       codigo: data['codigo'] ?? '',
       categoria: data['categoria'] ?? '',
       subcategoria: data['subcategoria'] ?? '',
-      timestampActualizacion: data['timestamp_actualizacion'],
-      timestampCreation: data['timestamp_creation'],
+      timestampActualizacion: data['timestamp_actualizacion']?? Timestamp.now(),
+      timestampCreation: data['timestamp_creation']?? Timestamp.now(),
       enabled: data['enabled'] ?? true,
     );
   }
@@ -102,7 +102,7 @@ class Producto {
     enabled = documentSnapshot['enabled'] ?? true;
   }
   ProductoNegocio convertProductCatalogue() {
-    ProductoNegocio productoNegocio = new ProductoNegocio();
+    ProductoNegocio productoNegocio = new ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
     productoNegocio.id = this.id;
     productoNegocio.urlimagen = this.urlImagen;
     productoNegocio.verificado = this.verificado;
@@ -137,8 +137,7 @@ class ProductoNegocio {
   String subcategoriaName = ""; // name subcategory
   Timestamp timestampCreation =
       Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
-  Timestamp timestampActualizacion =
-      Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
+  Timestamp timestampActualizacion = Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
   // Datos del producto
   bool enabled = true;
@@ -161,8 +160,8 @@ class ProductoNegocio {
     this.categoriaName = '',
     this.subcategoria = "",
     this.subcategoriaName = '',
-    timestampCreation,
-    timestampActualizacion,
+    required this.timestampCreation ,
+    required this.timestampActualizacion,
     this.enabled = true,
 
     // valores de la cuenta
@@ -189,8 +188,7 @@ class ProductoNegocio {
       categoriaName: data['categoriaName'] ?? '',
       subcategoria: data['subcategoria'] ?? '',
       subcategoriaName: data['subcategoriaName'] ?? '',
-      timestampActualizacion:
-          data['timestamp_actualizacion'] ?? Timestamp.now(),
+      timestampActualizacion:data['timestamp_actualizacion'] ?? Timestamp.now(),
       timestampCreation: data['timestamp_creation'] ?? Timestamp.now(),
       enabled: data['enabled'] ?? true,
       // valores de la cuenta
@@ -224,7 +222,7 @@ class ProductoNegocio {
 
   Producto convertProductoDefault() {
     // convertimos en el modelo para producto global
-    Producto productoDefault = new Producto();
+    Producto productoDefault = new Producto(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
     productoDefault.id = this.id;
     productoDefault.urlImagen = this.urlimagen;
     productoDefault.verificado = this.verificado;

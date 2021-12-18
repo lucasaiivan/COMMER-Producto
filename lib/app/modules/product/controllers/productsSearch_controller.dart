@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
@@ -154,6 +155,6 @@ class ControllerProductsSearch extends GetxController {
     Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct});
   }
   void toProductNew({required String id}) {
-    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': ProductoNegocio(id: id,codigo: id)});
+    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': ProductoNegocio(id: id,codigo: id,timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now())});
   }
 }

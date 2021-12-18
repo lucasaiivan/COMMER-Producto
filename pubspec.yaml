@@ -58,7 +58,9 @@ dependencies:
   clipboard: ^0.1.3 # ayuda a copiar texto al portapapeles y pegarlo desde el portapapeles
   carousel_slider: ^4.0.0 # Un control deslizante de carrusel.
   flutter_masked_text2: ^0.9.1 # Entrada de texto enmascarado para aleteo.
-
+  screenshot: ^1.2.3 # Un paquete simple para capturar widgets como imágenes. ¡Ahora también puede capturar los widgets que no se muestran en la pantalla!
+  path_provider: ^2.0.8 # Un complemento de Flutter para encontrar ubicaciones de uso común en el sistema de archivos. Soporta Android, iOS, Linux, macOS y Windows. No todos los métodos son compatibles con todas las plataformas.
+  share_plus: ^3.0.4 # Un complemento de Flutter para compartir contenido desde su aplicación Flutter a través del cuadro de diálogo para compartir de la plataforma.
 
 flutter_icons:
   android: true

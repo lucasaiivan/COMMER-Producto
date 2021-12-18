@@ -7,6 +7,7 @@ import 'package:producto/app/services/database.dart';
 import '../../mainScreen/controllers/welcome_controller.dart';
 
 class ProductController extends GetxController {
+  // controllers
   WelcomeController welcomeController = Get.find<WelcomeController>();
 
   static Rx<ProfileBusinessModel> profileBusinessModel =
@@ -15,7 +16,7 @@ class ProductController extends GetxController {
   set setProfileBusiness(ProfileBusinessModel model) =>
       profileBusinessModel.value = model;
 
-  static Rx<ProductoNegocio> listSuggestedProducts = ProductoNegocio().obs;
+  static Rx<ProductoNegocio> listSuggestedProducts = ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now()).obs;
   ProductoNegocio get getProduct => listSuggestedProducts.value;
   set setProduct(ProductoNegocio product) =>
       listSuggestedProducts.value = product;
@@ -27,12 +28,12 @@ class ProductController extends GetxController {
   set setMark(Marca value) => mark.value = value;
 
   static Rx<Categoria> category = Categoria(id: '', nombre: '').obs;
-  Categoria get getCategoty => category.value;
-  set setCategoty(Categoria value) => category.value = value;
+  Categoria get getCategory => category.value;
+  set setCategory(Categoria value) => category.value = value;
 
   static Rx<Categoria> subcategory = Categoria(id: '', nombre: '').obs;
-  Categoria get getSubcategoty => subcategory.value;
-  set setSubcategoty(Categoria value) => subcategory.value = value;
+  Categoria get getSubcategory => subcategory.value;
+  set setSubcategory(Categoria value) => subcategory.value = value;
 
   // otros productos de la misma marca
   static RxList<Producto> listOthersProductsForMark = <Producto>[].obs;
@@ -73,8 +74,18 @@ class ProductController extends GetxController {
   void onClose() {}
 
   void readCategory() {
+    // aignamos los datos de la cátegoria y subcátegoria del producto
     welcomeController.getCatalogueCategoryList.forEach((element) {
-      if (getProduct.categoria == element.id) setCategoty = element;
+      if (getProduct.categoria == element.id) {
+        // set category
+        setCategory = element;
+        element.subcategorias.forEach((key, value) {
+          if (getProduct.subcategoria == key) {
+            // set subcategory
+            setSubcategory = Categoria(id: key,nombre: value);
+          }
+        });
+      }
     });
   }
 
@@ -91,8 +102,8 @@ class ProductController extends GetxController {
   void readOthersProductsCategoryCatalogue() {
     List<ProductoNegocio> list = [];
     welcomeController.getCataloProducts.forEach((element) {
-      if (getCategoty.id == element.categoria ||
-          getSubcategoty.id == element.subcategoria) {
+      if (getCategory.id == element.categoria ||
+          getSubcategory.id == element.subcategoria) {
         list.add(element);
       }
     });
@@ -118,8 +129,6 @@ class ProductController extends GetxController {
       setListPricesForProduct = list.cast<Precio>();
     });
   }
-
-
 
   // navigator
   void toProductEdit() {

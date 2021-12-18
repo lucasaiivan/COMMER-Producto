@@ -33,7 +33,7 @@ class ControllerProductsEdit extends GetxController {
   bool get getNewProduct => _newProduct;
 
   // parameter
-  ProductoNegocio _product = ProductoNegocio();
+  ProductoNegocio _product = ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
   set setProduct(ProductoNegocio product) => _product = product;
   ProductoNegocio get getProduct => _product;
 
@@ -100,7 +100,7 @@ class ControllerProductsEdit extends GetxController {
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi(); //
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ?? ProductoNegocio();
+    setProduct = Get.arguments['product'] ?? ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
     if (getProduct.descripcion == '') {
       setNewProduct = true;
     } else {
