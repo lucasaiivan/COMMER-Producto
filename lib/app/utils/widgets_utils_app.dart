@@ -155,9 +155,7 @@ class ProductoItem extends StatelessWidget {
     return Hero(
       tag: producto.id,
       child: Card(
-        color: Get.theme.brightness == Brightness.dark
-            ? Get.theme.scaffoldBackgroundColor
-            : Colors.white,
+        color: Colors.white,
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
         clipBehavior: Clip.antiAlias,
@@ -216,14 +214,14 @@ class ProductoItem extends StatelessWidget {
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14.0,
-                  color: Get.theme.textTheme.headline1!.color),
+                  color: Colors.grey),
               overflow: TextOverflow.fade,
               softWrap: false),
           Text(Publicaciones.getFormatoPrecio(monto: producto.precioVenta),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14.0,
-                  color: Get.theme.textTheme.bodyText1!.color),
+                  color: Colors.black),
               overflow: TextOverflow.fade,
               softWrap: false),
         ],

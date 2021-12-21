@@ -42,39 +42,27 @@ class Product extends GetView<ProductController> {
       iconTheme: Theme.of(context)
           .iconTheme
           .copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
-      title: InkWell(
-        onTap: () {
-          /* if (contextScaffold != null) {
-              Clipboard.setData(new ClipboardData(text: widget.producto.codigo))
-                  .then((_) {
-                ScaffoldMessenger.of(contextScaffold).showSnackBar(SnackBar(
-                    content: Text("Código copiado en portapapeles: " +
-                        widget.producto.id)));
-              });
-            } */
-        },
-        child: Obx(() => Row(
-              children: <Widget>[
-                controller.getProduct.verificado == true
-                    ? Padding(
-                        padding: const EdgeInsets.only(right: 4.0),
-                        child: new Image.asset('assets/icon_verificado.png',
-                            width: 14.0, height: 14.0))
-                    : new Container(),
-                Expanded(
-                  child: Text(controller.getMark.name,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          color: Theme.of(context).textTheme.bodyText1!.color)),
-                ),
-              ],
-            )),
-      ),
+      title: Obx(() => Row(
+            children: <Widget>[
+              controller.getProduct.verificado == true
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 3.0),
+                      child: new Image.asset('assets/icon_verificado.png',
+                          width: 18.0, height: 18.0))
+                  : new Container(),
+              Expanded(
+                child: Text(controller.getMark.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 18.0,
+                        color: Theme.of(context).textTheme.bodyText1!.color)),
+              ),
+            ],
+          )),
       actions: [
         IconButton(
           padding: EdgeInsets.all(12.0),
-          icon: Icon(Icons.center_focus_strong),
+          icon: Icon(Icons.screenshot),
           onPressed: () {
             showGeneralDialog(
                 context: context,
@@ -94,18 +82,18 @@ class Product extends GetView<ProductController> {
                             delay: const Duration(milliseconds: 1),
                             pixelRatio: pixelRatio)
                         .then((image) async {
-                          if (image != null) {
-                            final directory =
-                                await getApplicationDocumentsDirectory();
-                            final imagePath =
-                                await File('${directory.path}/image.png').create();
-                            await imagePath.writeAsBytes(image);
+                      if (image != null) {
+                        final directory =
+                            await getApplicationDocumentsDirectory();
+                        final imagePath =
+                            await File('${directory.path}/image.png').create();
+                        await imagePath.writeAsBytes(image);
 
-                            /// Share Plugin
-                            await Share.shareFiles([imagePath.path]);
-                            Get.back();
-                          }
-                        });
+                        /// Share Plugin
+                        await Share.shareFiles([imagePath.path]);
+                        Get.back();
+                      }
+                    }); 
                   });
 
                   // Get available height and width of the build area of this widget. Make a choice depending on the size.
@@ -128,71 +116,13 @@ class Product extends GetView<ProductController> {
             controller.toProductEdit();
           },
         ),
-        IconButton(
-          padding: EdgeInsets.all(12.0),
-          icon: Icon(Icons.new_releases),
-          onPressed: () {
-            // show the dialog
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                TextStyle textStyleTitle = TextStyle(
-                    fontSize: 16.0,
-                    fontStyle: FontStyle.normal,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontFamily: "Poppins");
-                // set up the AlertDialog
-                return AlertDialog(
-                  titleTextStyle: TextStyle(color: Colors.white),
-                  backgroundColor: Colors.red[400],
-                  title: Row(
-                    children: [
-                      Icon(Icons.new_releases, color: Colors.white),
-                      SizedBox(
-                        height: 5.0,
-                        width: 5.0,
-                      ),
-                      Text("Algo no esta bien!", style: textStyleTitle)
-                    ],
-                  ),
-                  content: Text(
-                    "Envíe una solicitud de revisión para este producto si:\n\n# La imagen no tiene relación con el codigo del producto\n\n# El nombre o descripción esta mal",
-                    style: TextStyle(color: Colors.white60),
-                  ),
-                  actions: [
-                    // set up the button
-                    FlatButton(
-                      child: Text("Cancelar",
-                          style: TextStyle(color: Colors.white)),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                    FlatButton(
-                      child: Text("Enviar solicitud",
-                          style: TextStyle(color: Colors.white)),
-                      onPressed: () async {
-                        // Firebase set
-                        /* widget.producto.verificado = false;
-                        await Global.getProductosPrecargado(
-                                idProducto: widget.producto.id, isoPAis: "ARG")
-                            .upSetPrecioProducto(widget.producto
-                                .convertProductoDefault()
-                                .toJson()); 
-                        Navigator.of(context).pop(); */
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        )
       ],
     );
   }
 
   Widget body() {
     return ExpandableBottomSheet(
+      onIsExtendedCallback: () => print('extended'),
       background: background(),
       persistentHeader: persistentHeader(
           colorBackground: Get.theme.cardColor, colorText: Colors.white),
@@ -209,13 +139,20 @@ class Product extends GetView<ProductController> {
     Color colorCard = Get.theme.brightness == Brightness.dark
         ? Get.theme.primaryColorDark
         : Colors.white;
-    return Scaffold(
-        body: Container(
-      color: Get.theme.scaffoldBackgroundColor,
-      child: Column(
-        children: [
-          Expanded(
-              child: Center(
+
+    // vista para la captura de la pantalla
+    return SafeArea(
+      child: Scaffold(
+          body: Container(
+        color: Get.theme.scaffoldBackgroundColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // nombre del negocio
+            Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
                   child: Text(
                       welcomeController.getProfileAccountSelected.nombreNegocio,
                       style: TextStyle(
@@ -224,99 +161,69 @@ class Product extends GetView<ProductController> {
                           fontWeight: FontWeight.w900,
                           color: Get.theme.brightness == Brightness.dark
                               ? Colors.white.withOpacity(0.90)
-                              : Colors.black.withOpacity(0.90))))),
-          Card(
-            color: colorCard,
-            clipBehavior: Clip.antiAlias,
-            margin: EdgeInsets.only(
-                left: width * 0.20,
-                right: width * 0.20,
-                bottom: height * 0.05,
-                top: height * 0.05),
-            elevation: 20,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32)), //<--custom shape
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                    height: width * 0.60,
-                    width: width * 0.60,
-                    child: WidgetImagen(
-                        producto: controller.getProduct,
-                        marca: controller.getMark,
-                        borderRadius: 30.0)),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      controller.getProduct.descripcion != ""
-                          ? Text(
-                              controller.getProduct.descripcion,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontWeight: FontWeight.bold,
-                                color: colorText,
-                                height: 1,
-                                fontSize: 16,
-                              ),
-                              textAlign: TextAlign.center,
-                            )
-                          : Container(),
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            controller.getProduct.precioVenta != 0.0
-                                ? Text(
-                                    Publicaciones.getFormatoPrecio(
-                                        monto:
-                                            controller.getProduct.precioVenta),
-                                    style: TextStyle(
-                                        color: Get.theme.primaryColor
-                                            .withOpacity(0.50),
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.w900),
-                                    textAlign: TextAlign.end)
-                                : Container(),
-                          ],
+                              : Colors.black.withOpacity(0.90))),
+                )),
+            // vista del producto
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      height: width * 0.60,
+                      width: width * 0.60,
+                      child: WidgetImagen(
+                          producto: controller.getProduct,
+                          marca: controller.getMark,
+                          borderRadius: 30.0)),
+                  Padding(
+                    padding: EdgeInsets.all(width * 0.20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        controller.getProduct.descripcion != ""
+                            ? Text(
+                                controller.getProduct.descripcion,
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontWeight: FontWeight.bold,
+                                  color: colorText,
+                                  height: 1,
+                                  fontSize: 16,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                            : Container(),
+                        Padding(
+                          padding: EdgeInsets.all( 12),
+                          child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              controller.getProduct.precioVenta != 0.0
+                                  ? Text(
+                                      Publicaciones.getFormatoPrecio(
+                                          monto:
+                                              controller.getProduct.precioVenta),
+                                      style: TextStyle(
+                                          color:Colors.blue,
+                                          fontSize: 40,
+                                          fontWeight: FontWeight.w900),
+                                      textAlign: TextAlign.end)
+                                  : Container(),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-              child: Center(
-                  child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset("assets/barcode.png",
-                    color: Colors.black.withOpacity(0.50),
-                    width: 50,
-                    height: 50.0),
+                ],
               ),
-              Text(
-                "Producto",
-                style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black.withOpacity(0.50)),
-              )
-            ],
-          ))),
-        ],
-      ),
-    ));
+            ),
+          ],
+        ),
+      )),
+    );
   }
 
   Widget widgetDescripcion(BuildContext context) {
@@ -408,8 +315,8 @@ class Product extends GetView<ProductController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 widgetDescripcion(contextBuilder),
-                otrosProductosEnCategoriaDeCatalogo(),
-                controller.getListOthersProductsForMark.length==0?Container():otrosProductosViewList(),
+                otherProductsCatalogueListHorizontal(),
+                otherBrandProductsListHorizontal(),
                 const SizedBox(height: 200.0, width: 120.0),
               ],
             ),
@@ -426,8 +333,9 @@ class Product extends GetView<ProductController> {
           topLeft: Radius.circular(20), topRight: Radius.circular(20)),
       child: Container(
         color: colorBackground,
+        margin: EdgeInsets.all(0),
         padding:
-            EdgeInsets.only(bottom: 50.0, left: 12.0, right: 12.0, top: 12.0),
+            EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -503,17 +411,18 @@ class Product extends GetView<ProductController> {
                                     Timestamp.now().toDate())
                                 .toLowerCase(),
                             style: TextStyle(
-                                fontStyle: FontStyle.normal, color: colorText),
+                                fontStyle: FontStyle.normal,
+                                color: colorText.withOpacity(0.5)),
                           ),
                         ),
                       ],
                     )
                   : Container(),
-              Icon(Icons.keyboard_arrow_up, color: colorText),
+              Icon(Icons.keyboard_arrow_up, color: colorText.withOpacity(0.5)),
               Text(
                 'Deslice hacia arriba para ver los últimos precios publicados',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: colorText),
+                style: TextStyle(color: colorText.withOpacity(0.5)),
               ),
             ],
           ),
@@ -528,9 +437,10 @@ class Product extends GetView<ProductController> {
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
         child: Container(
+            margin: EdgeInsets.all(0),
             color: colorBackground,
             padding: EdgeInsets.only(
-                bottom: 50.0, left: 12.0, right: 12.0, top: 12.0),
+                bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
             child: ultimosPreciosView())));
   }
 
@@ -733,15 +643,21 @@ class Product extends GetView<ProductController> {
     );
   }
 
-  Widget otrosProductosViewList() {
+  Widget otherBrandProductsListHorizontal() {
+    // mostramos en un lista horizontal otros productos de la misma marca
     return Obx(() => Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Divider(endIndent: 12.0, indent: 12.0),
             Padding(
-              child: Text("Otros", style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.normal)),
-              padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
+              child: Text(
+                  controller.getMark.name == ''
+                      ? 'Otros'
+                      : controller.getMark.name,
+                  style:
+                      TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal)),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             ),
             Container(
               height: 220,
@@ -770,7 +686,8 @@ class Product extends GetView<ProductController> {
         ));
   }
 
-  Widget otrosProductosEnCategoriaDeCatalogo() {
+  Widget otherProductsCatalogueListHorizontal() {
+    // mostramos otros productos del cátalogo de la misma cátegoria
     return Obx(() => Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -779,7 +696,7 @@ class Product extends GetView<ProductController> {
             Padding(
               child: Text(controller.getCategory.nombre,
                   style: TextStyle(fontSize: 16.0)),
-              padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             ),
             Container(
               height: 250,
@@ -978,8 +895,7 @@ class ProductoCatalogueItem extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () => Get.offNamed(Routes.PRODUCT,
-                        arguments: {'product': producto}),
+                    onTap: () => Get.offNamed(Routes.PRODUCT,arguments: {'product':producto},preventDuplicates: false),
                   ),
                 ),
               ),
@@ -1066,16 +982,14 @@ class ProductoItem extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Align(
                         alignment: Alignment.topRight,
-                        child: Icon(Icons.check_circle_rounded,
-                            color: Colors.green)),
+                        child: CircleAvatar(backgroundColor: Colors.green,child: Icon(Icons.check,color: Colors.white),radius: 14,)),
                   )
                 : Container(),
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Get.offNamed(Routes.PRODUCT,
-                      arguments: {'product': producto}),
+                  onTap: () => Get.offNamed(Routes.PRODUCT,arguments: {'product':producto},preventDuplicates: false),
                 ),
               ),
             ),
@@ -1185,12 +1099,12 @@ class WidgetImagen extends StatelessWidget {
     );
   }
 
-  Widget viewCircleImage(
-      {required String url, required String texto, double size = 85.0}) {
+  Widget viewCircleImage( {required String url, required String texto, double size = 85.0}) {
+
     return Container(
       width: size,
       height: size,
-      child: url == "" || url == "default"
+      child: url == ""
           ? CircleAvatar(
               backgroundColor: Colors.black26,
               radius: size,

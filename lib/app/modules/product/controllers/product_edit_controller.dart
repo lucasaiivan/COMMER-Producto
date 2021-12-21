@@ -27,13 +27,24 @@ class ControllerProductsEdit extends GetxController {
   set setIsCatalogue(bool value) => _inCatalogue = value;
   bool get getIsCatalogue => _inCatalogue;
 
-  // variable para mostrar al usaurio una viste para editar o crear un nuevo producto
+  // variable para mostrar al usuario una viste para editar o crear un nuevo producto
   bool _newProduct = true;
   set setNewProduct(bool value) => _newProduct = value;
   bool get getNewProduct => _newProduct;
 
+  // variable para editar el documento en modo de moderador
+  bool _edit = false;
+  set setEdit(bool value) {
+    _edit = value;
+    update(['updateAll']);
+  }
+
+  bool get getEdit => _edit;
+
   // parameter
-  ProductoNegocio _product = ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
+  ProductoNegocio _product = ProductoNegocio(
+      timestampActualizacion: Timestamp.now(),
+      timestampCreation: Timestamp.now());
   set setProduct(ProductoNegocio product) => _product = product;
   ProductoNegocio get getProduct => _product;
 
@@ -100,7 +111,10 @@ class ControllerProductsEdit extends GetxController {
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi(); //
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ?? ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
+    setProduct = Get.arguments['product'] ??
+        ProductoNegocio(
+            timestampActualizacion: Timestamp.now(),
+            timestampCreation: Timestamp.now());
     if (getProduct.descripcion == '') {
       setNewProduct = true;
     } else {
@@ -167,7 +181,7 @@ class ControllerProductsEdit extends GetxController {
                   .then((value) => getProduct.urlimagen = value);
             }
             // save data product global
-            if (getNewProduct) {
+            if (getNewProduct||getEdit) {
               getProduct.verificado = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
               savevProductoGlobal();
             }
@@ -179,12 +193,16 @@ class ControllerProductsEdit extends GetxController {
                 idNegocio: welcomeController.getProfileAccountSelected.id,
                 precio: getProduct.precioVenta,
                 moneda: getProduct.signoMoneda,
-                provincia:welcomeController.getProfileAccountSelected.provincia,
+                provincia:
+                    welcomeController.getProfileAccountSelected.provincia,
                 ciudad: welcomeController.getProfileAccountSelected.ciudad,
                 timestamp: Timestamp.fromDate(new DateTime.now()),
               );
               // Firebase set
-              await Database.refFirestoreRegisterPrice(idProducto: getProduct.id, isoPAis: 'ARG').doc(precio.id).set(precio.toJson());
+              await Database.refFirestoreRegisterPrice(
+                      idProducto: getProduct.id, isoPAis: 'ARG')
+                  .doc(precio.id)
+                  .set(precio.toJson());
             }
             // add/update data product in catalogue
             Database.refFirestoreCatalogueProduct(
@@ -281,7 +299,8 @@ class ControllerProductsEdit extends GetxController {
         .delete();
 
     // delete doc price
-    await Database.refFirestoreRegisterPrice(idProducto: getProduct.id, isoPAis: 'ARG')
+    await Database.refFirestoreRegisterPrice(
+            idProducto: getProduct.id, isoPAis: 'ARG')
         .doc(welcomeController.getProfileAccountSelected.id)
         .delete();
     // delete doc product
@@ -478,4 +497,3 @@ class ControllerProductsEdit extends GetxController {
     );
   }
 }
-

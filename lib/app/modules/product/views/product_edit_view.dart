@@ -133,11 +133,13 @@ class ProductEdit extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: controller.getMarkSelected.id == ''
-                  ? controller.showModalSelectMarca
-                  : controller.getNewProduct
-                      ? controller.showModalSelectMarca
-                      : null,
+              onPressed: () {
+                if (controller.getNewProduct) {
+                  controller.showModalSelectMarca();
+                }else if(controller.getEdit){
+                  controller.showModalSelectMarca();
+                }
+              },
               child: controller.getMarkSelected.id == ''
                   ? Text("Seleccionar marca")
                   : Row(
@@ -150,7 +152,7 @@ class ProductEdit extends StatelessWidget {
                         SizedBox(width: 5),
                         Text(controller.getMarkSelected.name,
                             style: TextStyle(
-                                color: controller.getNewProduct
+                                color: controller.getNewProduct || controller.getEdit
                                     ? null
                                     : Colors.grey))
                       ],
@@ -216,7 +218,8 @@ class ProductEdit extends StatelessWidget {
                       padding: EdgeInsets.only(
                           bottom: 12, top: 40, left: 0, right: 0),
                       child: button(
-                          padding: const EdgeInsets.symmetric(horizontal: 0,vertical:5),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 0, vertical: 5),
                           colorAccent: Colors.white,
                           colorButton: Colors.red,
                           icon: Icon(Icons.delete),
@@ -251,24 +254,35 @@ class ProductEdit extends StatelessWidget {
                     controller.getSaveIndicator
                         ? Container()
                         : button(
-                          padding: const EdgeInsets.symmetric(horizontal: 0,vertical:5),
-                          icon: Icon(Icons.security, color: Colors.white),
-                          onPressed: showDialogSaveOPTDeveloper,
-                          colorAccent: Colors.white,
-                          colorButton: Colors.orange,
-                          text: "Editar documento",
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 5),
+                            icon: Icon(Icons.security, color: Colors.white),
+                            onPressed: () {
+                              if (controller.getEdit) {
+                                showDialogSaveOPTDeveloper();
+                              }
+                              controller.setEdit = !controller.getEdit;
+                            },
+                            colorAccent: Colors.white,
+                            colorButton: controller.getEdit
+                                ? Colors.green
+                                : Colors.orange,
+                            text: controller.getEdit
+                                ? 'Actualizar documento'
+                                : "Editar documento",
                           ),
                     SizedBox(height: 20.0),
                     controller.getSaveIndicator
                         ? Container()
                         : button(
-                          padding: const EdgeInsets.symmetric(horizontal: 0,vertical:5),
-                          icon: Icon(Icons.security, color: Colors.white),
-                          onPressed: showDialogDeleteOPTDeveloper,
-                          colorAccent: Colors.white,
-                          colorButton: Colors.red,
-                          text: "Eliminar documento",
-                        ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 5),
+                            icon: Icon(Icons.security, color: Colors.white),
+                            onPressed: showDialogDeleteOPTDeveloper,
+                            colorAccent: Colors.white,
+                            colorButton: Colors.red,
+                            text: "Eliminar documento",
+                          ),
                     SizedBox(height: 50.0),
                   ],
                 ),
@@ -329,12 +343,12 @@ class ProductEdit extends StatelessWidget {
   }
 
   Widget button(
-      {
-      double width = double.infinity,
+      {double width = double.infinity,
       required Widget icon,
       String text = '',
       required dynamic onPressed,
-      EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+      EdgeInsets padding =
+          const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       Color colorButton = Colors.purple,
       Color colorAccent = Colors.white}) {
     return FadeInRight(
@@ -345,8 +359,8 @@ class ProductEdit extends StatelessWidget {
         child: ElevatedButton.icon(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5)),
               padding: EdgeInsets.all(12.0),
               primary: colorButton,
               textStyle: TextStyle(color: colorAccent)),
@@ -382,7 +396,6 @@ class ProductEdit extends StatelessWidget {
           );
   } */
 
-
   void showDialogDeleteOPTDeveloper() {
     Get.dialog(AlertDialog(
       title: new Text(
@@ -408,8 +421,7 @@ class ProductEdit extends StatelessWidget {
 
   void showDialogSaveOPTDeveloper() {
     Get.dialog(AlertDialog(
-      title: new Text(
-          "¿Seguro que quieres actualizar este docuemnto? (Mods)"),
+      title: new Text("¿Seguro que quieres actualizar este docuemnto? (Mods)"),
       content: new Text(
           "El producto será actualizado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
       actions: <Widget>[
@@ -419,7 +431,7 @@ class ProductEdit extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         new TextButton(
-          child: new Text("Borrar"),
+          child: new Text("Actualizar"),
           onPressed: () {
             Get.back();
             controller.saveProductGlobal();
@@ -1215,7 +1227,12 @@ class _SelectMarkState extends State<SelectMark> {
                                   product.name,
                                   product.description,
                                 ],
-                                builder: (mark) => listTile(marcaSelect: mark),
+                                builder: (mark) => Column(
+                                  children: <Widget>[
+                                    listTile(marcaSelect: mark),
+                                    Divider(endIndent: 12.0, indent: 12.0),
+                                  ],
+                                ),
                               ),
                             );
                           },
