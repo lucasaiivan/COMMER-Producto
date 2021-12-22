@@ -26,6 +26,8 @@ class ProductEdit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // GetBuilder - refresh all the views
     return GetBuilder<ControllerProductsEdit>(
       id: 'updateAll',
       init: ControllerProductsEdit(),
@@ -71,49 +73,18 @@ class ProductEdit extends StatelessWidget {
   }
 
   Widget widgetsImagen() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: controller.loadImage(),
-        ),
-        controller.getSaveIndicator
-            ? Container()
-            : controller.getNewProduct
-                ? Row(
-                    children: [
-                      Expanded(
-                          child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: FloatingActionButton.extended(
-                          heroTag: '',
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5)),
-                          backgroundColor: Get.theme.primaryColor,
-                          foregroundColor: Colors.white,
-                          onPressed: controller.getLoadImageGalery,
-                          icon: Icon(Icons.photo_library, color: Colors.white),
-                          label: Text('Galeria',
-                              style: TextStyle(color: Colors.white)),
-                        ),
-                      )),
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: FloatingActionButton(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5)),
-                          backgroundColor: Get.theme.primaryColor,
-                          foregroundColor: Colors.white,
-                          onPressed: controller.getLoadImageCamera,
-                          child: Icon(Icons.camera_alt, color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  )
-                : Container(),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(24.0),
+      color: Colors.grey.withOpacity(0.1),
+      width: double.infinity,height: Get.size.height*0.25,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          controller.getSaveIndicator?Container():controller.getNewProduct||controller.getEdit?IconButton(onPressed: controller.getLoadImageCamera, icon: Icon(Icons.camera_alt,color: Colors.grey)):Container(),
+          controller.loadImage(),
+          controller.getSaveIndicator?Container():controller.getNewProduct||controller.getEdit?IconButton(onPressed: controller.getLoadImageGalery, icon: Icon(Icons.image,color: Colors.grey)):Container(),
+        ],
+      ),
     );
   }
 
@@ -168,11 +139,9 @@ class ProductEdit extends StatelessWidget {
             minLines: 1,
             maxLines: 5,
             keyboardType: TextInputType.multiline,
-            //enabled: !producto.verificado,
             onChanged: (value) => controller.getProduct.descripcion = value,
             decoration: InputDecoration(
                 border: OutlineInputBorder(), labelText: "Descripción"),
-            //style: controller.getProduct.verificado ? textStyle_disabled : textStyle,
             controller: controller.controllerTextEdit_descripcion,
           ),
           space,
@@ -412,7 +381,7 @@ class ProductEdit extends StatelessWidget {
           child: new Text("Borrar"),
           onPressed: () {
             Get.back();
-            controller.deleteProducGlobal();
+            controller.deleteProducPublic();
           },
         ),
       ],
@@ -434,7 +403,7 @@ class ProductEdit extends StatelessWidget {
           child: new Text("Actualizar"),
           onPressed: () {
             Get.back();
-            controller.saveProductGlobal();
+            controller.saveProductPublic();
           },
         ),
       ],

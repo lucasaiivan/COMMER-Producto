@@ -47,6 +47,21 @@ class _ViewCategoriaState extends State<ViewCategoria> {
 
   @override
   Widget build(BuildContext buildContext) {
+    if (controller.getCatalogueCategoryList.length == 0) {
+      return Row(
+        children: [
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text('Categoría', style: TextStyle(fontSize: 18)),
+          )),
+          IconButton(
+              icon: Icon(Icons.add),
+              padding: const EdgeInsets.all(20.0),
+              onPressed: () => showDialogSetCategoria(categoria: Categoria()))
+        ],
+      );
+    }
     return Obx(
       () => ListView.builder(
         padding: EdgeInsets.symmetric(vertical: 15.0),
@@ -68,7 +83,8 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                         IconButton(
                             icon: Icon(Icons.add),
                             padding: const EdgeInsets.all(20.0),
-                            onPressed: () => showDialogSetCategoria(categoria: Categoria()))
+                            onPressed: () =>
+                                showDialogSetCategoria(categoria: Categoria()))
                       ],
                     ),
                     controller.getCatalogueCategoryList.length != 0
@@ -109,7 +125,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                         ViewSubCategoria.show(
                             buildContext: buildContext, categoria: categoria);
                       },
-                      trailing: popupMenuItemCategoria(categoria: categoria),
+                      trailing: dropdownButtonCategory(categoria: categoria),
                     ),
                     Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                   ],
@@ -138,7 +154,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                         ViewSubCategoria.show(
                             buildContext: buildContext, categoria: categoria);
                       },
-                      trailing: popupMenuItemCategoria(categoria: categoria),
+                      trailing: dropdownButtonCategory(categoria: categoria),
                     ),
                     Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                   ],
@@ -148,18 +164,24 @@ class _ViewCategoriaState extends State<ViewCategoria> {
     );
   }
 
-  Widget popupMenuItemCategoria({required Categoria categoria}) {
-
+  Widget dropdownButtonCategory({required Categoria categoria}) {
     final WelcomeController controller = Get.find();
 
-    return new PopupMenuButton(
+    return DropdownButton<String>(
       icon: Icon(Icons.more_vert),
-      itemBuilder: (_) => <PopupMenuItem<String>>[
-        new PopupMenuItem<String>(child: const Text('Editar'), value: 'editar'),
-        new PopupMenuItem<String>(
-            child: const Text('Eliminar'), value: 'eliminar'),
+      value: null,
+      elevation: 10,
+      items: [
+        DropdownMenuItem(
+          child: Text("Editar"),
+          value: 'editar',
+        ),
+        DropdownMenuItem(
+          child: Text("Eliminar"),
+          value: 'eliminar',
+        ),
       ],
-      onSelected: (value) async {
+      onChanged: (value) async {
         switch (value) {
           case "editar":
             showDialogSetCategoria(categoria: categoria);
@@ -182,7 +204,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                     new TextButton(
                         child: const Text('CANCEL'),
                         onPressed: () {
-                          Navigator.pop(context);
+                          Get.back();
                         }),
                     new TextButton(
                         child: loadSave == false
@@ -190,6 +212,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                             : CircularProgressIndicator(),
                         onPressed: () async {
                           controller.categoryDelete(idCategory: categoria.id);
+                          Get.back();
                         })
                   ],
                 );
@@ -202,7 +225,6 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   }
 
   showDialogSetCategoria({required Categoria categoria}) async {
-
     final WelcomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
@@ -243,12 +265,16 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                     ? Text(newProduct ? 'GUARDAR' : "ACTUALIZAR")
                     : CircularProgressIndicator(),
                 onPressed: () async {
-                  if(textEditingController.text!=''){
+                  if (textEditingController.text != '') {
                     // set
                     categoria.nombre = textEditingController.text;
                     setState(() => loadSave = true);
                     // save
-                    await controller.categoryUpdate(categoria: categoria).whenComplete(() => Get.back()).catchError((error, stackTrace) =>setState(() => loadSave = false));
+                    await controller
+                        .categoryUpdate(categoria: categoria)
+                        .whenComplete(() => Get.back())
+                        .catchError((error, stackTrace) =>
+                            setState(() => loadSave = false));
                   }
                 })
           ],
@@ -256,10 +282,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
       },
     );
   }
-  
 }
-
-
 
 class ViewSubCategoria extends StatefulWidget {
   final BuildContext buildContext;
@@ -309,6 +332,23 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
 
   @override
   Widget build(BuildContext buildContext) {
+    if (categoriaSelected.subcategorias.length == 0) {
+      return Row(
+        children: [
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text('Subategoría', style: TextStyle(fontSize: 18)),
+          )),
+          IconButton(
+              icon: Icon(Icons.add),
+              padding: const EdgeInsets.all(20.0),
+              onPressed: () =>
+                  showDialogSetSubcategoria(subcategoria: Categoria()))
+        ],
+      );
+    }
+
     return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
@@ -336,8 +376,8 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                       IconButton(
                           icon: Icon(Icons.add),
                           padding: const EdgeInsets.all(20.0),
-                          onPressed: ()=>showDialogSetSubcategoria(subcategoria: Categoria())
-                          )
+                          onPressed: () => showDialogSetSubcategoria(
+                              subcategoria: Categoria()))
                     ],
                   ),
                   categoriaSelected.subcategorias.length != 0
@@ -376,7 +416,8 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                       controller.setsubCategorySelect = subcategoria;
                       Get.back();
                     },
-                    trailing: popupMenuItemSubcategoria(subcategoria: subcategoria),
+                    trailing:
+                        dropdownButtonSubcategory(subcategoria: subcategoria),
                   ),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                 ],
@@ -403,7 +444,8 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                       controller.setsubCategorySelect = subcategoria;
                       Get.back();
                     },
-                    trailing: popupMenuItemSubcategoria(subcategoria: subcategoria),
+                    trailing:
+                        dropdownButtonSubcategory(subcategoria: subcategoria),
                   ),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                 ],
@@ -412,18 +454,25 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
     );
   }
 
-  Widget popupMenuItemSubcategoria({required Categoria subcategoria}) {
-
+  Widget dropdownButtonSubcategory({required Categoria subcategoria}) {
     final WelcomeController controller = Get.find();
 
-    return new PopupMenuButton(
+    return DropdownButton<String>(
       icon: Icon(Icons.more_vert),
-      itemBuilder: (_) => <PopupMenuItem<String>>[
-        new PopupMenuItem<String>(child: const Text('Editar'), value: 'editar'),
-        new PopupMenuItem<String>(
-            child: const Text('Eliminar'), value: 'eliminar'),
+      hint: Text('Language'),
+      value: null,
+      elevation: 10,
+      items: [
+        DropdownMenuItem(
+          child: Text("Editar"),
+          value: 'editar',
+        ),
+        DropdownMenuItem(
+          child: Text("Eliminar"),
+          value: 'eliminar',
+        ),
       ],
-      onSelected: (value) async {
+      onChanged: (value) async {
         switch (value) {
           case "editar":
             showDialogSetSubcategoria(subcategoria: subcategoria);
@@ -444,18 +493,22 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                   ),
                   actions: <Widget>[
                     new TextButton(
-                        child: const Text('CANCEL'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
+                        child: const Text('CANCEL'), onPressed: Get.back),
                     new TextButton(
                         child: loadSave == false
                             ? Text("ELIMINAR")
                             : CircularProgressIndicator(),
                         onPressed: () async {
-                          controller.getCategorySelect.subcategorias.remove(subcategoria.id);
+                          controller.getCategorySelect.subcategorias
+                              .remove(subcategoria.id);
                           // save
-                          await controller.categoryUpdate(categoria: controller.getCategorySelect).whenComplete(() => Get.back()).catchError((error, stackTrace) =>setState(() => loadSave = false));
+                          await controller
+                              .categoryUpdate(
+                                  categoria: controller.getCategorySelect)
+                              .whenComplete(() => Get.back())
+                              .catchError((error, stackTrace) =>
+                                  setState(() => loadSave = false));
+                          Get.back();
                         })
                   ],
                 );
@@ -468,7 +521,6 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
   }
 
   showDialogSetSubcategoria({required Categoria subcategoria}) async {
-
     final WelcomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
@@ -509,13 +561,18 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                     ? Text(newProduct ? 'GUARDAR' : "ACTUALIZAR")
                     : CircularProgressIndicator(),
                 onPressed: () async {
-                  if(textEditingController.text!=''){
+                  if (textEditingController.text != '') {
                     // set
                     subcategoria.nombre = textEditingController.text;
-                    controller.getCategorySelect.subcategorias[subcategoria.id] = subcategoria.nombre;
+                    controller.getCategorySelect
+                        .subcategorias[subcategoria.id] = subcategoria.nombre;
                     setState(() => loadSave = true);
                     // save
-                    await controller.categoryUpdate(categoria: controller.getCategorySelect).whenComplete(() => Get.back()).catchError((error, stackTrace) =>setState(() => loadSave = false));
+                    await controller
+                        .categoryUpdate(categoria: controller.getCategorySelect)
+                        .whenComplete(() => Get.back())
+                        .catchError((error, stackTrace) =>
+                            setState(() => loadSave = false));
                   }
                 })
           ],

@@ -65,7 +65,6 @@ class ControllerProductsEdit extends GetxController {
     getProduct.nameMark = value.name;
     update(['updateAll']);
   }
-
   Marca get getMarkSelected => _markSelected;
 
   // marcas
@@ -111,10 +110,7 @@ class ControllerProductsEdit extends GetxController {
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi(); //
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ??
-        ProductoNegocio(
-            timestampActualizacion: Timestamp.now(),
-            timestampCreation: Timestamp.now());
+    setProduct = Get.arguments['product'] ?? ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
     if (getProduct.descripcion == '') {
       setNewProduct = true;
     } else {
@@ -176,14 +172,12 @@ class ControllerProductsEdit extends GetxController {
               UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
               await uploadTask;
               // obtenemos la url de la imagen guardada
-              await ref
-                  .getDownloadURL()
-                  .then((value) => getProduct.urlimagen = value);
+              await ref.getDownloadURL().then((value) => getProduct.urlimagen = value);
             }
-            // save data product global
+            // Mods - save data product global
             if (getNewProduct||getEdit) {
               getProduct.verificado = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
-              savevProductoGlobal();
+              saveProductPublic();
             }
 
             // registra el precio en una colección publica para todos los usuarios
@@ -233,24 +227,14 @@ class ControllerProductsEdit extends GetxController {
     }
   }
 
-  void savevProductoGlobal() async {
-    // set
-    Producto newProduct = getProduct.convertProductoDefault();
-    newProduct.idAccount = welcomeController.getProfileAccountSelected.id;
-    newProduct.timestampActualizacion = Timestamp.fromDate(new DateTime.now());
-
-    // save in firestore
-    await Database.refFirestoreCatalogueProductGlobal()
-        .doc(newProduct.id)
-        .set(newProduct.toJson());
-  }
 
   // DEVELOPER OPTIONS
-  Future<void> saveProductGlobal() async {
+  Future<void> saveProductPublic() async {
     if (getProduct.id != '') {
       if (getCategory.id != '') {
         if (getProduct.descripcion != '') {
           if (getMarkSelected.id != '') {
+
             // activate indicator load
             setSaveIndicator = true;
             setTextAppBar = 'Actualizando...';
@@ -258,13 +242,11 @@ class ControllerProductsEdit extends GetxController {
 
             // set
             Producto newProduct = getProduct.convertProductoDefault();
-            newProduct.idAccount =
-                welcomeController.getProfileAccountSelected.id;
-            newProduct.timestampActualizacion =
-                Timestamp.fromDate(new DateTime.now());
+            newProduct.idAccount = welcomeController.getProfileAccountSelected.id;
+            newProduct.timestampActualizacion = Timestamp.fromDate(new DateTime.now());
 
-            // save in firestore
-            await Database.refFirestoreCatalogueProductGlobal()
+            // firestore - save product public
+            await Database.refFirestoreProductPublic()
                 .doc(newProduct.id)
                 .set(newProduct.toJson())
                 .whenComplete(() {
@@ -286,28 +268,16 @@ class ControllerProductsEdit extends GetxController {
     }
   }
 
-  void deleteProducGlobal() async {
+  void deleteProducPublic() async {
     // activate indicator load
     setSaveIndicator = true;
     setTextAppBar = 'Eliminando...';
     updateAll();
 
-    // delecte doc product in catalogue account
-    await Database.refFirestoreCatalogueProduct(
-            idAccount: welcomeController.getProfileAccountSelected.id)
-        .doc(getProduct.id)
-        .delete();
-
-    // delete doc price
-    await Database.refFirestoreRegisterPrice(
-            idProducto: getProduct.id, isoPAis: 'ARG')
-        .doc(welcomeController.getProfileAccountSelected.id)
-        .delete();
+    // delete doc product in catalogue account
+    await Database.refFirestoreCatalogueProduct(idAccount: welcomeController.getProfileAccountSelected.id).doc(getProduct.id).delete();
     // delete doc product
-    await Database.refFirestoreCatalogueProduct(
-            idAccount: welcomeController.getProfileAccountSelected.id)
-        .doc(getProduct.id)
-        .delete()
+    await Database.refFirestoreProductPublic().doc(getProduct.id).delete()
         .whenComplete(() {
       Get.back();
       Get.back();
@@ -334,19 +304,9 @@ class ControllerProductsEdit extends GetxController {
       getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
       update(['updateAll']);
     }).onError((error, stackTrace) {
-      setMarkSelected = Marca(
-          timestampUpdate: Timestamp.now(),
-          timestampCreacion: Timestamp.now(),
-          name: '',
-          id: '0000',
-          urlImage: 'default');
+      setMarkSelected = Marca(timestampUpdate: Timestamp.now(),timestampCreacion: Timestamp.now());
     }).catchError((_) {
-      setMarkSelected = Marca(
-          timestampUpdate: Timestamp.now(),
-          timestampCreacion: Timestamp.now(),
-          name: '',
-          id: '0000',
-          urlImage: 'default');
+      setMarkSelected = Marca(timestampUpdate: Timestamp.now(),timestampCreacion: Timestamp.now());
     });
   }
 
@@ -404,13 +364,14 @@ class ControllerProductsEdit extends GetxController {
   }
 
   Widget loadImage() {
+    // devuelve la imagen del product
     if (getXFileImage.path != '') {
       // el usuario cargo un nueva imagen externa
       return AspectRatio(
         child: Image.file(File(getXFileImage.path), fit: BoxFit.cover),
         aspectRatio: 1 / 1,
       );
-    } else if (getProduct.urlimagen != '') {
+    } else{
       // se visualiza la imagen del producto
       return AspectRatio(
         aspectRatio: 1 / 1,
@@ -422,7 +383,7 @@ class ControllerProductsEdit extends GetxController {
             child: Center(child: Icon(Icons.cloud, color: Colors.white)),
           ),
           imageBuilder: (context, image) => Container(
-            child: Image(image: image, fit: BoxFit.cover),
+            child: Image(image: image),
           ),
           errorWidget: (context, url, error) => Container(
             color: Colors.grey.withOpacity(0.3),
@@ -432,21 +393,7 @@ class ControllerProductsEdit extends GetxController {
           ),
         ),
       );
-    } else {
-      // muestra un fondo gris por defecto
-      return AspectRatio(
-        aspectRatio: 1 / 1,
-        child: Container(
-          color: Colors.grey.withOpacity(0.3),
-          child: Center(
-            child: Icon(
-              Icons.image,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      );
-    }
+    } 
   }
 
   void showDialogDelete() {

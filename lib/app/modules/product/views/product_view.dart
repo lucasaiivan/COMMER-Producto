@@ -62,13 +62,12 @@ class Product extends GetView<ProductController> {
       actions: [
         IconButton(
           padding: EdgeInsets.all(12.0),
-          icon: Icon(Icons.screenshot),
+          icon: Icon(Icons.share),
           onPressed: () {
             showGeneralDialog(
                 context: context,
                 barrierDismissible: true,
-                barrierLabel:
-                    MaterialLocalizations.of(context).modalBarrierDismissLabel,
+                barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
                 barrierColor: Colors.black45,
                 transitionDuration: const Duration(milliseconds: 200),
                 pageBuilder: (BuildContext buildContext, Animation animation,
