@@ -239,18 +239,9 @@ class Product extends GetView<ProductController> {
                   children: <Widget>[
                     controller.getCategory.nombre != ""
                         ? Chip(
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            avatar: CircleAvatar(
-                              backgroundColor: Colors.grey.shade800,
-                              child: Text(
-                                  controller.getCategory.nombre.substring(0, 1),
-                                  style: TextStyle(color: Colors.grey)),
-                            ),
-                            label: Text(
-                              controller.getCategory.nombre,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            materialTapTargetSize:MaterialTapTargetSize.shrinkWrap,
+                            avatar: CircleAvatar(backgroundColor: Colors.grey.shade800,child: Text(controller.getCategory.nombre.substring(0, 1),style: TextStyle(color: Colors.grey))),
+                            label: Text(controller.getCategory.nombre,overflow: TextOverflow.ellipsis),
                           )
                         : Container(),
                     controller.getSubcategory.nombre != ""
@@ -289,11 +280,18 @@ class Product extends GetView<ProductController> {
           controller.getProduct.codigo != ""
               ? Opacity(
                   opacity: 0.8,
-                  child: Text(controller.getProduct.codigo,
-                      style: TextStyle(
-                          height: 1,
-                          fontSize: 12,
-                          fontWeight: FontWeight.normal)),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.qr_code_2_rounded,size: 14),
+                      SizedBox(width: 5),
+                      Text(controller.getProduct.codigo,
+                          style: TextStyle(
+                              height: 1,
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal)),
+                    ],
+                  ),
                 )
               : Container(),
         ],
@@ -301,26 +299,20 @@ class Product extends GetView<ProductController> {
     );
   }
 
-  // WIDGETS COMPONENTS
   Widget background() {
     return Builder(builder: (contextBuilder) {
       return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 12),
-            imageViewCard(),
-            Column(
+        child:  Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 12),
+                imageViewCard(),
                 widgetDescripcion(contextBuilder),
                 otherProductsCatalogueListHorizontal(),
                 otherBrandProductsListHorizontal(),
                 const SizedBox(height: 200.0, width: 120.0),
               ],
             ),
-          ],
-        ),
       );
     });
   }
@@ -442,7 +434,8 @@ class Product extends GetView<ProductController> {
                 bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
             child: ultimosPreciosView())));
   }
-
+  // WIDGETS COMPONENTS
+  
   Widget ultimosPreciosView() {
     if (controller.getListPricesForProduct.length != 0) {
       Color colorText = Colors.white;
@@ -644,18 +637,17 @@ class Product extends GetView<ProductController> {
 
   Widget otherBrandProductsListHorizontal() {
     // mostramos en un lista horizontal otros productos de la misma marca
-    return Obx(() => Column(
+    return Obx(() => controller.getListOthersProductsForMark.length==0?Container():Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Divider(endIndent: 12.0, indent: 12.0),
             Padding(
               child: Text(
                   controller.getMark.name == ''
                       ? 'Otros'
                       : controller.getMark.name,
                   style:
-                      TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal)),
+                      TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal)),
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             ),
             Container(
@@ -687,11 +679,14 @@ class Product extends GetView<ProductController> {
 
   Widget otherProductsCatalogueListHorizontal() {
     // mostramos otros productos del cátalogo de la misma cátegoria
-    return Obx(() => Column(
+    return Obx(() => controller.getListOthersProductsForCategoryCatalogue.length==0?Container():Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Divider(endIndent: 12.0, indent: 12.0),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Divider(height: 6,thickness: 1,color: Colors.grey.withOpacity(0.1)),
+            ),
             Padding(
               child: Text(controller.getCategory.nombre,
                   style: TextStyle(fontSize: 16.0)),
@@ -702,8 +697,7 @@ class Product extends GetView<ProductController> {
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount:
-                    controller.getListOthersProductsForCategoryCatalogue.length,
+                itemCount:controller.getListOthersProductsForCategoryCatalogue.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: EdgeInsets.only(
@@ -727,106 +721,6 @@ class Product extends GetView<ProductController> {
         ));
   }
 
-  Widget itemProduct({required Producto product}) {
-    return Container(
-      padding: EdgeInsets.all(8.0),
-      width: 200.0,
-      height: 200.0,
-      child: Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {
-            /* Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (BuildContext context) => producto != null
-                    ? ProductScreen(producto: producto)
-                    : Scaffold(
-                        body: Center(child: Text("Se produjo un Error!"))),
-              ),
-            ); */
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Stack(
-                fit: StackFit.passthrough,
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  AspectRatio(
-                    aspectRatio: 100 / 100,
-                    child: product.urlImagen != ""
-                        ? CachedNetworkImage(
-                            fadeInDuration: Duration(milliseconds: 200),
-                            fit: BoxFit.cover,
-                            imageUrl: product.urlImagen,
-                            placeholder: (context, url) => FadeInImage(
-                                fit: BoxFit.cover,
-                                image: AssetImage("assets/loading.gif"),
-                                placeholder: AssetImage("assets/loading.gif")),
-                            errorWidget: (context, url, error) =>
-                                Container(color: Colors.black12),
-                          )
-                        : Container(color: Colors.black26),
-                  ),
-                  Container(
-                    color: Colors.black54,
-                    child: ClipRect(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Column(
-                                children: <Widget>[
-                                  product.titulo != "" &&
-                                          product.titulo != "default"
-                                      ? Text(product.titulo,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false)
-                                      : Container(),
-                                  product.descripcion != ""
-                                      ? Text(product.descripcion,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12.0,
-                                              color: Colors.white),
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false)
-                                      : Container(),
-                                  product.precioVenta != 0.0
-                                      ? Text(
-                                          "${Publicaciones.getFormatoPrecio(monto: product.precioVenta)}",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16.0,
-                                              color: Colors.white),
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false)
-                                      : Container(),
-                                ],
-                              ),
-                            ),
-                          ),
-                          // Text(topic.description)
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   // FUNCTIONS
   String sProcentaje(
