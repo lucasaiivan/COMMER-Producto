@@ -8,10 +8,7 @@ import 'package:producto/app/modules/account/controller/account_controller.dart'
 import 'package:producto/app/utils/widgets_utils_app.dart';
 
 class AccountView extends GetView<AccountController> {
-  // Image
-  final String urlIamgen = "";
-  late final PickedFile imageFile;
-  final String titleAppBar = "Crear cuenta";
+
 
   // VAriables
   late final BuildContext context;
@@ -71,21 +68,14 @@ class AccountView extends GetView<AccountController> {
   // WIDGET
   PreferredSizeWidget appBar() {
     return AppBar(
-      centerTitle: true,
-      title: Text(controller.getSavingIndicator ? 'Actualizando' : "Mi Perfil"),
+      title: Text('Perfil'),
       actions: <Widget>[
-        GetBuilder<AccountController>(
-          id: 'load',
-          initState: (_) {},
-          builder: (_) {
-            return IconButton(
+        IconButton(
               icon: controller.getSavingIndicator
                   ? Container()
                   : Icon(Icons.check),
               onPressed: controller.saveAccount,
-            );
-          },
-        ),
+            )
       ],
       bottom: controller.getSavingIndicator ? linearProgressBarApp() : null,
     );
@@ -131,9 +121,7 @@ class AccountView extends GetView<AccountController> {
               controller.getImageUpdate == false
                   ? CachedNetworkImage(
                       fit: BoxFit.cover,
-                      imageUrl: controller.getProfileAccount.imagenPerfil != ""
-                          ? controller.getProfileAccount.imagenPerfil
-                          : "default",
+                      imageUrl: controller.getProfileAccount.imagenPerfil==''?'default':controller.getProfileAccount.imagenPerfil,
                       placeholder: (context, url) => CircleAvatar(
                         backgroundColor: Colors.grey,
                         radius: 75.0,
@@ -150,7 +138,8 @@ class AccountView extends GetView<AccountController> {
                   : CircleAvatar(
                       radius: 75.0,
                       backgroundColor: Colors.transparent,
-                      backgroundImage:FileImage(File(controller.getxFile.path)),
+                      backgroundImage:
+                          FileImage(File(controller.getxFile.path)),
                     )
             ],
           ),
@@ -223,8 +212,7 @@ class AccountView extends GetView<AccountController> {
                     labelText: "Signo de moneda",
                     filled: true,
                   ),
-                  controller: TextEditingController(
-                      text: controller.getProfileAccount.signoMoneda),
+                  controller: controller.getControllerTextEditSignoMoneda,
                   onChanged: (value) =>
                       controller.getProfileAccount.signoMoneda = value,
                 ),
@@ -262,13 +250,14 @@ class AccountView extends GetView<AccountController> {
                   labelText: "Ciudad (ocional)",
                   filled: true,
                 ),
-                controller: TextEditingController(
-                    text: controller.getProfileAccount.ciudad),
+                controller: TextEditingController(text: controller.getProfileAccount.ciudad),
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
-                onTap: () =>
-                    _bottomPickerSelectCities(list: controller.getCities),
+                onTap: () => controller.getProfileAccount.pais == ''
+                    ? _bottomPickerSelectCountries(
+                        list: controller.getCountries)
+                    : _bottomPickerSelectCities(list: controller.getCities),
                 child: TextField(
                     minLines: 1,
                     maxLines: 5,
@@ -296,8 +285,7 @@ class AccountView extends GetView<AccountController> {
                     labelText: "Pais",
                     filled: true,
                   ),
-                  controller: TextEditingController(
-                      text: controller.getProfileAccount.pais),
+                  controller: controller.getControllerTextEditPais,
                   onChanged: (value) =>
                       controller.getProfileAccount.pais = value,
                 ),
@@ -340,7 +328,7 @@ class AccountView extends GetView<AccountController> {
                 child: Text("Ok"),
                 onPressed: () {
                   controller.getControllerTextEditProvincia.text = list[_index];
-                  controller.getProfileAccount.signoMoneda = list[_index];
+                  controller.getProfileAccount.provincia = list[_index];
                   Navigator.pop(context);
                 },
               ),
@@ -348,10 +336,7 @@ class AccountView extends GetView<AccountController> {
           ),
         );
       },
-    ).whenComplete(() {
-      controller.getControllerTextEditProvincia.text = list[_index];
-      controller.getProfileAccount.signoMoneda = list[_index];
-    });
+    );
   }
 
   void _bottomPickerSelectCountries({required List list}) async {
@@ -385,16 +370,16 @@ class AccountView extends GetView<AccountController> {
               CupertinoButton(
                 child: Text("Ok"),
                 onPressed: () {
+                  controller.getProfileAccount.pais = list[_index];
                   controller.getControllerTextEditPais.text = list[_index];
-                  Navigator.pop(context);
+                  Get.back();
                 },
               ),
             ],
           ),
         );
       },
-    ).whenComplete(
-        () => controller.getControllerTextEditPais.text = list[_index]);
+    );
   }
 
   void _bottomPickerSelectCurreny({required List list}) async {
@@ -428,8 +413,8 @@ class AccountView extends GetView<AccountController> {
               CupertinoButton(
                 child: Text("Ok"),
                 onPressed: () {
-                  controller.getControllerTextEditSignoMoneda.text =
-                      list[_index];
+                  controller.getProfileAccount.signoMoneda =list[_index];
+                  controller.getControllerTextEditSignoMoneda.text = list[_index];
                   Navigator.pop(context);
                 },
               ),
@@ -437,7 +422,6 @@ class AccountView extends GetView<AccountController> {
           ),
         );
       },
-    ).whenComplete(
-        () => controller.getControllerTextEditSignoMoneda.text = list[_index]);
+    );
   }
 }

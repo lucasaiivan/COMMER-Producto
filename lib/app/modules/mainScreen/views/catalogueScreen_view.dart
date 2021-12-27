@@ -58,7 +58,10 @@ class CatalogueScreenView extends StatelessWidget {
           ),
         ),
         actions: <Widget>[
-          IconButton(onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'idProduct': ''}), icon: Icon(Icons.add)),
+          IconButton(
+              onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
+                  arguments: {'idProduct': ''}),
+              icon: Icon(Icons.add)),
           IconButton(
               onPressed: () {
                 showSearch(
@@ -87,7 +90,8 @@ class CatalogueScreenView extends StatelessWidget {
                       title: Text(product.titulo),
                       subtitle: Text(product.descripcion),
                       onTap: () {
-                        Get.toNamed(Routes.PRODUCT, arguments: {'product': product});
+                        Get.toNamed(Routes.PRODUCT,
+                            arguments: {'product': product});
                       },
                     ),
                   ),
@@ -152,12 +156,13 @@ class CatalogueScreenView extends StatelessWidget {
               builder: (_) {
                 return SliverList(
                   delegate: SliverChildListDelegate([
-                    Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-                        child: controller.getLoadDataCatalogueMarks
-                            ? WidgetsListaHorizontalMarks()
-                            : WidgetsListaHorizontalMarksLoadAnim()),
+                    controller.getLoadDataCatalogueMarks? Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 0),
+                            child:
+                                controller.getCatalogueMarksFilter.length == 0
+                                    ? Container()
+                                    : WidgetsListaHorizontalMarks()):WidgetsListaHorizontalMarksLoadAnim(),
                   ]),
                 );
               },
@@ -184,10 +189,20 @@ class CatalogueScreenView extends StatelessWidget {
             ),
             Divider(height: 0.0),
             Expanded(
-              child: TabBarView(
-                children: [
-                  gridViewLoadAny(),
-                ],
+              child: GetBuilder<WelcomeController>(
+                id: 'catalogue',
+                initState: (_) {},
+                builder: (_) {
+                  return controller.getCatalogueLoad.length == 0
+                      ? Center(
+                          child:Text('aún no has agregado ningún producto'),
+                        )
+                      : TabBarView(
+                          children: [
+                            gridViewLoadAny(),
+                          ],
+                        );
+                },
               ),
             ),
           ],
@@ -197,34 +212,29 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   Widget gridViewLoadAny() {
-    return GetBuilder<WelcomeController>(
-      id: 'catalogue',
-      builder: (controller) {
-        return LoadAny(
-          onLoadMore: controller.getCatalogueMoreLoad,
-          status: controller.getLoadGridCatalogueStatus,
-          loadingMsg: 'Cargando...',
-          errorMsg: 'errorMsg',
-          finishMsg:
-              controller.getCatalogueLoad.length.toString() + ' productos',
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverGrid(
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 150,
-                  childAspectRatio: 1/1.4,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return ProductoItem(producto: controller.getCatalogueLoad[index]);
-                  },
-                  childCount: controller.getCatalogueLoad.length,
-                ),
-              ),
-            ],
+    return LoadAny(
+      onLoadMore: controller.getCatalogueMoreLoad,
+      status: controller.getLoadGridCatalogueStatus,
+      loadingMsg: 'Cargando...',
+      errorMsg: 'errorMsg',
+      finishMsg: controller.getCatalogueLoad.length.toString() + ' productos',
+      child: CustomScrollView(
+        slivers: <Widget>[
+          SliverGrid(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 150,
+              childAspectRatio: 1 / 1.4,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return ProductoItem(
+                    producto: controller.getCatalogueLoad[index]);
+              },
+              childCount: controller.getCatalogueLoad.length,
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -453,131 +463,11 @@ class CatalogueScreenView extends StatelessWidget {
     } else {
       if (barcodeScanRes.toString() != "") {
         if (barcodeScanRes.toString() != "-1") {
-          Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id':barcodeScanRes});
+          Get.toNamed(Routes.PRODUCTS_SEARCH,
+              arguments: {'id': barcodeScanRes});
         }
       }
     }
-  }
-}
-
-// WIDGET - Sujerencias de productos
-class WidgetProductsSuggestions extends StatelessWidget {
-  WidgetProductsSuggestions({required this.list});
-
-  // var
-  final WelcomeController controller = Get.find();
-  final List<Producto> list;
-
-  @override
-  Widget build(BuildContext context) {
-    if (list.length == 0) return Container();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Text("sugerencias para ti"),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-              onTap: () {},
-              borderRadius: BorderRadius.circular(50),
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: FadeInLeft(
-                  child: CircleAvatar(
-                      child: CircleAvatar(
-                          child:
-                              Icon(Icons.search, color: Get.theme.primaryColor),
-                          radius: 24,
-                          backgroundColor: Colors.white),
-                      radius: 26,
-                      backgroundColor: Get.theme.primaryColor),
-                ),
-              ),
-            ),
-            Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 0),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[0]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[0].urlImagen,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 40),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[1]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[1].urlImagen,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 80),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[2]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[2].urlImagen,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
   }
 }
 
@@ -626,9 +516,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.all(5.0),
                         child: viewCircleImage(
-                            url: marca.urlImage,
-                            texto: marca.name,
-                            size: 50),
+                            url: marca.urlImage, texto: marca.name, size: 50),
                       ),
                     ),
                     SizedBox(

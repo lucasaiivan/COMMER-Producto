@@ -1,12 +1,16 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../routes/app_pages.dart';
 
 class ScanScreenView extends StatelessWidget {
   ScanScreenView({Key? key});
@@ -146,8 +150,7 @@ class ScanScreenView extends StatelessWidget {
 
   // BottomSheet - Getx
   void showModalBottomSheetSelectAccount(BuildContext buildContext) {
-    Widget widget = controller.getManagedAccountData.length == 0?
-    WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext):ListView.builder(
+    Widget widget = controller.getManagedAccountData.length == 0?WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext):ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
       itemCount: controller.getManagedAccountData.length,
@@ -181,8 +184,8 @@ class ScanScreenView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            InkWell(
-              onTap: () {},
+            InkWell(   
+              onTap: ()=>Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id':''}),
               borderRadius: BorderRadius.circular(50),
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
@@ -404,28 +407,29 @@ class ScanScreenView extends StatelessWidget {
     );
   }
 
+
   // Function
   Future<void> scanBarcodeNormal({required BuildContext context}) async {
-    /*Platform messages are asynchronous, so we initialize in an async method */
+    /* inicializamos en un método asincrónico */
 
     String barcodeScanRes = "";
     // Platform messages may fail, so we use a try/catch PlatformException.
-    /* try {
+    try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           "#ff6666", "Cancel", true, ScanMode.BARCODE);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
+    // Si el widget se eliminó del árbol mientras la plataforma asincrónica
+    // el mensaje estaba en vuelo, queremos descartar la respuesta en lugar de llamar
+    // setState para actualizar nuestra apariencia inexistente.
     //if (!mounted) return;
     bool coincidencia = false;
-    ProductoNegocio productoSelected;
+    late ProductoNegocio productoSelected;
 
-    if (Global.listProudctosNegocio.length != 0) {
-      for (ProductoNegocio producto in Global.listProudctosNegocio) {
+    if (controller.getCataloProducts.length != 0) {
+      for (ProductoNegocio producto in controller.getCataloProducts) {
         if (producto.codigo == barcodeScanRes) {
           productoSelected = producto;
           coincidencia = true;
@@ -435,17 +439,14 @@ class ScanScreenView extends StatelessWidget {
     }
 
     if (coincidencia) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (BuildContext context) =>
-              ProductScreen(producto: productoSelected)));
+      Get.toNamed(Routes.PRODUCT, arguments: {'product': productoSelected});
     } else {
       if (barcodeScanRes.toString() != "") {
         if (barcodeScanRes.toString() != "-1") {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) =>
-                  WidgetSeachProduct(codigo: barcodeScanRes)));
+          Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id':barcodeScanRes});
         }
       }
-    } */
+    }
   }
+
 }

@@ -106,7 +106,7 @@ class Product extends GetView<ProductController> {
                 });
           },
         ),
-        IconButton(
+        welcomeController.getProfileAccountSelected.id==''?Container(): IconButton(
           padding: EdgeInsets.all(12.0),
           icon: Icon(welcomeController.isCatalogue(id: controller.getProduct.id)
               ? Icons.edit
@@ -464,8 +464,8 @@ class Product extends GetView<ProductController> {
                       controller.getListPricesForProduct[index].idNegocio),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      ProfileBusinessModel perfilNegocio =
-                          ProfileBusinessModel.fromDocumentSnapshot(
+                      ProfileAccountModel perfilNegocio =
+                          ProfileAccountModel.fromDocumentSnapshot(
                               documentSnapshot:
                                   snapshot.data as DocumentSnapshot);
                       return Column(

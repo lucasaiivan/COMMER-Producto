@@ -63,43 +63,27 @@ class UsersModel {
   UsersModel({
     this.id = '',
     this.email = '',
-    //required this.timestamCreation ,
-    //required this.timestampSesion,
-    this.idBusiness = '',
   });
 
   late String id;
   late String email;
-  //late Timestamp timestamCreation;
-  //late Timestamp timestampSesion;
-  late String idBusiness;
 
-  factory UsersModel.fromJson(Map<String, dynamic> json) => UsersModel(
-        id: json["id"],
-        email: json["email"],
-        //timestamCreation: json["timestamCreation"] ?? json["timestamp_creation"],
-        //timestampSesion: json["timestampSesion"] ?? json["timestamp_sesion"],
-        idBusiness: json["idBusiness"] ?? json["id_cuenta_negocio"],
-      );
+
+ 
+  factory UsersModel.fromDocument(DocumentSnapshot doc) {
+  return UsersModel(
+    id : (doc.data() as Map<String, dynamic>).containsKey("id") ? doc["id"] : '',
+    email : (doc.data() as Map<String, dynamic>).containsKey("email") ? doc["email"] : '',
+  );
+}
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "email": email,
-        //"timestamCreation": timestamCreation,
-        //"timestampSesion": timestampSesion,
-        "idBusiness": idBusiness,
       };
-  UsersModel.fromDocumentSnapshot(
-      {required DocumentSnapshot documentSnapshot}) {
-    this.id = documentSnapshot.id;
-    this.email = documentSnapshot["email"];
-    //this.timestamCreation = documentSnapshot["timestamCreation"] ?? documentSnapshot["timestamp_creation"];
-    //this.timestampSesion = documentSnapshot["timestampSesion"] ?? documentSnapshot["timestamp_sesion"];
-    this.idBusiness = documentSnapshot["id_cuenta_negocio"];
-  }
 }
 
-class ProfileBusinessModel {
+class ProfileAccountModel {
   // Informacion del negocios
   String id = "";
   String username = "";
@@ -127,7 +111,7 @@ class ProfileBusinessModel {
   // data app
   String admin = '';
 
-  ProfileBusinessModel({
+  ProfileAccountModel({
     // Informacion del negocios
     this.id = "",
     this.username = "",
@@ -154,7 +138,7 @@ class ProfileBusinessModel {
     // data app
     this.admin = '',
   });
-  ProfileBusinessModel.fromMap(Map data) {
+  ProfileAccountModel.fromMap(Map data) {
     id = data['id'];
     username = data['username'];
     imagenPerfil = data['imagen_perfil'] ?? '';
@@ -193,7 +177,7 @@ class ProfileBusinessModel {
         "direccion": direccion,
       };
 
-  ProfileBusinessModel.fromDocumentSnapshot(
+  ProfileAccountModel.fromDocumentSnapshot(
       {required DocumentSnapshot documentSnapshot}) {
     this.id = documentSnapshot.id;
     //this.username = documentSnapshot["username"]??'';
@@ -217,42 +201,33 @@ class AdminUsuarioCuenta {
   String idUser = "";
   String idAccount = "";
   bool estadoCuentaUsuario = true;
-  int tipoUsuario = 0;
   int tipocuenta = 0; // 0 = null | 1 = administrador  | 2 = etandar
-  bool propietarioCuenta =
-      false; // True el usuario fue quien creo la cuenta del negocios
 
   AdminUsuarioCuenta({
     this.idUser = "",
     this.idAccount = "",
     this.estadoCuentaUsuario = false,
-    this.tipoUsuario = 0,
     this.tipocuenta = 0,
   });
 
   AdminUsuarioCuenta.fromMap(Map data) {
     idUser = data['id_usuario'] ?? "";
     idAccount = data['idAccount'] ?? "";
-    estadoCuentaUsuario = data['estado_cuenta_usuario'] ?? '';
-    tipoUsuario = data['tipo_usuario'] ?? '';
+    estadoCuentaUsuario = data['estadoCuentaUsuario'] ?? '';
     tipocuenta = data['tipocuenta'] ?? '';
-    propietarioCuenta = data['propietario_cuenta'] ?? '';
   }
 
-  AdminUsuarioCuenta.fromDocumentSnapshot(
-      {required DocumentSnapshot documentSnapshot}) {
-    idUser = documentSnapshot['id_usuario'] ?? "";
-    idAccount = documentSnapshot['idAccount'] ?? '';
-    estadoCuentaUsuario = documentSnapshot['estado_cuenta_usuario'] ?? '';
-    tipoUsuario = documentSnapshot['tipo_usuario'] ?? '';
-    tipocuenta = documentSnapshot['tipocuenta'] ?? '';
-    propietarioCuenta = documentSnapshot['propietario_cuenta'] ?? '';
+  AdminUsuarioCuenta.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+
+    idUser = (documentSnapshot.data() as Map<String, dynamic>).containsKey("idUser") ? documentSnapshot["idUser"] : '';
+    idAccount = (documentSnapshot.data() as Map<String, dynamic>).containsKey("idAccount") ? documentSnapshot["idAccount"] : '';
+    estadoCuentaUsuario = (documentSnapshot.data() as Map<String, dynamic>).containsKey("estadoCuentaUsuario") ? documentSnapshot["estadoCuentaUsuario"] : false;
+    tipocuenta = (documentSnapshot.data() as Map<String, dynamic>).containsKey("tipocuenta") ? documentSnapshot["tipocuenta"] : 0;
   }
   Map<String, dynamic> toJson() => {
         "idUser": idUser,
         "idAccount": idAccount,
         "estadoCuentaUsuario": estadoCuentaUsuario,
         "tipocuenta": tipocuenta,
-        "propietarioCuenta": propietarioCuenta,
-    };
+      };
 }

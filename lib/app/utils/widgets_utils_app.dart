@@ -172,7 +172,8 @@ class ProductoItem extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Get.toNamed(Routes.PRODUCT, arguments: {'product': producto}),
+                  onTap: () => Get.toNamed(Routes.PRODUCT,
+                      arguments: {'product': producto}),
                 ),
               ),
             ),
@@ -181,6 +182,7 @@ class ProductoItem extends StatelessWidget {
       ),
     );
   }
+
   Widget contentImage() {
     return producto.urlimagen != ""
         ? Container(
@@ -230,7 +232,6 @@ class ProductoItem extends StatelessWidget {
   }
 }
 
-
 class WidgetButtonListTile extends StatelessWidget {
   final BuildContext buildContext;
   final WelcomeController controller = Get.find<WelcomeController>();
@@ -256,14 +257,8 @@ class WidgetButtonListTile extends StatelessWidget {
       dense: true,
       title: Text("Crear cuenta", style: TextStyle(fontSize: 16.0)),
       onTap: () {
-        /* Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) => ProfileCuenta(
-              perfilNegocio: null,
-              createCuenta: true,
-            ),
-          ),
-        ); */
+        Get.back();
+        Get.toNamed(Routes.ACCOUNT);
       },
     );
   }
@@ -348,7 +343,7 @@ class WidgetButtonListTile extends StatelessWidget {
 
   Widget buttonListTileItemCuenta(
       {required BuildContext buildContext,
-      required ProfileBusinessModel perfilNegocio,
+      required ProfileAccountModel perfilNegocio,
       bool adminPropietario = false}) {
     if (perfilNegocio.id == '') {
       return Container();

@@ -10,10 +10,10 @@ class ProductController extends GetxController {
   // controllers
   WelcomeController welcomeController = Get.find<WelcomeController>();
 
-  static Rx<ProfileBusinessModel> profileBusinessModel =
-      ProfileBusinessModel().obs;
-  ProfileBusinessModel get getProfileBusiness => profileBusinessModel.value;
-  set setProfileBusiness(ProfileBusinessModel model) =>
+  static Rx<ProfileAccountModel> profileBusinessModel =
+      ProfileAccountModel().obs;
+  ProfileAccountModel get getProfileBusiness => profileBusinessModel.value;
+  set setProfileBusiness(ProfileAccountModel model) =>
       profileBusinessModel.value = model;
 
   static Rx<ProductoNegocio> listSuggestedProducts = ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now()).obs;
@@ -96,7 +96,7 @@ class ProductController extends GetxController {
 
   void readProfileBusiness({required String id}) {
     Database.readProfileBusinessModelFuture(id).then((value) =>
-        setProfileBusiness = ProfileBusinessModel.fromMap(value.data() as Map));
+        setProfileBusiness = ProfileAccountModel.fromMap(value.data() as Map));
   }
 
   void readOthersProductsCategoryCatalogue() {

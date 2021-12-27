@@ -20,6 +20,7 @@ class SplashController extends GetxController {
 
   @override
   void onReady() async {
+    
     ever(isSignIn, handleAuthStateChanged);
     // verificamos que alla un usaario autentificado
     isSignIn.value = firebaseAuth.currentUser != null;

@@ -73,14 +73,15 @@ class LoginView extends GetView<LoginController> {
       required String descripcion,
       required Color color,
       Brightness brightness = Brightness.light}) {
-    Color colorPrimary =
-        brightness != Brightness.light ? Colors.black : Colors.white;
+
+        // var
+    Color colorPrimary = brightness != Brightness.light ? Colors.black : Colors.white;
+
     return Container(
       color: color,
       padding: EdgeInsets.symmetric(horizontal: 30.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Flexible(
             flex: 3,

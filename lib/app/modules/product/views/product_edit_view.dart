@@ -64,8 +64,8 @@ class ProductEdit extends StatelessWidget {
                   color:
                       Theme.of(contextPrincipal).textTheme.bodyText1!.color)),
       actions: <Widget>[
-        IconButton(
-            icon: controller.getSaveIndicator ? Container() : Icon(Icons.check),
+        controller.getSaveIndicator? Container():IconButton(
+            icon: Icon(Icons.check),
             onPressed: controller.save),
       ],
       bottom: controller.getSaveIndicator ? linearProgressBarApp() : null,
@@ -453,14 +453,30 @@ class _SelectCategoryState extends State<SelectCategory> {
 
   @override
   Widget build(BuildContext buildContext) {
+
+    if (welcomeController.getCatalogueCategoryList.length == 0) {
+      return Row(
+        children: [
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text('Categoría', style: TextStyle(fontSize: 18)),
+          )),
+          IconButton(
+              icon: Icon(Icons.add),
+              padding: const EdgeInsets.all(20.0),
+              onPressed: () => showDialogSetCategoria(categoria: Categoria()))
+        ],
+      );
+    }
+
     return Obx(
       () => ListView.builder(
         padding: EdgeInsets.symmetric(vertical: 15.0),
         shrinkWrap: true,
         itemCount: welcomeController.getCatalogueCategoryList.length,
         itemBuilder: (BuildContext context, int index) {
-          Categoria categoria =
-              welcomeController.getCatalogueCategoryList[index];
+          Categoria categoria = welcomeController.getCatalogueCategoryList[index];
           return index == 0
               ? Column(
                   children: <Widget>[
@@ -692,6 +708,24 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
 
   @override
   Widget build(BuildContext buildContext) {
+
+    if (categoriaSelected.subcategorias.length == 0) {
+      return Row(
+        children: [
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text('Categoría', style: TextStyle(fontSize: 18)),
+          )),
+          IconButton(
+              icon: Icon(Icons.add),
+              padding: const EdgeInsets.all(20.0),
+              onPressed: () => showDialogSetSubcategoria( subcategoria: Categoria()))
+        ],
+      );
+    }
+
+
     return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
@@ -719,8 +753,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                       IconButton(
                           icon: Icon(Icons.add),
                           padding: const EdgeInsets.all(20.0),
-                          onPressed: () => showDialogSetSubcategoria(
-                              subcategoria: Categoria()))
+                          onPressed: () => showDialogSetSubcategoria( subcategoria: Categoria()))
                     ],
                   ),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),

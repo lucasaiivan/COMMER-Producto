@@ -46,13 +46,13 @@ class WelcomeController extends GetxController {
   }
 
   String get getIdAccountSelecte => idAccountSelected.value;
-  Rx<ProfileBusinessModel> _profileAccount = ProfileBusinessModel().obs;
-  ProfileBusinessModel get getProfileAccountSelected => _profileAccount.value;
-  set setProfileAccountSelected(ProfileBusinessModel user) =>
+  Rx<ProfileAccountModel> _profileAccount = ProfileAccountModel().obs;
+  ProfileAccountModel get getProfileAccountSelected => _profileAccount.value;
+  set setProfileAccountSelected(ProfileAccountModel user) =>
       _profileAccount.value = user;
   bool getSelected({required String id}) {
     bool isSelected = false;
-    for (ProfileBusinessModel obj in getManagedAccountData) {
+    for (ProfileAccountModel obj in getManagedAccountData) {
       if (obj.id == getIdAccountSelecte) {
         if (id == getIdAccountSelecte) {
           isSelected = true;
@@ -298,14 +298,14 @@ class WelcomeController extends GetxController {
       _accountsReferenceIdentifiers.value = value;
 
   // managed accounts data
-  RxList<ProfileBusinessModel> _managedAccountDataList =
-      <ProfileBusinessModel>[].obs;
-  List<ProfileBusinessModel> get getManagedAccountData =>
+  RxList<ProfileAccountModel> _managedAccountDataList =
+      <ProfileAccountModel>[].obs;
+  List<ProfileAccountModel> get getManagedAccountData =>
       _managedAccountDataList;
-  set setManagedAccountData(List<ProfileBusinessModel> value) =>
+  set setManagedAccountData(List<ProfileAccountModel> value) =>
       _managedAccountDataList.value = value;
   void addManagedAccount(
-      {required ProfileBusinessModel profileData,
+      {required ProfileAccountModel profileData,
       required AdminUsuarioCuenta adminUsuarioCuentaData}) {
     switch (adminUsuarioCuentaData.tipocuenta) {
       case 0:
@@ -324,7 +324,7 @@ class WelcomeController extends GetxController {
   bool _isExistAccount = true;
   get getIsExistAccount {
     _isExistAccount = false;
-    for (ProfileBusinessModel obj in getManagedAccountData) {
+    for (ProfileAccountModel obj in getManagedAccountData) {
       if (getUserAccountAuth.uid == obj.id) {
         _isExistAccount = false;
       }
@@ -334,7 +334,7 @@ class WelcomeController extends GetxController {
 
   @override
   void onInit() async {
-    // obtenemos por parametro los datos de la cuenta de atentificaión
+    // obtenemos por parametro los datos de la cuenta de atentificación
     setUserAccountAuth = Get.arguments['currentUser'];
     try {
       setIdAccountSelected = Get.arguments['idAccount'];
@@ -345,7 +345,8 @@ class WelcomeController extends GetxController {
     // cargamos los datos de la cuenta de autentificación
     if (getUserAccountAuth.uid != '') {
       readProfileUserStream(id: _userAccountAuth.uid);
-      readManagedAccountsReference(idUser: _userAccountAuth.uid);
+      // accounts managers
+      readManagerAccountsReference(idUser: _userAccountAuth.uid);
     }
     // verificamos si recibimos id de cuenta por parametro
     if (getIdAccountSelecte != '') {
@@ -396,7 +397,7 @@ class WelcomeController extends GetxController {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
       setProfileAccountSelected =
-          ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: event);
+          ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
       readCatalogueListProductsStream(id: getIdAccountSelecte);
       readListCategoryListFuture();
@@ -419,14 +420,14 @@ class WelcomeController extends GetxController {
     // obtenemos una sola ves el perfil de la cuenta de un negocio
     Database.readUserModelFuture(id).then((value) {
       // ignore: unused_local_variable \
-      ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: value);
+      ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
     }).catchError((error) {
       print('######################## readProfileBursinesFuture: ' +
           error.toString());
     });
   }
 
-  void readManagedAccountsReference({required String idUser}) {
+  void readManagerAccountsReference({required String idUser}) {
     // obtenemos las cuentas adminitradas por este usuario
     Database.readManagedAccountsQueryStream(id: idUser).listen((value) {
       value.docs.forEach((element) => readManagedAccountsData(
@@ -440,26 +441,22 @@ class WelcomeController extends GetxController {
 
   void readManagedAccountsData(
       {required String idAccountBussiness, required String idAccountUser}) {
-    // obtenemos los datos dela cuenta adminitrada por este usuario
-    Database.readManagedAccounts(
-            idAccount: idAccountBussiness, idUser: idAccountUser)
+    // obtenemos los datos de la cuenta adminitrada por este usuario
+    Database.refFirestoreAccountAdmin(idAccount: idAccountBussiness).doc(idAccountUser).get()
         .then((value) {
-      AdminUsuarioCuenta adminUsuarioCuenta =
-          AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
-
-      // obtenemos una sola ves el perfil de la cuenta de un negocio
-      Database.readProfileBusinessModelFuture(adminUsuarioCuenta.idAccount)
-          .then((value) {
-        ProfileBusinessModel profileAccount =
-            ProfileBusinessModel.fromDocumentSnapshot(documentSnapshot: value);
-        //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
-        addManagedAccount(
-            profileData: profileAccount,
-            adminUsuarioCuentaData: adminUsuarioCuenta);
-      }).catchError((error) {
-        print('######################## readProfileBursinesFuture: ' +
-            error.toString());
-      });
+      //get
+      if (value.exists) {
+        AdminUsuarioCuenta adminUsuarioCuenta = AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
+        // obtenemos una sola ves el perfil de la cuenta de un negocio
+        Database.readProfileBusinessModelFuture(value.id).then((value) {
+          ProfileAccountModel profileAccount = ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
+          //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
+          addManagedAccount( profileData: profileAccount, adminUsuarioCuentaData: adminUsuarioCuenta);
+        }).catchError((error) {
+          print('######################## readProfileBursinesFuture: ' +
+              error.toString());
+        });
+      }
     }).catchError((error) {
       print('######################## readManagedAccountsData: ' +
           error.toString());
@@ -468,14 +465,18 @@ class WelcomeController extends GetxController {
 
   void readProfileUserStream({required String id}) {
     //  leemos el perfil de la cuenta del usuario en la db de firestore
-    Database.readUserModelStream(id).listen((event) {
-      setUsetAccount = UsersModel.fromDocumentSnapshot(documentSnapshot: event);
-      setLoadDataProfileUser = true;
-    }).onError((error) {
-      print(
-          '######################## readUserModelStream: ' + error.toString());
-      setLoadDataProfileUser = false;
-    });
+    if (id != '') {
+      Database.readUserModelStream(id).listen((event) {
+        if(event.exists){
+          setUsetAccount = UsersModel.fromDocument(event);
+          setLoadDataProfileUser = true;
+        }
+      }).onError((error) {
+        print('######################## readUserModelStream: ' +
+            error.toString());
+        setLoadDataProfileUser = false;
+      });
+    }
   }
 
   void readListCategoryListFuture() {
@@ -616,10 +617,10 @@ class WelcomeController extends GetxController {
               CustomFullScreenDialog.showDialog();
               // instancias de GoogleSignIn para proceder a cerrar sesión en el proveedor de cuentas
               late final GoogleSignIn googleSign = GoogleSignIn();
-              await googleSign.signIn().then((value) async {
+              await googleSign.signOut().then((value) async {
                 // instancias de FirebaseAuth para proceder a cerrar sesión
                 final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-                await firebaseAuth.signOut().then((value) {
+                firebaseAuth.signOut().then((value) {
                   // value default
                   GetStorage().write('idAccount', '');
                   CustomFullScreenDialog.cancelDialog();
