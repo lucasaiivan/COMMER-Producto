@@ -56,7 +56,7 @@ class ProductController extends GetxController {
 
   @override
   void onInit() async {
-    setProduct = Get.arguments['product'];
+    setProduct = Get.arguments['product']?? ProductoNegocio(timestampActualizacion: Timestamp.now(), timestampCreation: Timestamp.now());
     readCategory();
     readMarkProducts();
     readOthersProductsMark();

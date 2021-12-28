@@ -59,7 +59,7 @@ class Product extends GetView<ProductController> {
               ),
             ],
           )),
-      actions: [
+      actions: welcomeController.getProfileAccountSelected.id==''?[]:[
         IconButton(
           padding: EdgeInsets.all(12.0),
           icon: Icon(Icons.share),
@@ -106,7 +106,7 @@ class Product extends GetView<ProductController> {
                 });
           },
         ),
-        welcomeController.getProfileAccountSelected.id==''?Container(): IconButton(
+        IconButton(
           padding: EdgeInsets.all(12.0),
           icon: Icon(welcomeController.isCatalogue(id: controller.getProduct.id)
               ? Icons.edit
