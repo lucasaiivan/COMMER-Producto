@@ -23,141 +23,156 @@ class ScanScreenView extends StatelessWidget {
   }
 
   Scaffold scaffoldScan({required BuildContext buildContext}) {
-    Color color = Theme.of(buildContext).brightness == Brightness.dark
-        ? Colors.white54
-        : Colors.black38;
-    bool accountsAvailables =
-        controller.getManagedAccountData.length != 0 ? true : false;
-    
+
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Theme.of(buildContext).scaffoldBackgroundColor,
-        iconTheme: Theme.of(buildContext)
-            .iconTheme
-            .copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
-        title: InkWell(
-          onTap: () => showModalBottomSheetSelectAccount(buildContext),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.0),
-            child: Row(
-              children: <Widget>[
-                Text(
-                    controller.getProfileAccountSelected.id == ''
-                        ? "Seleccionar cuenta"
-                        : controller.getProfileAccountSelected.nombreNegocio != ""
-                            ? controller.getProfileAccountSelected.nombreNegocio
-                            : "Mi catalogo",
-                    style: TextStyle(
-                        color:
-                            Theme.of(buildContext).textTheme.bodyText1!.color),
-                    overflow: TextOverflow.fade,
-                    softWrap: false),
-                Icon(Icons.keyboard_arrow_down)
-              ],
-            ),
+      appBar: appbar(),
+      body: Center(
+        child: body(),
+      ),
+    );
+  }
+
+  // WIDGETS VIEW
+  PreferredSizeWidget appbar() {
+    return AppBar(
+      elevation: 0.0,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      iconTheme: Get.theme.iconTheme
+          .copyWith(color: Get.theme.textTheme.bodyText1!.color),
+      title: InkWell(
+        onTap: () => showModalBottomSheetSelectAccount(),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 12.0),
+          child: Row(
+            children: <Widget>[
+              Text(
+                  controller.getProfileAccountSelected.id == ''
+                      ? "Seleccionar cuenta"
+                      : controller.getProfileAccountSelected.nombreNegocio != ""
+                          ? controller.getProfileAccountSelected.nombreNegocio
+                          : "Mi catalogo",
+                  style: TextStyle(color: Get.theme.textTheme.bodyText1!.color),
+                  overflow: TextOverflow.fade,
+                  softWrap: false),
+              Icon(Icons.keyboard_arrow_down)
+            ],
           ),
-        
         ),
-        actions: <Widget>[
-          Container(
-                  padding: EdgeInsets.all(12.0),
-                  child: InkWell(
-                    customBorder: new CircleBorder(),
-                    splashColor: Colors.red,
-                    onTap: () {
-                      showModalBottomSheetSetting(buildContext);
-                    },
-                    child: Hero(
-                      tag: "fotoperfiltoolbar",
-                      child: CircleAvatar(
-                        radius: 17,
-                        child: CircleAvatar(
-                          radius: 15,
-                          backgroundColor: Colors.white,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10000.0),
-                            child: CachedNetworkImage(
-                              width: 35.0,
-                              height: 35.0,
-                              fadeInDuration: Duration(milliseconds: 200),
-                              fit: BoxFit.cover,
-                              imageUrl: controller.getUserAccountAuth.photoURL??'https',
-                              placeholder: (context, url) => FadeInImage(
-                                  image: AssetImage("assets/loading.gif"),
-                                  placeholder:
-                                      AssetImage("assets/loading.gif")),
-                              errorWidget: (context, url, error) => Container(
-                                color: Colors.grey,
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.width,
-                                child: Center(
-                                  child: Text(
-                                    controller.getUserAccountAuth.displayName
-                                        .toString().substring(0, 1),style: TextStyle(fontSize: 16.0),
-                                  ),
-                                ),
-                              ),
-                            ),
+      ),
+      actions: <Widget>[
+        Container(
+          padding: EdgeInsets.all(12.0),
+          child: InkWell(
+            customBorder: new CircleBorder(),
+            splashColor: Colors.red,
+            onTap: () {
+              showModalBottomSheetSetting();
+            },
+            child: Hero(
+              tag: "fotoperfiltoolbar",
+              child: CircleAvatar(
+                radius: 17,
+                child: CircleAvatar(
+                  radius: 15,
+                  backgroundColor: Colors.white,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10000.0),
+                    child: CachedNetworkImage(
+                      width: 35.0,
+                      height: 35.0,
+                      fadeInDuration: Duration(milliseconds: 200),
+                      fit: BoxFit.cover,
+                      imageUrl:
+                          controller.getUserAccountAuth.photoURL ?? 'https',
+                      placeholder: (context, url) => FadeInImage(
+                          image: AssetImage("assets/loading.gif"),
+                          placeholder: AssetImage("assets/loading.gif")),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey,
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.width,
+                        child: Center(
+                          child: Text(
+                            controller.getUserAccountAuth.displayName
+                                .toString()
+                                .substring(0, 1),
+                            style: TextStyle(fontSize: 16.0),
                           ),
                         ),
                       ),
                     ),
                   ),
-                )
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            InkWell(
-              borderRadius: BorderRadius.all(Radius.circular(30.0)),
-              splashColor: Theme.of(buildContext).primaryColor,
-              onTap: () => scanBarcodeNormal(context: buildContext),
-              child: Container(
-                margin: const EdgeInsets.all(0.0),
-                padding: const EdgeInsets.all(30.0),
-                decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(width: 0.5, color: color),
-                    borderRadius: BorderRadius.all(Radius.circular(30.0))),
-                child: Image(
-                    color: color,
-                    height: 200.0,
-                    width: 200.0,
-                    image: AssetImage('assets/barcode.png'),
-                    fit: BoxFit.contain),
+                ),
               ),
             ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 40.0),
-              child: Text("Escanea un producto para conocer su precio",
-                  style: TextStyle(
-                      fontFamily: "POPPINS_FONT",
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                      fontSize: 24.0),
-                  textAlign: TextAlign.center),
-            ),
-            Obx(() => widgetSuggestions(list: controller.getListSuggestedProducts)),
-          ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget body() {
+
+    // var 
+    Color color = Get.theme.brightness == Brightness.dark
+        ? Colors.white54
+        : Colors.black38;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        InkWell(
+          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          splashColor: Get.theme.primaryColor,
+          onTap: () => scanBarcodeNormal(),
+          child: Container(
+            width: 200,height: 200,
+            margin: const EdgeInsets.all(0.0),
+            padding: const EdgeInsets.all(30.0),
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(width: 0.5, color: color),
+                borderRadius: BorderRadius.all(Radius.circular(30.0))),
+            child: Image(
+                color: color,
+                height: 200.0,
+                width: 200.0,
+                image: AssetImage('assets/barcode.png'),
+                fit: BoxFit.contain),
+          ),
         ),
-      ),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 40.0),
+          child: Text("Escanea un producto para conocer su precio",
+              style: TextStyle(
+                  fontFamily: "POPPINS_FONT",
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                  fontSize: 24.0),
+              textAlign: TextAlign.center),
+        ),
+        Obx(() => widgetSuggestions(list: controller.getListSuggestedProducts)),
+      ],
     );
   }
 
   // BottomSheet - Getx
-  void showModalBottomSheetSelectAccount(BuildContext buildContext) {
-    Widget widget = controller.getManagedAccountData.length == 0?WidgetButtonListTile(buildContext: buildContext).buttonListTileCrearCuenta(context: buildContext):ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 15.0),
-      shrinkWrap: true,
-      itemCount: controller.getManagedAccountData.length,
-      itemBuilder: (BuildContext context, int index) {
-        return WidgetButtonListTile(buildContext: buildContext).buttonListTileItemCuenta(buildContext: buildContext,perfilNegocio:controller.getManagedAccountData[index],adminPropietario:controller.getManagedAccountData[index].id ==controller.getUserAccountAuth.uid);
-      },
-    );
+  void showModalBottomSheetSelectAccount() {
+    Widget widget = controller.getManagedAccountData.length == 0
+        ? WidgetButtonListTile().buttonListTileCrearCuenta()
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 15.0),
+            shrinkWrap: true,
+            itemCount: controller.getManagedAccountData.length,
+            itemBuilder: (BuildContext context, int index) {
+              return WidgetButtonListTile().buttonListTileItemCuenta(
+                  perfilNegocio: controller.getManagedAccountData[index],
+                  adminPropietario:
+                      controller.getManagedAccountData[index].id ==
+                          controller.getUserAccountAuth.uid);
+            },
+          );
 
     // muestre la hoja inferior modal de getx
     Get.bottomSheet(
@@ -184,8 +199,9 @@ class ScanScreenView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            InkWell(   
-              onTap: ()=>Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id':''}),
+            InkWell(
+              onTap: () =>
+                  Get.toNamed(Routes.PRODUCTS_SEARCH, arguments: {'id': ''}),
               borderRadius: BorderRadius.circular(50),
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
@@ -281,7 +297,7 @@ class ScanScreenView extends StatelessWidget {
   }
 
   // ShowModalBottomSheet
-  void showModalBottomSheetSetting(BuildContext buildContext) {
+  void showModalBottomSheetSetting() {
     Widget widget = ListView(
       shrinkWrap: true,
       padding: EdgeInsets.symmetric(vertical: 15.0),
@@ -290,7 +306,7 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Icons.logout),
           title: Text('Cerrar sesión'),
-          onTap:controller.showDialogCerrarSesion,
+          onTap: controller.showDialogCerrarSesion,
         ),
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
@@ -407,9 +423,8 @@ class ScanScreenView extends StatelessWidget {
     );
   }
 
-
   // Function
-  Future<void> scanBarcodeNormal({required BuildContext context}) async {
+  Future<void> scanBarcodeNormal() async {
     /* inicializamos en un método asincrónico */
 
     String barcodeScanRes = "";
@@ -443,10 +458,10 @@ class ScanScreenView extends StatelessWidget {
     } else {
       if (barcodeScanRes.toString() != "") {
         if (barcodeScanRes.toString() != "-1") {
-          Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id':barcodeScanRes});
+          Get.toNamed(Routes.PRODUCTS_SEARCH,
+              arguments: {'id': barcodeScanRes});
         }
       }
     }
   }
-
 }

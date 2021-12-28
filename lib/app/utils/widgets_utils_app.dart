@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
@@ -233,17 +232,16 @@ class ProductoItem extends StatelessWidget {
 }
 
 class WidgetButtonListTile extends StatelessWidget {
-  final BuildContext buildContext;
   final WelcomeController controller = Get.find<WelcomeController>();
 
-  WidgetButtonListTile({required this.buildContext});
+  WidgetButtonListTile();
 
   @override
   Widget build(BuildContext context) {
-    return buttonListTileCrearCuenta(context: buildContext);
+    return buttonListTileCrearCuenta();
   }
 
-  Widget buttonListTileCrearCuenta({required BuildContext context}) {
+  Widget buttonListTileCrearCuenta() {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
       leading: CircleAvatar(
@@ -342,7 +340,7 @@ class WidgetButtonListTile extends StatelessWidget {
   }
 
   Widget buttonListTileItemCuenta(
-      {required BuildContext buildContext,
+      {
       required ProfileAccountModel perfilNegocio,
       bool adminPropietario = false}) {
     if (perfilNegocio.id == '') {

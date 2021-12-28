@@ -767,33 +767,31 @@ class ProductoCatalogueItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        color: Colors.white,
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        clipBehavior: Clip.antiAlias,
-        child: Container(
-          width: 160,
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: contentImage()),
-                  contentInfo(),
-                ],
-              ),
-              Positioned.fill(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => Get.offNamed(Routes.PRODUCT,arguments: {'product':producto},preventDuplicates: false),
-                  ),
+    return Card(
+      color: Colors.white,
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        width: 160,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: contentImage()),
+                contentInfo(),
+              ],
+            ),
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Get.offNamed(Routes.PRODUCT,arguments: {'product':producto},preventDuplicates: false),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

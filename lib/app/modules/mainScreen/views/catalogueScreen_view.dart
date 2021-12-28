@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,101 +26,7 @@ class CatalogueScreenView extends StatelessWidget {
 
   Widget scaffondCatalogo({required BuildContext buildContext}) {
     return Scaffold(
-      /* AppBar persistente que nunca se desplaza */
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Theme.of(buildContext).scaffoldBackgroundColor,
-        iconTheme: Theme.of(buildContext)
-            .iconTheme
-            .copyWith(color: Theme.of(buildContext).textTheme.bodyText1!.color),
-        title: InkWell(
-          onTap: () => showModalBottomSheetSelectAccount(buildContext),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.0),
-            child: Row(
-              children: <Widget>[
-                Obx(() => Text(
-                    controller.getProfileAccountSelected.id == ''
-                        ? "Seleccionar cuenta"
-                        : controller.getProfileAccountSelected.nombreNegocio !=
-                                ""
-                            ? controller.getProfileAccountSelected.nombreNegocio
-                            : "Mi catalogo",
-                    style: TextStyle(
-                        color:
-                            Theme.of(buildContext).textTheme.bodyText1!.color),
-                    overflow: TextOverflow.fade,
-                    softWrap: false)),
-                Icon(Icons.keyboard_arrow_down)
-              ],
-            ),
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-              onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
-                  arguments: {'idProduct': ''}),
-              icon: Icon(Icons.add)),
-          IconButton(
-              onPressed: () {
-                showSearch(
-                  context: buildContext,
-                  delegate: SearchPage<ProductoNegocio>(
-                    items: controller.getCataloProducts,
-                    searchLabel: 'Buscar producto',
-                    suggestion: Center(
-                      child: Text('ej. alfajor'),
-                    ),
-                    failure: Center(
-                      child: Text('No se encontro :('),
-                    ),
-                    filter: (product) => [
-                      product.titulo,
-                      product.descripcion,
-                    ],
-                    builder: (product) => ListTile(
-                      leading: FadeInImage(
-                        image: NetworkImage(product.urlimagen),
-                        placeholder: AssetImage("assets/loading.gif"),
-                        fadeInDuration: Duration(milliseconds: 200),
-                        fit: BoxFit.cover,
-                        width: 50.0,
-                      ),
-                      title: Text(product.titulo),
-                      subtitle: Text(product.descripcion),
-                      onTap: () {
-                        Get.toNamed(Routes.PRODUCT,
-                            arguments: {'product': product});
-                      },
-                    ),
-                  ),
-                );
-              },
-              icon: Icon(Icons.search)),
-          Obx(() => controller.getProfileAccountSelected.id == ''
-              ? Container()
-              : Container(
-                  padding: EdgeInsets.all(12.0),
-                  child: InkWell(
-                    customBorder: new CircleBorder(),
-                    splashColor: Colors.grey,
-                    onTap: () {
-                      showModalBottomSheetSetting(buildContext);
-                    },
-                    child: Hero(
-                      tag: "fotoperfiltoolbar",
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.grey,
-                        backgroundImage: CachedNetworkImageProvider(
-                          controller.getProfileAccountSelected.imagenPerfil,
-                        ),
-                      ),
-                    ),
-                  ),
-                )),
-        ],
-      ),
+      appBar: appbar(context: buildContext),
       body: body(buildContext: buildContext),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Get.theme.primaryColor,
@@ -139,7 +44,111 @@ class CatalogueScreenView extends StatelessWidget {
     );
   }
 
-  // Widgets
+  // WIDGET VIEWS
+  PreferredSizeWidget appbar({required BuildContext context}) {
+    /* AppBar persistente que nunca se desplaza */
+
+    return AppBar(
+      elevation: 0.0,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      iconTheme: Get.theme.iconTheme
+          .copyWith(color: Get.theme.textTheme.bodyText1!.color),
+      title: InkWell(
+        onTap: () => showModalBottomSheetSelectAccount(),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 0.0),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 9,
+                child: Obx(() => Text(
+                      controller.getProfileAccountSelected.id == ''
+                          ? "Seleccionar cuenta"
+                          : controller.getProfileAccountSelected.nombreNegocio !=
+                                  ""
+                              ? controller.getProfileAccountSelected.nombreNegocio
+                              : "Mi catalogo",
+                      style:
+                          TextStyle(color: Get.theme.textTheme.bodyText1!.color),
+                      overflow: TextOverflow.fade,
+                      maxLines: 1,
+                      softWrap: false,
+                    )),
+              ),
+              Expanded(
+                flex: 1,
+                child: Icon(Icons.keyboard_arrow_down))
+            ],
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        IconButton(
+            onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
+                arguments: {'idProduct': ''}),
+            icon: Icon(Icons.add)),
+        IconButton(
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: SearchPage<ProductoNegocio>(
+                  items: controller.getCataloProducts,
+                  searchLabel: 'Buscar producto',
+                  suggestion: Center(
+                    child: Text('ej. alfajor'),
+                  ),
+                  failure: Center(
+                    child: Text('No se encontro :('),
+                  ),
+                  filter: (product) => [
+                    product.titulo,
+                    product.descripcion,
+                  ],
+                  builder: (product) => ListTile(
+                    leading: FadeInImage(
+                      image: NetworkImage(product.urlimagen),
+                      placeholder: AssetImage("assets/loading.gif"),
+                      fadeInDuration: Duration(milliseconds: 200),
+                      fit: BoxFit.cover,
+                      width: 50.0,
+                    ),
+                    title: Text(product.titulo),
+                    subtitle: Text(product.descripcion),
+                    onTap: () {
+                      Get.toNamed(Routes.PRODUCT,
+                          arguments: {'product': product});
+                    },
+                  ),
+                ),
+              );
+            },
+            icon: Icon(Icons.search)),
+        Obx(() => controller.getProfileAccountSelected.id == ''
+            ? Container()
+            : Container(
+                padding: EdgeInsets.all(12.0),
+                child: InkWell(
+                  customBorder: new CircleBorder(),
+                  splashColor: Colors.grey,
+                  onTap: () {
+                    showModalBottomSheetSetting();
+                  },
+                  child: Hero(
+                    tag: "fotoperfiltoolbar",
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Colors.grey,
+                      backgroundImage: CachedNetworkImageProvider(
+                        controller.getProfileAccountSelected.imagenPerfil,
+                      ),
+                    ),
+                  ),
+                ),
+              )),
+      ],
+    );
+  }
+
   Widget body({required BuildContext buildContext}) {
     return DefaultTabController(
       length: 1,
@@ -156,13 +165,15 @@ class CatalogueScreenView extends StatelessWidget {
               builder: (_) {
                 return SliverList(
                   delegate: SliverChildListDelegate([
-                    controller.getLoadDataCatalogueMarks? Container(
+                    controller.getLoadDataCatalogueMarks
+                        ? Container(
                             padding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 0),
                             child:
                                 controller.getCatalogueMarksFilter.length == 0
                                     ? Container()
-                                    : WidgetsListaHorizontalMarks()):WidgetsListaHorizontalMarksLoadAnim(),
+                                    : WidgetsListaHorizontalMarks())
+                        : WidgetsListaHorizontalMarksLoadAnim(),
                   ]),
                 );
               },
@@ -195,7 +206,7 @@ class CatalogueScreenView extends StatelessWidget {
                 builder: (_) {
                   return controller.getCatalogueLoad.length == 0
                       ? Center(
-                          child:Text('aún no has agregado ningún producto'),
+                          child: Text('aún no has agregado ningún producto'),
                         )
                       : TabBarView(
                           children: [
@@ -239,23 +250,20 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   // BottomSheet - Getx
-  void showModalBottomSheetSelectAccount(BuildContext buildContext) {
+  void showModalBottomSheetSelectAccount() {
     // muestra las cuentas en el que este usuario tiene acceso
     Widget widget = controller.getManagedAccountData.length == 0
-        ? WidgetButtonListTile(buildContext: buildContext)
-            .buttonListTileCrearCuenta(context: buildContext)
+        ? WidgetButtonListTile().buttonListTileCrearCuenta()
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 15.0),
             shrinkWrap: true,
             itemCount: controller.getManagedAccountData.length,
             itemBuilder: (BuildContext context, int index) {
-              return WidgetButtonListTile(buildContext: buildContext)
-                  .buttonListTileItemCuenta(
-                      buildContext: buildContext,
-                      perfilNegocio: controller.getManagedAccountData[index],
-                      adminPropietario:
-                          controller.getManagedAccountData[index].id ==
-                              controller.getUserAccountAuth.uid);
+              return WidgetButtonListTile().buttonListTileItemCuenta(
+                  perfilNegocio: controller.getManagedAccountData[index],
+                  adminPropietario:
+                      controller.getManagedAccountData[index].id ==
+                          controller.getUserAccountAuth.uid);
             },
           );
 
@@ -270,7 +278,7 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   // BottomSheet
-  void showModalBottomSheetSetting(BuildContext buildContext) {
+  void showModalBottomSheetSetting() {
     Widget widget = ListView(
       shrinkWrap: true,
       padding: EdgeInsets.symmetric(vertical: 15.0),
@@ -302,7 +310,7 @@ class CatalogueScreenView extends StatelessWidget {
                 ),
           title: Text('Editar perfil'),
           onTap: () {
-            Navigator.pop(buildContext);
+            Get.back();
             Get.toNamed(Routes.ACCOUNT);
           },
         ),
