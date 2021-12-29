@@ -55,7 +55,27 @@ class CatalogueScreenView extends StatelessWidget {
           .copyWith(color: Get.theme.textTheme.bodyText1!.color),
       title: InkWell(
         onTap: () => showModalBottomSheetSelectAccount(),
-        child: Padding(
+        child: Obx(() => RichText(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+            text: TextSpan(
+              style: TextStyle(
+                color: Get.theme.textTheme.bodyText1!.color,
+                fontSize: 18,
+              ),
+              children: [
+                TextSpan(
+                  text: controller.getProfileAccountSelected.id == ''
+                      ? "Seleccionar cuenta"
+                      : controller.getProfileAccountSelected.nombreNegocio != ""
+                          ? controller.getProfileAccountSelected.nombreNegocio
+                          : "Mi catalogo",
+                ),
+                WidgetSpan(child: Icon(Icons.keyboard_arrow_down, size: 24)),
+              ],
+            ))) ,
+        /* child: Padding(
           padding: EdgeInsets.symmetric(vertical: 0.0),
           child: Row(
             children: <Widget>[
@@ -64,29 +84,31 @@ class CatalogueScreenView extends StatelessWidget {
                 child: Obx(() => Text(
                       controller.getProfileAccountSelected.id == ''
                           ? "Seleccionar cuenta"
-                          : controller.getProfileAccountSelected.nombreNegocio !=
+                          : controller.getProfileAccountSelected
+                                      .nombreNegocio !=
                                   ""
-                              ? controller.getProfileAccountSelected.nombreNegocio
+                              ? controller
+                                  .getProfileAccountSelected.nombreNegocio
                               : "Mi catalogo",
-                      style:
-                          TextStyle(color: Get.theme.textTheme.bodyText1!.color),
+                      style: TextStyle(
+                          color: Get.theme.textTheme.bodyText1!.color),
                       overflow: TextOverflow.fade,
                       maxLines: 1,
                       softWrap: false,
                     )),
               ),
-              Expanded(
-                flex: 1,
-                child: Icon(Icons.keyboard_arrow_down))
+              Icon(Icons.keyboard_arrow_down)
             ],
           ),
-        ),
+        ), */
       ),
       actions: <Widget>[
-        IconButton(
-            onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
-                arguments: {'idProduct': ''}),
-            icon: Icon(Icons.add)),
+        controller.getCatalogueLoad.length < 15
+            ? Container()
+            : IconButton(
+                onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
+                    arguments: {'idProduct': ''}),
+                icon: Icon(Icons.add)),
         IconButton(
             onPressed: () {
               showSearch(
@@ -223,6 +245,8 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   Widget gridViewLoadAny() {
+    int itemsDefault = 12;
+
     return LoadAny(
       onLoadMore: controller.getCatalogueMoreLoad,
       status: controller.getLoadGridCatalogueStatus,
@@ -238,10 +262,40 @@ class CatalogueScreenView extends StatelessWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                return ProductoItem(
-                    producto: controller.getCatalogueLoad[index]);
+                // mostramos 15 elementos vacíos de los cuales el primero tendrá un icono 'add'
+                if ((index + 1) <= controller.getCatalogueLoad.length) {
+                  return ProductoItem(
+                      producto: controller.getCatalogueLoad[index]);
+                } else {
+                  if (controller.getCatalogueLoad.length == index) {
+                    return Card(
+                      elevation: 0,
+                      color: Colors.grey.withOpacity(0.1),
+                      child: Stack(
+                        children: [
+                          Center(
+                              child: Icon(Icons.add,
+                                  color: Colors.grey.withOpacity(0.8),
+                                  size: 30)),
+                          Positioned.fill(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
+                                    arguments: {'idProduct': ''}),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Card(
+                        elevation: 0, color: Colors.grey.withOpacity(0.1));
+                  }
+                }
               },
-              childCount: controller.getCatalogueLoad.length,
+              childCount: controller.getCatalogueLoad.length + itemsDefault,
             ),
           ),
         ],
