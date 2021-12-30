@@ -74,41 +74,21 @@ class CatalogueScreenView extends StatelessWidget {
                 ),
                 WidgetSpan(child: Icon(Icons.keyboard_arrow_down, size: 24)),
               ],
-            ))) ,
-        /* child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 0.0),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                flex: 9,
-                child: Obx(() => Text(
-                      controller.getProfileAccountSelected.id == ''
-                          ? "Seleccionar cuenta"
-                          : controller.getProfileAccountSelected
-                                      .nombreNegocio !=
-                                  ""
-                              ? controller
-                                  .getProfileAccountSelected.nombreNegocio
-                              : "Mi catalogo",
-                      style: TextStyle(
-                          color: Get.theme.textTheme.bodyText1!.color),
-                      overflow: TextOverflow.fade,
-                      maxLines: 1,
-                      softWrap: false,
-                    )),
-              ),
-              Icon(Icons.keyboard_arrow_down)
-            ],
-          ),
-        ), */
+            ))),
       ),
       actions: <Widget>[
-        controller.getCatalogueLoad.length < 15
+        GetBuilder<WelcomeController>(
+          id: 'catalogue',
+          initState: (_) {},
+          builder: (_) {
+            return controller.getCatalogueLoad.length < 15
             ? Container()
             : IconButton(
                 onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
                     arguments: {'idProduct': ''}),
-                icon: Icon(Icons.add)),
+                icon: Icon(Icons.add));
+          },
+        ),
         IconButton(
             onPressed: () {
               showSearch(
@@ -245,13 +225,16 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   Widget gridViewLoadAny() {
-    int itemsDefault = 12;
+    //var
+    int itemsDefault = 0;
+    if (controller.getCatalogueLoad.length < 15) itemsDefault = 12;
+    if (controller.getCatalogueLoad.length > 15) itemsDefault = 3;
 
     return LoadAny(
       onLoadMore: controller.getCatalogueMoreLoad,
       status: controller.getLoadGridCatalogueStatus,
       loadingMsg: 'Cargando...',
-      errorMsg: 'errorMsg',
+      errorMsg: 'error!',
       finishMsg: controller.getCatalogueLoad.length.toString() + ' productos',
       child: CustomScrollView(
         slivers: <Widget>[
@@ -268,6 +251,7 @@ class CatalogueScreenView extends StatelessWidget {
                       producto: controller.getCatalogueLoad[index]);
                 } else {
                   if (controller.getCatalogueLoad.length == index) {
+                    // item defaul add
                     return Card(
                       elevation: 0,
                       color: Colors.grey.withOpacity(0.1),

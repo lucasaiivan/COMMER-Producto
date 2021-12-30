@@ -204,6 +204,7 @@ class WelcomeController extends GetxController {
     setMarkSelect = Marca(
         timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     // set
+    _subCategorySelect.value = Categoria();
     _categorySelect.value = value;
     catalogueFilter();
     // actualiza el texto del 'TabBar'
@@ -430,8 +431,7 @@ class WelcomeController extends GetxController {
   void readManagerAccountsReference({required String idUser}) {
     // obtenemos las cuentas adminitradas por este usuario
     Database.readManagedAccountsQueryStream(id: idUser).listen((value) {
-      value.docs.forEach((element) => readManagedAccountsData(
-          idAccountUser: idUser, idAccountBussiness: element.id));
+      value.docs.forEach((element) => readManagedAccountsData(idAccountUser: idUser, idAccountBussiness: element.id));
     }).onError((error) {
       print('######################## readManagedAccountsReference: ' +
           error.toString());
@@ -439,35 +439,40 @@ class WelcomeController extends GetxController {
     });
   }
 
-  void readManagedAccountsData(
-      {required String idAccountBussiness, required String idAccountUser}) {
-    // obtenemos los datos de la cuenta adminitrada por este usuario
-    Database.refFirestoreAccountAdmin(idAccount: idAccountBussiness).doc(idAccountUser).get()
-        .then((value) {
-      //get
-      if (value.exists) {
-        AdminUsuarioCuenta adminUsuarioCuenta = AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
-        // obtenemos una sola ves el perfil de la cuenta de un negocio
-        Database.readProfileBusinessModelFuture(value.id).then((value) {
-          ProfileAccountModel profileAccount = ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
-          //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
-          addManagedAccount( profileData: profileAccount, adminUsuarioCuentaData: adminUsuarioCuenta);
-        }).catchError((error) {
-          print('######################## readProfileBursinesFuture: ' +
-              error.toString());
-        });
-      }
-    }).catchError((error) {
-      print('######################## readManagedAccountsData: ' +
-          error.toString());
-    });
+  void readManagedAccountsData({required String idAccountBussiness, required String idAccountUser}) {
+
+      // obtenemos los datos de la cuenta adminitrada por este usuario
+      Database.refFirestoreAccountAdmin(idAccount: idAccountBussiness)
+          .doc(idAccountUser)
+          .get()
+          .then((value) {
+        //get
+        if (value.exists) {
+          AdminUsuarioCuenta adminUsuarioCuenta = AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
+          // obtenemos una sola ves el perfil de la cuenta de un negocio
+          Database.readProfileBusinessModelFuture(adminUsuarioCuenta.idAccount).then((value) {
+            ProfileAccountModel profileAccount =
+                ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
+            //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
+            addManagedAccount(
+                profileData: profileAccount,
+                adminUsuarioCuentaData: adminUsuarioCuenta);
+          }).catchError((error) {
+            print('######################## readProfileBursinesFuture: ' +
+                error.toString());
+          });
+        }
+      }).catchError((error) {
+        print('######################## readManagedAccountsData: ' +
+            error.toString());
+      });
   }
 
   void readProfileUserStream({required String id}) {
     //  leemos el perfil de la cuenta del usuario en la db de firestore
     if (id != '') {
       Database.readUserModelStream(id).listen((event) {
-        if(event.exists){
+        if (event.exists) {
           setUsetAccount = UsersModel.fromDocument(event);
           setLoadDataProfileUser = true;
         }

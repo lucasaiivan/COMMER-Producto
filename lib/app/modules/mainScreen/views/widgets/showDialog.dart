@@ -105,57 +105,13 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                           )
                         : Container(),
                     Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                    ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.black26,
-                        radius: 24.0,
-                        child: Text(categoria.nombre.substring(0, 1),
-                            style: TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                      dense: true,
-                      title: Text(categoria.nombre),
-                      onTap: () {
-                        Get.back();
-                        controller.setCategorySelect = categoria;
-                        ViewSubCategoria.show(
-                            buildContext: buildContext, categoria: categoria);
-                      },
-                      trailing: dropdownButtonCategory(categoria: categoria),
-                    ),
+                    listTileItem(categoria: categoria),
                     Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                   ],
                 )
               : Column(
                   children: <Widget>[
-                    ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.black26,
-                        radius: 24.0,
-                        child: categoria.nombre != ""
-                            ? Text(categoria.nombre.substring(0, 1),
-                                style: TextStyle(
-                                    fontSize: 18.0,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold))
-                            : Text("C"),
-                      ),
-                      dense: true,
-                      title: Text(categoria.nombre),
-                      onTap: () {
-                        Get.back();
-                        controller.setCategorySelect = categoria;
-                        ViewSubCategoria.show(
-                            buildContext: buildContext, categoria: categoria);
-                      },
-                      trailing: dropdownButtonCategory(categoria: categoria),
-                    ),
+                    listTileItem(categoria: categoria),
                     Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                   ],
                 );
@@ -164,6 +120,35 @@ class _ViewCategoriaState extends State<ViewCategoria> {
     );
   }
 
+  // listTile view
+  Widget listTileItem({required Categoria categoria}) {
+
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      leading: CircleAvatar(
+        backgroundColor: Colors.black26,
+        radius: 24.0,
+        child: categoria.nombre != ""
+            ? Text(categoria.nombre.substring(0, 1),
+                style: TextStyle(
+                    fontSize: 18.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold))
+            : Text("C"),
+      ),
+      dense: true,
+      title: Text(categoria.nombre),
+      onTap: () {
+        Get.back();
+        controller.setCategorySelect = categoria;
+        ViewSubCategoria.show(categoria: categoria);
+      },
+      trailing: dropdownButtonCategory(categoria: categoria),
+    );
+  }
+
+  // menu options
+
   Widget dropdownButtonCategory({required Categoria categoria}) {
     final WelcomeController controller = Get.find();
 
@@ -171,6 +156,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
       icon: Icon(Icons.more_vert),
       value: null,
       elevation: 10,
+      underline: Container(),
       items: [
         DropdownMenuItem(
           child: Text("Editar"),
@@ -285,18 +271,15 @@ class _ViewCategoriaState extends State<ViewCategoria> {
 }
 
 class ViewSubCategoria extends StatefulWidget {
-  final BuildContext buildContext;
   final Categoria categoria;
-  ViewSubCategoria({required this.buildContext, required this.categoria});
+  ViewSubCategoria({required this.categoria});
 
   @override
-  _ViewSubCategoriaState createState() => _ViewSubCategoriaState(
-      buildContextPrincipal: buildContext, categoriaSelected: categoria);
+  _ViewSubCategoriaState createState() =>
+      _ViewSubCategoriaState(categoriaSelected: categoria);
 
-  static void show(
-      {required BuildContext buildContext, required Categoria categoria}) {
-    Widget widget =
-        ViewSubCategoria(buildContext: buildContext, categoria: categoria);
+  static void show({required Categoria categoria}) {
+    Widget widget = ViewSubCategoria(categoria: categoria);
     // muestre la hoja inferior modal de getx
     Get.bottomSheet(
       widget,
@@ -309,13 +292,11 @@ class ViewSubCategoria extends StatefulWidget {
 }
 
 class _ViewSubCategoriaState extends State<ViewSubCategoria> {
-  _ViewSubCategoriaState(
-      {required this.buildContextPrincipal, required this.categoriaSelected});
+  _ViewSubCategoriaState({required this.categoriaSelected});
 
   // Variables
   late Categoria categoriaSelected;
   bool crearSubCategoria = false, loadSave = false;
-  final BuildContext buildContextPrincipal;
   final WelcomeController controller = Get.find();
 
   @override
@@ -398,55 +379,13 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                         )
                       : Container(),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                  ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.black26,
-                      radius: 24.0,
-                      child: Text(subcategoria.nombre.substring(0, 1),
-                          style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)),
-                    ),
-                    dense: true,
-                    title: Text(subcategoria.nombre),
-                    onTap: () {
-                      controller.setsubCategorySelect = subcategoria;
-                      Get.back();
-                    },
-                    trailing:
-                        dropdownButtonSubcategory(subcategoria: subcategoria),
-                  ),
+                  listTileItem(subcategoria: subcategoria),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                 ],
               )
             : Column(
                 children: <Widget>[
-                  ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.black26,
-                      radius: 24.0,
-                      child: subcategoria.nombre != ""
-                          ? Text(subcategoria.nombre.substring(0, 1),
-                              style: TextStyle(
-                                  fontSize: 18.0,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold))
-                          : Text("C"),
-                    ),
-                    dense: true,
-                    title: Text(subcategoria.nombre),
-                    onTap: () {
-                      controller.setsubCategorySelect = subcategoria;
-                      Get.back();
-                    },
-                    trailing:
-                        dropdownButtonSubcategory(subcategoria: subcategoria),
-                  ),
+                  listTileItem(subcategoria: subcategoria),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                 ],
               );
@@ -454,14 +393,43 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
     );
   }
 
+  // listTile view
+  Widget listTileItem({required Categoria subcategoria}) {
+
+    return ListTile(
+      contentPadding:
+          EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      leading: CircleAvatar(
+        backgroundColor: Colors.black26,
+        radius: 24.0,
+        child: subcategoria.nombre != ""
+            ? Text(subcategoria.nombre.substring(0, 1),
+                style: TextStyle(
+                    fontSize: 18.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold))
+            : Text("C"),
+      ),
+      dense: true,
+      title: Text(subcategoria.nombre),
+      onTap: () {
+        controller.setsubCategorySelect = subcategoria;
+        Get.back();
+      },
+      trailing:
+          dropdownButtonSubcategory(subcategoria: subcategoria),
+    );
+  }
+
+  // menu options
   Widget dropdownButtonSubcategory({required Categoria subcategoria}) {
     final WelcomeController controller = Get.find();
 
     return DropdownButton<String>(
       icon: Icon(Icons.more_vert),
-      hint: Text('Language'),
       value: null,
       elevation: 10,
+      underline: Container(),
       items: [
         DropdownMenuItem(
           child: Text("Editar"),
