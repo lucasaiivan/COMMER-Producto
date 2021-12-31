@@ -17,17 +17,14 @@ import 'widgets/showDialog.dart';
 class CatalogueScreenView extends StatelessWidget {
   CatalogueScreenView({Key? key}) : super(key: key);
 
+  // controllers
   final WelcomeController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    return scaffondCatalogo(buildContext: context);
-  }
-
-  Widget scaffondCatalogo({required BuildContext buildContext}) {
     return Scaffold(
-      appBar: appbar(context: buildContext),
-      body: body(buildContext: buildContext),
+      appBar: appbar(context: context),
+      body: body(buildContext: context),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Get.theme.primaryColor,
           heroTag: "Escanear codigo",
@@ -39,7 +36,7 @@ class CatalogueScreenView extends StatelessWidget {
               fit: BoxFit.contain),
           tooltip: 'Escanea el codigo del producto',
           onPressed: () {
-            scanBarcodeNormal(context: buildContext);
+            scanBarcodeNormal(context: context);
           }),
     );
   }
@@ -82,11 +79,10 @@ class CatalogueScreenView extends StatelessWidget {
           initState: (_) {},
           builder: (_) {
             return controller.getCatalogueLoad.length < 15
-            ? Container()
-            : IconButton(
-                onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
-                    arguments: {'idProduct': ''}),
-                icon: Icon(Icons.add));
+                ? Container()
+                : IconButton(
+                    onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'idProduct': ''}),
+                    icon: Icon(Icons.add));
           },
         ),
         IconButton(
@@ -117,8 +113,7 @@ class CatalogueScreenView extends StatelessWidget {
                     title: Text(product.titulo),
                     subtitle: Text(product.descripcion),
                     onTap: () {
-                      Get.toNamed(Routes.PRODUCT,
-                          arguments: {'product': product});
+                      Get.toNamed(Routes.PRODUCT, arguments: {'product': product});
                     },
                   ),
                 ),
@@ -208,7 +203,13 @@ class CatalogueScreenView extends StatelessWidget {
                 builder: (_) {
                   return controller.getCatalogueLoad.length == 0
                       ? Center(
-                          child: Text('aún no has agregado ningún producto'),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Todavía no hay producto'),
+                              TextButton.icon(onPressed: ()=> Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'idProduct': ''}),label: Text('Agregar nuevo'),icon: Icon(Icons.add))
+                            ],
+                          ),
                         )
                       : TabBarView(
                           children: [
@@ -430,18 +431,17 @@ class CatalogueScreenView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6.0),
               child: FaIcon(FontAwesomeIcons.blogger)),
           title: Text(
-            'Más información',
+            'Acerca de',
           ),
           onTap: () async {
             String url = "https://logicabooleanaapps.blogspot.com/";
-            /* if (await canLaunch(url)) {
+            if (await canLaunch(url)) {
               await launch(url);
             } else {
               throw 'Could not launch $url';
-            } */
+            } 
           },
         ),
-        SizedBox(width: 50.0, height: 50.0),
       ],
     );
 

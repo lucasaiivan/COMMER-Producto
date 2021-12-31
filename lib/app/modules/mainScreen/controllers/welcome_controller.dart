@@ -180,8 +180,10 @@ class WelcomeController extends GetxController {
   // variable para comprobar cuando se han cargado todos las marcas para mostrar
   RxBool _loadDataCatalogueMarks = false.obs;
   bool get getLoadDataCatalogueMarks => _loadDataCatalogueMarks.value;
-  set setLoadDataCatalogueMarks(bool value) =>
-      _loadDataCatalogueMarks.value = value;
+  set setLoadDataCatalogueMarks(bool value) {
+    _loadDataCatalogueMarks.value = value;
+    update(['marks']);
+  }
 
   //  mark selected
   Rx<Marca> _markSelect = Marca(
@@ -509,8 +511,7 @@ class WelcomeController extends GetxController {
     // obtenemos los obj(productos) del catalogo de la cuenta del negocio
     Database.readProductsCatalogueStream(id: id).listen((value) {
       List<ProductoNegocio> list = [];
-      value.docs.forEach(
-          (element) => list.add(ProductoNegocio.fromMap(element.data())));
+      value.docs.forEach((element) => list.add(ProductoNegocio.fromMap(element.data())));
       setCatalogueProducts = list;
       setCatalogueFilter = list;
       getCatalogueMoreLoad();
@@ -533,10 +534,10 @@ class WelcomeController extends GetxController {
     // y finamente la agregamos con los datos cargados para mostrar al usuario
     for (var productoNegocio in list) {
       if (productoNegocio.idMarca != '') {
-        readMark(id: productoNegocio.idMarca)
-            .then((value) => addMark(markParam: value));
+        readMark(id: productoNegocio.idMarca).then((value) => addMark(markParam: value));
       }
     }
+    if(list.length==0){setLoadDataCatalogueMarks = true;}
   }
 
   void filterMarks({required List<ProductoNegocio> catalogueFilter}) {
@@ -629,6 +630,7 @@ class WelcomeController extends GetxController {
                   // value default
                   GetStorage().write('idAccount', '');
                   CustomFullScreenDialog.cancelDialog();
+                  Get.offAllNamed(Routes.LOGIN);
                 });
               });
             }),
