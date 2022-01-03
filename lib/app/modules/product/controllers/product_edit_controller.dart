@@ -65,6 +65,7 @@ class ControllerProductsEdit extends GetxController {
     getProduct.nameMark = value.name;
     update(['updateAll']);
   }
+
   Marca get getMarkSelected => _markSelected;
 
   // marcas
@@ -110,7 +111,10 @@ class ControllerProductsEdit extends GetxController {
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi(); //
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ?? ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
+    setProduct = Get.arguments['product'] ??
+        ProductoNegocio(
+            timestampActualizacion: Timestamp.now(),
+            timestampCreation: Timestamp.now());
     if (getProduct.descripcion == '') {
       setNewProduct = true;
     } else {
@@ -172,11 +176,14 @@ class ControllerProductsEdit extends GetxController {
               UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
               await uploadTask;
               // obtenemos la url de la imagen guardada
-              await ref.getDownloadURL().then((value) => getProduct.urlimagen = value);
+              await ref
+                  .getDownloadURL()
+                  .then((value) => getProduct.urlimagen = value);
             }
             // Mods - save data product global
-            if (getNewProduct||getEdit) {
-              getProduct.verificado = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+            if (getNewProduct || getEdit) {
+              getProduct.verificado =
+                  true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
               saveProductPublic();
             }
 
@@ -199,6 +206,7 @@ class ControllerProductsEdit extends GetxController {
                   .set(precio.toJson());
             }
             // add/update data product in catalogue
+            getProduct.timestampActualizacion = Timestamp.now();
             Database.refFirestoreCatalogueProduct(
                     idAccount: welcomeController.getProfileAccountSelected.id)
                 .doc(getProduct.id)
@@ -227,14 +235,12 @@ class ControllerProductsEdit extends GetxController {
     }
   }
 
-
   // DEVELOPER OPTIONS
   Future<void> saveProductPublic() async {
     if (getProduct.id != '') {
       if (getCategory.id != '') {
         if (getProduct.descripcion != '') {
           if (getMarkSelected.id != '') {
-
             // activate indicator load
             setSaveIndicator = true;
             setTextAppBar = 'Actualizando...';
@@ -242,8 +248,10 @@ class ControllerProductsEdit extends GetxController {
 
             // set
             Producto newProduct = getProduct.convertProductoDefault();
-            newProduct.idAccount = welcomeController.getProfileAccountSelected.id;
-            newProduct.timestampActualizacion = Timestamp.fromDate(new DateTime.now());
+            newProduct.idAccount =
+                welcomeController.getProfileAccountSelected.id;
+            newProduct.timestampActualizacion =
+                Timestamp.fromDate(new DateTime.now());
 
             // firestore - save product public
             await Database.refFirestoreProductPublic()
@@ -275,9 +283,14 @@ class ControllerProductsEdit extends GetxController {
     updateAll();
 
     // delete doc product in catalogue account
-    await Database.refFirestoreCatalogueProduct(idAccount: welcomeController.getProfileAccountSelected.id).doc(getProduct.id).delete();
+    await Database.refFirestoreCatalogueProduct(
+            idAccount: welcomeController.getProfileAccountSelected.id)
+        .doc(getProduct.id)
+        .delete();
     // delete doc product
-    await Database.refFirestoreProductPublic().doc(getProduct.id).delete()
+    await Database.refFirestoreProductPublic()
+        .doc(getProduct.id)
+        .delete()
         .whenComplete(() {
       Get.back();
       Get.back();
@@ -304,9 +317,11 @@ class ControllerProductsEdit extends GetxController {
       getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
       update(['updateAll']);
     }).onError((error, stackTrace) {
-      setMarkSelected = Marca(timestampUpdate: Timestamp.now(),timestampCreacion: Timestamp.now());
+      setMarkSelected = Marca(
+          timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     }).catchError((_) {
-      setMarkSelected = Marca(timestampUpdate: Timestamp.now(),timestampCreacion: Timestamp.now());
+      setMarkSelected = Marca(
+          timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     });
   }
 
@@ -371,7 +386,7 @@ class ControllerProductsEdit extends GetxController {
         child: Image.file(File(getXFileImage.path), fit: BoxFit.cover),
         aspectRatio: 1 / 1,
       );
-    } else{
+    } else {
       // se visualiza la imagen del producto
       return AspectRatio(
         aspectRatio: 1 / 1,
@@ -393,7 +408,7 @@ class ControllerProductsEdit extends GetxController {
           ),
         ),
       );
-    } 
+    }
   }
 
   void showDialogDelete() {

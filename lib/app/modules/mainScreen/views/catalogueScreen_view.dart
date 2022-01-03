@@ -81,7 +81,8 @@ class CatalogueScreenView extends StatelessWidget {
             return controller.getCatalogueLoad.length < 15
                 ? Container()
                 : IconButton(
-                    onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'idProduct': ''}),
+                    onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
+                        arguments: {'idProduct': ''}),
                     icon: Icon(Icons.add));
           },
         ),
@@ -113,7 +114,8 @@ class CatalogueScreenView extends StatelessWidget {
                     title: Text(product.titulo),
                     subtitle: Text(product.descripcion),
                     onTap: () {
-                      Get.toNamed(Routes.PRODUCT, arguments: {'product': product});
+                      Get.toNamed(Routes.PRODUCT,
+                          arguments: {'product': product});
                     },
                   ),
                 ),
@@ -207,7 +209,12 @@ class CatalogueScreenView extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text('Todavía no hay producto'),
-                              TextButton.icon(onPressed: ()=> Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'idProduct': ''}),label: Text('Agregar nuevo'),icon: Icon(Icons.add))
+                              TextButton.icon(
+                                  onPressed: () => Get.toNamed(
+                                      Routes.PRODUCTS_SEARCH,
+                                      arguments: {'idProduct': ''}),
+                                  label: Text('Agregar nuevo'),
+                                  icon: Icon(Icons.add))
                             ],
                           ),
                         )
@@ -246,13 +253,10 @@ class CatalogueScreenView extends StatelessWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                // mostramos 15 elementos vacíos de los cuales el primero tendrá un icono 'add'
-                if ((index + 1) <= controller.getCatalogueLoad.length) {
-                  return ProductoItem(
-                      producto: controller.getCatalogueLoad[index]);
-                } else {
-                  if (controller.getCatalogueLoad.length == index) {
-                    // item defaul add
+                
+                // en la primera posición muestra el botón para agregar un nuevo objeto
+                if(index == 0){
+                  // item defaul add
                     return Card(
                       elevation: 0,
                       color: Colors.grey.withOpacity(0.1),
@@ -274,10 +278,13 @@ class CatalogueScreenView extends StatelessWidget {
                         ],
                       ),
                     );
-                  } else {
-                    return Card(
-                        elevation: 0, color: Colors.grey.withOpacity(0.1));
-                  }
+                }
+
+                // mostramos 15 elementos vacíos de los cuales el primero tendrá un icono 'add'
+                if ((index ) <= controller.getCatalogueLoad.length) {
+                  return ProductoItem(producto: controller.getCatalogueLoad[index-1]);
+                } else {
+                  return Card(elevation: 0, color: Colors.grey.withOpacity(0.1));
                 }
               },
               childCount: controller.getCatalogueLoad.length + itemsDefault,
@@ -439,7 +446,7 @@ class CatalogueScreenView extends StatelessWidget {
               await launch(url);
             } else {
               throw 'Could not launch $url';
-            } 
+            }
           },
         ),
       ],

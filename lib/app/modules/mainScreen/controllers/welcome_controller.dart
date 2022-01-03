@@ -433,7 +433,8 @@ class WelcomeController extends GetxController {
   void readManagerAccountsReference({required String idUser}) {
     // obtenemos las cuentas adminitradas por este usuario
     Database.readManagedAccountsQueryStream(id: idUser).listen((value) {
-      value.docs.forEach((element) => readManagedAccountsData(idAccountUser: idUser, idAccountBussiness: element.id));
+      value.docs.forEach((element) => readManagedAccountsData(
+          idAccountUser: idUser, idAccountBussiness: element.id));
     }).onError((error) {
       print('######################## readManagedAccountsReference: ' +
           error.toString());
@@ -443,32 +444,38 @@ class WelcomeController extends GetxController {
 
   void readManagedAccountsData({required String idAccountBussiness, required String idAccountUser}) {
 
-      // obtenemos los datos de la cuenta adminitrada por este usuario
+    // obtenemos los datos de la cuenta adminitrada por este usuario
+    if( idAccountBussiness!=''&& idAccountUser != '' ){
       Database.refFirestoreAccountAdmin(idAccount: idAccountBussiness)
-          .doc(idAccountUser)
-          .get()
-          .then((value) {
-        //get
-        if (value.exists) {
-          AdminUsuarioCuenta adminUsuarioCuenta = AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
-          // obtenemos una sola ves el perfil de la cuenta de un negocio
-          Database.readProfileBusinessModelFuture(adminUsuarioCuenta.idAccount).then((value) {
-            ProfileAccountModel profileAccount =
-                ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
-            //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
-            addManagedAccount(
-                profileData: profileAccount,
-                adminUsuarioCuentaData: adminUsuarioCuenta);
-          }).catchError((error) {
+        .doc(idAccountUser)
+        .get()
+        .then((value) {
+      //get
+      if (value.exists) {
+        AdminUsuarioCuenta adminUsuarioCuenta = AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
+        // obtenemos una sola ves el perfil de la cuenta de un negocio
+        if( adminUsuarioCuenta.idAccount != '' ){
+          Database.readProfileBusinessModelFuture(adminUsuarioCuenta.idAccount)
+              .then((value) {
+                ProfileAccountModel profileAccount = ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
+                //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
+                addManagedAccount(
+                    profileData: profileAccount,
+                    adminUsuarioCuentaData: adminUsuarioCuenta);
+              }
+            ).catchError((error) {
             print('######################## readProfileBursinesFuture: ' +
                 error.toString());
           });
         }
-      }).catchError((error) {
-        print('######################## readManagedAccountsData: ' +
-            error.toString());
-      });
+      }
+    }).catchError((error) {
+      print('######################## readManagedAccountsData: ' +
+          error.toString());
+    });
   }
+}
+    
 
   void readProfileUserStream({required String id}) {
     //  leemos el perfil de la cuenta del usuario en la db de firestore
@@ -509,19 +516,22 @@ class WelcomeController extends GetxController {
 
   void readCatalogueListProductsStream({required String id}) {
     // obtenemos los obj(productos) del catalogo de la cuenta del negocio
-    Database.readProductsCatalogueStream(id: id).listen((value) {
-      List<ProductoNegocio> list = [];
-      value.docs.forEach((element) => list.add(ProductoNegocio.fromMap(element.data())));
-      setCatalogueProducts = list;
-      setCatalogueFilter = list;
-      getCatalogueMoreLoad();
-      _loadMarksAll(list: list);
-      setLoadDataCatalogue = true;
-    }).onError((error) {
-      print('######################## readCatalogueListProductsStream: ' +
-          error.toString());
-      setLoadDataProfileUser = false;
-    });
+    if (id != '') {
+      Database.readProductsCatalogueStream(id: id).listen((value) {
+        List<ProductoNegocio> list = [];
+        value.docs.forEach(
+            (element) => list.add(ProductoNegocio.fromMap(element.data())));
+        setCatalogueProducts = list;
+        setCatalogueFilter = list;
+        getCatalogueMoreLoad();
+        _loadMarksAll(list: list);
+        setLoadDataCatalogue = true;
+      }).onError((error) {
+        print('######################## readCatalogueListProductsStream: ' +
+            error.toString());
+        setLoadDataProfileUser = false;
+      });
+    }
   }
 
   //  Función -  obtenemos los datos de la marca //
@@ -534,10 +544,13 @@ class WelcomeController extends GetxController {
     // y finamente la agregamos con los datos cargados para mostrar al usuario
     for (var productoNegocio in list) {
       if (productoNegocio.idMarca != '') {
-        readMark(id: productoNegocio.idMarca).then((value) => addMark(markParam: value));
+        readMark(id: productoNegocio.idMarca)
+            .then((value) => addMark(markParam: value));
       }
     }
-    if(list.length==0){setLoadDataCatalogueMarks = true;}
+    if (list.length == 0) {
+      setLoadDataCatalogueMarks = true;
+    }
   }
 
   void filterMarks({required List<ProductoNegocio> catalogueFilter}) {

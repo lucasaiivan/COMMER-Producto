@@ -57,7 +57,7 @@ class Database {
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readUserModelStream( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).snapshots();
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readProfileBusinessModelStream( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).snapshots();
   // stream - QuerySnapshot
-  static Stream<QuerySnapshot<Map<String, dynamic>>> readProductsCatalogueStream( { required String id}) => FirebaseFirestore.instance.collection('NEGOCIOS/$id/EXTENSION_CATALOGO').orderBy("timestamp_creation",descending: true).snapshots();
+  static Stream<QuerySnapshot<Map<String, dynamic>>> readProductsCatalogueStream( { required String id}) => FirebaseFirestore.instance.collection('NEGOCIOS/$id/EXTENSION_CATALOGO').orderBy("timestamp_actualizacion",descending: true).snapshots();
   static Stream<QuerySnapshot<Map<String, dynamic>>> readManagedAccountsQueryStream( { required String id}) => FirebaseFirestore.instance.collection('/USUARIOS/$id/ADMINISTRADOR_NEGOCIOS').snapshots();
   static Stream<QuerySnapshot<Map<String, dynamic>>> readCategoriesQueryStream( {required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA').snapshots();
   // STORAGE reference
