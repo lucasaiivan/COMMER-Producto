@@ -159,6 +159,12 @@ class ControllerProductsEdit extends GetxController {
       if (getCategory.id != '') {
         if (getProduct.descripcion != '') {
           if (getMarkSelected.id != '') {
+            //  set
+            getProduct.categoria = getCategory.id;
+            getProduct.subcategoria = getSubcategory.id;
+            getProduct.idMarca = getMarkSelected.id;
+            getProduct.nameMark = getMarkSelected.name;
+
             // activate indicator load
             setSaveIndicator = true;
             setTextAppBar = 'Actualizando...';
@@ -191,7 +197,9 @@ class ControllerProductsEdit extends GetxController {
             if (welcomeController.getProfileAccountSelected.id != "") {
               Precio precio = new Precio(
                 id: welcomeController.getProfileAccountSelected.id,
-                idNegocio: welcomeController.getProfileAccountSelected.id,
+                idAccount: welcomeController.getProfileAccountSelected.id,
+                urlImageAccount: welcomeController.getProfileAccountSelected.imagenPerfil,
+                nameAccount: welcomeController.getProfileAccountSelected.nombreNegocio ,
                 precio: getProduct.precioVenta,
                 moneda: getProduct.signoMoneda,
                 provincia:

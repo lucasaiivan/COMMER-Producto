@@ -459,9 +459,93 @@ class Product extends GetView<ProductController> {
             shrinkWrap: true,
             itemCount: controller.getListPricesForProduct.length,
             itemBuilder: (context, index) {
+
+              return Column(
+                        children: <Widget>[
+                          ListTile(
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 0.0),
+                            leading: controller.getListPricesForProduct[index]
+                                            .idAccount ==
+                                        "" ||
+                                    controller.getListPricesForProduct[index].urlImageAccount == ""
+                                ? CircleAvatar(
+                                    backgroundColor: Colors.grey,
+                                    radius: 24.0, 
+                                  )
+                                : CachedNetworkImage(
+                                    imageUrl: controller.getListPricesForProduct[index].urlImageAccount,
+                                    placeholder: (context, url) =>
+                                        const CircleAvatar(
+                                      backgroundColor: Colors.grey,
+                                      radius: 24.0,
+                                    ),
+                                    imageBuilder: (context, image) =>
+                                        CircleAvatar(
+                                      backgroundImage: image,
+                                      radius: 24.0,
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const CircleAvatar(
+                                      backgroundColor: Colors.grey,
+                                      radius: 24.0,
+                                    ),
+                                  ),
+                            title: Text(
+                              Publicaciones.getFormatoPrecio(
+                                  monto: controller
+                                      .getListPricesForProduct[index].precio),
+                              style: TextStyle(
+                                  color: colorText,
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            trailing: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  Publicaciones.getFechaPublicacion(
+                                          controller
+                                              .getListPricesForProduct[index]
+                                              .timestamp
+                                              .toDate(),
+                                          new DateTime.now())
+                                      .toLowerCase(),
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                      fontStyle: FontStyle.normal,
+                                      color: colorText),
+                                ),
+                                controller.getListPricesForProduct[index]
+                                            .ciudad !=
+                                        ""
+                                    ? Text(
+                                        "En " +
+                                            controller
+                                                .getListPricesForProduct[index]
+                                                .ciudad
+                                                .toString(),
+                                        style: TextStyle(
+                                            color: colorText,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    : Text("Ubicación desconocido",
+                                        style: TextStyle(
+                                            color: colorText,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12.0)),
+                              ],
+                            ),
+                            onTap: () {},
+                          ),
+                          SizedBox(
+                            height: 5.0,
+                          )
+                        ],
+                      );
               return FutureBuilder(
                   future: Database.readProfileBusinessModelFuture(
-                      controller.getListPricesForProduct[index].idNegocio),
+                      controller.getListPricesForProduct[index].idAccount),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       ProfileAccountModel perfilNegocio =
@@ -474,7 +558,7 @@ class Product extends GetView<ProductController> {
                             contentPadding:
                                 EdgeInsets.symmetric(horizontal: 0.0),
                             leading: controller.getListPricesForProduct[index]
-                                            .idNegocio ==
+                                            .idAccount ==
                                         "" ||
                                     perfilNegocio.imagenPerfil == "default"
                                 ? CircleAvatar(

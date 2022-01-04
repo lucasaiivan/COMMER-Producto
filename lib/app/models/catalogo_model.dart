@@ -77,8 +77,9 @@ class Producto {
       codigo: data['codigo'] ?? '',
       categoria: data['categoria'] ?? '',
       subcategoria: data['subcategoria'] ?? '',
-      timestampActualizacion: data['timestamp_actualizacion']?? Timestamp.now(),
-      timestampCreation: data['timestamp_creation']?? Timestamp.now(),
+      timestampActualizacion:
+          data['timestamp_actualizacion'] ?? Timestamp.now(),
+      timestampCreation: data['timestamp_creation'] ?? Timestamp.now(),
       enabled: data['enabled'] ?? true,
     );
   }
@@ -102,7 +103,9 @@ class Producto {
     enabled = documentSnapshot['enabled'] ?? true;
   }
   ProductoNegocio convertProductCatalogue() {
-    ProductoNegocio productoNegocio = new ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
+    ProductoNegocio productoNegocio = new ProductoNegocio(
+        timestampActualizacion: Timestamp.now(),
+        timestampCreation: Timestamp.now());
     productoNegocio.id = this.id;
     productoNegocio.urlimagen = this.urlImagen;
     productoNegocio.verificado = this.verificado;
@@ -114,8 +117,8 @@ class Producto {
     productoNegocio.categoria = this.categoria;
     productoNegocio.subcategoria = this.subcategoria;
     productoNegocio.enabled = this.enabled;
-    productoNegocio.precioVenta= this.precioVenta;
-    productoNegocio.precioCompra= this.precioCompra;
+    productoNegocio.precioVenta = this.precioVenta;
+    productoNegocio.precioCompra = this.precioCompra;
 
     return productoNegocio;
   }
@@ -137,7 +140,8 @@ class ProductoNegocio {
   String subcategoriaName = ""; // name subcategory
   Timestamp timestampCreation =
       Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
-  Timestamp timestampActualizacion = Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
+  Timestamp timestampActualizacion =
+      Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
   // Datos del producto
   bool enabled = true;
@@ -160,7 +164,7 @@ class ProductoNegocio {
     this.categoriaName = '',
     this.subcategoria = "",
     this.subcategoriaName = '',
-    required this.timestampCreation ,
+    required this.timestampCreation,
     required this.timestampActualizacion,
     this.enabled = true,
 
@@ -188,7 +192,8 @@ class ProductoNegocio {
       categoriaName: data['categoriaName'] ?? '',
       subcategoria: data['subcategoria'] ?? '',
       subcategoriaName: data['subcategoriaName'] ?? '',
-      timestampActualizacion:data['timestamp_actualizacion'] ?? Timestamp.now(),
+      timestampActualizacion:
+          data['timestamp_actualizacion'] ?? Timestamp.now(),
       timestampCreation: data['timestamp_creation'] ?? Timestamp.now(),
       enabled: data['enabled'] ?? true,
       // valores de la cuenta
@@ -222,7 +227,9 @@ class ProductoNegocio {
 
   Producto convertProductoDefault() {
     // convertimos en el modelo para producto global
-    Producto productoDefault = new Producto(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now());
+    Producto productoDefault = new Producto(
+        timestampActualizacion: Timestamp.now(),
+        timestampCreation: Timestamp.now());
     productoDefault.id = this.id;
     productoDefault.urlImagen = this.urlimagen;
     productoDefault.verificado = this.verificado;
@@ -243,16 +250,21 @@ DateTime date = Timestamp.now() as DateTime;
 
 class Precio {
   String id = '';
-  String idNegocio = "";
   double precio = 0.0;
   late Timestamp timestamp;
   String moneda = "";
   String provincia = "";
   String ciudad = "";
+  // data account
+  String idAccount = "";
+  String urlImageAccount = '';
+  String nameAccount = '';
 
   Precio({
     required this.id,
-    required this.idNegocio,
+    required this.idAccount,
+    required this.urlImageAccount,
+    required this.nameAccount,
     required this.precio,
     required this.timestamp,
     required this.moneda,
@@ -262,7 +274,9 @@ class Precio {
 
   Precio.fromMap(Map data) {
     id = data['id'] ?? '';
-    idNegocio = data['id_negocio'] ?? '';
+    idAccount = data['idAccount'] ?? '';
+    urlImageAccount = data['urlImageAccount'] ?? '';
+    nameAccount = data['nameAccount'] ?? '';
     precio = data['precio'] ?? 0.0;
     timestamp = data['timestamp'];
     moneda = data['moneda'] ?? '';
@@ -270,14 +284,16 @@ class Precio {
     ciudad = data['ciudad'] ?? '';
   }
   Map<String, dynamic> toJson() => {
-    'id':id,
-    "id_negocio": idNegocio,
-    "precio": precio,
-    "timestamp": timestamp,
-    "moneda": moneda,
-    "provincia": provincia,
-    "ciudad": ciudad,
-  };
+        'id': id,
+        "idAccount": idAccount,
+        "urlImageAccount": urlImageAccount,
+        "nameAccount": nameAccount,
+        "precio": precio,
+        "timestamp": timestamp,
+        "moneda": moneda,
+        "provincia": provincia,
+        "ciudad": ciudad,
+      };
 }
 
 class Categoria {

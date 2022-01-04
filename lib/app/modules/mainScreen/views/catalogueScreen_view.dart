@@ -74,18 +74,6 @@ class CatalogueScreenView extends StatelessWidget {
             ))),
       ),
       actions: <Widget>[
-        GetBuilder<WelcomeController>(
-          id: 'catalogue',
-          initState: (_) {},
-          builder: (_) {
-            return controller.getCatalogueLoad.length < 15
-                ? Container()
-                : IconButton(
-                    onPressed: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
-                        arguments: {'idProduct': ''}),
-                    icon: Icon(Icons.add));
-          },
-        ),
         IconButton(
             onPressed: () {
               showSearch(

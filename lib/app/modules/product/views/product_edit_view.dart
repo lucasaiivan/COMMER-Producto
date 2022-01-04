@@ -26,7 +26,6 @@ class ProductEdit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // GetBuilder - refresh all the views
     return GetBuilder<ControllerProductsEdit>(
       id: 'updateAll',
@@ -64,9 +63,9 @@ class ProductEdit extends StatelessWidget {
                   color:
                       Theme.of(contextPrincipal).textTheme.bodyText1!.color)),
       actions: <Widget>[
-        controller.getSaveIndicator? Container():IconButton(
-            icon: Icon(Icons.check),
-            onPressed: controller.save),
+        controller.getSaveIndicator
+            ? Container()
+            : IconButton(icon: Icon(Icons.check), onPressed: controller.save),
       ],
       bottom: controller.getSaveIndicator ? linearProgressBarApp() : null,
     );
@@ -76,13 +75,27 @@ class ProductEdit extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24.0),
       color: Colors.grey.withOpacity(0.1),
-      width: double.infinity,height: Get.size.height*0.25,
+      width: double.infinity,
+      height: Get.size.height * 0.25,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          controller.getSaveIndicator?Container():controller.getNewProduct||controller.getEdit?IconButton(onPressed: controller.getLoadImageCamera, icon: Icon(Icons.camera_alt,color: Colors.grey)):Container(),
+          controller.getSaveIndicator
+              ? Container()
+              : controller.getNewProduct || controller.getEdit
+                  ? IconButton(
+                      onPressed: controller.getLoadImageCamera,
+                      icon: Icon(Icons.camera_alt, color: Colors.grey))
+                  : Container(),
           controller.loadImage(),
-          controller.getSaveIndicator?Container():controller.getNewProduct||controller.getEdit?IconButton(onPressed: controller.getLoadImageGalery, icon: Icon(Icons.image,color: Colors.grey)):Container(),
+          controller.getSaveIndicator
+              ? Container()
+              : controller.getNewProduct || controller.getEdit
+                  ? IconButton(
+                      onPressed: controller.getLoadImageGalery,
+                      icon: Icon(Icons.image, color: Colors.grey))
+                  : Container(),
         ],
       ),
     );
@@ -94,20 +107,13 @@ class ProductEdit extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [],
-          ),
           buttonsCategory(),
           space,
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
               onPressed: () {
-                if (controller.getNewProduct) {
-                  controller.showModalSelectMarca();
-                }else if(controller.getEdit){
+                if (controller.getNewProduct || controller.getEdit) {
                   controller.showModalSelectMarca();
                 }
               },
@@ -123,7 +129,8 @@ class ProductEdit extends StatelessWidget {
                         SizedBox(width: 5),
                         Text(controller.getMarkSelected.name,
                             style: TextStyle(
-                                color: controller.getNewProduct || controller.getEdit
+                                color: controller.getNewProduct ||
+                                        controller.getEdit
                                     ? null
                                     : Colors.grey))
                       ],
@@ -217,8 +224,6 @@ class ProductEdit extends StatelessWidget {
                                 height: 1.0, endIndent: 12.0, indent: 12.0))
                       ],
                     ),
-                    //SizedBox(height: 20.0),
-                    //buttonAddFavorite(context: builderContext),
                     SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
                     controller.getSaveIndicator
                         ? Container()
@@ -411,6 +416,7 @@ class ProductEdit extends StatelessWidget {
   }
 }
 
+// category
 class SelectCategory extends StatefulWidget {
   SelectCategory();
 
@@ -453,7 +459,6 @@ class _SelectCategoryState extends State<SelectCategory> {
 
   @override
   Widget build(BuildContext buildContext) {
-
     if (welcomeController.getCatalogueCategoryList.length == 0) {
       return Row(
         children: [
@@ -476,7 +481,8 @@ class _SelectCategoryState extends State<SelectCategory> {
         shrinkWrap: true,
         itemCount: welcomeController.getCatalogueCategoryList.length,
         itemBuilder: (BuildContext context, int index) {
-          Categoria categoria = welcomeController.getCatalogueCategoryList[index];
+          Categoria categoria =
+              welcomeController.getCatalogueCategoryList[index];
           return index == 0
               ? Column(
                   children: <Widget>[
@@ -666,6 +672,7 @@ class _SelectCategoryState extends State<SelectCategory> {
   }
 }
 
+// subcategory
 class SelectSubCategoria extends StatefulWidget {
   SelectSubCategoria();
 
@@ -708,7 +715,6 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
 
   @override
   Widget build(BuildContext buildContext) {
-
     if (categoriaSelected.subcategorias.length == 0) {
       return Row(
         children: [
@@ -720,11 +726,11 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
           IconButton(
               icon: Icon(Icons.add),
               padding: const EdgeInsets.all(20.0),
-              onPressed: () => showDialogSetSubcategoria( subcategoria: Categoria()))
+              onPressed: () =>
+                  showDialogSetSubcategoria(subcategoria: Categoria()))
         ],
       );
     }
-
 
     return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
@@ -753,7 +759,8 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                       IconButton(
                           icon: Icon(Icons.add),
                           padding: const EdgeInsets.all(20.0),
-                          onPressed: () => showDialogSetSubcategoria( subcategoria: Categoria()))
+                          onPressed: () => showDialogSetSubcategoria(
+                              subcategoria: Categoria()))
                     ],
                   ),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
@@ -938,6 +945,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
   }
 }
 
+// create marks
 class CreateMark extends StatefulWidget {
   late final Marca mark;
   CreateMark({required this.mark, Key? key}) : super(key: key);
@@ -1153,6 +1161,7 @@ class _CreateMarkState extends State<CreateMark> {
   }
 }
 
+// select mark
 class SelectMark extends StatefulWidget {
   SelectMark({Key? key}) : super(key: key);
 
@@ -1161,8 +1170,9 @@ class SelectMark extends StatefulWidget {
 }
 
 class _SelectMarkState extends State<SelectMark> {
-  // var
+  //  controllers
   ControllerProductsEdit controllerProductsEdit = Get.find();
+  //  var
   List<Marca> list = [];
 
   @override
@@ -1214,29 +1224,7 @@ class _SelectMarkState extends State<SelectMark> {
                           icon: Icon(Icons.search),
                           onPressed: () {
                             Get.back();
-                            showSearch(
-                              context: context,
-                              delegate: SearchPage<Marca>(
-                                items: list,
-                                searchLabel: 'Buscar marca',
-                                suggestion: Center(
-                                  child: Text('ej. Miller'),
-                                ),
-                                failure: Center(
-                                  child: Text('No se encontro :('),
-                                ),
-                                filter: (product) => [
-                                  product.name,
-                                  product.description,
-                                ],
-                                builder: (mark) => Column(
-                                  children: <Widget>[
-                                    listTile(marcaSelect: mark),
-                                    Divider(endIndent: 12.0, indent: 12.0),
-                                  ],
-                                ),
-                              ),
-                            );
+                            widgetSearch();
                           },
                         )
                       ],
@@ -1268,17 +1256,9 @@ class _SelectMarkState extends State<SelectMark> {
       title: Row(
         children: <Widget>[
           marcaSelect.verified == true
-              ? Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: new Image.asset('assets/icon_verificado.png',
-                      width: 16.0, height: 16.0))
+              ? Padding(padding: EdgeInsets.all(5.0),child: new Image.asset('assets/icon_verificado.png', width: 16.0, height: 16.0))
               : new Container(),
-          Expanded(
-            child: Text(marcaSelect.name,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: Get.theme.textTheme.bodyText1!.color)),
+          Expanded(child: Text(marcaSelect.name,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 16.0,color: Get.theme.textTheme.bodyText1!.color)),
           ),
         ],
       ),
@@ -1289,6 +1269,33 @@ class _SelectMarkState extends State<SelectMark> {
       onLongPress: () {
         Get.to(() => CreateMark(mark: marcaSelect));
       },
+    );
+  }
+
+  // Widgets
+  Future<void> widgetSearch() {
+    return showSearch(
+      context: context,
+      delegate: SearchPage<Marca>(
+        items: list,
+        searchLabel: 'Buscar marca',
+        suggestion: Center(
+          child: Text('ej. Miller'),
+        ),
+        failure: Center(
+          child: Text('No se encontro :('),
+        ),
+        filter: (product) => [
+          product.name,
+          product.description,
+        ],
+        builder: (mark) => Column(
+          children: <Widget>[
+            listTile(marcaSelect: mark),
+            Divider(endIndent: 12.0, indent: 12.0),
+          ],
+        ),
+      ),
     );
   }
 
