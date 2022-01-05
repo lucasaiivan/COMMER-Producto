@@ -111,13 +111,17 @@ class ProductController extends GetxController {
   }
 
   void readOthersProductsMark() {
-    Database.readProductsForMakFuture(idMark: getProduct.idMarca).then((value) {
-      List<Producto> list = [];
-      value.docs.forEach((element) {
-        list.add(Producto.fromMap(element.data()));
-      });
-      setListOthersProductsForMark = list.cast<Producto>();
+
+    //esta verificación evita que cargue productos que no tengas especificada la marca
+    if( getProduct.idMarca!=''){
+      Database.readProductsForMakFuture(idMark: getProduct.idMarca).then((value) {
+        List<Producto> list = [];
+        value.docs.forEach((element) {
+          list.add(Producto.fromMap(element.data()));
+        });
+        setListOthersProductsForMark = list.cast<Producto>();
     });
+    }
   }
 
   void readListPricesForProduct() {

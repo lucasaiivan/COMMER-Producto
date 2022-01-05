@@ -1224,7 +1224,29 @@ class _SelectMarkState extends State<SelectMark> {
                           icon: Icon(Icons.search),
                           onPressed: () {
                             Get.back();
-                            widgetSearch();
+                            showSearch(
+                              context: context,
+                              delegate: SearchPage<Marca>(
+                                items: list,
+                                searchLabel: 'Buscar marca',
+                                suggestion: Center(
+                                  child: Text('ej. Miller'),
+                                ),
+                                failure: Center(
+                                  child: Text('No se encontro :('),
+                                ),
+                                filter: (product) => [
+                                  product.name,
+                                  product.description,
+                                ],
+                                builder: (mark) => Column(
+                                  children: <Widget>[
+                                    listTile(marcaSelect: mark),
+                                    Divider(endIndent: 12.0, indent: 12.0),
+                                  ],
+                                ),
+                              ),
+                            );
                           },
                         )
                       ],
@@ -1269,33 +1291,6 @@ class _SelectMarkState extends State<SelectMark> {
       onLongPress: () {
         Get.to(() => CreateMark(mark: marcaSelect));
       },
-    );
-  }
-
-  // Widgets
-  Future<void> widgetSearch() {
-    return showSearch(
-      context: context,
-      delegate: SearchPage<Marca>(
-        items: list,
-        searchLabel: 'Buscar marca',
-        suggestion: Center(
-          child: Text('ej. Miller'),
-        ),
-        failure: Center(
-          child: Text('No se encontro :('),
-        ),
-        filter: (product) => [
-          product.name,
-          product.description,
-        ],
-        builder: (mark) => Column(
-          children: <Widget>[
-            listTile(marcaSelect: mark),
-            Divider(endIndent: 12.0, indent: 12.0),
-          ],
-        ),
-      ),
     );
   }
 
