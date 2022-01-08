@@ -194,10 +194,13 @@ class ProductoItem extends StatelessWidget {
                   fit: BoxFit.cover,
                   image: AssetImage("assets/loading.gif"),
                   placeholder: AssetImage("assets/loading.gif")),
-              errorWidget: (context, url, error) => Center(
-                child: Text(
-                  producto.titulo.substring(0, 3),
-                  style: TextStyle(fontSize: 24.0),
+              errorWidget: (context, url, error) => Container(
+                color: Colors.grey[100],
+                child: Center(
+                  child: Text(
+                    producto.descripcion.substring(0, 3),
+                    style: TextStyle(fontSize: 24.0),
+                  ),
                 ),
               ),
             ),

@@ -59,63 +59,69 @@ class Product extends GetView<ProductController> {
               ),
             ],
           )),
-      actions: welcomeController.getProfileAccountSelected.id==''?[]:[
-        IconButton(
-          padding: EdgeInsets.all(12.0),
-          icon: Icon(Icons.share),
-          onPressed: () {
-            showGeneralDialog(
-                context: context,
-                barrierDismissible: true,
-                barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-                barrierColor: Colors.black45,
-                transitionDuration: const Duration(milliseconds: 200),
-                pageBuilder: (BuildContext buildContext, Animation animation,
-                    Animation secondaryAnimation) {
-                  Timer(Duration(seconds: 1), () async {
-                    // note: La imagen capturada puede verse pixelada. Puede solucionar este problema configurando el valor de pixelRatio
-                    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
-                    // Captura de widgets
-                    await screenshotController
-                        .capture(
-                            delay: const Duration(milliseconds: 1),
-                            pixelRatio: pixelRatio)
-                        .then((image) async {
-                      if (image != null) {
-                        final directory =
-                            await getApplicationDocumentsDirectory();
-                        final imagePath =
-                            await File('${directory.path}/image.png').create();
-                        await imagePath.writeAsBytes(image);
+      actions: welcomeController.getProfileAccountSelected.id == ''
+          ? []
+          : [
+              IconButton(
+                padding: EdgeInsets.all(12.0),
+                icon: Icon(Icons.share),
+                onPressed: () {
+                  showGeneralDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      barrierLabel: MaterialLocalizations.of(context)
+                          .modalBarrierDismissLabel,
+                      barrierColor: Colors.black45,
+                      transitionDuration: const Duration(milliseconds: 200),
+                      pageBuilder: (BuildContext buildContext,
+                          Animation animation, Animation secondaryAnimation) {
+                        Timer(Duration(seconds: 1), () async {
+                          // note: La imagen capturada puede verse pixelada. Puede solucionar este problema configurando el valor de pixelRatio
+                          double pixelRatio =
+                              MediaQuery.of(context).devicePixelRatio;
+                          // Captura de widgets
+                          await screenshotController
+                              .capture(
+                                  delay: const Duration(milliseconds: 1),
+                                  pixelRatio: pixelRatio)
+                              .then((image) async {
+                            if (image != null) {
+                              final directory =
+                                  await getApplicationDocumentsDirectory();
+                              final imagePath =
+                                  await File('${directory.path}/image.png')
+                                      .create();
+                              await imagePath.writeAsBytes(image);
 
-                        /// Share Plugin
-                        await Share.shareFiles([imagePath.path]);
-                        Get.back();
-                      }
-                    }); 
-                  });
+                              /// Share Plugin
+                              await Share.shareFiles([imagePath.path]);
+                              Get.back();
+                            }
+                          });
+                        });
 
-                  // Get available height and width of the build area of this widget. Make a choice depending on the size.
-                  var height = MediaQuery.of(buildContext).size.height;
-                  var width = MediaQuery.of(buildContext).size.width;
+                        // Get available height and width of the build area of this widget. Make a choice depending on the size.
+                        var height = MediaQuery.of(buildContext).size.height;
+                        var width = MediaQuery.of(buildContext).size.width;
 
-                  return Screenshot(
-                    controller: screenshotController,
-                    child: viewProducto(height: height, width: width),
-                  );
-                });
-          },
-        ),
-        IconButton(
-          padding: EdgeInsets.all(12.0),
-          icon: Icon(welcomeController.isCatalogue(id: controller.getProduct.id)
-              ? Icons.edit
-              : Icons.add_box),
-          onPressed: () {
-            controller.toProductEdit();
-          },
-        ),
-      ],
+                        return Screenshot(
+                          controller: screenshotController,
+                          child: viewProducto(height: height, width: width),
+                        );
+                      });
+                },
+              ),
+              IconButton(
+                padding: EdgeInsets.all(12.0),
+                icon: Icon(
+                    welcomeController.isCatalogue(id: controller.getProduct.id)
+                        ? Icons.edit
+                        : Icons.add_box),
+                onPressed: () {
+                  controller.toProductEdit();
+                },
+              ),
+            ],
     );
   }
 
@@ -151,17 +157,17 @@ class Product extends GetView<ProductController> {
             // nombre del negocio
             Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Text(
-                      welcomeController.getProfileAccountSelected.nombreNegocio,
-                      style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontSize: 30,
-                          fontWeight: FontWeight.w900,
-                          color: Get.theme.brightness == Brightness.dark
-                              ? Colors.white.withOpacity(0.90)
-                              : Colors.black.withOpacity(0.90))),
-                )),
+              padding: const EdgeInsets.all(24.0),
+              child: Text(
+                  welcomeController.getProfileAccountSelected.nombreNegocio,
+                  style: TextStyle(
+                      fontFamily: "Poppins",
+                      fontSize: 30,
+                      fontWeight: FontWeight.w900,
+                      color: Get.theme.brightness == Brightness.dark
+                          ? Colors.white.withOpacity(0.90)
+                          : Colors.black.withOpacity(0.90))),
+            )),
             // vista del producto
             Expanded(
               child: Column(
@@ -195,17 +201,17 @@ class Product extends GetView<ProductController> {
                               )
                             : Container(),
                         Padding(
-                          padding: EdgeInsets.all( 12),
+                          padding: EdgeInsets.all(12),
                           child: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               controller.getProduct.precioVenta != 0.0
                                   ? Text(
                                       Publicaciones.getFormatoPrecio(
-                                          monto:
-                                              controller.getProduct.precioVenta),
+                                          monto: controller
+                                              .getProduct.precioVenta),
                                       style: TextStyle(
-                                          color:Colors.blue,
+                                          color: Colors.blue,
                                           fontSize: 40,
                                           fontWeight: FontWeight.w900),
                                       textAlign: TextAlign.end)
@@ -239,9 +245,16 @@ class Product extends GetView<ProductController> {
                   children: <Widget>[
                     controller.getCategory.nombre != ""
                         ? Chip(
-                            materialTapTargetSize:MaterialTapTargetSize.shrinkWrap,
-                            avatar: CircleAvatar(backgroundColor: Colors.grey.shade800,child: Text(controller.getCategory.nombre.substring(0, 1),style: TextStyle(color: Colors.grey))),
-                            label: Text(controller.getCategory.nombre,overflow: TextOverflow.ellipsis),
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            avatar: CircleAvatar(
+                                backgroundColor: Colors.grey.shade800,
+                                child: Text(
+                                    controller.getCategory.nombre
+                                        .substring(0, 1),
+                                    style: TextStyle(color: Colors.grey))),
+                            label: Text(controller.getCategory.nombre,
+                                overflow: TextOverflow.ellipsis),
                           )
                         : Container(),
                     controller.getSubcategory.nombre != ""
@@ -281,9 +294,10 @@ class Product extends GetView<ProductController> {
               ? Opacity(
                   opacity: 0.8,
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(Icons.qr_code_2_rounded,size: 14),
+                      Icon(Icons.qr_code_2_rounded, size: 14),
                       SizedBox(width: 5),
                       Text(controller.getProduct.codigo,
                           style: TextStyle(
@@ -302,17 +316,17 @@ class Product extends GetView<ProductController> {
   Widget background() {
     return Builder(builder: (contextBuilder) {
       return SingleChildScrollView(
-        child:  Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 12),
-                imageViewCard(),
-                widgetDescripcion(contextBuilder),
-                otherProductsCatalogueListHorizontal(),
-                otherBrandProductsListHorizontal(),
-                const SizedBox(height: 200.0, width: 120.0),
-              ],
-            ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 12),
+            imageViewCard(),
+            widgetDescripcion(contextBuilder),
+            otherProductsCatalogueListHorizontal(),
+            otherBrandProductsListHorizontal(),
+            const SizedBox(height: 200.0, width: 120.0),
+          ],
+        ),
       );
     });
   }
@@ -435,7 +449,7 @@ class Product extends GetView<ProductController> {
             child: ultimosPreciosView())));
   }
   // WIDGETS COMPONENTS
-  
+
   Widget ultimosPreciosView() {
     if (controller.getListPricesForProduct.length != 0) {
       Color colorText = Colors.white;
@@ -459,90 +473,84 @@ class Product extends GetView<ProductController> {
             shrinkWrap: true,
             itemCount: controller.getListPricesForProduct.length,
             itemBuilder: (context, index) {
-
               return Column(
-                        children: <Widget>[
-                          ListTile(
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 0.0),
-                            leading: controller.getListPricesForProduct[index]
-                                            .idAccount ==
-                                        "" ||
-                                    controller.getListPricesForProduct[index].urlImageAccount == ""
-                                ? CircleAvatar(
-                                    backgroundColor: Colors.grey,
-                                    radius: 24.0, 
-                                  )
-                                : CachedNetworkImage(
-                                    imageUrl: controller.getListPricesForProduct[index].urlImageAccount,
-                                    placeholder: (context, url) =>
-                                        const CircleAvatar(
-                                      backgroundColor: Colors.grey,
-                                      radius: 24.0,
-                                    ),
-                                    imageBuilder: (context, image) =>
-                                        CircleAvatar(
-                                      backgroundImage: image,
-                                      radius: 24.0,
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const CircleAvatar(
-                                      backgroundColor: Colors.grey,
-                                      radius: 24.0,
-                                    ),
-                                  ),
-                            title: Text(
-                              Publicaciones.getFormatoPrecio(
-                                  monto: controller
-                                      .getListPricesForProduct[index].precio),
-                              style: TextStyle(
-                                  color: colorText,
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            trailing: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Text(
-                                  Publicaciones.getFechaPublicacion(
-                                          controller
-                                              .getListPricesForProduct[index]
-                                              .timestamp
-                                              .toDate(),
-                                          new DateTime.now())
-                                      .toLowerCase(),
-                                  textAlign: TextAlign.end,
-                                  style: TextStyle(
-                                      fontStyle: FontStyle.normal,
-                                      color: colorText),
-                                ),
-                                controller.getListPricesForProduct[index]
-                                            .ciudad !=
-                                        ""
-                                    ? Text(
-                                        "En " +
-                                            controller
-                                                .getListPricesForProduct[index]
-                                                .ciudad
-                                                .toString(),
-                                        style: TextStyle(
-                                            color: colorText,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    : Text("Ubicación desconocido",
-                                        style: TextStyle(
-                                            color: colorText,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12.0)),
-                              ],
-                            ),
-                            onTap: () {},
-                          ),
-                          SizedBox(
-                            height: 5.0,
+                children: <Widget>[
+                  ListTile(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
+                    leading: controller
+                                    .getListPricesForProduct[index].idAccount ==
+                                "" ||
+                            controller.getListPricesForProduct[index]
+                                    .urlImageAccount ==
+                                ""
+                        ? CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            radius: 24.0,
                           )
-                        ],
-                      );
+                        : CachedNetworkImage(
+                            imageUrl: controller
+                                .getListPricesForProduct[index].urlImageAccount,
+                            placeholder: (context, url) => const CircleAvatar(
+                              backgroundColor: Colors.grey,
+                              radius: 24.0,
+                            ),
+                            imageBuilder: (context, image) => CircleAvatar(
+                              backgroundImage: image,
+                              radius: 24.0,
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const CircleAvatar(
+                              backgroundColor: Colors.grey,
+                              radius: 24.0,
+                            ),
+                          ),
+                    title: Text(
+                      Publicaciones.getFormatoPrecio(
+                          monto:
+                              controller.getListPricesForProduct[index].precio),
+                      style: TextStyle(
+                          color: colorText,
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          Publicaciones.getFechaPublicacion(
+                                  controller
+                                      .getListPricesForProduct[index].timestamp
+                                      .toDate(),
+                                  new DateTime.now())
+                              .toLowerCase(),
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                              fontStyle: FontStyle.normal, color: colorText),
+                        ),
+                        controller.getListPricesForProduct[index].ciudad != ""
+                            ? Text(
+                                "En " +
+                                    controller
+                                        .getListPricesForProduct[index].ciudad
+                                        .toString(),
+                                style: TextStyle(
+                                    color: colorText,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            : Text("Ubicación desconocido",
+                                style: TextStyle(
+                                    color: colorText,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0)),
+                      ],
+                    ),
+                    onTap: () {},
+                  ),
+                  SizedBox(
+                    height: 5.0,
+                  )
+                ],
+              );
               return FutureBuilder(
                   future: Database.readProfileBusinessModelFuture(
                       controller.getListPricesForProduct[index].idAccount),
@@ -691,8 +699,7 @@ class Product extends GetView<ProductController> {
                 height: Get.width,
                 child: Center(
                   child: Text(
-                    'Text',
-                    //controller.getProduct.titulo.substring(0, 3),
+                    controller.getProduct.descripcion.substring(0, 1),
                     style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.25),
                   ),
@@ -721,90 +728,103 @@ class Product extends GetView<ProductController> {
 
   Widget otherBrandProductsListHorizontal() {
     // mostramos en un lista horizontal otros productos de la misma marca
-    return Obx(() => controller.getListOthersProductsForMark.length==0?Container():Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              child: Text(
-                  controller.getMark.name == ''
-                      ? 'Otros'
-                      : controller.getMark.name,
-                  style:
-                      TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal)),
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            ),
-            Container(
-              height: 220,
-              child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: controller.getListOthersProductsForMark.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                        bottom: 8,
-                        top: 8,
-                        left: index == 0 ? 12 : 0,
-                        right: controller.getListOthersProductsForMark.length ==
-                                (index + 1)
-                            ? 12
-                            : 0),
-                    child: ProductoItem(
-                        producto: controller.getListOthersProductsForMark[index]
-                            .convertProductCatalogue()),
-                  );
-                },
+    return Obx(() => controller.getListOthersProductsForMark.length == 0
+        ? Container()
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                child: Text(
+                    controller.getMark.name == ''
+                        ? 'Otros'
+                        : controller.getMark.name,
+                    style: TextStyle(
+                        fontSize: 18.0, fontWeight: FontWeight.normal)),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               ),
-            ),
-          ],
-        ));
+              Container(
+                height: 220,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: controller.getListOthersProductsForMark.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.only(
+                          bottom: 8,
+                          top: 8,
+                          left: index == 0 ? 12 : 0,
+                          right:
+                              controller.getListOthersProductsForMark.length ==
+                                      (index + 1)
+                                  ? 12
+                                  : 0),
+                      child: ProductoItem(
+                          producto: controller
+                              .getListOthersProductsForMark[index]
+                              .convertProductCatalogue()),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ));
   }
 
   Widget otherProductsCatalogueListHorizontal() {
     // mostramos otros productos del cátalogo de la misma cátegoria
-    return Obx(() => controller.getListOthersProductsForCategoryCatalogue.length==0?Container():Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Divider(height: 6,thickness: 1,color: Colors.grey.withOpacity(0.1)),
-            ),
-            Padding(
-              child: Text(controller.getCategory.nombre,
-                  style: TextStyle(fontSize: 16.0)),
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            ),
-            Container(
-              height: 250,
-              child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount:controller.getListOthersProductsForCategoryCatalogue.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                        bottom: 8,
-                        top: 8,
-                        left: index == 0 ? 12 : 0,
-                        right: controller
-                                    .getListOthersProductsForCategoryCatalogue
-                                    .length ==
-                                (index + 1)
-                            ? 12
-                            : 0),
-                    child: ProductoCatalogueItem(
-                        producto: controller
-                            .getListOthersProductsForCategoryCatalogue[index]),
-                  );
-                },
-              ),
-            ),
-          ],
-        ));
+    return Obx(
+        () => controller.getListOthersProductsForCategoryCatalogue.length == 0
+            ? Container()
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Divider(
+                        height: 6,
+                        thickness: 1,
+                        color: Colors.grey.withOpacity(0.1)),
+                  ),
+                  Padding(
+                    child: Text(controller.getCategory.nombre,
+                        style: TextStyle(fontSize: 16.0)),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  ),
+                  Container(
+                    height: 250,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: controller
+                          .getListOthersProductsForCategoryCatalogue.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              bottom: 8,
+                              top: 8,
+                              left: index == 0 ? 12 : 0,
+                              right: controller
+                                          .getListOthersProductsForCategoryCatalogue
+                                          .length ==
+                                      (index + 1)
+                                  ? 12
+                                  : 0),
+                          child: ProductoCatalogueItem(
+                              producto: controller
+                                      .getListOthersProductsForCategoryCatalogue[
+                                  index]),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ));
   }
-
 
   // FUNCTIONS
   String sProcentaje(
@@ -871,7 +891,9 @@ class ProductoCatalogueItem extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Get.offNamed(Routes.PRODUCT,arguments: {'product':producto},preventDuplicates: false),
+                  onTap: () => Get.offNamed(Routes.PRODUCT,
+                      arguments: {'product': producto},
+                      preventDuplicates: false),
                 ),
               ),
             ),
@@ -957,14 +979,20 @@ class ProductoItem extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Align(
                         alignment: Alignment.topRight,
-                        child: CircleAvatar(backgroundColor: Colors.green,child: Icon(Icons.check,color: Colors.white),radius: 14,)),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.green,
+                          child: Icon(Icons.check, color: Colors.white),
+                          radius: 14,
+                        )),
                   )
                 : Container(),
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Get.offNamed(Routes.PRODUCT,arguments: {'product':producto},preventDuplicates: false),
+                  onTap: () => Get.offNamed(Routes.PRODUCT,
+                      arguments: {'product': producto},
+                      preventDuplicates: false),
                 ),
               ),
             ),
@@ -981,17 +1009,31 @@ class ProductoItem extends StatelessWidget {
             fit: BoxFit.cover,
             imageUrl: producto.urlimagen,
             placeholder: (context, url) => FadeInImage(
+                placeholderErrorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[100],
+                    child: Center(
+                      child: Text(
+                        producto.titulo.substring(0, 3),
+                        style: TextStyle(fontSize: 24.0,color: Colors.grey),
+                      ),
+                    ),
+                  );
+                },
                 fit: BoxFit.cover,
                 image: AssetImage("assets/loading.gif"),
                 placeholder: AssetImage("assets/loading.gif")),
-            errorWidget: (context, url, error) => Center(
-              child: Text(
-                producto.titulo.substring(0, 3),
-                style: TextStyle(fontSize: 24.0),
+            errorWidget: (context, url, error) => Container(
+              color: Colors.grey[100],
+              child: Center(
+                child: Text(
+                  producto.descripcion.substring(0, 3),
+                  style: TextStyle(fontSize: 24.0,color: Colors.grey),
+                ),
               ),
             ),
           )
-        : Container(color: Color.fromARGB(255, 43, 45, 57));
+        : Container(color: Colors.grey[100]);
   }
 
   Widget contentInfo() {
@@ -1074,8 +1116,8 @@ class WidgetImagen extends StatelessWidget {
     );
   }
 
-  Widget viewCircleImage( {required String url, required String texto, double size = 85.0}) {
-
+  Widget viewCircleImage(
+      {required String url, required String texto, double size = 85.0}) {
     return Container(
       width: size,
       height: size,

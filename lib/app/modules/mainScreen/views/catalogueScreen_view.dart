@@ -133,6 +133,10 @@ class CatalogueScreenView extends StatelessWidget {
                 ),
               )),
       ],
+    /* bottom: controller.connectivityIntetnet ? PreferredSize(
+    child: Container(width: double.infinity,child: Center(child: Text('Sin internet',style: TextStyle(color: Colors.white),)),color: Colors.red),
+    preferredSize: Size.fromHeight(50),
+  ) : null, */
     );
   }
 

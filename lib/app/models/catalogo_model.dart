@@ -6,6 +6,7 @@ class Producto {
   bool verificado = false; // estado de verificación  al un moderador
   bool favorite = false;
   String idMarca = ""; // ID de la marca por defecto esta vacia
+  String nameMark = '';
   String idNegocio = ""; // ID del negocios que actualizo el producto
   String urlImagen = "https://default"; // URL imagen
   String titulo = ""; // Titulo
@@ -27,6 +28,7 @@ class Producto {
     this.verificado = false,
     this.favorite = false,
     this.idMarca = "",
+    this.nameMark = '',
     this.idNegocio = "",
     this.urlImagen = "",
     this.titulo = "",
@@ -47,6 +49,7 @@ class Producto {
         "verificado": verificado,
         "favorite": verificado,
         "id_marca": idMarca,
+        'nameMark': nameMark,
         "id_negocio": idNegocio,
         "urlimagen": urlImagen,
         "titulo": titulo,
@@ -68,6 +71,7 @@ class Producto {
       verificado: data['verificado'] ?? false,
       favorite: data['favorite'] ?? false,
       idMarca: data['id_marca'] ?? '',
+      nameMark: data['nameMark'] ?? '',
       idNegocio: data['id_negocio'] ?? '',
       urlImagen: data['urlimagen'],
       titulo: data['titulo'] ?? '',
@@ -89,6 +93,7 @@ class Producto {
     verificado = documentSnapshot['verificado'] ?? false;
     favorite = documentSnapshot['favorite'] ?? false;
     idMarca = documentSnapshot['id_marca'] ?? '';
+    nameMark = documentSnapshot['nameMark'] ?? '';
     idNegocio = documentSnapshot['id_negocio'] ?? '';
     urlImagen = documentSnapshot['urlimagen'] ?? 'https://default';
     titulo = documentSnapshot['titulo'] ?? '';
@@ -111,6 +116,7 @@ class Producto {
     productoNegocio.verificado = this.verificado;
     productoNegocio.favorite = this.favorite;
     productoNegocio.idMarca = this.idMarca;
+    productoNegocio.nameMark = this.nameMark;
     productoNegocio.titulo = this.titulo;
     productoNegocio.descripcion = this.descripcion;
     productoNegocio.codigo = this.codigo;
@@ -235,6 +241,7 @@ class ProductoNegocio {
     productoDefault.verificado = this.verificado;
     productoDefault.favorite = this.favorite;
     productoDefault.idMarca = this.idMarca;
+    productoDefault.nameMark = this.nameMark;
     productoDefault.titulo = this.titulo;
     productoDefault.descripcion = this.descripcion;
     productoDefault.codigo = this.codigo;

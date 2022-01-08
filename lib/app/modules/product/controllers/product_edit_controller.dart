@@ -202,8 +202,7 @@ class ControllerProductsEdit extends GetxController {
                 nameAccount: welcomeController.getProfileAccountSelected.nombreNegocio ,
                 precio: getProduct.precioVenta,
                 moneda: getProduct.signoMoneda,
-                provincia:
-                    welcomeController.getProfileAccountSelected.provincia,
+                provincia:welcomeController.getProfileAccountSelected.provincia,
                 ciudad: welcomeController.getProfileAccountSelected.ciudad,
                 timestamp: Timestamp.fromDate(new DateTime.now()),
               );
@@ -249,6 +248,7 @@ class ControllerProductsEdit extends GetxController {
       if (getCategory.id != '') {
         if (getProduct.descripcion != '') {
           if (getMarkSelected.id != '') {
+
             // activate indicator load
             setSaveIndicator = true;
             setTextAppBar = 'Actualizando...';
@@ -256,10 +256,10 @@ class ControllerProductsEdit extends GetxController {
 
             // set
             Producto newProduct = getProduct.convertProductoDefault();
-            newProduct.idAccount =
-                welcomeController.getProfileAccountSelected.id;
-            newProduct.timestampActualizacion =
-                Timestamp.fromDate(new DateTime.now());
+            newProduct.idAccount =welcomeController.getProfileAccountSelected.id;
+            newProduct.timestampActualizacion =  Timestamp.fromDate(new DateTime.now());
+            newProduct.idMarca = getMarkSelected.id;
+            newProduct.nameMark = getMarkSelected.name;
 
             // firestore - save product public
             await Database.refFirestoreProductPublic()

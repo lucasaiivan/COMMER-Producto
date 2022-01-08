@@ -16,6 +16,7 @@ import '../../splash/controllers/splash_controller.dart';
 class WelcomeController extends GetxController {
   SplashController homeController = Get.find<SplashController>();
 
+
   // text tab
   String _textTab = 'Todos';
   String get getTextTab => _textTab;
@@ -362,6 +363,7 @@ class WelcomeController extends GetxController {
     // cargamos los datos de la app desde la db
     readListSuggestedProductsFuture();
 
+
     super.onInit();
   }
 
@@ -371,7 +373,9 @@ class WelcomeController extends GetxController {
   }
 
   @override
-  void onClose() {}
+  void onClose() {
+  }
+
 
   void logout() async {
     // aca implementamos el cierre de sesión dentro de la función logout.
@@ -442,40 +446,42 @@ class WelcomeController extends GetxController {
     });
   }
 
-  void readManagedAccountsData({required String idAccountBussiness, required String idAccountUser}) {
-
+  void readManagedAccountsData(
+      {required String idAccountBussiness, required String idAccountUser}) {
     // obtenemos los datos de la cuenta adminitrada por este usuario
-    if( idAccountBussiness!=''&& idAccountUser != '' ){
+    if (idAccountBussiness != '' && idAccountUser != '') {
       Database.refFirestoreAccountAdmin(idAccount: idAccountBussiness)
-        .doc(idAccountUser)
-        .get()
-        .then((value) {
-      //get
-      if (value.exists) {
-        AdminUsuarioCuenta adminUsuarioCuenta = AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
-        // obtenemos una sola ves el perfil de la cuenta de un negocio
-        if( adminUsuarioCuenta.idAccount != '' ){
-          Database.readProfileBusinessModelFuture(adminUsuarioCuenta.idAccount)
-              .then((value) {
-                ProfileAccountModel profileAccount = ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
-                //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
-                addManagedAccount(
-                    profileData: profileAccount,
-                    adminUsuarioCuentaData: adminUsuarioCuenta);
-              }
-            ).catchError((error) {
-            print('######################## readProfileBursinesFuture: ' +
-                error.toString());
-          });
+          .doc(idAccountUser)
+          .get()
+          .then((value) {
+        //get
+        if (value.exists) {
+          AdminUsuarioCuenta adminUsuarioCuenta =
+              AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
+          // obtenemos una sola ves el perfil de la cuenta de un negocio
+          if (adminUsuarioCuenta.idAccount != '') {
+            Database.readProfileBusinessModelFuture(
+                    adminUsuarioCuenta.idAccount)
+                .then((value) {
+              ProfileAccountModel profileAccount =
+                  ProfileAccountModel.fromDocumentSnapshot(
+                      documentSnapshot: value);
+              //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
+              addManagedAccount(
+                  profileData: profileAccount,
+                  adminUsuarioCuentaData: adminUsuarioCuenta);
+            }).catchError((error) {
+              print('######################## readProfileBursinesFuture: ' +
+                  error.toString());
+            });
+          }
         }
-      }
-    }).catchError((error) {
-      print('######################## readManagedAccountsData: ' +
-          error.toString());
-    });
+      }).catchError((error) {
+        print('######################## readManagedAccountsData: ' +
+            error.toString());
+      });
+    }
   }
-}
-    
 
   void readProfileUserStream({required String id}) {
     //  leemos el perfil de la cuenta del usuario en la db de firestore

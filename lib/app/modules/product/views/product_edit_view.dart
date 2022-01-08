@@ -1278,9 +1278,17 @@ class _SelectMarkState extends State<SelectMark> {
       title: Row(
         children: <Widget>[
           marcaSelect.verified == true
-              ? Padding(padding: EdgeInsets.all(5.0),child: new Image.asset('assets/icon_verificado.png', width: 16.0, height: 16.0))
+              ? Padding(
+                  padding: EdgeInsets.all(5.0),
+                  child: new Image.asset('assets/icon_verificado.png',
+                      width: 16.0, height: 16.0))
               : new Container(),
-          Expanded(child: Text(marcaSelect.name,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 16.0,color: Get.theme.textTheme.bodyText1!.color)),
+          Expanded(
+            child: Text(marcaSelect.name,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontSize: 16.0,
+                    color: Get.theme.textTheme.bodyText1!.color)),
           ),
         ],
       ),
@@ -1289,6 +1297,7 @@ class _SelectMarkState extends State<SelectMark> {
         Get.back();
       },
       onLongPress: () {
+        // TODO : ver para antes de release
         Get.to(() => CreateMark(mark: marcaSelect));
       },
     );

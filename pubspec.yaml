@@ -61,6 +61,8 @@ dependencies:
   screenshot: ^1.2.3 # Un paquete simple para capturar widgets como imágenes. ¡Ahora también puede capturar los widgets que no se muestran en la pantalla!
   path_provider: ^2.0.8 # Un complemento de Flutter para encontrar ubicaciones de uso común en el sistema de archivos. Soporta Android, iOS, Linux, macOS y Windows. No todos los métodos son compatibles con todas las plataformas.
   share_plus: ^3.0.4 # Un complemento de Flutter para compartir contenido desde su aplicación Flutter a través del cuadro de diálogo para compartir de la plataforma.
+  internet_connection_checker: ^0.0.1+3 # verifica una conexión a Internet abriendo un socket a una lista de direcciones específicas
+
 
 flutter_icons:
   android: true
