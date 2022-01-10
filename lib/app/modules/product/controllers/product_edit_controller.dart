@@ -156,14 +156,9 @@ class ControllerProductsEdit extends GetxController {
 
   Future<void> save() async {
     if (getProduct.id != '') {
-      if (getCategory.id != '') {
+      if (getProduct.categoria != '') {
         if (getProduct.descripcion != '') {
-          if (getMarkSelected.id != '') {
-            //  set
-            getProduct.categoria = getCategory.id;
-            getProduct.subcategoria = getSubcategory.id;
-            getProduct.idMarca = getMarkSelected.id;
-            getProduct.nameMark = getMarkSelected.name;
+          if (getProduct.idMarca != '' && getProduct.nameMark != '') {
 
             // activate indicator load
             setSaveIndicator = true;
@@ -195,7 +190,7 @@ class ControllerProductsEdit extends GetxController {
 
             // registra el precio en una colección publica para todos los usuarios
             if (welcomeController.getProfileAccountSelected.id != "") {
-              Price precio = new Price(
+              Precio precio = new Precio(
                 id: welcomeController.getProfileAccountSelected.id,
                 idAccount: welcomeController.getProfileAccountSelected.id,
                 urlImageAccount: welcomeController.getProfileAccountSelected.imagenPerfil,
@@ -245,9 +240,9 @@ class ControllerProductsEdit extends GetxController {
   // DEVELOPER OPTIONS
   Future<void> saveProductPublic() async {
     if (getProduct.id != '') {
-      if (getCategory.id != '') {
+      if (getProduct.categoria != '') {
         if (getProduct.descripcion != '') {
-          if (getMarkSelected.id != '') {
+          if (getProduct.idMarca != '') {
 
             // activate indicator load
             setSaveIndicator = true;

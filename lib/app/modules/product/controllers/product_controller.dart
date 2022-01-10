@@ -49,9 +49,9 @@ class ProductController extends GetxController {
   set setListOthersProductsForCategoryCatalogue(List<ProductCatalogue> value) =>
       listOthersProductsForCategoryCatalogue.value = value;
 
-  static RxList<Price> listPricesForProduct = <Price>[].obs;
-  List<Price> get getListPricesForProduct => listPricesForProduct;
-  set setListPricesForProduct(List<Price> value) =>
+  static RxList<Precio> listPricesForProduct = <Precio>[].obs;
+  List<Precio> get getListPricesForProduct => listPricesForProduct;
+  set setListPricesForProduct(List<Precio> value) =>
       listPricesForProduct.value = value;
 
   @override
@@ -126,11 +126,11 @@ class ProductController extends GetxController {
 
   void readListPricesForProduct() {
     Database.readListPricesProductFuture(id: getProduct.id).then((value) {
-      List<Price> list = [];
+      List<Precio> list = [];
       value.docs.forEach((element) {
-        list.add(Price.fromMap(element.data()));
+        list.add(Precio.fromMap(element.data()));
       });
-      setListPricesForProduct = list.cast<Price>();
+      setListPricesForProduct = list.cast<Precio>();
     });
   }
 

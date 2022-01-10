@@ -255,7 +255,7 @@ class ProductCatalogue {
 
 DateTime date = Timestamp.now() as DateTime;
 
-class Price {
+class Precio {
   String id = '';
   double precio = 0.0;
   late Timestamp timestamp;
@@ -267,7 +267,7 @@ class Price {
   String urlImageAccount = '';
   String nameAccount = '';
 
-  Price({
+  Precio({
     required this.id,
     required this.idAccount,
     required this.urlImageAccount,
@@ -279,7 +279,7 @@ class Price {
     this.ciudad = '',
   });
 
-  Price.fromMap(Map data) {
+  Precio.fromMap(Map data) {
     id = data['id'] ?? '';
     idAccount = data['idAccount'] ?? '';
     urlImageAccount = data['urlImageAccount'] ?? '';
