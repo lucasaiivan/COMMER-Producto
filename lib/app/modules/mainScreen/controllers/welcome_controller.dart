@@ -87,26 +87,26 @@ class WelcomeController extends GetxController {
       _loadDataProfileBusiness.value = value;
 
   // catalog product list
-  RxList<Producto> _listSuggestedProducts = <Producto>[].obs;
-  List<Producto> get getListSuggestedProducts => _listSuggestedProducts;
-  set setListSuggestedProducts(List<Producto> products) =>
+  RxList<Product> _listSuggestedProducts = <Product>[].obs;
+  List<Product> get getListSuggestedProducts => _listSuggestedProducts;
+  set setListSuggestedProducts(List<Product> products) =>
       _listSuggestedProducts.value = products;
 
   // catalogue
-  RxList<ProductoNegocio> _catalogueBusiness = <ProductoNegocio>[].obs;
-  List<ProductoNegocio> get getCataloProducts => _catalogueBusiness;
-  set setCatalogueProducts(List<ProductoNegocio> products) {
+  RxList<ProductCatalogue> _catalogueBusiness = <ProductCatalogue>[].obs;
+  List<ProductCatalogue> get getCataloProducts => _catalogueBusiness;
+  set setCatalogueProducts(List<ProductCatalogue> products) {
     _catalogueBusiness.value = products;
     catalogueFilter();
   }
 
   // filter catalog
-  RxList<ProductoNegocio> _catalogueFilter = <ProductoNegocio>[].obs;
-  List<ProductoNegocio> get getCatalogueFilter => _catalogueFilter;
-  set setCatalogueFilter(List<ProductoNegocio> products) =>
+  RxList<ProductCatalogue> _catalogueFilter = <ProductCatalogue>[].obs;
+  List<ProductCatalogue> get getCatalogueFilter => _catalogueFilter;
+  set setCatalogueFilter(List<ProductCatalogue> products) =>
       _catalogueFilter.value = products;
   void catalogueFilter() {
-    List<ProductoNegocio> list = [];
+    List<ProductCatalogue> list = [];
     // si los filtros son nulos muestra todos los elemtos del cátalogo
     if (getMarkSelect.id == '' &&
         getCategorySelect.id == '' &&
@@ -157,10 +157,10 @@ class WelcomeController extends GetxController {
 
   void catalogueFilterReset() {
     // resetea los valores de los filtros para mostrar todos los productos
-    setMarkSelect = Marca(
+    setMarkSelect = Mark(
         timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
-    setCategorySelect = Categoria();
-    setsubCategorySelect = Categoria();
+    setCategorySelect = Category();
+    setsubCategorySelect = Category();
     catalogueFilter();
     // actualiza el texto del 'TabBar'
     setTextTab = 'Todos';
@@ -168,9 +168,9 @@ class WelcomeController extends GetxController {
   }
 
   // load catalog
-  List<ProductoNegocio> _catalogueLoad = <ProductoNegocio>[].obs;
-  List<ProductoNegocio> get getCatalogueLoad => _catalogueLoad;
-  set setCatalogueLoad(List<ProductoNegocio> products) =>
+  List<ProductCatalogue> _catalogueLoad = <ProductCatalogue>[].obs;
+  List<ProductCatalogue> get getCatalogueLoad => _catalogueLoad;
+  set setCatalogueLoad(List<ProductCatalogue> products) =>
       _catalogueLoad = products;
 
   // variable para comprobar cuando se han cargado todos los productos del cátalogo
@@ -187,11 +187,11 @@ class WelcomeController extends GetxController {
   }
 
   //  mark selected
-  Rx<Marca> _markSelect = Marca(
+  Rx<Mark> _markSelect = Mark(
           timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now())
       .obs;
-  Marca get getMarkSelect => _markSelect.value;
-  set setMarkSelect(Marca value) {
+  Mark get getMarkSelect => _markSelect.value;
+  set setMarkSelect(Mark value) {
     _markSelect.value = value;
     catalogueFilter();
     // actualiza el texto del 'TabBar'
@@ -200,14 +200,14 @@ class WelcomeController extends GetxController {
   }
 
   //  category selected
-  Rx<Categoria> _categorySelect = Categoria().obs;
-  Categoria get getCategorySelect => _categorySelect.value;
-  set setCategorySelect(Categoria value) {
+  Rx<Category> _categorySelect = Category().obs;
+  Category get getCategorySelect => _categorySelect.value;
+  set setCategorySelect(Category value) {
     // default value
-    setMarkSelect = Marca(
+    setMarkSelect = Mark(
         timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     // set
-    _subCategorySelect.value = Categoria();
+    _subCategorySelect.value = Category();
     _categorySelect.value = value;
     catalogueFilter();
     // actualiza el texto del 'TabBar'
@@ -220,7 +220,7 @@ class WelcomeController extends GetxController {
               idAccount: getProfileAccountSelected.id)
           .doc(idCategory)
           .delete();
-  Future<void> categoryUpdate({required Categoria categoria}) async {
+  Future<void> categoryUpdate({required Category categoria}) async {
     // ref
     var documentReferencer =
         Database.refFirestoreCategory(idAccount: getProfileAccountSelected.id)
@@ -236,11 +236,11 @@ class WelcomeController extends GetxController {
   }
 
   //  subCategory selected
-  Rx<Categoria> _subCategorySelect = Categoria().obs;
-  Categoria get getsubCategorySelect => _subCategorySelect.value;
-  set setsubCategorySelect(Categoria value) {
+  Rx<Category> _subCategorySelect = Category().obs;
+  Category get getsubCategorySelect => _subCategorySelect.value;
+  set setsubCategorySelect(Category value) {
     // default value
-    setMarkSelect = Marca(
+    setMarkSelect = Mark(
         timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     // set
     _subCategorySelect.value = value;
@@ -251,16 +251,16 @@ class WelcomeController extends GetxController {
   }
 
   // category list
-  RxList<Categoria> _categoryList = <Categoria>[].obs;
-  List<Categoria> get getCatalogueCategoryList => _categoryList;
-  set setCatalogueCategoryList(List<Categoria> value) {
+  RxList<Category> _categoryList = <Category>[].obs;
+  List<Category> get getCatalogueCategoryList => _categoryList;
+  set setCatalogueCategoryList(List<Category> value) {
     _categoryList.value = value;
   }
 
   // subcategory list selected
-  RxList<Categoria> _subCategoryList = <Categoria>[].obs;
-  List<Categoria> get getsubCatalogueCategoryList => _subCategoryList;
-  set setCataloguesubCategoryList(List<Categoria> value) {
+  RxList<Category> _subCategoryList = <Category>[].obs;
+  List<Category> get getsubCatalogueCategoryList => _subCategoryList;
+  set setCataloguesubCategoryList(List<Category> value) {
     _subCategoryList.value = value;
   }
 
@@ -272,13 +272,13 @@ class WelcomeController extends GetxController {
   }
 
   // marks
-  RxList<Marca> _marks = <Marca>[].obs;
-  List<Marca> get getCatalogueMarks => _marks;
-  set setCatalogueMarks(List<Marca> value) => _marks.value = value;
-  void addMark({required Marca markParam}) {
+  RxList<Mark> _marks = <Mark>[].obs;
+  List<Mark> get getCatalogueMarks => _marks;
+  set setCatalogueMarks(List<Mark> value) => _marks.value = value;
+  void addMark({required Mark markParam}) {
     // cada ves que se agrega un obj se asegura que en la lista no alla ninguno repetido
     bool repeated = false;
-    for (Marca mark in getCatalogueMarks) {
+    for (Mark mark in getCatalogueMarks) {
       if (mark.id == markParam.id) repeated = true;
     }
     // si 'repeated' es falso procede a agregar a la lista
@@ -290,9 +290,9 @@ class WelcomeController extends GetxController {
   }
 
   // marks filter
-  RxList<Marca> _marksFilter = <Marca>[].obs;
-  List<Marca> get getCatalogueMarksFilter => _marksFilter;
-  set setCatalogueMarksFilter(List<Marca> value) => _marksFilter.value = value;
+  RxList<Mark> _marksFilter = <Mark>[].obs;
+  List<Mark> get getCatalogueMarksFilter => _marksFilter;
+  set setCatalogueMarksFilter(List<Mark> value) => _marksFilter.value = value;
 
   // accounts reference identifiers
   RxList<String> _accountsReferenceIdentifiers = <String>[].obs;
@@ -383,7 +383,7 @@ class WelcomeController extends GetxController {
     await homeController.firebaseAuth.signOut();
   }
 
-  void toProductView({required Producto porduct}) {
+  void toProductView({required Product porduct}) {
     Get.toNamed(Routes.PRODUCT,
         arguments: {'product': porduct.convertProductCatalogue()});
   }
@@ -391,7 +391,7 @@ class WelcomeController extends GetxController {
   int getNumeroDeProductosDeMarca({required String id}) {
     int cantidad = 0;
 
-    for (ProductoNegocio item in getCataloProducts) {
+    for (ProductCatalogue item in getCataloProducts) {
       if (item.idMarca == id) {
         cantidad++;
       }
@@ -415,10 +415,10 @@ class WelcomeController extends GetxController {
     });
   }
 
-  Future<Marca> readMark({required String id}) async {
+  Future<Mark> readMark({required String id}) async {
     return Database.readMarkFuture(id: id)
-        .then((value) => Marca.fromMap(value.data() as Map))
-        .catchError((error) => Marca(
+        .then((value) => Mark.fromMap(value.data() as Map))
+        .catchError((error) => Mark(
             timestampUpdate: Timestamp.now(),
             timestampCreacion: Timestamp.now()));
   }
@@ -503,9 +503,9 @@ class WelcomeController extends GetxController {
     // obtenemos la categorias creadas por el usuario
     Database.readCategoriesQueryStream(idAccount: getProfileAccountSelected.id)
         .listen((event) {
-      List<Categoria> list = [];
+      List<Category> list = [];
       event.docs
-          .forEach((element) => list.add(Categoria.fromMap(element.data())));
+          .forEach((element) => list.add(Category.fromMap(element.data())));
       setCatalogueCategoryList = list;
     });
   }
@@ -513,9 +513,9 @@ class WelcomeController extends GetxController {
   void readListSuggestedProductsFuture() {
     // obtenemos tres primeros obj(productos) desctacados para mostrarle al usuario
     Database.readProductsFuture(limit: 3).then((value) {
-      List<Producto> list = [];
+      List<Product> list = [];
       value.docs
-          .forEach((element) => list.add(Producto.fromMap(element.data())));
+          .forEach((element) => list.add(Product.fromMap(element.data())));
       setListSuggestedProducts = list;
     });
   }
@@ -524,9 +524,9 @@ class WelcomeController extends GetxController {
     // obtenemos los obj(productos) del catalogo de la cuenta del negocio
     if (id != '') {
       Database.readProductsCatalogueStream(id: id).listen((value) {
-        List<ProductoNegocio> list = [];
+        List<ProductCatalogue> list = [];
         value.docs.forEach(
-            (element) => list.add(ProductoNegocio.fromMap(element.data())));
+            (element) => list.add(ProductCatalogue.fromMap(element.data())));
         setCatalogueProducts = list;
         setCatalogueFilter = list;
         getCatalogueMoreLoad();
@@ -544,7 +544,7 @@ class WelcomeController extends GetxController {
   // release
   // obtenemos un lista de las id de cada marca y procedemos a hacer una consulta en la db
   // y lo guardamos en las lista para mostrar al usuario
-  void _loadMarksAll({required List<ProductoNegocio> list}) {
+  void _loadMarksAll({required List<ProductCatalogue> list}) {
     // recorremos las lista de los productos
     // obtenemos la marca de cada producto en un nueva lista
     // y finamente la agregamos con los datos cargados para mostrar al usuario
@@ -559,7 +559,7 @@ class WelcomeController extends GetxController {
     }
   }
 
-  void filterMarks({required List<ProductoNegocio> catalogueFilter}) {
+  void filterMarks({required List<ProductCatalogue> catalogueFilter}) {
     // recorresmos las lista de elementos para mostras las marcas al usuario
     List<String> idList = [];
     // extraemos los ids de las marcas
@@ -576,7 +576,7 @@ class WelcomeController extends GetxController {
       }
     }
     // creamos una nueva lista con las marca y los datos ya cargados
-    List<Marca> markList = [];
+    List<Mark> markList = [];
     for (var idMark in idList) {
       for (var mark in getCatalogueMarks) {
         if (mark.id == idMark) {
@@ -603,7 +603,7 @@ class WelcomeController extends GetxController {
       timer.cancel();
 
       // creamos una nueva variable con los datos ya mostrados al usuario
-      List<ProductoNegocio> listLoad = getCatalogueLoad;
+      List<ProductCatalogue> listLoad = getCatalogueLoad;
 
       // agregamos de a 15 elmentos
       for (var i = 0; i < 15; ++i) {

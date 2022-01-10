@@ -440,7 +440,7 @@ class _SelectCategoryState extends State<SelectCategory> {
   _SelectCategoryState();
 
   // Variables
-  final Categoria categoriaSelected = Categoria();
+  final Category categoriaSelected = Category();
   bool crearCategoria = false, loadSave = false;
   final WelcomeController welcomeController = Get.find();
   final ControllerProductsEdit controllerProductsEdit = Get.find();
@@ -470,7 +470,7 @@ class _SelectCategoryState extends State<SelectCategory> {
           IconButton(
               icon: Icon(Icons.add),
               padding: const EdgeInsets.all(20.0),
-              onPressed: () => showDialogSetCategoria(categoria: Categoria()))
+              onPressed: () => showDialogSetCategoria(categoria: Category()))
         ],
       );
     }
@@ -481,7 +481,7 @@ class _SelectCategoryState extends State<SelectCategory> {
         shrinkWrap: true,
         itemCount: welcomeController.getCatalogueCategoryList.length,
         itemBuilder: (BuildContext context, int index) {
-          Categoria categoria =
+          Category categoria =
               welcomeController.getCatalogueCategoryList[index];
           return index == 0
               ? Column(
@@ -498,7 +498,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                             icon: Icon(Icons.add),
                             padding: const EdgeInsets.all(20.0),
                             onPressed: () =>
-                                showDialogSetCategoria(categoria: Categoria()))
+                                showDialogSetCategoria(categoria: Category()))
                       ],
                     ),
                     Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
@@ -546,7 +546,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                       title: Text(categoria.nombre),
                       onTap: () {
                         controllerProductsEdit.setCategory = categoria;
-                        controllerProductsEdit.setSubcategory = Categoria();
+                        controllerProductsEdit.setSubcategory = Category();
                         Get.back();
                       },
                       trailing: popupMenuItemCategoria(categoria: categoria),
@@ -559,7 +559,7 @@ class _SelectCategoryState extends State<SelectCategory> {
     );
   }
 
-  Widget popupMenuItemCategoria({required Categoria categoria}) {
+  Widget popupMenuItemCategoria({required Category categoria}) {
     final WelcomeController controller = Get.find();
 
     return new PopupMenuButton(
@@ -612,7 +612,7 @@ class _SelectCategoryState extends State<SelectCategory> {
     );
   }
 
-  showDialogSetCategoria({required Categoria categoria}) async {
+  showDialogSetCategoria({required Category categoria}) async {
     final WelcomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
@@ -621,7 +621,7 @@ class _SelectCategoryState extends State<SelectCategory> {
 
     if (categoria.id == '') {
       newProduct = true;
-      categoria = new Categoria();
+      categoria = new Category();
       categoria.id = new DateTime.now().millisecondsSinceEpoch.toString();
     }
 
@@ -696,7 +696,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
   _SelectSubCategoriaState();
 
   // Variables
-  late Categoria categoriaSelected;
+  late Category categoriaSelected;
   bool crearSubCategoria = false, loadSave = false;
   final ControllerProductsEdit controllerProductsEdit = Get.find();
 
@@ -727,7 +727,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
               icon: Icon(Icons.add),
               padding: const EdgeInsets.all(20.0),
               onPressed: () =>
-                  showDialogSetSubcategoria(subcategoria: Categoria()))
+                  showDialogSetSubcategoria(subcategoria: Category()))
         ],
       );
     }
@@ -737,7 +737,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
       shrinkWrap: true,
       itemCount: categoriaSelected.subcategorias.length,
       itemBuilder: (BuildContext _, int index) {
-        Categoria subcategoria = new Categoria(
+        Category subcategoria = new Category(
             id: categoriaSelected.subcategorias.keys
                 .elementAt(index)
                 .toString(),
@@ -760,7 +760,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                           icon: Icon(Icons.add),
                           padding: const EdgeInsets.all(20.0),
                           onPressed: () => showDialogSetSubcategoria(
-                              subcategoria: Categoria()))
+                              subcategoria: Category()))
                     ],
                   ),
                   Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
@@ -821,7 +821,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
     );
   }
 
-  Widget popupMenuItemSubcategoria({required Categoria subcategoria}) {
+  Widget popupMenuItemSubcategoria({required Category subcategoria}) {
     final WelcomeController controller = Get.find();
 
     return new PopupMenuButton(
@@ -882,7 +882,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
     );
   }
 
-  showDialogSetSubcategoria({required Categoria subcategoria}) async {
+  showDialogSetSubcategoria({required Category subcategoria}) async {
     final WelcomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
@@ -891,7 +891,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
 
     if (subcategoria.id == '') {
       newProduct = true;
-      subcategoria = new Categoria();
+      subcategoria = new Category();
       subcategoria.id = new DateTime.now().millisecondsSinceEpoch.toString();
     }
 
@@ -947,7 +947,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
 
 // create marks
 class CreateMark extends StatefulWidget {
-  late final Marca mark;
+  late final Mark mark;
   CreateMark({required this.mark, Key? key}) : super(key: key);
 
   @override
@@ -1173,7 +1173,7 @@ class _SelectMarkState extends State<SelectMark> {
   //  controllers
   ControllerProductsEdit controllerProductsEdit = Get.find();
   //  var
-  List<Marca> list = [];
+  List<Mark> list = [];
 
   @override
   void initState() {
@@ -1197,7 +1197,7 @@ class _SelectMarkState extends State<SelectMark> {
       shrinkWrap: true,
       itemCount: list.length,
       itemBuilder: (BuildContext context, int index) {
-        Marca marcaSelect = list[index];
+        Mark marcaSelect = list[index];
         if (index == 0) {
           return Column(
             children: [
@@ -1215,7 +1215,7 @@ class _SelectMarkState extends State<SelectMark> {
                             onPressed: () {
                               Get.back();
                               Get.to(() => CreateMark(
-                                  mark: Marca(
+                                  mark: Mark(
                                       timestampUpdate: Timestamp.now(),
                                       timestampCreacion: Timestamp.now())));
                             },
@@ -1226,7 +1226,7 @@ class _SelectMarkState extends State<SelectMark> {
                             Get.back();
                             showSearch(
                               context: context,
-                              delegate: SearchPage<Marca>(
+                              delegate: SearchPage<Mark>(
                                 items: list,
                                 searchLabel: 'Buscar marca',
                                 suggestion: Center(
@@ -1270,7 +1270,7 @@ class _SelectMarkState extends State<SelectMark> {
   }
 
   // WIDGETS COMPONENT
-  Widget listTile({required Marca marcaSelect}) {
+  Widget listTile({required Mark marcaSelect}) {
     return ListTile(
       leading: viewCircleImage(
           texto: marcaSelect.name, url: marcaSelect.urlImage, size: 50.0),
@@ -1309,7 +1309,7 @@ class _SelectMarkState extends State<SelectMark> {
       await Database.readListMarksFuture().then((value) {
         setState(() {
           value.docs.forEach((element) {
-            Marca mark = Marca.fromMap(element.data());
+            Mark mark = Mark.fromMap(element.data());
             mark.id = element.id;
             list.add(mark);
           });

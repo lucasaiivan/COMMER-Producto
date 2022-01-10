@@ -866,7 +866,7 @@ class WidgetsLoad extends StatelessWidget {
 }
 
 class ProductoCatalogueItem extends StatelessWidget {
-  final ProductoNegocio producto;
+  final ProductCatalogue producto;
   ProductoCatalogueItem({required this.producto});
 
   @override
@@ -950,7 +950,7 @@ class ProductoCatalogueItem extends StatelessWidget {
 }
 
 class ProductoItem extends StatelessWidget {
-  final ProductoNegocio producto;
+  final ProductCatalogue producto;
   ProductoItem({required this.producto});
 
   // controllers
@@ -1062,8 +1062,8 @@ class WidgetImagen extends StatelessWidget {
     this.borderRadius = 20.0,
   });
 
-  final ProductoNegocio producto;
-  final Marca marca;
+  final ProductCatalogue producto;
+  final Mark marca;
   final double borderRadius;
 
   @override

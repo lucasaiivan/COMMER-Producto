@@ -184,7 +184,7 @@ class ScanScreenView extends StatelessWidget {
     );
   }
 
-  Widget widgetSuggestions({required List<Producto> list}) {
+  Widget widgetSuggestions({required List<Product> list}) {
     if (list.length == 0) return Container();
 
     return Column(
@@ -441,10 +441,10 @@ class ScanScreenView extends StatelessWidget {
     // setState para actualizar nuestra apariencia inexistente.
     //if (!mounted) return;
     bool coincidencia = false;
-    late ProductoNegocio productoSelected;
+    late ProductCatalogue productoSelected;
 
     if (controller.getCataloProducts.length != 0) {
-      for (ProductoNegocio producto in controller.getCataloProducts) {
+      for (ProductCatalogue producto in controller.getCataloProducts) {
         if (producto.codigo == barcodeScanRes) {
           productoSelected = producto;
           coincidencia = true;

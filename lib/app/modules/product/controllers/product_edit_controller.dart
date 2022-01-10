@@ -42,11 +42,11 @@ class ControllerProductsEdit extends GetxController {
   bool get getEdit => _edit;
 
   // parameter
-  ProductoNegocio _product = ProductoNegocio(
+  ProductCatalogue _product = ProductCatalogue(
       timestampActualizacion: Timestamp.now(),
       timestampCreation: Timestamp.now());
-  set setProduct(ProductoNegocio product) => _product = product;
-  ProductoNegocio get getProduct => _product;
+  set setProduct(ProductCatalogue product) => _product = product;
+  ProductCatalogue get getProduct => _product;
 
   // TextEditingController
   TextEditingController controllerTextEdit_descripcion =
@@ -57,43 +57,43 @@ class ControllerProductsEdit extends GetxController {
       MoneyMaskedTextController();
 
   // marca
-  Marca _markSelected = Marca(
+  Mark _markSelected = Mark(
       timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
-  set setMarkSelected(Marca value) {
+  set setMarkSelected(Mark value) {
     _markSelected = value;
     getProduct.idMarca = value.id;
     getProduct.nameMark = value.name;
     update(['updateAll']);
   }
 
-  Marca get getMarkSelected => _markSelected;
+  Mark get getMarkSelected => _markSelected;
 
   // marcas
-  List<Marca> _marks = [];
-  set setMarks(List<Marca> value) => _marks = value;
-  List<Marca> get getMarks => _marks;
+  List<Mark> _marks = [];
+  set setMarks(List<Mark> value) => _marks = value;
+  List<Mark> get getMarks => _marks;
 
   //  category
-  Categoria _category = Categoria();
-  set setCategory(Categoria value) {
+  Category _category = Category();
+  set setCategory(Category value) {
     _category = value;
     getProduct.categoria = value.id;
     getProduct.categoriaName = value.nombre;
     update(['updateAll']);
   }
 
-  Categoria get getCategory => _category;
+  Category get getCategory => _category;
 
   //  subcategory
-  Categoria _subcategory = Categoria();
-  set setSubcategory(Categoria value) {
+  Category _subcategory = Category();
+  set setSubcategory(Category value) {
     _subcategory = value;
     getProduct.subcategoria = value.id;
     getProduct.subcategoriaName = value.nombre;
     update(['updateAll']);
   }
 
-  Categoria get getSubcategory => _subcategory;
+  Category get getSubcategory => _subcategory;
 
   // imagen
   ImagePicker _picker = ImagePicker();
@@ -112,7 +112,7 @@ class ControllerProductsEdit extends GetxController {
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
     setProduct = Get.arguments['product'] ??
-        ProductoNegocio(
+        ProductCatalogue(
             timestampActualizacion: Timestamp.now(),
             timestampCreation: Timestamp.now());
     if (getProduct.descripcion == '') {
@@ -195,7 +195,7 @@ class ControllerProductsEdit extends GetxController {
 
             // registra el precio en una colección publica para todos los usuarios
             if (welcomeController.getProfileAccountSelected.id != "") {
-              Precio precio = new Precio(
+              Price precio = new Price(
                 id: welcomeController.getProfileAccountSelected.id,
                 idAccount: welcomeController.getProfileAccountSelected.id,
                 urlImageAccount: welcomeController.getProfileAccountSelected.imagenPerfil,
@@ -255,7 +255,7 @@ class ControllerProductsEdit extends GetxController {
             updateAll();
 
             // set
-            Producto newProduct = getProduct.convertProductoDefault();
+            Product newProduct = getProduct.convertProductoDefault();
             newProduct.idAccount =welcomeController.getProfileAccountSelected.id;
             newProduct.timestampActualizacion =  Timestamp.fromDate(new DateTime.now());
             newProduct.idMarca = getMarkSelected.id;
@@ -321,14 +321,14 @@ class ControllerProductsEdit extends GetxController {
 
   void readMarkProducts() {
     Database.readMarkFuture(id: getProduct.idMarca).then((value) {
-      setMarkSelected = Marca.fromMap(value.data() as Map);
+      setMarkSelected = Mark.fromMap(value.data() as Map);
       getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
       update(['updateAll']);
     }).onError((error, stackTrace) {
-      setMarkSelected = Marca(
+      setMarkSelected = Mark(
           timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     }).catchError((_) {
-      setMarkSelected = Marca(
+      setMarkSelected = Mark(
           timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
     });
   }
@@ -338,21 +338,21 @@ class ControllerProductsEdit extends GetxController {
             idAccount: welcomeController.getProfileAccountSelected.id,
             idCategory: getProduct.categoria)
         .then((value) {
-      setCategory = Categoria.fromDocumentSnapshot(documentSnapshot: value);
+      setCategory = Category.fromDocumentSnapshot(documentSnapshot: value);
       if (getProduct.subcategoria != '') readSubcategory();
     }).onError((error, stackTrace) {
-      setCategory = Categoria(id: '0000', nombre: '');
-      setSubcategory = Categoria(id: '0000', nombre: '');
+      setCategory = Category(id: '0000', nombre: '');
+      setSubcategory = Category(id: '0000', nombre: '');
     }).catchError((_) {
-      setCategory = Categoria(id: '0000', nombre: '');
-      setSubcategory = Categoria(id: '0000', nombre: '');
+      setCategory = Category(id: '0000', nombre: '');
+      setSubcategory = Category(id: '0000', nombre: '');
     });
   }
 
   void readSubcategory() {
     getCategory.subcategorias.forEach((key, value) {
       if (key == getProduct.subcategoria) {
-        setSubcategory = Categoria(id: key, nombre: value.toString());
+        setSubcategory = Category(id: key, nombre: value.toString());
       }
     });
   }

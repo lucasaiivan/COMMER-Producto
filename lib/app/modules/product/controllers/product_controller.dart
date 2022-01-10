@@ -16,47 +16,47 @@ class ProductController extends GetxController {
   set setProfileBusiness(ProfileAccountModel model) =>
       profileBusinessModel.value = model;
 
-  static Rx<ProductoNegocio> listSuggestedProducts = ProductoNegocio(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now()).obs;
-  ProductoNegocio get getProduct => listSuggestedProducts.value;
-  set setProduct(ProductoNegocio product) =>
+  static Rx<ProductCatalogue> listSuggestedProducts = ProductCatalogue(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now()).obs;
+  ProductCatalogue get getProduct => listSuggestedProducts.value;
+  set setProduct(ProductCatalogue product) =>
       listSuggestedProducts.value = product;
 
-  static Rx<Marca> mark = Marca(
+  static Rx<Mark> mark = Mark(
           timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now())
       .obs;
-  Marca get getMark => mark.value;
-  set setMark(Marca value) => mark.value = value;
+  Mark get getMark => mark.value;
+  set setMark(Mark value) => mark.value = value;
 
-  static Rx<Categoria> category = Categoria(id: '', nombre: '').obs;
-  Categoria get getCategory => category.value;
-  set setCategory(Categoria value) => category.value = value;
+  static Rx<Category> category = Category(id: '', nombre: '').obs;
+  Category get getCategory => category.value;
+  set setCategory(Category value) => category.value = value;
 
-  static Rx<Categoria> subcategory = Categoria(id: '', nombre: '').obs;
-  Categoria get getSubcategory => subcategory.value;
-  set setSubcategory(Categoria value) => subcategory.value = value;
+  static Rx<Category> subcategory = Category(id: '', nombre: '').obs;
+  Category get getSubcategory => subcategory.value;
+  set setSubcategory(Category value) => subcategory.value = value;
 
   // otros productos de la misma marca
-  static RxList<Producto> listOthersProductsForMark = <Producto>[].obs;
-  List<Producto> get getListOthersProductsForMark => listOthersProductsForMark;
-  set setListOthersProductsForMark(List<Producto> value) =>
+  static RxList<Product> listOthersProductsForMark = <Product>[].obs;
+  List<Product> get getListOthersProductsForMark => listOthersProductsForMark;
+  set setListOthersProductsForMark(List<Product> value) =>
       listOthersProductsForMark.value = value;
 
   // otros productos de la misma categoria del cátalogo
-  static RxList<ProductoNegocio> listOthersProductsForCategoryCatalogue =
-      <ProductoNegocio>[].obs;
-  List<ProductoNegocio> get getListOthersProductsForCategoryCatalogue =>
+  static RxList<ProductCatalogue> listOthersProductsForCategoryCatalogue =
+      <ProductCatalogue>[].obs;
+  List<ProductCatalogue> get getListOthersProductsForCategoryCatalogue =>
       listOthersProductsForCategoryCatalogue;
-  set setListOthersProductsForCategoryCatalogue(List<ProductoNegocio> value) =>
+  set setListOthersProductsForCategoryCatalogue(List<ProductCatalogue> value) =>
       listOthersProductsForCategoryCatalogue.value = value;
 
-  static RxList<Precio> listPricesForProduct = <Precio>[].obs;
-  List<Precio> get getListPricesForProduct => listPricesForProduct;
-  set setListPricesForProduct(List<Precio> value) =>
+  static RxList<Price> listPricesForProduct = <Price>[].obs;
+  List<Price> get getListPricesForProduct => listPricesForProduct;
+  set setListPricesForProduct(List<Price> value) =>
       listPricesForProduct.value = value;
 
   @override
   void onInit() async {
-    setProduct = Get.arguments['product']?? ProductoNegocio(timestampActualizacion: Timestamp.now(), timestampCreation: Timestamp.now());
+    setProduct = Get.arguments['product']?? ProductCatalogue(timestampActualizacion: Timestamp.now(), timestampCreation: Timestamp.now());
     readCategory();
     readMarkProducts();
     readOthersProductsMark();
@@ -82,7 +82,7 @@ class ProductController extends GetxController {
         element.subcategorias.forEach((key, value) {
           if (getProduct.subcategoria == key) {
             // set subcategory
-            setSubcategory = Categoria(id: key,nombre: value);
+            setSubcategory = Category(id: key,nombre: value);
           }
         });
       }
@@ -91,7 +91,7 @@ class ProductController extends GetxController {
 
   void readMarkProducts() {
     Database.readMarkFuture(id: getProduct.idMarca)
-        .then((value) => setMark = Marca.fromMap(value.data() as Map));
+        .then((value) => setMark = Mark.fromMap(value.data() as Map));
   }
 
   void readProfileBusiness({required String id}) {
@@ -100,14 +100,14 @@ class ProductController extends GetxController {
   }
 
   void readOthersProductsCategoryCatalogue() {
-    List<ProductoNegocio> list = [];
+    List<ProductCatalogue> list = [];
     welcomeController.getCataloProducts.forEach((element) {
       if (getCategory.id == element.categoria ||
           getSubcategory.id == element.subcategoria) {
         list.add(element);
       }
     });
-    setListOthersProductsForCategoryCatalogue = list.cast<ProductoNegocio>();
+    setListOthersProductsForCategoryCatalogue = list.cast<ProductCatalogue>();
   }
 
   void readOthersProductsMark() {
@@ -115,22 +115,22 @@ class ProductController extends GetxController {
     //esta verificación evita que cargue productos que no tengas especificada la marca
     if( getProduct.idMarca!=''){
       Database.readProductsForMakFuture(idMark: getProduct.idMarca).then((value) {
-        List<Producto> list = [];
+        List<Product> list = [];
         value.docs.forEach((element) {
-          list.add(Producto.fromMap(element.data()));
+          list.add(Product.fromMap(element.data()));
         });
-        setListOthersProductsForMark = list.cast<Producto>();
+        setListOthersProductsForMark = list.cast<Product>();
     });
     }
   }
 
   void readListPricesForProduct() {
     Database.readListPricesProductFuture(id: getProduct.id).then((value) {
-      List<Precio> list = [];
+      List<Price> list = [];
       value.docs.forEach((element) {
-        list.add(Precio.fromMap(element.data()));
+        list.add(Price.fromMap(element.data()));
       });
-      setListPricesForProduct = list.cast<Precio>();
+      setListPricesForProduct = list.cast<Price>();
     });
   }
 

@@ -78,7 +78,7 @@ class CatalogueScreenView extends StatelessWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: SearchPage<ProductoNegocio>(
+                delegate: SearchPage<ProductCatalogue>(
                   items: controller.getCataloProducts,
                   searchLabel: 'Buscar producto',
                   suggestion: Center(
@@ -491,10 +491,10 @@ class CatalogueScreenView extends StatelessWidget {
     // setState to update our non-existent appearance.
     //if (!mounted) return;
     bool coincidencia = false;
-    late ProductoNegocio productoSelected;
+    late ProductCatalogue productoSelected;
 
     if (controller.getCataloProducts.length != 0) {
-      for (ProductoNegocio producto in controller.getCataloProducts) {
+      for (ProductCatalogue producto in controller.getCataloProducts) {
         if (producto.codigo == barcodeScanRes) {
           productoSelected = producto;
           coincidencia = true;
@@ -541,7 +541,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
           itemCount: controller.getCatalogueMarksFilter.length,
           itemBuilder: (BuildContext c, int index) {
             // get
-            Marca marca = controller.getCatalogueMarksFilter[index];
+            Mark marca = controller.getCatalogueMarksFilter[index];
             if (marca.name == '') return Container();
 
             return Container(

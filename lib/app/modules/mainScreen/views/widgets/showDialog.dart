@@ -28,7 +28,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   _ViewCategoriaState({required this.buildContextPrincipal});
 
   // Variables
-  final Categoria categoriaSelected = Categoria();
+  final Category categoriaSelected = Category();
   bool crearCategoria = false, loadSave = false;
   final BuildContext buildContextPrincipal;
   final WelcomeController controller = Get.find();
@@ -58,7 +58,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
           IconButton(
               icon: Icon(Icons.add),
               padding: const EdgeInsets.all(20.0),
-              onPressed: () => showDialogSetCategoria(categoria: Categoria()))
+              onPressed: () => showDialogSetCategoria(categoria: Category()))
         ],
       );
     }
@@ -68,7 +68,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
         shrinkWrap: true,
         itemCount: controller.getCatalogueCategoryList.length,
         itemBuilder: (BuildContext context, int index) {
-          Categoria categoria = controller.getCatalogueCategoryList[index];
+          Category categoria = controller.getCatalogueCategoryList[index];
           return index == 0
               ? Column(
                   children: <Widget>[
@@ -84,7 +84,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                             icon: Icon(Icons.add),
                             padding: const EdgeInsets.all(20.0),
                             onPressed: () =>
-                                showDialogSetCategoria(categoria: Categoria()))
+                                showDialogSetCategoria(categoria: Category()))
                       ],
                     ),
                     controller.getCatalogueCategoryList.length != 0
@@ -121,7 +121,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   }
 
   // listTile view
-  Widget listTileItem({required Categoria categoria}) {
+  Widget listTileItem({required Category categoria}) {
 
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
@@ -149,7 +149,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
 
   // menu options
 
-  Widget dropdownButtonCategory({required Categoria categoria}) {
+  Widget dropdownButtonCategory({required Category categoria}) {
     final WelcomeController controller = Get.find();
 
     return DropdownButton<String>(
@@ -210,7 +210,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
     );
   }
 
-  showDialogSetCategoria({required Categoria categoria}) async {
+  showDialogSetCategoria({required Category categoria}) async {
     final WelcomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
@@ -219,7 +219,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
 
     if (categoria.id == '') {
       newProduct = true;
-      categoria = new Categoria();
+      categoria = new Category();
       categoria.id = new DateTime.now().millisecondsSinceEpoch.toString();
     }
 
@@ -271,14 +271,14 @@ class _ViewCategoriaState extends State<ViewCategoria> {
 }
 
 class ViewSubCategoria extends StatefulWidget {
-  final Categoria categoria;
+  final Category categoria;
   ViewSubCategoria({required this.categoria});
 
   @override
   _ViewSubCategoriaState createState() =>
       _ViewSubCategoriaState(categoriaSelected: categoria);
 
-  static void show({required Categoria categoria}) {
+  static void show({required Category categoria}) {
     Widget widget = ViewSubCategoria(categoria: categoria);
     // muestre la hoja inferior modal de getx
     Get.bottomSheet(
@@ -295,7 +295,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
   _ViewSubCategoriaState({required this.categoriaSelected});
 
   // Variables
-  late Categoria categoriaSelected;
+  late Category categoriaSelected;
   bool crearSubCategoria = false, loadSave = false;
   final WelcomeController controller = Get.find();
 
@@ -325,7 +325,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
               icon: Icon(Icons.add),
               padding: const EdgeInsets.all(20.0),
               onPressed: () =>
-                  showDialogSetSubcategoria(subcategoria: Categoria()))
+                  showDialogSetSubcategoria(subcategoria: Category()))
         ],
       );
     }
@@ -335,7 +335,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
       shrinkWrap: true,
       itemCount: categoriaSelected.subcategorias.length,
       itemBuilder: (BuildContext _, int index) {
-        Categoria subcategoria = new Categoria(
+        Category subcategoria = new Category(
             id: categoriaSelected.subcategorias.keys
                 .elementAt(index)
                 .toString(),
@@ -358,7 +358,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                           icon: Icon(Icons.add),
                           padding: const EdgeInsets.all(20.0),
                           onPressed: () => showDialogSetSubcategoria(
-                              subcategoria: Categoria()))
+                              subcategoria: Category()))
                     ],
                   ),
                   categoriaSelected.subcategorias.length != 0
@@ -394,7 +394,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
   }
 
   // listTile view
-  Widget listTileItem({required Categoria subcategoria}) {
+  Widget listTileItem({required Category subcategoria}) {
 
     return ListTile(
       contentPadding:
@@ -422,7 +422,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
   }
 
   // menu options
-  Widget dropdownButtonSubcategory({required Categoria subcategoria}) {
+  Widget dropdownButtonSubcategory({required Category subcategoria}) {
     final WelcomeController controller = Get.find();
 
     return DropdownButton<String>(
@@ -488,7 +488,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
     );
   }
 
-  showDialogSetSubcategoria({required Categoria subcategoria}) async {
+  showDialogSetSubcategoria({required Category subcategoria}) async {
     final WelcomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
@@ -497,7 +497,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
 
     if (subcategoria.id == '') {
       newProduct = true;
-      subcategoria = new Categoria();
+      subcategoria = new Category();
       subcategoria.id = new DateTime.now().millisecondsSinceEpoch.toString();
     }
 

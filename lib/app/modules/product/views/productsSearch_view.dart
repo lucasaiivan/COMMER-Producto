@@ -219,7 +219,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
     );
   }
 
-  Widget widgetSuggestions({required List<Producto> list}) {
+  Widget widgetSuggestions({required List<Product> list}) {
     if (list.length == 0) return Container();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,

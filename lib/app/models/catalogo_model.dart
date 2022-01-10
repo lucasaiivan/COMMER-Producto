@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Producto {
+class Product {
   String id = "";
   String idAccount = '';
   bool verificado = false; // estado de verificación  al un moderador
@@ -22,7 +22,7 @@ class Producto {
   Timestamp timestampActualizacion =
       Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
-  Producto({
+  Product({
     this.id = "",
     this.idAccount = '',
     this.verificado = false,
@@ -64,8 +64,8 @@ class Producto {
         "enabled": enabled,
       };
 
-  factory Producto.fromMap(Map data) {
-    return Producto(
+  factory Product.fromMap(Map data) {
+    return Product(
       id: data['id'] ?? '',
       idAccount: data['idAccount'] ?? '',
       verificado: data['verificado'] ?? false,
@@ -87,7 +87,7 @@ class Producto {
       enabled: data['enabled'] ?? true,
     );
   }
-  Producto.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+  Product.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     id = documentSnapshot['id'] ?? '';
     idAccount = documentSnapshot['idAccount'] ?? '';
     verificado = documentSnapshot['verificado'] ?? false;
@@ -107,8 +107,8 @@ class Producto {
     timestampCreation = documentSnapshot['timestamp_creation'];
     enabled = documentSnapshot['enabled'] ?? true;
   }
-  ProductoNegocio convertProductCatalogue() {
-    ProductoNegocio productoNegocio = new ProductoNegocio(
+  ProductCatalogue convertProductCatalogue() {
+    ProductCatalogue productoNegocio = new ProductCatalogue(
         timestampActualizacion: Timestamp.now(),
         timestampCreation: Timestamp.now());
     productoNegocio.id = this.id;
@@ -130,7 +130,7 @@ class Producto {
   }
 }
 
-class ProductoNegocio {
+class ProductCatalogue {
   // valores del producto
   String id = "";
   bool favorite = false;
@@ -157,7 +157,7 @@ class ProductoNegocio {
   double precioCompra = 0.0;
   String signoMoneda;
 
-  ProductoNegocio({
+  ProductCatalogue({
     // Valores del producto
     this.id = "",
     this.verificado = false,
@@ -182,8 +182,8 @@ class ProductoNegocio {
     this.nameMark = '',
   });
 
-  factory ProductoNegocio.fromMap(Map data) {
-    return ProductoNegocio(
+  factory ProductCatalogue.fromMap(Map data) {
+    return ProductCatalogue(
       // Valores del producto
       id: data['id'] ?? '',
       verificado: data['verificado'] ?? false,
@@ -231,9 +231,9 @@ class ProductoNegocio {
         "signo_moneda": signoMoneda,
       };
 
-  Producto convertProductoDefault() {
+  Product convertProductoDefault() {
     // convertimos en el modelo para producto global
-    Producto productoDefault = new Producto(
+    Product productoDefault = new Product(
         timestampActualizacion: Timestamp.now(),
         timestampCreation: Timestamp.now());
     productoDefault.id = this.id;
@@ -255,7 +255,7 @@ class ProductoNegocio {
 
 DateTime date = Timestamp.now() as DateTime;
 
-class Precio {
+class Price {
   String id = '';
   double precio = 0.0;
   late Timestamp timestamp;
@@ -267,7 +267,7 @@ class Precio {
   String urlImageAccount = '';
   String nameAccount = '';
 
-  Precio({
+  Price({
     required this.id,
     required this.idAccount,
     required this.urlImageAccount,
@@ -279,7 +279,7 @@ class Precio {
     this.ciudad = '',
   });
 
-  Precio.fromMap(Map data) {
+  Price.fromMap(Map data) {
     id = data['id'] ?? '';
     idAccount = data['idAccount'] ?? '';
     urlImageAccount = data['urlImageAccount'] ?? '';
@@ -303,12 +303,12 @@ class Precio {
       };
 }
 
-class Categoria {
+class Category {
   String id = "";
   String nombre = "";
   Map<String, dynamic> subcategorias = Map<String, dynamic>();
 
-  Categoria({
+  Category({
     this.id = "",
     this.nombre = "",
     this.subcategorias = const {},
@@ -318,14 +318,14 @@ class Categoria {
         "nombre": nombre,
         "subcategorias": subcategorias,
       };
-  factory Categoria.fromMap(Map<String, dynamic> data) {
-    return Categoria(
+  factory Category.fromMap(Map<String, dynamic> data) {
+    return Category(
       id: data['id'] ?? '',
       nombre: data['nombre'] ?? '',
       subcategorias: data['subcategorias'] ?? new Map<String, dynamic>(),
     );
   }
-  Categoria.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+  Category.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     id = documentSnapshot['id'] ?? '';
     nombre = documentSnapshot['nombre'] ?? '';
     subcategorias =
@@ -333,7 +333,7 @@ class Categoria {
   }
 }
 
-class Marca {
+class Mark {
   String id = "";
   String name = "";
   String description = "";
@@ -346,7 +346,7 @@ class Marca {
       timestampCreacion; // Marca de tiempo de la creacion del documento
   late Timestamp timestampUpdate; // Marca de tiempo de la ultima actualizacion
 
-  Marca({
+  Mark({
     this.id = "",
     this.name = "",
     this.description = "",
@@ -355,7 +355,7 @@ class Marca {
     required this.timestampUpdate,
     required this.timestampCreacion,
   });
-  Marca.fromMap(Map data) {
+  Mark.fromMap(Map data) {
     id = data['id'] ?? '';
     name = data['name'] ?? data['titulo'] ?? '';
     description = data['description'] ?? data['descripcion'] ?? '';

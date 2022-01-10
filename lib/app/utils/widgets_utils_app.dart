@@ -146,7 +146,7 @@ Widget viewCircleImage(
 }
 
 class ProductoItem extends StatelessWidget {
-  final ProductoNegocio producto;
+  final ProductCatalogue producto;
   ProductoItem({required this.producto});
 
   @override

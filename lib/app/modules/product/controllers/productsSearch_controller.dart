@@ -89,10 +89,10 @@ class ControllerProductsSearch extends GetxController {
   }
 
   // list productos sujeridos
-  List<Producto> _listProductsSuggestion = [];
-  set setListProductsSuggestions(List<Producto> list) =>
+  List<Product> _listProductsSuggestion = [];
+  set setListProductsSuggestions(List<Product> list) =>
       _listProductsSuggestion = list;
-  List<Producto> get getListProductsSuggestions => _listProductsSuggestion;
+  List<Product> get getListProductsSuggestions => _listProductsSuggestion;
 
   get getproductDoesNotExist => _productDoesNotExist;
 
@@ -104,7 +104,7 @@ class ControllerProductsSearch extends GetxController {
       update(['updateAll']);
       // query
       Database.readProductGlobalFuture(id: id).then((value) {
-        Producto productoNegocio = Producto.fromMap(value.data() as Map);
+        Product productoNegocio = Product.fromMap(value.data() as Map);
         Get.back();
         Get.toNamed(Routes.PRODUCT,
             arguments: {'product': productoNegocio.convertProductCatalogue()});
@@ -143,18 +143,18 @@ class ControllerProductsSearch extends GetxController {
 
   void queryProductSuggestion() {
     Database.readProductsFuture(limit: 4).then((value) {
-      List<Producto> newList = [];
+      List<Product> newList = [];
       value.docs
-          .forEach((element) => newList.add(Producto.fromMap(element.data())));
+          .forEach((element) => newList.add(Product.fromMap(element.data())));
       setListProductsSuggestions = newList;
       update(['updateAll']);
     });
   }
 
-  void toProductView({required ProductoNegocio porduct}) {
+  void toProductView({required ProductCatalogue porduct}) {
     Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct});
   }
   void toProductNew({required String id}) {
-    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': ProductoNegocio(id: id,codigo: id,timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now())});
+    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': ProductCatalogue(id: id,codigo: id,timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now())});
   }
 }
