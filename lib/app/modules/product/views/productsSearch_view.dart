@@ -243,7 +243,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         child: CircleAvatar(
                             child: ClipRRect(
                               child: CachedNetworkImage(
-                                  imageUrl: list[0].urlImagen,
+                                  imageUrl: list[0].image,
                                   fit: BoxFit.cover),
                               borderRadius: BorderRadius.circular(999),
                             ),
@@ -266,7 +266,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         child: CircleAvatar(
                             child: ClipRRect(
                               child: CachedNetworkImage(
-                                  imageUrl: list[1].urlImagen,
+                                  imageUrl: list[1].image,
                                   fit: BoxFit.cover),
                               borderRadius: BorderRadius.circular(999),
                             ),
@@ -289,7 +289,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         child: CircleAvatar(
                             child: ClipRRect(
                               child: CachedNetworkImage(
-                                  imageUrl: list[2].urlImagen,
+                                  imageUrl: list[2].image,
                                   fit: BoxFit.cover),
                               borderRadius: BorderRadius.circular(999),
                             ),
@@ -312,7 +312,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         child: CircleAvatar(
                             child: ClipRRect(
                               child: CachedNetworkImage(
-                                  imageUrl: list[3].urlImagen,
+                                  imageUrl: list[3].image,
                                   fit: BoxFit.cover),
                               borderRadius: BorderRadius.circular(999),
                             ),

@@ -231,7 +231,7 @@ class ScanScreenView extends StatelessWidget {
                             child: CircleAvatar(
                                 child: ClipRRect(
                                   child: CachedNetworkImage(
-                                      imageUrl: list[0].urlImagen,
+                                      imageUrl: list[0].image,
                                       fit: BoxFit.cover),
                                   borderRadius: BorderRadius.circular(999),
                                 ),
@@ -254,7 +254,7 @@ class ScanScreenView extends StatelessWidget {
                             child: CircleAvatar(
                                 child: ClipRRect(
                                   child: CachedNetworkImage(
-                                      imageUrl: list[1].urlImagen,
+                                      imageUrl: list[1].image,
                                       fit: BoxFit.cover),
                                   borderRadius: BorderRadius.circular(999),
                                 ),
@@ -277,7 +277,7 @@ class ScanScreenView extends StatelessWidget {
                             child: CircleAvatar(
                                 child: ClipRRect(
                                   child: CachedNetworkImage(
-                                      imageUrl: list[2].urlImagen,
+                                      imageUrl: list[2].image,
                                       fit: BoxFit.cover),
                                   borderRadius: BorderRadius.circular(999),
                                 ),
@@ -445,7 +445,7 @@ class ScanScreenView extends StatelessWidget {
 
     if (controller.getCataloProducts.length != 0) {
       for (ProductCatalogue producto in controller.getCataloProducts) {
-        if (producto.codigo == barcodeScanRes) {
+        if (producto.code == barcodeScanRes) {
           productoSelected = producto;
           coincidencia = true;
           break;

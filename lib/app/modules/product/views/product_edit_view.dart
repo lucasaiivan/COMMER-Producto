@@ -146,7 +146,7 @@ class ProductEdit extends StatelessWidget {
             minLines: 1,
             maxLines: 5,
             keyboardType: TextInputType.multiline,
-            onChanged: (value) => controller.getProduct.descripcion = value,
+            onChanged: (value) => controller.getProduct.description = value,
             decoration: InputDecoration(
                 border: OutlineInputBorder(), labelText: "Descripción"),
             controller: controller.controllerTextEdit_descripcion,
@@ -155,7 +155,7 @@ class ProductEdit extends StatelessWidget {
           TextField(
             enabled: !controller.getSaveIndicator,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
-            onChanged: (value) => controller.getProduct.precioCompra =
+            onChanged: (value) => controller.getProduct.purchasePrice =
                 controller.controllerTextEdit_precio_compra.numberValue,
             decoration: InputDecoration(
                 border: OutlineInputBorder(), labelText: "Precio de compra"),
@@ -166,7 +166,7 @@ class ProductEdit extends StatelessWidget {
           TextField(
             enabled: !controller.getSaveIndicator,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
-            onChanged: (value) => controller.getProduct.precioVenta =
+            onChanged: (value) => controller.getProduct.salePrice =
                 controller.controllerTextEdit_precio_venta.numberValue,
             decoration: InputDecoration(
                 border: OutlineInputBorder(), labelText: "Precio de venta"),
@@ -179,7 +179,7 @@ class ProductEdit extends StatelessWidget {
               : Center(
                   child: Padding(
                     padding: const EdgeInsets.all(30.0),
-                    child: Text(controller.getProduct.codigo,
+                    child: Text(controller.getProduct.code,
                         style: TextStyle(
                             color: Get.theme.textTheme.headline1!.color,
                             fontWeight: FontWeight.bold)),

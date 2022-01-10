@@ -43,8 +43,8 @@ class ControllerProductsEdit extends GetxController {
 
   // parameter
   ProductCatalogue _product = ProductCatalogue(
-      timestampActualizacion: Timestamp.now(),
-      timestampCreation: Timestamp.now());
+      upgrade: Timestamp.now(),
+      creation: Timestamp.now());
   set setProduct(ProductCatalogue product) => _product = product;
   ProductCatalogue get getProduct => _product;
 
@@ -61,7 +61,7 @@ class ControllerProductsEdit extends GetxController {
       timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
   set setMarkSelected(Mark value) {
     _markSelected = value;
-    getProduct.idMarca = value.id;
+    getProduct.idMark = value.id;
     getProduct.nameMark = value.name;
     update(['updateAll']);
   }
@@ -77,8 +77,8 @@ class ControllerProductsEdit extends GetxController {
   Category _category = Category();
   set setCategory(Category value) {
     _category = value;
-    getProduct.categoria = value.id;
-    getProduct.categoriaName = value.nombre;
+    getProduct.category = value.id;
+    getProduct.nameCategory = value.nombre;
     update(['updateAll']);
   }
 
@@ -88,8 +88,8 @@ class ControllerProductsEdit extends GetxController {
   Category _subcategory = Category();
   set setSubcategory(Category value) {
     _subcategory = value;
-    getProduct.subcategoria = value.id;
-    getProduct.subcategoriaName = value.nombre;
+    getProduct.subcategory = value.id;
+    getProduct.nameSubcategory = value.nombre;
     update(['updateAll']);
   }
 
@@ -113,9 +113,9 @@ class ControllerProductsEdit extends GetxController {
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
     setProduct = Get.arguments['product'] ??
         ProductCatalogue(
-            timestampActualizacion: Timestamp.now(),
-            timestampCreation: Timestamp.now());
-    if (getProduct.descripcion == '') {
+            upgrade: Timestamp.now(),
+            creation: Timestamp.now());
+    if (getProduct.description == '') {
       setNewProduct = true;
     } else {
       setNewProduct = false;
@@ -156,9 +156,9 @@ class ControllerProductsEdit extends GetxController {
 
   Future<void> save() async {
     if (getProduct.id != '') {
-      if (getProduct.categoria != '') {
-        if (getProduct.descripcion != '') {
-          if (getProduct.idMarca != '' && getProduct.nameMark != '') {
+      if (getProduct.category != '') {
+        if (getProduct.description != '') {
+          if (getProduct.idMark != '' && getProduct.nameMark != '') {
 
             // activate indicator load
             setSaveIndicator = true;
@@ -179,11 +179,11 @@ class ControllerProductsEdit extends GetxController {
               // obtenemos la url de la imagen guardada
               await ref
                   .getDownloadURL()
-                  .then((value) => getProduct.urlimagen = value);
+                  .then((value) => getProduct.image = value);
             }
             // Mods - save data product global
             if (getNewProduct || getEdit) {
-              getProduct.verificado =
+              getProduct.verified =
                   true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
               saveProductPublic();
             }
@@ -195,8 +195,8 @@ class ControllerProductsEdit extends GetxController {
                 idAccount: welcomeController.getProfileAccountSelected.id,
                 urlImageAccount: welcomeController.getProfileAccountSelected.imagenPerfil,
                 nameAccount: welcomeController.getProfileAccountSelected.nombreNegocio ,
-                precio: getProduct.precioVenta,
-                moneda: getProduct.signoMoneda,
+                precio: getProduct.salePrice,
+                moneda: getProduct.sign,
                 provincia:welcomeController.getProfileAccountSelected.provincia,
                 ciudad: welcomeController.getProfileAccountSelected.ciudad,
                 timestamp: Timestamp.fromDate(new DateTime.now()),
@@ -208,7 +208,7 @@ class ControllerProductsEdit extends GetxController {
                   .set(precio.toJson());
             }
             // add/update data product in catalogue
-            getProduct.timestampActualizacion = Timestamp.now();
+            getProduct.upgrade = Timestamp.now();
             Database.refFirestoreCatalogueProduct(
                     idAccount: welcomeController.getProfileAccountSelected.id)
                 .doc(getProduct.id)
@@ -240,9 +240,9 @@ class ControllerProductsEdit extends GetxController {
   // DEVELOPER OPTIONS
   Future<void> saveProductPublic() async {
     if (getProduct.id != '') {
-      if (getProduct.categoria != '') {
-        if (getProduct.descripcion != '') {
-          if (getProduct.idMarca != '') {
+      if (getProduct.category != '') {
+        if (getProduct.description != '') {
+          if (getProduct.idMark != '') {
 
             // activate indicator load
             setSaveIndicator = true;
@@ -252,8 +252,8 @@ class ControllerProductsEdit extends GetxController {
             // set
             Product newProduct = getProduct.convertProductoDefault();
             newProduct.idAccount =welcomeController.getProfileAccountSelected.id;
-            newProduct.timestampActualizacion =  Timestamp.fromDate(new DateTime.now());
-            newProduct.idMarca = getMarkSelected.id;
+            newProduct.upgrade =  Timestamp.fromDate(new DateTime.now());
+            newProduct.idMark = getMarkSelected.id;
             newProduct.nameMark = getMarkSelected.name;
 
             // firestore - save product public
@@ -303,19 +303,19 @@ class ControllerProductsEdit extends GetxController {
   void loadDataProduct() {
     // set
     controllerTextEdit_descripcion =
-        TextEditingController(text: getProduct.descripcion);
+        TextEditingController(text: getProduct.description);
     controllerTextEdit_precio_venta =
-        MoneyMaskedTextController(initialValue: getProduct.precioVenta);
+        MoneyMaskedTextController(initialValue: getProduct.salePrice);
     controllerTextEdit_precio_compra =
-        MoneyMaskedTextController(initialValue: getProduct.precioCompra);
+        MoneyMaskedTextController(initialValue: getProduct.purchasePrice);
 
     // primero verificamos que no tenga el metadato del dato de la marca para hacer un consulta inecesaria
-    if (getProduct.idMarca != '') readMarkProducts();
-    if (getProduct.categoria != '') readCategory();
+    if (getProduct.idMark != '') readMarkProducts();
+    if (getProduct.category != '') readCategory();
   }
 
   void readMarkProducts() {
-    Database.readMarkFuture(id: getProduct.idMarca).then((value) {
+    Database.readMarkFuture(id: getProduct.idMark).then((value) {
       setMarkSelected = Mark.fromMap(value.data() as Map);
       getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
       update(['updateAll']);
@@ -331,10 +331,10 @@ class ControllerProductsEdit extends GetxController {
   void readCategory() {
     Database.readCategotyCatalogueFuture(
             idAccount: welcomeController.getProfileAccountSelected.id,
-            idCategory: getProduct.categoria)
+            idCategory: getProduct.category)
         .then((value) {
       setCategory = Category.fromDocumentSnapshot(documentSnapshot: value);
-      if (getProduct.subcategoria != '') readSubcategory();
+      if (getProduct.subcategory != '') readSubcategory();
     }).onError((error, stackTrace) {
       setCategory = Category(id: '0000', nombre: '');
       setSubcategory = Category(id: '0000', nombre: '');
@@ -346,7 +346,7 @@ class ControllerProductsEdit extends GetxController {
 
   void readSubcategory() {
     getCategory.subcategorias.forEach((key, value) {
-      if (key == getProduct.subcategoria) {
+      if (key == getProduct.subcategory) {
         setSubcategory = Category(id: key, nombre: value.toString());
       }
     });
@@ -395,7 +395,7 @@ class ControllerProductsEdit extends GetxController {
         aspectRatio: 1 / 1,
         child: CachedNetworkImage(
           fit: BoxFit.cover,
-          imageUrl: getProduct.urlimagen,
+          imageUrl: getProduct.image,
           placeholder: (context, url) => Container(
             color: Colors.grey.withOpacity(0.3),
             child: Center(child: Icon(Icons.cloud, color: Colors.white)),

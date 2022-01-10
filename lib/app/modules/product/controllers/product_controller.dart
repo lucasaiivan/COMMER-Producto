@@ -16,7 +16,7 @@ class ProductController extends GetxController {
   set setProfileBusiness(ProfileAccountModel model) =>
       profileBusinessModel.value = model;
 
-  static Rx<ProductCatalogue> listSuggestedProducts = ProductCatalogue(timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now()).obs;
+  static Rx<ProductCatalogue> listSuggestedProducts = ProductCatalogue(upgrade: Timestamp.now(),creation: Timestamp.now()).obs;
   ProductCatalogue get getProduct => listSuggestedProducts.value;
   set setProduct(ProductCatalogue product) =>
       listSuggestedProducts.value = product;
@@ -56,7 +56,7 @@ class ProductController extends GetxController {
 
   @override
   void onInit() async {
-    setProduct = Get.arguments['product']?? ProductCatalogue(timestampActualizacion: Timestamp.now(), timestampCreation: Timestamp.now());
+    setProduct = Get.arguments['product']?? ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     readCategory();
     readMarkProducts();
     readOthersProductsMark();
@@ -76,11 +76,11 @@ class ProductController extends GetxController {
   void readCategory() {
     // aignamos los datos de la cátegoria y subcátegoria del producto
     welcomeController.getCatalogueCategoryList.forEach((element) {
-      if (getProduct.categoria == element.id) {
+      if (getProduct.category == element.id) {
         // set category
         setCategory = element;
         element.subcategorias.forEach((key, value) {
-          if (getProduct.subcategoria == key) {
+          if (getProduct.subcategory == key) {
             // set subcategory
             setSubcategory = Category(id: key,nombre: value);
           }
@@ -90,7 +90,7 @@ class ProductController extends GetxController {
   }
 
   void readMarkProducts() {
-    Database.readMarkFuture(id: getProduct.idMarca)
+    Database.readMarkFuture(id: getProduct.idMark)
         .then((value) => setMark = Mark.fromMap(value.data() as Map));
   }
 
@@ -102,8 +102,8 @@ class ProductController extends GetxController {
   void readOthersProductsCategoryCatalogue() {
     List<ProductCatalogue> list = [];
     welcomeController.getCataloProducts.forEach((element) {
-      if (getCategory.id == element.categoria ||
-          getSubcategory.id == element.subcategoria) {
+      if (getCategory.id == element.category ||
+          getSubcategory.id == element.subcategory) {
         list.add(element);
       }
     });
@@ -113,8 +113,8 @@ class ProductController extends GetxController {
   void readOthersProductsMark() {
 
     //esta verificación evita que cargue productos que no tengas especificada la marca
-    if( getProduct.idMarca!=''){
-      Database.readProductsForMakFuture(idMark: getProduct.idMarca).then((value) {
+    if( getProduct.idMark!=''){
+      Database.readProductsForMakFuture(idMark: getProduct.idMark).then((value) {
         List<Product> list = [];
         value.docs.forEach((element) {
           list.add(Product.fromMap(element.data()));

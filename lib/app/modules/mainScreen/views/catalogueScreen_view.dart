@@ -88,19 +88,19 @@ class CatalogueScreenView extends StatelessWidget {
                     child: Text('No se encontro :('),
                   ),
                   filter: (product) => [
-                    product.titulo,
-                    product.descripcion,
+                    product.title,
+                    product.description,
                   ],
                   builder: (product) => ListTile(
                     leading: FadeInImage(
-                      image: NetworkImage(product.urlimagen),
+                      image: NetworkImage(product.image),
                       placeholder: AssetImage("assets/loading.gif"),
                       fadeInDuration: Duration(milliseconds: 200),
                       fit: BoxFit.cover,
                       width: 50.0,
                     ),
-                    title: Text(product.titulo),
-                    subtitle: Text(product.descripcion),
+                    title: Text(product.title),
+                    subtitle: Text(product.description),
                     onTap: () {
                       Get.toNamed(Routes.PRODUCT,
                           arguments: {'product': product});
@@ -495,7 +495,7 @@ class CatalogueScreenView extends StatelessWidget {
 
     if (controller.getCataloProducts.length != 0) {
       for (ProductCatalogue producto in controller.getCataloProducts) {
-        if (producto.codigo == barcodeScanRes) {
+        if (producto.code == barcodeScanRes) {
           productoSelected = producto;
           coincidencia = true;
           break;

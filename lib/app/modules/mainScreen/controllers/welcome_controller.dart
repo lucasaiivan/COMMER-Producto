@@ -116,20 +116,20 @@ class WelcomeController extends GetxController {
     //filter
     if (getMarkSelect.id != '') {
       getCataloProducts.forEach((element) {
-        if (getMarkSelect.id == element.idMarca) {
+        if (getMarkSelect.id == element.idMark) {
           list.add(element);
         }
       });
     } else {
       if (getsubCategorySelect.id != '') {
         getCataloProducts.forEach((element) {
-          if (getsubCategorySelect.id == element.subcategoria) {
+          if (getsubCategorySelect.id == element.subcategory) {
             list.add(element);
           }
         });
       } else if (getCategorySelect.id != '') {
         getCataloProducts.forEach((element) {
-          if (getCategorySelect.id == element.categoria) {
+          if (getCategorySelect.id == element.category) {
             list.add(element);
           }
         });
@@ -392,7 +392,7 @@ class WelcomeController extends GetxController {
     int cantidad = 0;
 
     for (ProductCatalogue item in getCataloProducts) {
-      if (item.idMarca == id) {
+      if (item.idMark == id) {
         cantidad++;
       }
     }
@@ -549,8 +549,8 @@ class WelcomeController extends GetxController {
     // obtenemos la marca de cada producto en un nueva lista
     // y finamente la agregamos con los datos cargados para mostrar al usuario
     for (var productoNegocio in list) {
-      if (productoNegocio.idMarca != '') {
-        readMark(id: productoNegocio.idMarca)
+      if (productoNegocio.idMark != '') {
+        readMark(id: productoNegocio.idMark)
             .then((value) => addMark(markParam: value));
       }
     }
@@ -568,11 +568,11 @@ class WelcomeController extends GetxController {
       bool repeated = false;
       // recorremos las lista de ids
       for (String id in idList) {
-        if (id == product.idMarca) repeated = true;
+        if (id == product.idMark) repeated = true;
       }
       // si no se repite se agrega a la lista
       if (repeated == false) {
-        idList.add(product.idMarca);
+        idList.add(product.idMark);
       }
     }
     // creamos una nueva lista con las marca y los datos ya cargados

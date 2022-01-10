@@ -183,13 +183,13 @@ class ProductoItem extends StatelessWidget {
   }
 
   Widget contentImage() {
-    return producto.urlimagen != ""
+    return producto.image != ""
         ? Container(
             width: double.infinity,
             child: CachedNetworkImage(
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
-              imageUrl: producto.urlimagen,
+              imageUrl: producto.image,
               placeholder: (context, url) => FadeInImage(
                   fit: BoxFit.cover,
                   image: AssetImage("assets/loading.gif"),
@@ -198,7 +198,7 @@ class ProductoItem extends StatelessWidget {
                 color: Colors.grey[100],
                 child: Center(
                   child: Text(
-                    producto.descripcion.substring(0, 3),
+                    producto.description.substring(0, 3),
                     style: TextStyle(fontSize: 24.0),
                   ),
                 ),
@@ -214,14 +214,14 @@ class ProductoItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(producto.descripcion,
+          Text(producto.description,
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14.0,
                   color: Colors.grey),
               overflow: TextOverflow.fade,
               softWrap: false),
-          Text(Publicaciones.getFormatoPrecio(monto: producto.precioVenta),
+          Text(Publicaciones.getFormatoPrecio(monto: producto.salePrice),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14.0,

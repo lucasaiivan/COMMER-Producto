@@ -44,7 +44,7 @@ class Product extends GetView<ProductController> {
           .copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
       title: Obx(() => Row(
             children: <Widget>[
-              controller.getProduct.verificado == true
+              controller.getProduct.verified == true
                   ? Padding(
                       padding: const EdgeInsets.only(right: 3.0),
                       child: new Image.asset('assets/icon_verificado.png',
@@ -187,9 +187,9 @@ class Product extends GetView<ProductController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        controller.getProduct.descripcion != ""
+                        controller.getProduct.description != ""
                             ? Text(
-                                controller.getProduct.descripcion,
+                                controller.getProduct.description,
                                 style: TextStyle(
                                   fontFamily: "Poppins",
                                   fontWeight: FontWeight.bold,
@@ -205,11 +205,11 @@ class Product extends GetView<ProductController> {
                           child: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              controller.getProduct.precioVenta != 0.0
+                              controller.getProduct.salePrice != 0.0
                                   ? Text(
                                       Publicaciones.getFormatoPrecio(
                                           monto: controller
-                                              .getProduct.precioVenta),
+                                              .getProduct.salePrice),
                                       style: TextStyle(
                                           color: Colors.blue,
                                           fontSize: 40,
@@ -277,20 +277,20 @@ class Product extends GetView<ProductController> {
                   ],
                 )
               : Container(),
-          controller.getProduct.descripcion != ""
+          controller.getProduct.description != ""
               ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(controller.getProduct.descripcion,
+                  child: Text(controller.getProduct.description,
                       style: TextStyle(
                           height: 1,
                           fontSize: 20,
                           fontWeight: FontWeight.bold)),
                 )
               : Container(),
-          controller.getProduct.codigo != ""
+          controller.getProduct.code != ""
               ? SizedBox(height: 5)
               : Container(),
-          controller.getProduct.codigo != ""
+          controller.getProduct.code != ""
               ? Opacity(
                   opacity: 0.8,
                   child: Row(
@@ -299,7 +299,7 @@ class Product extends GetView<ProductController> {
                     children: [
                       Icon(Icons.qr_code_2_rounded, size: 14),
                       SizedBox(width: 5),
-                      Text(controller.getProduct.codigo,
+                      Text(controller.getProduct.code,
                           style: TextStyle(
                               height: 1,
                               fontSize: 12,
@@ -353,13 +353,13 @@ class Product extends GetView<ProductController> {
                       textDirection: TextDirection.ltr,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        controller.getProduct.precioVenta != 0.0
+                        controller.getProduct.salePrice != 0.0
                             ? Column(
                                 children: [
                                   Text(
                                       Publicaciones.getFormatoPrecio(
                                           monto: controller
-                                              .getProduct.precioVenta),
+                                              .getProduct.salePrice),
                                       style: TextStyle(
                                           color: colorText,
                                           fontSize: 30,
@@ -367,36 +367,36 @@ class Product extends GetView<ProductController> {
                                       textAlign: TextAlign.end),
                                   Row(
                                     children: [
-                                      controller.getProduct.precioCompra != 0.0
+                                      controller.getProduct.purchasePrice != 0.0
                                           ? Text(
                                               sProcentaje(
                                                   precioCompra: controller
-                                                      .getProduct.precioCompra,
+                                                      .getProduct.purchasePrice,
                                                   precioVenta: controller
-                                                      .getProduct.precioVenta),
+                                                      .getProduct.salePrice),
                                               style: TextStyle(
                                                   color: Colors.green,
                                                   fontSize: 12.0,
                                                   fontWeight: FontWeight.bold))
                                           : Container(),
-                                      controller.getProduct.precioCompra != 0.0
+                                      controller.getProduct.purchasePrice != 0.0
                                           ? Text(" > ",
                                               style: TextStyle(
                                                   color: Colors.green,
                                                   fontSize: 12.0))
                                           : Container(),
-                                      controller.getProduct.precioCompra != 0.0
+                                      controller.getProduct.purchasePrice != 0.0
                                           ? Text(
                                               Publicaciones.sGanancia(
                                                   precioCompra: controller
-                                                      .getProduct.precioCompra,
+                                                      .getProduct.purchasePrice,
                                                   precioVenta: controller
-                                                      .getProduct.precioVenta),
+                                                      .getProduct.salePrice),
                                               style: TextStyle(
                                                   color: controller.getProduct
-                                                              .precioCompra <
+                                                              .purchasePrice <
                                                           controller.getProduct
-                                                              .precioVenta
+                                                              .salePrice
                                                       ? Colors.green
                                                       : Colors.red,
                                                   fontSize: 12.0,
@@ -411,7 +411,7 @@ class Product extends GetView<ProductController> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             Publicaciones.getFechaPublicacion(
-                                    controller.getProduct.timestampActualizacion
+                                    controller.getProduct.upgrade
                                         .toDate(),
                                     Timestamp.now().toDate())
                                 .toLowerCase(),
@@ -687,7 +687,7 @@ class Product extends GetView<ProductController> {
               height: Get.width,
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
-              imageUrl: controller.getProduct.urlimagen,
+              imageUrl: controller.getProduct.image,
               placeholder: (context, url) => FadeInImage(
                 image: AssetImage("assets/loading.gif"),
                 placeholder: AssetImage("assets/loading.gif"),
@@ -699,7 +699,7 @@ class Product extends GetView<ProductController> {
                 height: Get.width,
                 child: Center(
                   child: Text(
-                    controller.getProduct.descripcion.substring(0, 1),
+                    controller.getProduct.description.substring(0, 1),
                     style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.25),
                   ),
@@ -904,18 +904,18 @@ class ProductoCatalogueItem extends StatelessWidget {
   }
 
   Widget contentImage() {
-    return producto.urlimagen != ""
+    return producto.image != ""
         ? CachedNetworkImage(
             fadeInDuration: Duration(milliseconds: 200),
             fit: BoxFit.cover,
-            imageUrl: producto.urlimagen,
+            imageUrl: producto.image,
             placeholder: (context, url) => FadeInImage(
                 fit: BoxFit.cover,
                 image: AssetImage("assets/loading.gif"),
                 placeholder: AssetImage("assets/loading.gif")),
             errorWidget: (context, url, error) => Center(
               child: Text(
-                producto.titulo.substring(0, 3),
+                producto.title.substring(0, 3),
                 style: TextStyle(fontSize: 24.0),
               ),
             ),
@@ -929,14 +929,14 @@ class ProductoCatalogueItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(producto.descripcion,
+          Text(producto.description,
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14.0,
                   color: Colors.grey),
               overflow: TextOverflow.fade,
               softWrap: false),
-          Text(Publicaciones.getFormatoPrecio(monto: producto.precioVenta),
+          Text(Publicaciones.getFormatoPrecio(monto: producto.salePrice),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14.0,
@@ -1003,18 +1003,18 @@ class ProductoItem extends StatelessWidget {
   }
 
   Widget contentImage() {
-    return producto.urlimagen != ""
+    return producto.image != ""
         ? CachedNetworkImage(
             fadeInDuration: Duration(milliseconds: 200),
             fit: BoxFit.cover,
-            imageUrl: producto.urlimagen,
+            imageUrl: producto.image,
             placeholder: (context, url) => FadeInImage(
                 placeholderErrorBuilder: (context, error, stackTrace) {
                   return Container(
                     color: Colors.grey[100],
                     child: Center(
                       child: Text(
-                        producto.titulo.substring(0, 3),
+                        producto.title.substring(0, 3),
                         style: TextStyle(fontSize: 24.0,color: Colors.grey),
                       ),
                     ),
@@ -1027,7 +1027,7 @@ class ProductoItem extends StatelessWidget {
               color: Colors.grey[100],
               child: Center(
                 child: Text(
-                  producto.descripcion.substring(0, 3),
+                  producto.description.substring(0, 3),
                   style: TextStyle(fontSize: 24.0,color: Colors.grey),
                 ),
               ),
@@ -1042,7 +1042,7 @@ class ProductoItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(producto.descripcion,
+          Text(producto.description,
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14.0,
@@ -1083,7 +1083,7 @@ class WidgetImagen extends StatelessWidget {
               height: MediaQuery.of(context).size.width,
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
-              imageUrl: producto.urlimagen,
+              imageUrl: producto.image,
               placeholder: (context, url) => FadeInImage(
                 image: AssetImage("assets/loading.gif"),
                 placeholder: AssetImage("assets/loading.gif"),
@@ -1095,7 +1095,7 @@ class WidgetImagen extends StatelessWidget {
                 height: MediaQuery.of(context).size.width,
                 child: Center(
                   child: Text(
-                    producto.titulo.substring(0, 3),
+                    producto.title.substring(0, 3),
                     style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.25),
                   ),

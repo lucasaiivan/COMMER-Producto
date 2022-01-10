@@ -155,6 +155,6 @@ class ControllerProductsSearch extends GetxController {
     Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct});
   }
   void toProductNew({required String id}) {
-    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': ProductCatalogue(id: id,codigo: id,timestampActualizacion: Timestamp.now(),timestampCreation: Timestamp.now())});
+    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': ProductCatalogue(id: id,code: id,upgrade: Timestamp.now(),creation: Timestamp.now())});
   }
 }
