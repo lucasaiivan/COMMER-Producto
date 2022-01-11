@@ -180,9 +180,9 @@ class ProductCatalogue {
   String subcategory = ""; // ID de la subcategoria del producto
   String nameSubcategory = ""; // name subcategory
   Timestamp creation =
-      Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
+      Timestamp.now(); // Marca de tiempo ( hora en que se creo el documento )
   Timestamp upgrade =
-      Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
+      Timestamp.now(); // Marca de tiempo ( hora en que se actualizaron los datos )
 
   // Datos del producto
   bool enabled = true;
@@ -226,7 +226,7 @@ class ProductCatalogue {
           : data['verificado'] ?? false,
       favorite: data.containsKey('favorite')
           ? data['favorite']
-          : data['favorite'] ?? false,
+          : data['favorito'] ?? false,
       idMark:
           data.containsKey('idMark') ? data['idMark'] : data['id_marca'] ?? '',
       nameMark: data['nameMark'] ?? '',
@@ -293,8 +293,7 @@ class ProductCatalogue {
 
   Product convertProductoDefault() {
     // convertimos en el modelo para producto global
-    Product productoDefault =
-        new Product(upgrade: Timestamp.now(), creation: Timestamp.now());
+    Product productoDefault = new Product(upgrade: Timestamp.now(), creation: Timestamp.now());
     productoDefault.id = this.id;
     productoDefault.image = this.image;
     productoDefault.verified = this.verified;
@@ -430,12 +429,12 @@ class Mark {
     upgrade = data.containsKey('upgrade') ? data['upgrade'] :data['timestampUpdate'] ?? Timestamp.now();
   }
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "description": description,
-        "image": image,
-        "verified": verified,
-        "creation": creation,
-        "upgrade": upgrade,
-      };
+    "id": id,
+    "name": name,
+    "description": description,
+    "image": image,
+    "verified": verified,
+    "creation": creation,
+    "upgrade": upgrade,
+  };
 }

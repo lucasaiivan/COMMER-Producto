@@ -40,7 +40,7 @@ class Database {
   //  de lo contrario usaremos Stream, ya que sincronizará automáticamente los datos cada vez que se modifiquen en la base de datos.
   // future - QuerySnapshot
   static Future<QuerySnapshot<Map<String, dynamic>>> readProductsFuture( {int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').orderBy("favorite",descending: true).get();
-  static Future<QuerySnapshot<Map<String, dynamic>>> readProductsForMakFuture( {required String idMark,int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("id_marca",isEqualTo: idMark).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("id_marca",isEqualTo: idMark).get();
+  static Future<QuerySnapshot<Map<String, dynamic>>> readProductsForMakFuture( {required String idMark,int limit=0}) => limit!=0?FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("idMark",isEqualTo: idMark).limit(limit).get():FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("idMark",isEqualTo: idMark).get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readListPricesProductFuture( {required String id,String isoPAis = 'ARG'}) => FirebaseFirestore.instance.collection('APP/$isoPAis/PRODUCTOS/$id/REGISTRO_PRECIOS_$isoPAis').orderBy("timestamp",descending: true).get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readCategoryListFuture( {required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA').get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readListMarksFuture() => FirebaseFirestore.instance.collection('/APP/ARG/MARCAS').get();
@@ -57,7 +57,7 @@ class Database {
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readUserModelStream( String id) => FirebaseFirestore.instance.collection('USUARIOS').doc(id).snapshots();
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readProfileBusinessModelStream( String id) => FirebaseFirestore.instance.collection('NEGOCIOS').doc(id).snapshots();
   // stream - QuerySnapshot
-  static Stream<QuerySnapshot<Map<String, dynamic>>> readProductsCatalogueStream( { required String id}) => FirebaseFirestore.instance.collection('NEGOCIOS/$id/EXTENSION_CATALOGO').orderBy("timestamp_actualizacion",descending: true).snapshots();
+  static Stream<QuerySnapshot<Map<String, dynamic>>> readProductsCatalogueStream( { required String id}) => FirebaseFirestore.instance.collection('NEGOCIOS/$id/EXTENSION_CATALOGO').orderBy("upgrade",descending: true).snapshots();
   static Stream<QuerySnapshot<Map<String, dynamic>>> readManagedAccountsQueryStream( { required String id}) => FirebaseFirestore.instance.collection('/USUARIOS/$id/ADMINISTRADOR_NEGOCIOS').snapshots();
   static Stream<QuerySnapshot<Map<String, dynamic>>> readCategoriesQueryStream( {required String idAccount}) => FirebaseFirestore.instance.collection('/NEGOCIOS/$idAccount/EXTENSION_CATALOGO_CATEGORIA').snapshots();
   // STORAGE reference

@@ -74,6 +74,7 @@ class CatalogueScreenView extends StatelessWidget {
             ))),
       ),
       actions: <Widget>[
+        IconButton(onPressed: (){controller.castIdCreationTime();}, icon: Icon(Icons.update)),
         IconButton(
             onPressed: () {
               showSearch(
@@ -118,7 +119,7 @@ class CatalogueScreenView extends StatelessWidget {
                   customBorder: new CircleBorder(),
                   splashColor: Colors.grey,
                   onTap: () {
-                    showModalBottomSheetSetting();
+                    showMSetting();
                   },
                   child: Hero(
                     tag: "fotoperfiltoolbar",
@@ -316,7 +317,7 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   // BottomSheet
-  void showModalBottomSheetSetting() {
+  void showMSetting() {
     Widget widget = ListView(
       shrinkWrap: true,
       padding: EdgeInsets.symmetric(vertical: 15.0),

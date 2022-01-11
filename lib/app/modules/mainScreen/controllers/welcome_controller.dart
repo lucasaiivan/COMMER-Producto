@@ -16,7 +16,6 @@ import '../../splash/controllers/splash_controller.dart';
 class WelcomeController extends GetxController {
   SplashController homeController = Get.find<SplashController>();
 
-
   // text tab
   String _textTab = 'Todos';
   String get getTextTab => _textTab;
@@ -47,7 +46,8 @@ class WelcomeController extends GetxController {
   }
 
   String get getIdAccountSelecte => idAccountSelected.value;
-  Rx<ProfileAccountModel> _profileAccount = ProfileAccountModel(creation: Timestamp.now()).obs;
+  Rx<ProfileAccountModel> _profileAccount =
+      ProfileAccountModel(creation: Timestamp.now()).obs;
   ProfileAccountModel get getProfileAccountSelected => _profileAccount.value;
   set setProfileAccountSelected(ProfileAccountModel user) =>
       _profileAccount.value = user;
@@ -157,8 +157,7 @@ class WelcomeController extends GetxController {
 
   void catalogueFilterReset() {
     // resetea los valores de los filtros para mostrar todos los productos
-    setMarkSelect = Mark(
-        upgrade: Timestamp.now(), creation: Timestamp.now());
+    setMarkSelect = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
     setCategorySelect = Category();
     setsubCategorySelect = Category();
     catalogueFilter();
@@ -187,9 +186,8 @@ class WelcomeController extends GetxController {
   }
 
   //  mark selected
-  Rx<Mark> _markSelect = Mark(
-          upgrade: Timestamp.now(), creation: Timestamp.now())
-      .obs;
+  Rx<Mark> _markSelect =
+      Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
   Mark get getMarkSelect => _markSelect.value;
   set setMarkSelect(Mark value) {
     _markSelect.value = value;
@@ -204,8 +202,7 @@ class WelcomeController extends GetxController {
   Category get getCategorySelect => _categorySelect.value;
   set setCategorySelect(Category value) {
     // default value
-    setMarkSelect = Mark(
-        upgrade: Timestamp.now(), creation: Timestamp.now());
+    setMarkSelect = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
     // set
     _subCategorySelect.value = Category();
     _categorySelect.value = value;
@@ -240,8 +237,7 @@ class WelcomeController extends GetxController {
   Category get getsubCategorySelect => _subCategorySelect.value;
   set setsubCategorySelect(Category value) {
     // default value
-    setMarkSelect = Mark(
-        upgrade: Timestamp.now(), creation: Timestamp.now());
+    setMarkSelect = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
     // set
     _subCategorySelect.value = value;
     catalogueFilter();
@@ -340,21 +336,15 @@ class WelcomeController extends GetxController {
   void onInit() async {
     // obtenemos por parametro los datos de la cuenta de atentificación
     setUserAccountAuth = Get.arguments['currentUser'];
-    try {
-      setIdAccountSelected = Get.arguments['idAccount'];
-    } catch (e) {
-      setIdAccountSelected = '';
-    }
+    Map map = Get.arguments as Map;
+    // verificamos y cargamos datos de la cuenta
+    map.containsKey('idAccount')?setIdAccountSelected = Get.arguments['idAccount']:setIdAccountSelected = '';
 
     // cargamos los datos de la cuenta de autentificación
     if (getUserAccountAuth.uid != '') {
       readProfileUserStream(id: _userAccountAuth.uid);
-      // accounts managers
+      // read accounts managers
       readManagerAccountsReference(idUser: _userAccountAuth.uid);
-    }
-    // verificamos si recibimos id de cuenta por parametro
-    if (getIdAccountSelecte != '') {
-      readProfileAccountStream(id: getIdAccountSelecte);
     }
     // verificamos que el usuario ha seleccionado una cuenta
     /* if (getIdAccountSelecte != '') {
@@ -362,7 +352,6 @@ class WelcomeController extends GetxController {
     } */
     // cargamos los datos de la app desde la db
     readListSuggestedProductsFuture();
-
 
     super.onInit();
   }
@@ -373,9 +362,7 @@ class WelcomeController extends GetxController {
   }
 
   @override
-  void onClose() {
-  }
-
+  void onClose() {}
 
   void logout() async {
     // aca implementamos el cierre de sesión dentro de la función logout.
@@ -418,9 +405,8 @@ class WelcomeController extends GetxController {
   Future<Mark> readMark({required String id}) async {
     return Database.readMarkFuture(id: id)
         .then((value) => Mark.fromMap(value.data() as Map))
-        .catchError((error) => Mark(
-            upgrade: Timestamp.now(),
-            creation: Timestamp.now()));
+        .catchError((error) =>
+            Mark(upgrade: Timestamp.now(), creation: Timestamp.now()));
   }
 
   void readProfileBursinesFuture({required String id}) {
@@ -525,8 +511,10 @@ class WelcomeController extends GetxController {
     if (id != '') {
       Database.readProductsCatalogueStream(id: id).listen((value) {
         List<ProductCatalogue> list = [];
+        //  get
         value.docs.forEach(
             (element) => list.add(ProductCatalogue.fromMap(element.data())));
+        //  set
         setCatalogueProducts = list;
         setCatalogueFilter = list;
         getCatalogueMoreLoad();
@@ -643,6 +631,9 @@ class WelcomeController extends GetxController {
               // instancias de GoogleSignIn para proceder a cerrar sesión en el proveedor de cuentas
               late final GoogleSignIn googleSign = GoogleSignIn();
               await googleSign.signOut().then((value) async {
+
+                // set values default 
+                GetStorage().write('idAccount', '');
                 // instancias de FirebaseAuth para proceder a cerrar sesión
                 final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
                 firebaseAuth.signOut().then((value) {
@@ -670,5 +661,18 @@ class WelcomeController extends GetxController {
       }
     });
     return iscatalogue;
+  }
+
+  void castIdCreationTime() {
+    getCataloProducts.forEach((element) {
+      element.creation = new Timestamp.now();
+      Database.refFirestoreCatalogueProduct(
+              idAccount: getProfileAccountSelected.id)
+          .doc(element.id)
+          .set(element.toJson())
+          .whenComplete(() async {})
+          .onError((error, stackTrace) => false)
+          .catchError((_) => false);
+    });
   }
 }
