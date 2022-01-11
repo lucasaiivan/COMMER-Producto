@@ -48,8 +48,8 @@ class ScanScreenView extends StatelessWidget {
               Text(
                   controller.getProfileAccountSelected.id == ''
                       ? "Seleccionar cuenta"
-                      : controller.getProfileAccountSelected.nombreNegocio != ""
-                          ? controller.getProfileAccountSelected.nombreNegocio
+                      : controller.getProfileAccountSelected.name != ""
+                          ? controller.getProfileAccountSelected.name
                           : "Mi catalogo",
                   style: TextStyle(color: Get.theme.textTheme.bodyText1!.color),
                   overflow: TextOverflow.fade,

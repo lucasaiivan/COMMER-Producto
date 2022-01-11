@@ -64,15 +64,25 @@ class Product {
   factory Product.fromMap(Map data) {
     return Product(
       id: data['id'] ?? '',
-      idAccount: data.containsKey('idAccount')? data['idAccount']: data['id_negocio'] ?? '',
-      verified: data.containsKey('verified')? data['verified']: data['verificado'] ?? false,
+      idAccount: data.containsKey('idAccount')
+          ? data['idAccount']
+          : data['id_negocio'] ?? '',
+      verified: data.containsKey('verified')
+          ? data['verified']
+          : data['verificado'] ?? false,
       favorite: data['favorite'] ?? false,
-      idMark:data.containsKey('idMark') ? data['idMark'] : data['id_marca'] ?? '',
+      idMark:
+          data.containsKey('idMark') ? data['idMark'] : data['id_marca'] ?? '',
       nameMark: data['nameMark'] ?? '',
-      image:data.containsKey('image') ? data['image'] : data['urlimagen'] ?? '',
+      image:
+          data.containsKey('image') ? data['image'] : data['urlimagen'] ?? '',
       title: data.containsKey('title') ? data['title'] : data['titulo'] ?? '',
-      description: data.containsKey('description')? data['description']: data['descripcion'] ?? '',
-      salePrice: data.containsKey('salePrice')? data['salePrice']: data['precio_venta'] ?? 0.0,
+      description: data.containsKey('description')
+          ? data['description']
+          : data['descripcion'] ?? '',
+      salePrice: data.containsKey('salePrice')
+          ? data['salePrice']
+          : data['precio_venta'] ?? 0.0,
       purchasePrice: data.containsKey('purchasePrice')
           ? data['purchasePrice']
           : data['precio_compra'] ?? 0.0,
@@ -135,8 +145,7 @@ class Product {
   }
   ProductCatalogue convertProductCatalogue() {
     ProductCatalogue productoNegocio = new ProductCatalogue(
-        upgrade: Timestamp.now(),
-        creation: Timestamp.now());
+        upgrade: Timestamp.now(), creation: Timestamp.now());
     productoNegocio.id = this.id;
     productoNegocio.image = this.image;
     productoNegocio.verified = this.verified;
@@ -170,8 +179,10 @@ class ProductCatalogue {
   String nameCategory = ""; // name category
   String subcategory = ""; // ID de la subcategoria del producto
   String nameSubcategory = ""; // name subcategory
-  Timestamp creation =Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
-  Timestamp upgrade =Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
+  Timestamp creation =
+      Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
+  Timestamp upgrade =
+      Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
   // Datos del producto
   bool enabled = true;
@@ -179,7 +190,7 @@ class ProductCatalogue {
   // Variables
   double salePrice = 0.0;
   double purchasePrice = 0.0;
-  String sign; // signo de la moneda
+  String currencySign= "\$"; // signo de la moneda
 
   ProductCatalogue({
     // Valores del producto
@@ -199,9 +210,9 @@ class ProductCatalogue {
     this.enabled = true,
 
     // valores de la cuenta
-    this.salePrice = 0.0, 
+    this.salePrice = 0.0,
     this.purchasePrice = 0.0,
-    this.sign = "",
+    this.currencySign = "\$",
     this.idMark = '',
     this.nameMark = '',
   });
@@ -210,25 +221,51 @@ class ProductCatalogue {
     return ProductCatalogue(
       // Valores del producto
       id: data['id'] ?? '',
-      verified: data.containsKey('verified')?data['verified']:data['verificado'] ?? false,
-      favorite: data.containsKey('favorite')?data['favorite']:data['favorite'] ?? false,
-      idMark: data.containsKey('idMark')?data['idMark']:data['id_marca'] ?? '',
+      verified: data.containsKey('verified')
+          ? data['verified']
+          : data['verificado'] ?? false,
+      favorite: data.containsKey('favorite')
+          ? data['favorite']
+          : data['favorite'] ?? false,
+      idMark:
+          data.containsKey('idMark') ? data['idMark'] : data['id_marca'] ?? '',
       nameMark: data['nameMark'] ?? '',
-      image: data.containsKey('image')?data['image']:data['urlimagen'] ?? 'https://default',
-      title: data.containsKey('title')?data['title']:data['titulo'] ?? '',
-      description: data.containsKey('description')?data['description']:data['descripcion'] ?? '',
-      code: data.containsKey('code')?data['code']:data['codigo'] ?? '',
-      category: data.containsKey('category')?data['category']:data['categoria'] ?? '',
-      nameCategory: data.containsKey('nameCategory')?data['nameCategory']:data['categoriaName'] ?? '',
-      subcategory: data.containsKey('subcategory')?data['subcategory']:data['subcategoria'] ?? '',
-      nameSubcategory: data.containsKey('nameSubcategory')?data['nameSubcategory']:data['subcategoriaName'] ?? '',
-      upgrade: data.containsKey('upgrade')?data['upgrade']:data['timestamp_actualizacion'] ?? Timestamp.now(),
-      creation: data.containsKey('creation')?data['creation']:data['timestamp_creation'] ?? Timestamp.now(),
+      image: data.containsKey('image')
+          ? data['image']
+          : data['urlimagen'] ?? 'https://default',
+      title: data.containsKey('title') ? data['title'] : data['titulo'] ?? '',
+      description: data.containsKey('description')
+          ? data['description']
+          : data['descripcion'] ?? '',
+      code: data.containsKey('code') ? data['code'] : data['codigo'] ?? '',
+      category: data.containsKey('category')
+          ? data['category']
+          : data['categoria'] ?? '',
+      nameCategory: data.containsKey('nameCategory')
+          ? data['nameCategory']
+          : data['categoriaName'] ?? '',
+      subcategory: data.containsKey('subcategory')
+          ? data['subcategory']
+          : data['subcategoria'] ?? '',
+      nameSubcategory: data.containsKey('nameSubcategory')
+          ? data['nameSubcategory']
+          : data['subcategoriaName'] ?? '',
+      upgrade: data.containsKey('upgrade')
+          ? data['upgrade']
+          : data['timestamp_actualizacion'] ?? Timestamp.now(),
+      creation: data.containsKey('creation')
+          ? data['creation']
+          : data['timestamp_creation'] ?? Timestamp.now(),
       enabled: data['enabled'] ?? true,
       // valores de la cuenta
-      salePrice: data.containsKey('salePrice')?data['salePrice']:data['precio_venta'] ?? 0.0,
-      purchasePrice: data.containsKey('purchasePrice')?data['purchasePrice']:data['precio_compra'] ?? 0.0,
-      sign: data.containsKey('sign')?data['sign']:data['signo_moneda'] ?? '',
+      salePrice: data.containsKey('salePrice')
+          ? data['salePrice']
+          : data['precio_venta'] ?? 0.0,
+      purchasePrice: data.containsKey('purchasePrice')
+          ? data['purchasePrice']
+          : data['precio_compra'] ?? 0.0,
+      currencySign:
+          data.containsKey('currencySign') ? data['currencySign'] : data['signo_moneda'] ?? '',
     );
   }
 
@@ -251,12 +288,13 @@ class ProductCatalogue {
         "purchasePrice": purchasePrice,
         "creation": creation,
         "upgrade": upgrade,
-        "sign": sign,
+        "currencySign": currencySign,
       };
 
   Product convertProductoDefault() {
     // convertimos en el modelo para producto global
-    Product productoDefault = new Product(upgrade: Timestamp.now(), creation: Timestamp.now());
+    Product productoDefault =
+        new Product(upgrade: Timestamp.now(), creation: Timestamp.now());
     productoDefault.id = this.id;
     productoDefault.image = this.image;
     productoDefault.verified = this.verified;
@@ -274,83 +312,90 @@ class ProductCatalogue {
   }
 }
 
-DateTime date = Timestamp.now() as DateTime;
-
-class Precio {
+class Price {
   String id = '';
-  double precio = 0.0;
-  late Timestamp timestamp;
-  String moneda = "";
-  String provincia = "";
-  String ciudad = "";
+  double price = 0.0;
+  late Timestamp time; // marca de tiempo en la que se registro el precio
+  String currencySign = ""; // signo de la moneda
+  String province = ""; // provincia
+  String town = ""; // ciudad o pueblo
   // data account
   String idAccount = "";
-  String urlImageAccount = '';
-  String nameAccount = '';
+  String imageAccount = ''; // imagen de perfil de la cuenta
+  String nameAccount = ''; // nombre de la cuenta
 
-  Precio({
+  Price({
     required this.id,
     required this.idAccount,
-    required this.urlImageAccount,
+    required this.imageAccount,
     required this.nameAccount,
-    required this.precio,
-    required this.timestamp,
-    required this.moneda,
-    this.provincia = '',
-    this.ciudad = '',
+    required this.price,
+    required this.time,
+    required this.currencySign,
+    this.province = '',
+    this.town = '',
   });
 
-  Precio.fromMap(Map data) {
+  Price.fromMap(Map data) {
     id = data['id'] ?? '';
     idAccount = data['idAccount'] ?? '';
-    urlImageAccount = data['urlImageAccount'] ?? '';
+    imageAccount = data.containsKey('imageAccount')
+        ? data['imageAccount']
+        : data['urlImageAccount'] ?? '';
     nameAccount = data['nameAccount'] ?? '';
-    precio = data['precio'] ?? 0.0;
-    timestamp = data['timestamp'];
-    moneda = data['moneda'] ?? '';
-    provincia = data['provincia'] ?? '';
-    ciudad = data['ciudad'] ?? '';
+    price = data.containsKey('price') ? data['price'] : data['precio'] ?? 0.0;
+    time = data.containsKey('time') ? data['time'] : data['timestamp'];
+    currencySign = data.containsKey('currencySign') ? data['currencySign'] : data['moneda'] ?? '';
+    province = data.containsKey('province')
+        ? data['province']
+        : data['provincia'] ?? '';
+    town = data.containsKey('town') ? data['town'] : data['ciudad'] ?? '';
   }
   Map<String, dynamic> toJson() => {
         'id': id,
         "idAccount": idAccount,
-        "urlImageAccount": urlImageAccount,
+        "imageAccount": imageAccount,
         "nameAccount": nameAccount,
-        "precio": precio,
-        "timestamp": timestamp,
-        "moneda": moneda,
-        "provincia": provincia,
-        "ciudad": ciudad,
+        "price": price,
+        "time": time,
+        "currencySign": currencySign,
+        "province": province,
+        "town": town,
       };
 }
 
 class Category {
   String id = "";
-  String nombre = "";
-  Map<String, dynamic> subcategorias = Map<String, dynamic>();
+  String name = "";
+  Map<String, dynamic> subcategories = Map<String, dynamic>();
 
   Category({
     this.id = "",
-    this.nombre = "",
-    this.subcategorias = const {},
+    this.name = "",
+    this.subcategories = const {},
   });
   Map<String, dynamic> toJson() => {
         "id": id,
-        "nombre": nombre,
-        "subcategorias": subcategorias,
+        "name": name,
+        "subcategories": subcategories,
       };
   factory Category.fromMap(Map<String, dynamic> data) {
     return Category(
       id: data['id'] ?? '',
-      nombre: data['nombre'] ?? '',
-      subcategorias: data['subcategorias'] ?? new Map<String, dynamic>(),
+      name: data.containsKey('name') ? data['name'] : data['nombre'] ?? '',
+      subcategories: data.containsKey('subcategories')
+          ? data['subcategories']
+          : data['subcategorias'] ?? new Map<String, dynamic>(),
     );
   }
   Category.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
-    id = documentSnapshot['id'] ?? '';
-    nombre = documentSnapshot['nombre'] ?? '';
-    subcategorias =
-        documentSnapshot['subcategorias'] ?? new Map<String, dynamic>();
+    Map data = documentSnapshot.data() as Map;
+
+    id = data['id'] ?? '';
+    name =  data.containsKey('name') ? data['name'] : data['nombre'] ?? '';
+    subcategories =data.containsKey('subcategories')
+          ? data['subcategories']
+          : data['subcategorias'] ?? new Map<String, dynamic>();
   }
 }
 
@@ -358,40 +403,39 @@ class Mark {
   String id = "";
   String name = "";
   String description = "";
-  String urlImage = "";
+  String image = "";
   bool verified = false;
 
   // Datos de la creación
   String idUsuarioCreador = ""; // ID el usuaruio que creo el productos
-  late Timestamp
-      timestampCreacion; // Marca de tiempo de la creacion del documento
-  late Timestamp timestampUpdate; // Marca de tiempo de la ultima actualizacion
+  Timestamp creation = Timestamp.now(); // Marca de tiempo de la creacion del documento
+  Timestamp upgrade = Timestamp.now(); // Marca de tiempo de la ultima actualizacion
 
   Mark({
     this.id = "",
     this.name = "",
     this.description = "",
-    this.urlImage = "",
+    this.image = "",
     this.verified = false,
-    required this.timestampUpdate,
-    required this.timestampCreacion,
+    required this.upgrade,
+    required this.creation,
   });
   Mark.fromMap(Map data) {
     id = data['id'] ?? '';
-    name = data['name'] ?? data['titulo'] ?? '';
-    description = data['description'] ?? data['descripcion'] ?? '';
-    urlImage = data['urlImage'] ?? data['url_imagen'] ?? '';
-    verified = data['verified'] ?? data['verificado'] ?? false;
-    timestampCreacion = data['timestampCreacion'] ?? Timestamp.now();
-    timestampUpdate = data['timestampUpdate'] ?? Timestamp.now();
+    name = data.containsKey('name') ? data['name'] : data['titulo'] ?? '';
+    description = data.containsKey('description') ? data['description'] : data['descripcion'] ?? '';
+    image = data.containsKey('image') ? data['image'] : data['url_imagen'] ?? '';
+    verified = data.containsKey('verified') ? data['verified'] : data['verificado'] ?? false;
+    creation = data.containsKey('creation') ? data['creation'] :data['timestampCreacion'] ?? Timestamp.now();
+    upgrade = data.containsKey('upgrade') ? data['upgrade'] :data['timestampUpdate'] ?? Timestamp.now();
   }
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "description": description,
-        "urlImage": urlImage,
+        "image": image,
         "verified": verified,
-        "timestampCreacion": timestampCreacion,
-        "timestampUpdate": timestampUpdate,
+        "creation": creation,
+        "upgrade": upgrade,
       };
 }

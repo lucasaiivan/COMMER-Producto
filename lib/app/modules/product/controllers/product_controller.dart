@@ -11,7 +11,7 @@ class ProductController extends GetxController {
   WelcomeController welcomeController = Get.find<WelcomeController>();
 
   static Rx<ProfileAccountModel> profileBusinessModel =
-      ProfileAccountModel().obs;
+      ProfileAccountModel(creation: Timestamp.now()).obs;
   ProfileAccountModel get getProfileBusiness => profileBusinessModel.value;
   set setProfileBusiness(ProfileAccountModel model) =>
       profileBusinessModel.value = model;
@@ -22,16 +22,16 @@ class ProductController extends GetxController {
       listSuggestedProducts.value = product;
 
   static Rx<Mark> mark = Mark(
-          timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now())
+          upgrade: Timestamp.now(), creation: Timestamp.now())
       .obs;
   Mark get getMark => mark.value;
   set setMark(Mark value) => mark.value = value;
 
-  static Rx<Category> category = Category(id: '', nombre: '').obs;
+  static Rx<Category> category = Category(id: '', name: '').obs;
   Category get getCategory => category.value;
   set setCategory(Category value) => category.value = value;
 
-  static Rx<Category> subcategory = Category(id: '', nombre: '').obs;
+  static Rx<Category> subcategory = Category(id: '', name: '').obs;
   Category get getSubcategory => subcategory.value;
   set setSubcategory(Category value) => subcategory.value = value;
 
@@ -49,9 +49,9 @@ class ProductController extends GetxController {
   set setListOthersProductsForCategoryCatalogue(List<ProductCatalogue> value) =>
       listOthersProductsForCategoryCatalogue.value = value;
 
-  static RxList<Precio> listPricesForProduct = <Precio>[].obs;
-  List<Precio> get getListPricesForProduct => listPricesForProduct;
-  set setListPricesForProduct(List<Precio> value) =>
+  static RxList<Price> listPricesForProduct = <Price>[].obs;
+  List<Price> get getListPricesForProduct => listPricesForProduct;
+  set setListPricesForProduct(List<Price> value) =>
       listPricesForProduct.value = value;
 
   @override
@@ -79,10 +79,10 @@ class ProductController extends GetxController {
       if (getProduct.category == element.id) {
         // set category
         setCategory = element;
-        element.subcategorias.forEach((key, value) {
+        element.subcategories.forEach((key, value) {
           if (getProduct.subcategory == key) {
             // set subcategory
-            setSubcategory = Category(id: key,nombre: value);
+            setSubcategory = Category(id: key,name: value);
           }
         });
       }
@@ -126,11 +126,11 @@ class ProductController extends GetxController {
 
   void readListPricesForProduct() {
     Database.readListPricesProductFuture(id: getProduct.id).then((value) {
-      List<Precio> list = [];
+      List<Price> list = [];
       value.docs.forEach((element) {
-        list.add(Precio.fromMap(element.data()));
+        list.add(Price.fromMap(element.data()));
       });
-      setListPricesForProduct = list.cast<Precio>();
+      setListPricesForProduct = list.cast<Price>();
     });
   }
 

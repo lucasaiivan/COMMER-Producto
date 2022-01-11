@@ -124,7 +124,7 @@ class ProductEdit extends StatelessWidget {
                       children: [
                         utilsWidget.viewCircleImage(
                             size: 25,
-                            url: controller.getMarkSelected.urlImage,
+                            url: controller.getMarkSelected.image,
                             texto: controller.getMarkSelected.name),
                         SizedBox(width: 5),
                         Text(controller.getMarkSelected.name,
@@ -271,7 +271,7 @@ class ProductEdit extends StatelessWidget {
     Text textCategory = Text(
         controller.getCategory.id == ''
             ? 'Categoría'
-            : controller.getCategory.nombre,
+            : controller.getCategory.name,
         maxLines: 1,
         style: TextStyle(
             color: controller.getCategory.id == '' ? null : Colors.grey,
@@ -279,7 +279,7 @@ class ProductEdit extends StatelessWidget {
     Text textSubcategory = Text(
         controller.getSubcategory.id == ''
             ? 'Subcategoría'
-            : controller.getSubcategory.nombre,
+            : controller.getSubcategory.name,
         maxLines: 1,
         style: TextStyle(
             color: controller.getSubcategory.id == '' ? null : Colors.grey,
@@ -508,14 +508,14 @@ class _SelectCategoryState extends State<SelectCategory> {
                       leading: CircleAvatar(
                         backgroundColor: Colors.black26,
                         radius: 24.0,
-                        child: Text(categoria.nombre.substring(0, 1),
+                        child: Text(categoria.name.substring(0, 1),
                             style: TextStyle(
                                 fontSize: 18.0,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold)),
                       ),
                       dense: true,
-                      title: Text(categoria.nombre),
+                      title: Text(categoria.name),
                       onTap: () {
                         controllerProductsEdit.setCategory = categoria;
                         controllerProductsEdit.updateAll();
@@ -534,8 +534,8 @@ class _SelectCategoryState extends State<SelectCategory> {
                       leading: CircleAvatar(
                         backgroundColor: Colors.black26,
                         radius: 24.0,
-                        child: categoria.nombre != ""
-                            ? Text(categoria.nombre.substring(0, 1),
+                        child: categoria.name != ""
+                            ? Text(categoria.name.substring(0, 1),
                                 style: TextStyle(
                                     fontSize: 18.0,
                                     color: Colors.white,
@@ -543,7 +543,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                             : Text("C"),
                       ),
                       dense: true,
-                      title: Text(categoria.nombre),
+                      title: Text(categoria.name),
                       onTap: () {
                         controllerProductsEdit.setCategory = categoria;
                         controllerProductsEdit.setSubcategory = Category();
@@ -617,7 +617,7 @@ class _SelectCategoryState extends State<SelectCategory> {
     bool loadSave = false;
     bool newProduct = false;
     TextEditingController textEditingController =
-        TextEditingController(text: categoria.nombre);
+        TextEditingController(text: categoria.name);
 
     if (categoria.id == '') {
       newProduct = true;
@@ -655,7 +655,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                 onPressed: () async {
                   if (textEditingController.text != '') {
                     // set
-                    categoria.nombre = textEditingController.text;
+                    categoria.name = textEditingController.text;
                     setState(() => loadSave = true);
                     // save
                     await controller
@@ -715,7 +715,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
 
   @override
   Widget build(BuildContext buildContext) {
-    if (categoriaSelected.subcategorias.length == 0) {
+    if (categoriaSelected.subcategories.length == 0) {
       return Row(
         children: [
           Expanded(
@@ -735,13 +735,13 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
     return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
-      itemCount: categoriaSelected.subcategorias.length,
+      itemCount: categoriaSelected.subcategories.length,
       itemBuilder: (BuildContext _, int index) {
         Category subcategoria = new Category(
-            id: categoriaSelected.subcategorias.keys
+            id: categoriaSelected.subcategories.keys
                 .elementAt(index)
                 .toString(),
-            nombre: categoriaSelected.subcategorias.values
+            name: categoriaSelected.subcategories.values
                 .elementAt(index)
                 .toString());
 
@@ -770,14 +770,14 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                     leading: CircleAvatar(
                       backgroundColor: Colors.black26,
                       radius: 24.0,
-                      child: Text(subcategoria.nombre.substring(0, 1),
+                      child: Text(subcategoria.name.substring(0, 1),
                           style: TextStyle(
                               fontSize: 18.0,
                               color: Colors.white,
                               fontWeight: FontWeight.bold)),
                     ),
                     dense: true,
-                    title: Text(subcategoria.nombre),
+                    title: Text(subcategoria.name),
                     onTap: () {
                       controllerProductsEdit.setSubcategory = subcategoria;
                       Get.back();
@@ -796,8 +796,8 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                     leading: CircleAvatar(
                       backgroundColor: Colors.black26,
                       radius: 24.0,
-                      child: subcategoria.nombre != ""
-                          ? Text(subcategoria.nombre.substring(0, 1),
+                      child: subcategoria.name != ""
+                          ? Text(subcategoria.name.substring(0, 1),
                               style: TextStyle(
                                   fontSize: 18.0,
                                   color: Colors.white,
@@ -805,7 +805,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                           : Text("C"),
                     ),
                     dense: true,
-                    title: Text(subcategoria.nombre),
+                    title: Text(subcategoria.name),
                     onTap: () {
                       controllerProductsEdit.setSubcategory = subcategoria;
                       controllerProductsEdit.updateAll();
@@ -861,7 +861,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                             ? Text("ELIMINAR")
                             : CircularProgressIndicator(),
                         onPressed: () async {
-                          controller.getCategorySelect.subcategorias
+                          controller.getCategorySelect.subcategories
                               .remove(subcategoria.id);
                           // save
                           await controller
@@ -887,7 +887,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
     bool loadSave = false;
     bool newProduct = false;
     TextEditingController textEditingController =
-        TextEditingController(text: subcategoria.nombre);
+        TextEditingController(text: subcategoria.name);
 
     if (subcategoria.id == '') {
       newProduct = true;
@@ -925,9 +925,9 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                 onPressed: () async {
                   if (textEditingController.text != '') {
                     // set
-                    subcategoria.nombre = textEditingController.text;
+                    subcategoria.name = textEditingController.text;
                     controllerProductsEdit.getCategory
-                        .subcategorias[subcategoria.id] = subcategoria.nombre;
+                        .subcategories[subcategoria.id] = subcategoria.name;
                     setState(() => loadSave = true);
                     // save
                     await controller
@@ -1020,7 +1020,7 @@ class _CreateMarkState extends State<CreateMark> {
                     )
                   : CachedNetworkImage(
                       fit: BoxFit.cover,
-                      imageUrl: widget.mark.urlImage,
+                      imageUrl: widget.mark.image,
                       placeholder: (context, url) => CircleAvatar(
                         backgroundColor: Colors.grey,
                         radius: 75.0,
@@ -1138,7 +1138,7 @@ class _CreateMarkState extends State<CreateMark> {
             .getDownloadURL()
             .then((value) async {
               // set
-              widget.mark.urlImage = value;
+              widget.mark.image = value;
               // mark save
               await Database.refFirestoreMark()
                   .doc()
@@ -1216,8 +1216,8 @@ class _SelectMarkState extends State<SelectMark> {
                               Get.back();
                               Get.to(() => CreateMark(
                                   mark: Mark(
-                                      timestampUpdate: Timestamp.now(),
-                                      timestampCreacion: Timestamp.now())));
+                                      upgrade: Timestamp.now(),
+                                      creation: Timestamp.now())));
                             },
                             icon: Icon(Icons.add)),
                         IconButton(
@@ -1273,7 +1273,7 @@ class _SelectMarkState extends State<SelectMark> {
   Widget listTile({required Mark marcaSelect}) {
     return ListTile(
       leading: viewCircleImage(
-          texto: marcaSelect.name, url: marcaSelect.urlImage, size: 50.0),
+          texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
       dense: true,
       title: Row(
         children: <Widget>[

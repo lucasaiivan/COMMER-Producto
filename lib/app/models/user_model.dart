@@ -1,63 +1,4 @@
-// To parse this JSON data, do
-//
-//     final usersModel = usersModelFromJson(jsonString);
-
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-UserAuthModel usersModelFromJson(String str) =>
-    UserAuthModel.fromJson(json.decode(str));
-
-String usersModelToJson(UserAuthModel data) => json.encode(data.toJson());
-
-class UserAuthModel {
-  UserAuthModel({
-    required this.uid,
-    required this.nombre,
-    required this.keyName,
-    required this.email,
-    required this.creationTime,
-    required this.lastSignInTime,
-    required this.photoUrl,
-    required this.status,
-    required this.updatedTime,
-  });
-
-  String uid;
-  String nombre;
-  String keyName;
-  String email;
-  String creationTime;
-  String lastSignInTime;
-  String photoUrl;
-  String status;
-  String updatedTime;
-
-  factory UserAuthModel.fromJson(Map<String, dynamic> json) => UserAuthModel(
-        uid: json["uid"],
-        nombre: json["nombre"],
-        keyName: json["keyName"],
-        email: json["email"],
-        creationTime: json["creationTime"],
-        lastSignInTime: json["lastSignInTime"],
-        photoUrl: json["photoUrl"],
-        status: json["status"],
-        updatedTime: json["updatedTime"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "uid": uid,
-        "name": nombre,
-        "keyName": keyName,
-        "email": email,
-        "creationTime": creationTime,
-        "lastSignInTime": lastSignInTime,
-        "photoUrl": photoUrl,
-        "status": status,
-        "updatedTime": updatedTime,
-      };
-}
 
 class UsersModel {
   UsersModel({
@@ -68,14 +9,13 @@ class UsersModel {
   late String id;
   late String email;
 
-
- 
   factory UsersModel.fromDocument(DocumentSnapshot doc) {
-  return UsersModel(
-    id : (doc.data() as Map<String, dynamic>).containsKey("id") ? doc["id"] : '',
-    email : (doc.data() as Map<String, dynamic>).containsKey("email") ? doc["email"] : '',
-  );
-}
+    Map data = doc.data() as Map;
+    return UsersModel(
+      id: data.containsKey("id") ? doc["id"] : '',
+      email: data.containsKey("email") ? doc["email"] : '',
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -87,147 +27,182 @@ class ProfileAccountModel {
   // Informacion del negocios
   String id = "";
   String username = "";
-  String imagenPerfil = "";
-  String nombreNegocio = "";
-  String descripcion = "";
-  //Timestamp timestamp_creation; // Fecha en la que se creo la cuenta
-  //Timestamp timestamp_login; // Fecha de las ultima ves que inicio la app
-  String signoMoneda = "\$";
+  String image = "";
+  String name = "";
+  String description = "";
+  String currencySign = "\$";
 
-  // informacion de cuenta
-  bool bloqueo = false;
-  String mensajeBloqueo = "";
-  bool cuentaActiva =
-      true; // Estado de el uso de la cuenta dependiendo el uso // Las cuentas desactivadas no aprecen en el mapa
-  bool cuentaVerificada = false; // Cuenta verificada
+  // account info
+  bool blockingAccount = false;
+  String blockingMessage = "";
+  bool verifiedAccount = false; // Cuenta verificada
 
-  // Ubicacion
-  String codigoPais = "";
-  String pais = "";
-  String provincia = "";
-  String ciudad = "";
-  String direccion = "";
+  // location
+  String countrycode = "";
+  String country = "";
+  String province = ""; // provincia o estado
+  String town = ""; // ciudad o pueblo
+  String address = ""; // dirección
 
-  // data app
-  String admin = '';
+  // data user creation
+  Timestamp creation = Timestamp.now(); // Fecha en la que se creo la cuenta
+  String idAuthUserCreation = ''; // id del usuario que creo la cuenta
 
   ProfileAccountModel({
-    // Informacion del negocios
+    // account info
     this.id = "",
-    this.username = "",
-    this.imagenPerfil = "",
-    this.nombreNegocio = "",
-    this.descripcion = "",
-    //this.timestamp_creation, // Fecha en la que se creo la cuenta
-    //this.timestamp_login, // Fecha de las ultima ves que inicio la app
-    this.signoMoneda = "\$",
+    this.image = "",
+    this.name = "",
+    this.description = "",
+    this.currencySign = "\$",
     // informacion de cuenta
-    this.bloqueo = false,
-    this.mensajeBloqueo = "",
-    this.cuentaActiva =
-        true, // Estado de el uso de la cuenta dependiendo el uso // Las cuentas desactivadas no aprecen en el mapa
-    this.cuentaVerificada = false, // Cuenta verificada
+    this.blockingAccount = false,
+    this.blockingMessage = "",
+    this.verifiedAccount = false, // Cuenta verificada
 
-    // Ubicacion
-    this.codigoPais = "",
-    this.pais = "",
-    this.provincia = "",
-    this.ciudad = "",
-    this.direccion = "",
+    // location
+    this.countrycode = "",
+    this.country = "",
+    this.province = "",
+    this.town = "",
+    this.address = "",
 
-    // data app
-    this.admin = '',
+    // data user creation
+    this.idAuthUserCreation = '',
+    required this.creation, // Fecha en la que se creo la cuenta
   });
   ProfileAccountModel.fromMap(Map data) {
     id = data['id'];
     username = data['username'];
-    imagenPerfil = data['imagen_perfil'] ?? '';
-    nombreNegocio = data['nombre_negocio'];
-    descripcion = data['descripcion'];
-    // timestamp_creation = data['timestamp_creation'];
-    //timestamp_login = data['timestamp_login'];
-    signoMoneda = data['signo_moneda'] ?? "\$";
-    bloqueo = data['bloqueo'];
-    mensajeBloqueo = data['mensaje_bloqueo'];
-    cuentaActiva = data['cuenta_activa'];
-    cuentaVerificada = data['cuenta_verificada'];
-    codigoPais = data['codigo_pais'];
-    direccion = data['direccion'];
-    ciudad = data['ciudad'];
-    provincia = data['provincia'];
-    pais = data['pais'];
+    image =
+        data.containsKey('image') ? data['image'] : data['imagen_perfil'] ?? '';
+    name = data.containsKey('name') ? data['name'] : data['nombre_negocio'];
+    description = data.containsKey('description')
+        ? data['description']
+        : data['descripcion'];
+    creation = data.containsKey('creation')
+        ? data['creation']
+        : data['timestamp_creation'];
+    currencySign = data.containsKey('currencySign')
+        ? data['currencySign']
+        : data['signo_moneda'] ?? "\$";
+    blockingAccount = data.containsKey('blockingAccount')
+        ? data['blockingAccount']
+        : data['bloqueo'];
+    blockingMessage = data.containsKey('blockingMessage')
+        ? data['blockingMessage']
+        : data['mensaje_bloqueo'];
+    verifiedAccount = data.containsKey('verifiedAccount')
+        ? data['verifiedAccount']
+        : data['cuenta_verificada'];
+    countrycode = data.containsKey('countrycode')
+        ? data['countrycode']
+        : data['codigo_pais'];
+    address = data.containsKey('address') ? data['address'] : data['direccion'];
+    town = data.containsKey('town') ? data['town'] : data['ciudad'];
+    province =
+        data.containsKey('province') ? data['province'] : data['provincia'];
+    country = data.containsKey('country') ? data['country'] : data['pais'];
   }
   Map<String, dynamic> toJson() => {
         "id": id,
         "username": username,
-        "imagen_perfil": imagenPerfil,
-        "nombre_negocio": nombreNegocio,
-        "descripcion": descripcion,
-        //"timestamp_creation": timestamp_creation,
-        //"timestamp_login": timestamp_login,
-        "signo_moneda": signoMoneda,
-        "bloqueo": bloqueo,
-        "mensaje_bloqueo": mensajeBloqueo,
-        "cuenta_activa": cuentaActiva,
-        "cuenta_verificada": cuentaVerificada,
-        "codigo_pais": codigoPais,
-        "pais": pais,
-        "provincia": provincia,
-        "ciudad": ciudad,
-        "direccion": direccion,
+        "image": image,
+        "name": name,
+        "description": description,
+        "creation": creation,
+        "currencySign": currencySign,
+        "blockingAccount": blockingAccount,
+        "blockingMessage": blockingMessage,
+        "verifiedAccount": verifiedAccount,
+        "countrycode": countrycode,
+        "country": country,
+        "province": province,
+        "town": town,
+        "address": address,
       };
 
   ProfileAccountModel.fromDocumentSnapshot(
       {required DocumentSnapshot documentSnapshot}) {
-    this.id = documentSnapshot.id;
-    //this.username = documentSnapshot["username"]??'';
-    this.imagenPerfil = documentSnapshot["imagen_perfil"] ?? '';
-    this.nombreNegocio = documentSnapshot["nombre_negocio"] ?? 'null';
-    this.descripcion = documentSnapshot["descripcion"] ?? '';
-    //this.signoMoneda = documentSnapshot["signo_moneda"]??'';
-    this.bloqueo = documentSnapshot["bloqueo"] ?? '';
-    this.mensajeBloqueo = documentSnapshot["mensaje_bloqueo"] ?? '';
-    this.cuentaActiva = documentSnapshot["cuenta_activa"] ?? false;
-    this.cuentaVerificada = documentSnapshot["cuenta_verificada"] ?? false;
-    this.codigoPais = documentSnapshot["codigo_pais"] ?? '';
-    this.pais = documentSnapshot["pais"] ?? '';
-    this.provincia = documentSnapshot["provincia"] ?? '';
-    this.ciudad = documentSnapshot["ciudad"] ?? '';
-    this.direccion = documentSnapshot["direccion"] ?? '';
+    Map data = documentSnapshot.data() as Map;
+
+    //  set
+    this.id = data.containsKey('id') ? data['id'] : documentSnapshot.id;
+    this.username = data["username"] ?? '';
+    this.image =
+        data.containsKey('image') ? data['image'] : data["imagen_perfil"] ?? '';
+    this.name = data.containsKey('name')
+        ? data['name']
+        : data["nombre_negocio"] ?? 'null';
+    this.description = data.containsKey('description')
+        ? data['description']
+        : data["descripcion"] ?? '';
+    this.currencySign = data.containsKey('currencySign')
+        ? data['currencySign']
+        : data["signo_moneda"] ?? '';
+    this.blockingAccount = data.containsKey('blockingAccount')
+        ? data['blockingAccount']
+        : data["bloqueo"] ?? '';
+    this.blockingMessage = data.containsKey('blockingMessage')
+        ? data['blockingMessage']
+        : data["mensaje_bloqueo"] ?? '';
+    this.verifiedAccount = data.containsKey('verifiedAccount')
+        ? data['verifiedAccount']
+        : data["cuenta_verificada"] ?? false;
+    this.countrycode = data.containsKey('countrycode')
+        ? data['countrycode']
+        : data["codigo_pais"] ?? '';
+    this.country =
+        data.containsKey('country') ? data['country'] : data["pais"] ?? '';
+    this.province = data.containsKey('province')
+        ? data['province']
+        : data["provincia"] ?? '';
+    this.town = data.containsKey('town') ? data['town'] : data["ciudad"] ?? '';
+    this.address =
+        data.containsKey('address') ? data['address'] : data["direccion"] ?? '';
   }
 }
 
-class AdminUsuarioCuenta {
+class AdminUser {
+  // usuario administador
+
   String idUser = "";
   String idAccount = "";
-  bool estadoCuentaUsuario = true;
-  int tipocuenta = 0; // 0 = null | 1 = administrador  | 2 = etandar
+  bool activated = true;
+  int permitType = 0; // tipo de permiso // 0 = administrador | 1 = etandar
 
-  AdminUsuarioCuenta({
+  AdminUser({
     this.idUser = "",
     this.idAccount = "",
-    this.estadoCuentaUsuario = false,
-    this.tipocuenta = 0,
+    this.activated = false,
+    this.permitType = 0,
   });
 
-  AdminUsuarioCuenta.fromMap(Map data) {
-    idUser = data['id_usuario'] ?? "";
+  AdminUser.fromMap(Map data) {
+    idUser =
+        data.containsKey('idUser') ? data['idUser'] : data['id_usuario'] ?? "";
     idAccount = data['idAccount'] ?? "";
-    estadoCuentaUsuario = data['estadoCuentaUsuario'] ?? '';
-    tipocuenta = data['tipocuenta'] ?? '';
+    activated = data.containsKey('activated')
+        ? data['activated']
+        : data['estadoCuentaUsuario'] ?? '';
+    permitType = data.containsKey('permitType')
+        ? data['permitType']
+        : data['tipocuenta'] ?? '';
   }
 
-  AdminUsuarioCuenta.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+  AdminUser.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+    Map data = documentSnapshot.data() as Map;
 
-    idUser = (documentSnapshot.data() as Map<String, dynamic>).containsKey("idUser") ? documentSnapshot["idUser"] : '';
-    idAccount = (documentSnapshot.data() as Map<String, dynamic>).containsKey("idAccount") ? documentSnapshot["idAccount"] : '';
-    estadoCuentaUsuario = (documentSnapshot.data() as Map<String, dynamic>).containsKey("estadoCuentaUsuario") ? documentSnapshot["estadoCuentaUsuario"] : false;
-    tipocuenta = (documentSnapshot.data() as Map<String, dynamic>).containsKey("tipocuenta") ? documentSnapshot["tipocuenta"] : 0;
+    //  set
+    idUser =data.containsKey("idUser")? data["idUser"]: '';
+    idAccount =data.containsKey("idAccount")? data["idAccount"]: '';
+    activated = data.containsKey("activated")? data["activated"]:data["estadoCuentaUsuario"]??false;
+    permitType = data.containsKey("permitType")? data["permitType"]:data["tipocuenta"]?? 0;
   }
   Map<String, dynamic> toJson() => {
         "idUser": idUser,
         "idAccount": idAccount,
-        "estadoCuentaUsuario": estadoCuentaUsuario,
-        "tipocuenta": tipocuenta,
+        "activated": activated,
+        "permitType": permitType,
       };
 }

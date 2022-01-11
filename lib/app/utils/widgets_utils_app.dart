@@ -267,12 +267,12 @@ class WidgetButtonListTile extends StatelessWidget {
   Widget buttonListTileCerrarSesion({required BuildContext buildContext}) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-      leading: controller.getProfileAccountSelected.imagenPerfil == ""
+      leading: controller.getProfileAccountSelected.image == ""
           ? CircleAvatar(
               backgroundColor: Colors.black26,
               radius: 24.0,
               child: Text(
-                  controller.getProfileAccountSelected.nombreNegocio
+                  controller.getProfileAccountSelected.name
                       .substring(0, 1),
                   style: TextStyle(
                       fontSize: 18.0,
@@ -280,12 +280,12 @@ class WidgetButtonListTile extends StatelessWidget {
                       fontWeight: FontWeight.bold)),
             )
           : CachedNetworkImage(
-              imageUrl: controller.getProfileAccountSelected.imagenPerfil,
+              imageUrl: controller.getProfileAccountSelected.image,
               placeholder: (context, url) => CircleAvatar(
                 backgroundColor: Colors.black26,
                 radius: 24.0,
                 child: Text(
-                    controller.getProfileAccountSelected.nombreNegocio
+                    controller.getProfileAccountSelected.name
                         .substring(0, 1),
                     style: TextStyle(
                         fontSize: 18.0,
@@ -354,18 +354,18 @@ class WidgetButtonListTile extends StatelessWidget {
         ListTile(
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(10000.0),
-            child: perfilNegocio.imagenPerfil != '' ||
-                    perfilNegocio.imagenPerfil.isNotEmpty
+            child: perfilNegocio.image != '' ||
+                    perfilNegocio.image.isNotEmpty
                 ? CachedNetworkImage(
                     fadeInDuration: Duration(milliseconds: 200),
                     fit: BoxFit.cover,
-                    imageUrl: perfilNegocio.imagenPerfil.contains('https://')
-                        ? perfilNegocio.imagenPerfil
-                        : "https://" + perfilNegocio.imagenPerfil,
+                    imageUrl: perfilNegocio.image.contains('https://')
+                        ? perfilNegocio.image
+                        : "https://" + perfilNegocio.image,
                     placeholder: (context, url) => CircleAvatar(
                       backgroundColor: Colors.black26,
                       radius: 24.0,
-                      child: Text(perfilNegocio.nombreNegocio.substring(0, 1),
+                      child: Text(perfilNegocio.name.substring(0, 1),
                           style: TextStyle(
                               fontSize: 18.0,
                               color: Colors.white,
@@ -378,7 +378,7 @@ class WidgetButtonListTile extends StatelessWidget {
                     errorWidget: (context, url, error) => CircleAvatar(
                       backgroundColor: Colors.black26,
                       radius: 24.0,
-                      child: Text(perfilNegocio.nombreNegocio.substring(0, 1),
+                      child: Text(perfilNegocio.name.substring(0, 1),
                           style: TextStyle(
                               fontSize: 18.0,
                               color: Colors.white,
@@ -388,7 +388,7 @@ class WidgetButtonListTile extends StatelessWidget {
                 : CircleAvatar(
                     backgroundColor: Colors.black26,
                     radius: 24.0,
-                    child: Text(perfilNegocio.nombreNegocio.substring(0, 1),
+                    child: Text(perfilNegocio.name.substring(0, 1),
                         style: TextStyle(
                             fontSize: 18.0,
                             color: Colors.white,
@@ -396,9 +396,9 @@ class WidgetButtonListTile extends StatelessWidget {
                   ),
           ),
           dense: true,
-          title: Text(perfilNegocio.nombreNegocio),
+          title: Text(perfilNegocio.name),
           subtitle: !adminPropietario
-              ? Text(perfilNegocio.admin)
+              ? Text(perfilNegocio.idAuthUserCreation)
               : Row(
                   children: [
                     Icon(

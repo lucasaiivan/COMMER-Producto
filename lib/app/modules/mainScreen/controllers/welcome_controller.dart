@@ -47,7 +47,7 @@ class WelcomeController extends GetxController {
   }
 
   String get getIdAccountSelecte => idAccountSelected.value;
-  Rx<ProfileAccountModel> _profileAccount = ProfileAccountModel().obs;
+  Rx<ProfileAccountModel> _profileAccount = ProfileAccountModel(creation: Timestamp.now()).obs;
   ProfileAccountModel get getProfileAccountSelected => _profileAccount.value;
   set setProfileAccountSelected(ProfileAccountModel user) =>
       _profileAccount.value = user;
@@ -158,7 +158,7 @@ class WelcomeController extends GetxController {
   void catalogueFilterReset() {
     // resetea los valores de los filtros para mostrar todos los productos
     setMarkSelect = Mark(
-        timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
+        upgrade: Timestamp.now(), creation: Timestamp.now());
     setCategorySelect = Category();
     setsubCategorySelect = Category();
     catalogueFilter();
@@ -188,7 +188,7 @@ class WelcomeController extends GetxController {
 
   //  mark selected
   Rx<Mark> _markSelect = Mark(
-          timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now())
+          upgrade: Timestamp.now(), creation: Timestamp.now())
       .obs;
   Mark get getMarkSelect => _markSelect.value;
   set setMarkSelect(Mark value) {
@@ -205,13 +205,13 @@ class WelcomeController extends GetxController {
   set setCategorySelect(Category value) {
     // default value
     setMarkSelect = Mark(
-        timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
+        upgrade: Timestamp.now(), creation: Timestamp.now());
     // set
     _subCategorySelect.value = Category();
     _categorySelect.value = value;
     catalogueFilter();
     // actualiza el texto del 'TabBar'
-    setTextTab = _categorySelect.value.nombre;
+    setTextTab = _categorySelect.value.name;
     update(['tab']);
   }
 
@@ -241,12 +241,12 @@ class WelcomeController extends GetxController {
   set setsubCategorySelect(Category value) {
     // default value
     setMarkSelect = Mark(
-        timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
+        upgrade: Timestamp.now(), creation: Timestamp.now());
     // set
     _subCategorySelect.value = value;
     catalogueFilter();
     // actualiza el texto del 'TabBar'
-    setTextTab = _subCategorySelect.value.nombre;
+    setTextTab = _subCategorySelect.value.name;
     update(['tab']);
   }
 
@@ -310,15 +310,15 @@ class WelcomeController extends GetxController {
       _managedAccountDataList.value = value;
   void addManagedAccount(
       {required ProfileAccountModel profileData,
-      required AdminUsuarioCuenta adminUsuarioCuentaData}) {
-    switch (adminUsuarioCuentaData.tipocuenta) {
+      required AdminUser adminUsuarioCuentaData}) {
+    switch (adminUsuarioCuentaData.permitType) {
       case 0:
         break;
       case 1:
-        profileData.admin = 'Administrador';
+        profileData.idAuthUserCreation = 'Administrador';
         break;
       case 2:
-        profileData.admin = 'Estandar';
+        profileData.idAuthUserCreation = 'Estandar';
         break;
     }
     return _managedAccountDataList.add(profileData);
@@ -419,8 +419,8 @@ class WelcomeController extends GetxController {
     return Database.readMarkFuture(id: id)
         .then((value) => Mark.fromMap(value.data() as Map))
         .catchError((error) => Mark(
-            timestampUpdate: Timestamp.now(),
-            timestampCreacion: Timestamp.now()));
+            upgrade: Timestamp.now(),
+            creation: Timestamp.now()));
   }
 
   void readProfileBursinesFuture({required String id}) {
@@ -456,8 +456,8 @@ class WelcomeController extends GetxController {
           .then((value) {
         //get
         if (value.exists) {
-          AdminUsuarioCuenta adminUsuarioCuenta =
-              AdminUsuarioCuenta.fromDocumentSnapshot(documentSnapshot: value);
+          AdminUser adminUsuarioCuenta =
+              AdminUser.fromDocumentSnapshot(documentSnapshot: value);
           // obtenemos una sola ves el perfil de la cuenta de un negocio
           if (adminUsuarioCuenta.idAccount != '') {
             Database.readProfileBusinessModelFuture(

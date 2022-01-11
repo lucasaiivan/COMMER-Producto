@@ -65,8 +65,8 @@ class CatalogueScreenView extends StatelessWidget {
                 TextSpan(
                   text: controller.getProfileAccountSelected.id == ''
                       ? "Seleccionar cuenta"
-                      : controller.getProfileAccountSelected.nombreNegocio != ""
-                          ? controller.getProfileAccountSelected.nombreNegocio
+                      : controller.getProfileAccountSelected.name != ""
+                          ? controller.getProfileAccountSelected.name
                           : "Mi catalogo",
                 ),
                 WidgetSpan(child: Icon(Icons.keyboard_arrow_down, size: 24)),
@@ -126,7 +126,7 @@ class CatalogueScreenView extends StatelessWidget {
                       radius: 24,
                       backgroundColor: Colors.grey,
                       backgroundImage: CachedNetworkImageProvider(
-                        controller.getProfileAccountSelected.imagenPerfil,
+                        controller.getProfileAccountSelected.image,
                       ),
                     ),
                   ),
@@ -323,12 +323,12 @@ class CatalogueScreenView extends StatelessWidget {
       children: <Widget>[
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
-          leading: controller.getProfileAccountSelected.imagenPerfil == ""
+          leading: controller.getProfileAccountSelected.image == ""
               ? CircleAvatar(
                   backgroundColor: Colors.black26,
                   radius: 18.0,
                   child: Text(
-                      controller.getProfileAccountSelected.nombreNegocio
+                      controller.getProfileAccountSelected.name
                           .substring(0, 1),
                       style: TextStyle(
                           fontSize: 18.0,
@@ -336,7 +336,7 @@ class CatalogueScreenView extends StatelessWidget {
                           fontWeight: FontWeight.bold)),
                 )
               : CachedNetworkImage(
-                  imageUrl: controller.getProfileAccountSelected.imagenPerfil,
+                  imageUrl: controller.getProfileAccountSelected.image,
                   placeholder: (context, url) => const CircleAvatar(
                     backgroundColor: Colors.grey,
                     radius: 18.0,
@@ -561,7 +561,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.all(5.0),
                         child: viewCircleImage(
-                            url: marca.urlImage, texto: marca.name, size: 50),
+                            url: marca.image, texto: marca.name, size: 50),
                       ),
                     ),
                     SizedBox(

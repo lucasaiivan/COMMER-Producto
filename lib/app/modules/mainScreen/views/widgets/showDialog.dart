@@ -128,8 +128,8 @@ class _ViewCategoriaState extends State<ViewCategoria> {
       leading: CircleAvatar(
         backgroundColor: Colors.black26,
         radius: 24.0,
-        child: categoria.nombre != ""
-            ? Text(categoria.nombre.substring(0, 1),
+        child: categoria.name != ""
+            ? Text(categoria.name.substring(0, 1),
                 style: TextStyle(
                     fontSize: 18.0,
                     color: Colors.white,
@@ -137,7 +137,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
             : Text("C"),
       ),
       dense: true,
-      title: Text(categoria.nombre),
+      title: Text(categoria.name),
       onTap: () {
         Get.back();
         controller.setCategorySelect = categoria;
@@ -215,7 +215,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
     bool loadSave = false;
     bool newProduct = false;
     TextEditingController textEditingController =
-        TextEditingController(text: categoria.nombre);
+        TextEditingController(text: categoria.name);
 
     if (categoria.id == '') {
       newProduct = true;
@@ -253,7 +253,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                 onPressed: () async {
                   if (textEditingController.text != '') {
                     // set
-                    categoria.nombre = textEditingController.text;
+                    categoria.name = textEditingController.text;
                     setState(() => loadSave = true);
                     // save
                     await controller
@@ -313,7 +313,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
 
   @override
   Widget build(BuildContext buildContext) {
-    if (categoriaSelected.subcategorias.length == 0) {
+    if (categoriaSelected.subcategories.length == 0) {
       return Row(
         children: [
           Expanded(
@@ -333,13 +333,13 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
     return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
-      itemCount: categoriaSelected.subcategorias.length,
+      itemCount: categoriaSelected.subcategories.length,
       itemBuilder: (BuildContext _, int index) {
         Category subcategoria = new Category(
-            id: categoriaSelected.subcategorias.keys
+            id: categoriaSelected.subcategories.keys
                 .elementAt(index)
                 .toString(),
-            nombre: categoriaSelected.subcategorias.values
+            name: categoriaSelected.subcategories.values
                 .elementAt(index)
                 .toString());
 
@@ -361,7 +361,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                               subcategoria: Category()))
                     ],
                   ),
-                  categoriaSelected.subcategorias.length != 0
+                  categoriaSelected.subcategories.length != 0
                       ? ListTile(
                           contentPadding: EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 12.0),
@@ -402,8 +402,8 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
       leading: CircleAvatar(
         backgroundColor: Colors.black26,
         radius: 24.0,
-        child: subcategoria.nombre != ""
-            ? Text(subcategoria.nombre.substring(0, 1),
+        child: subcategoria.name != ""
+            ? Text(subcategoria.name.substring(0, 1),
                 style: TextStyle(
                     fontSize: 18.0,
                     color: Colors.white,
@@ -411,7 +411,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
             : Text("C"),
       ),
       dense: true,
-      title: Text(subcategoria.nombre),
+      title: Text(subcategoria.name),
       onTap: () {
         controller.setsubCategorySelect = subcategoria;
         Get.back();
@@ -467,7 +467,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                             ? Text("ELIMINAR")
                             : CircularProgressIndicator(),
                         onPressed: () async {
-                          controller.getCategorySelect.subcategorias
+                          controller.getCategorySelect.subcategories
                               .remove(subcategoria.id);
                           // save
                           await controller
@@ -493,7 +493,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
     bool loadSave = false;
     bool newProduct = false;
     TextEditingController textEditingController =
-        TextEditingController(text: subcategoria.nombre);
+        TextEditingController(text: subcategoria.name);
 
     if (subcategoria.id == '') {
       newProduct = true;
@@ -531,9 +531,9 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                 onPressed: () async {
                   if (textEditingController.text != '') {
                     // set
-                    subcategoria.nombre = textEditingController.text;
+                    subcategoria.name = textEditingController.text;
                     controller.getCategorySelect
-                        .subcategorias[subcategoria.id] = subcategoria.nombre;
+                        .subcategories[subcategoria.id] = subcategoria.name;
                     setState(() => loadSave = true);
                     // save
                     await controller

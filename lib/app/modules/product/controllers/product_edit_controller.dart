@@ -58,7 +58,7 @@ class ControllerProductsEdit extends GetxController {
 
   // marca
   Mark _markSelected = Mark(
-      timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
+      upgrade: Timestamp.now(), creation: Timestamp.now());
   set setMarkSelected(Mark value) {
     _markSelected = value;
     getProduct.idMark = value.id;
@@ -78,7 +78,7 @@ class ControllerProductsEdit extends GetxController {
   set setCategory(Category value) {
     _category = value;
     getProduct.category = value.id;
-    getProduct.nameCategory = value.nombre;
+    getProduct.nameCategory = value.name;
     update(['updateAll']);
   }
 
@@ -89,7 +89,7 @@ class ControllerProductsEdit extends GetxController {
   set setSubcategory(Category value) {
     _subcategory = value;
     getProduct.subcategory = value.id;
-    getProduct.nameSubcategory = value.nombre;
+    getProduct.nameSubcategory = value.name;
     update(['updateAll']);
   }
 
@@ -190,16 +190,16 @@ class ControllerProductsEdit extends GetxController {
 
             // registra el precio en una colección publica para todos los usuarios
             if (welcomeController.getProfileAccountSelected.id != "") {
-              Precio precio = new Precio(
+              Price precio = new Price(
                 id: welcomeController.getProfileAccountSelected.id,
                 idAccount: welcomeController.getProfileAccountSelected.id,
-                urlImageAccount: welcomeController.getProfileAccountSelected.imagenPerfil,
-                nameAccount: welcomeController.getProfileAccountSelected.nombreNegocio ,
-                precio: getProduct.salePrice,
-                moneda: getProduct.sign,
-                provincia:welcomeController.getProfileAccountSelected.provincia,
-                ciudad: welcomeController.getProfileAccountSelected.ciudad,
-                timestamp: Timestamp.fromDate(new DateTime.now()),
+                imageAccount: welcomeController.getProfileAccountSelected.image,
+                nameAccount: welcomeController.getProfileAccountSelected.name ,
+                price: getProduct.salePrice,
+                currencySign: getProduct.currencySign,
+                province:welcomeController.getProfileAccountSelected.province,
+                town: welcomeController.getProfileAccountSelected.town,
+                time: Timestamp.fromDate(new DateTime.now()),
               );
               // Firebase set
               await Database.refFirestoreRegisterPrice(
@@ -321,10 +321,10 @@ class ControllerProductsEdit extends GetxController {
       update(['updateAll']);
     }).onError((error, stackTrace) {
       setMarkSelected = Mark(
-          timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
+          upgrade: Timestamp.now(), creation: Timestamp.now());
     }).catchError((_) {
       setMarkSelected = Mark(
-          timestampUpdate: Timestamp.now(), timestampCreacion: Timestamp.now());
+          upgrade: Timestamp.now(), creation: Timestamp.now());
     });
   }
 
@@ -336,18 +336,18 @@ class ControllerProductsEdit extends GetxController {
       setCategory = Category.fromDocumentSnapshot(documentSnapshot: value);
       if (getProduct.subcategory != '') readSubcategory();
     }).onError((error, stackTrace) {
-      setCategory = Category(id: '0000', nombre: '');
-      setSubcategory = Category(id: '0000', nombre: '');
+      setCategory = Category(id: '0000', name: '');
+      setSubcategory = Category(id: '0000', name: '');
     }).catchError((_) {
-      setCategory = Category(id: '0000', nombre: '');
-      setSubcategory = Category(id: '0000', nombre: '');
+      setCategory = Category(id: '0000', name: '');
+      setSubcategory = Category(id: '0000', name: '');
     });
   }
 
   void readSubcategory() {
-    getCategory.subcategorias.forEach((key, value) {
+    getCategory.subcategories.forEach((key, value) {
       if (key == getProduct.subcategory) {
-        setSubcategory = Category(id: key, nombre: value.toString());
+        setSubcategory = Category(id: key, name: value.toString());
       }
     });
   }

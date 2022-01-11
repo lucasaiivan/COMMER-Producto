@@ -159,7 +159,7 @@ class Product extends GetView<ProductController> {
                 child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Text(
-                  welcomeController.getProfileAccountSelected.nombreNegocio,
+                  welcomeController.getProfileAccountSelected.name,
                   style: TextStyle(
                       fontFamily: "Poppins",
                       fontSize: 30,
@@ -243,33 +243,33 @@ class Product extends GetView<ProductController> {
                   runSpacing: 4.0, // gap between lines
                   direction: Axis.horizontal, // main axis (rows or columns)
                   children: <Widget>[
-                    controller.getCategory.nombre != ""
+                    controller.getCategory.name != ""
                         ? Chip(
                             materialTapTargetSize:
                                 MaterialTapTargetSize.shrinkWrap,
                             avatar: CircleAvatar(
                                 backgroundColor: Colors.grey.shade800,
                                 child: Text(
-                                    controller.getCategory.nombre
+                                    controller.getCategory.name
                                         .substring(0, 1),
                                     style: TextStyle(color: Colors.grey))),
-                            label: Text(controller.getCategory.nombre,
+                            label: Text(controller.getCategory.name,
                                 overflow: TextOverflow.ellipsis),
                           )
                         : Container(),
-                    controller.getSubcategory.nombre != ""
+                    controller.getSubcategory.name != ""
                         ? Chip(
                             materialTapTargetSize:
                                 MaterialTapTargetSize.shrinkWrap,
                             avatar: CircleAvatar(
                               backgroundColor: Colors.grey.shade800,
                               child: Text(
-                                  controller.getSubcategory.nombre
+                                  controller.getSubcategory.name
                                       .substring(0, 1),
                                   style: TextStyle(color: Colors.grey)),
                             ),
                             label: Text(
-                              controller.getSubcategory.nombre,
+                              controller.getSubcategory.name,
                               overflow: TextOverflow.ellipsis,
                             ),
                           )
@@ -481,7 +481,7 @@ class Product extends GetView<ProductController> {
                                     .getListPricesForProduct[index].idAccount ==
                                 "" ||
                             controller.getListPricesForProduct[index]
-                                    .urlImageAccount ==
+                                    .imageAccount ==
                                 ""
                         ? CircleAvatar(
                             backgroundColor: Colors.grey,
@@ -489,7 +489,7 @@ class Product extends GetView<ProductController> {
                           )
                         : CachedNetworkImage(
                             imageUrl: controller
-                                .getListPricesForProduct[index].urlImageAccount,
+                                .getListPricesForProduct[index].imageAccount,
                             placeholder: (context, url) => const CircleAvatar(
                               backgroundColor: Colors.grey,
                               radius: 24.0,
@@ -507,7 +507,7 @@ class Product extends GetView<ProductController> {
                     title: Text(
                       Publicaciones.getFormatoPrecio(
                           monto:
-                              controller.getListPricesForProduct[index].precio),
+                              controller.getListPricesForProduct[index].price),
                       style: TextStyle(
                           color: colorText,
                           fontSize: 24.0,
@@ -519,7 +519,7 @@ class Product extends GetView<ProductController> {
                         Text(
                           Publicaciones.getFechaPublicacion(
                                   controller
-                                      .getListPricesForProduct[index].timestamp
+                                      .getListPricesForProduct[index].time
                                       .toDate(),
                                   new DateTime.now())
                               .toLowerCase(),
@@ -527,11 +527,11 @@ class Product extends GetView<ProductController> {
                           style: TextStyle(
                               fontStyle: FontStyle.normal, color: colorText),
                         ),
-                        controller.getListPricesForProduct[index].ciudad != ""
+                        controller.getListPricesForProduct[index].town != ""
                             ? Text(
                                 "En " +
                                     controller
-                                        .getListPricesForProduct[index].ciudad
+                                        .getListPricesForProduct[index].town
                                         .toString(),
                                 style: TextStyle(
                                     color: colorText,
@@ -568,12 +568,12 @@ class Product extends GetView<ProductController> {
                             leading: controller.getListPricesForProduct[index]
                                             .idAccount ==
                                         "" ||
-                                    perfilNegocio.imagenPerfil == "default"
+                                    perfilNegocio.image == "default"
                                 ? CircleAvatar(
                                     backgroundColor: Colors.black26,
                                     radius: 24.0,
                                     child: Text(
-                                        perfilNegocio.nombreNegocio
+                                        perfilNegocio.name
                                             .substring(0, 1),
                                         style: TextStyle(
                                             fontSize: 18.0,
@@ -581,7 +581,7 @@ class Product extends GetView<ProductController> {
                                             fontWeight: FontWeight.bold)),
                                   )
                                 : CachedNetworkImage(
-                                    imageUrl: perfilNegocio.imagenPerfil,
+                                    imageUrl: perfilNegocio.image,
                                     placeholder: (context, url) =>
                                         const CircleAvatar(
                                       backgroundColor: Colors.grey,
@@ -601,7 +601,7 @@ class Product extends GetView<ProductController> {
                             title: Text(
                               Publicaciones.getFormatoPrecio(
                                   monto: controller
-                                      .getListPricesForProduct[index].precio),
+                                      .getListPricesForProduct[index].price),
                               style: TextStyle(
                                   color: colorText,
                                   fontSize: 24.0,
@@ -614,7 +614,7 @@ class Product extends GetView<ProductController> {
                                   Publicaciones.getFechaPublicacion(
                                           controller
                                               .getListPricesForProduct[index]
-                                              .timestamp
+                                              .time
                                               .toDate(),
                                           new DateTime.now())
                                       .toLowerCase(),
@@ -624,13 +624,13 @@ class Product extends GetView<ProductController> {
                                       color: colorText),
                                 ),
                                 controller.getListPricesForProduct[index]
-                                            .ciudad !=
+                                            .town !=
                                         ""
                                     ? Text(
                                         "En " +
                                             controller
                                                 .getListPricesForProduct[index]
-                                                .ciudad
+                                                .town
                                                 .toString(),
                                         style: TextStyle(
                                             color: colorText,
@@ -715,7 +715,7 @@ class Product extends GetView<ProductController> {
                       padding: const EdgeInsets.all(2.0),
                       child: utilsWidget.viewCircleImage(
                           size: 60,
-                          url: controller.getMark.urlImage,
+                          url: controller.getMark.image,
                           texto: controller.getMark.name),
                     ),
                   ),
@@ -790,7 +790,7 @@ class Product extends GetView<ProductController> {
                         color: Colors.grey.withOpacity(0.1)),
                   ),
                   Padding(
-                    child: Text(controller.getCategory.nombre,
+                    child: Text(controller.getCategory.name,
                         style: TextStyle(fontSize: 16.0)),
                     padding:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -1106,7 +1106,7 @@ class WidgetImagen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Chip(
                 avatar: viewCircleImage(
-                    url: marca.urlImage, texto: marca.name, size: 20),
+                    url: marca.image, texto: marca.name, size: 20),
                 label: Text(marca.name),
               ),
             ),

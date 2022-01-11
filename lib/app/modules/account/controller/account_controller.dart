@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -70,7 +71,7 @@ class AccountController extends GetxController {
   List<String> get getCountries => _listountries;
 
   // account profile
-  Rx<ProfileAccountModel> _profileAccount = ProfileAccountModel().obs;
+  Rx<ProfileAccountModel> _profileAccount = ProfileAccountModel(creation: Timestamp.now()).obs;
   ProfileAccountModel get getProfileAccount => _profileAccount.value;
   set setProfileAccount(ProfileAccountModel user) =>
       _profileAccount.value = user;
@@ -122,11 +123,11 @@ class AccountController extends GetxController {
     }
 
     setControllerTextEditProvincia =
-        TextEditingController(text: getProfileAccount.provincia);
+        TextEditingController(text: getProfileAccount.province);
     setControllerTextEditPais =
-        TextEditingController(text: getProfileAccount.pais);
+        TextEditingController(text: getProfileAccount.country);
     setControllerTextEditSignoMoneda =
-        TextEditingController(text: getProfileAccount.signoMoneda);
+        TextEditingController(text: getProfileAccount.currencySign);
 
     super.onInit();
   }
@@ -141,14 +142,14 @@ class AccountController extends GetxController {
 
   void saveAccount() async {
     if (getProfileAccount.id != "") {
-      if (getProfileAccount.nombreNegocio != "") {
+      if (getProfileAccount.name != "") {
         if (getControllerTextEditProvincia.text != "") {
           if (getControllerTextEditPais.text != "") {
             // get
-            _profileAccount.value.provincia =
+            _profileAccount.value.province =
                 getControllerTextEditProvincia.text;
-            _profileAccount.value.pais = getControllerTextEditPais.text;
-            _profileAccount.value.signoMoneda =
+            _profileAccount.value.country = getControllerTextEditPais.text;
+            _profileAccount.value.currencySign =
                 getControllerTextEditSignoMoneda.text;
             setSavingIndicator = true;
 
@@ -161,7 +162,7 @@ class AccountController extends GetxController {
                               : getProfileAccount.id)
                       .putFile(File(getxFile.path));
               // para obtener la URL de la imagen de firebase storage
-              getProfileAccount.imagenPerfil =
+              getProfileAccount.image =
                   await (await uploadTask).ref.getDownloadURL();
             }
 
@@ -175,11 +176,11 @@ class AccountController extends GetxController {
 
               // guarda la referencia del usuario en una colección de administradores en los datos de la cuenta
               await saveIdUserRefForAccountData(
-                  data: AdminUsuarioCuenta(
+                  data: AdminUser(
                           idAccount: getProfileAccount.id,
                           idUser: getProfileAccount.id,
-                          tipocuenta: 1,
-                          estadoCuentaUsuario: true)
+                          permitType: 1,
+                          activated: true)
                       .toJson());
 
               // crear una nueva cuenta
