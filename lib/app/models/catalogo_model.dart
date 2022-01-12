@@ -8,7 +8,6 @@ class Product {
   String idMark = ""; // ID de la marca por defecto esta vacia
   String nameMark = '';
   String image = "https://default"; // URL imagen
-  String title = ""; // Titulo
   String description = ""; // Informacion
   double salePrice = 0.0;
   double purchasePrice = 0.0;
@@ -29,7 +28,6 @@ class Product {
     this.idMark = "",
     this.nameMark = '',
     this.image = "",
-    this.title = "",
     this.description = "",
     this.salePrice = 0.0,
     this.purchasePrice = 0.0,
@@ -49,7 +47,6 @@ class Product {
         "idMark": idMark,
         'nameMark': nameMark,
         "image": image,
-        "title": title,
         "description": description,
         "salePrice": salePrice,
         "purchasePrice": purchasePrice,
@@ -76,7 +73,6 @@ class Product {
       nameMark: data['nameMark'] ?? '',
       image:
           data.containsKey('image') ? data['image'] : data['urlimagen'] ?? '',
-      title: data.containsKey('title') ? data['title'] : data['titulo'] ?? '',
       description: data.containsKey('description')
           ? data['description']
           : data['descripcion'] ?? '',
@@ -118,7 +114,6 @@ class Product {
         data.containsKey('idMark') ? data['idMark'] : data['id_marca'] ?? '';
     nameMark = data['nameMark'] ?? '';
     image = data.containsKey('image') ? data['image'] : data['urlimagen'] ?? '';
-    title = data.containsKey('title') ? data['title'] : data['titulo'] ?? '';
     description = data.containsKey('description')
         ? data['description']
         : data['descripcion'] ?? '';
@@ -152,7 +147,6 @@ class Product {
     productoNegocio.favorite = this.favorite;
     productoNegocio.idMark = this.idMark;
     productoNegocio.nameMark = this.nameMark;
-    productoNegocio.title = this.title;
     productoNegocio.description = this.description;
     productoNegocio.code = this.code;
     productoNegocio.category = this.category;
@@ -172,7 +166,6 @@ class ProductCatalogue {
   String idMark = ""; // ID de la marca por defecto esta vacia
   String nameMark = ''; // nombre de la marca
   String image = "https://default"; // URL imagen
-  String title = ""; // Titulo
   String description = ""; // Información
   String code = "";
   String category = ""; // ID de la categoria del producto
@@ -198,7 +191,6 @@ class ProductCatalogue {
     this.verified = false,
     this.favorite = false,
     this.image = "",
-    this.title = "",
     this.description = "",
     this.code = "",
     this.category = "",
@@ -233,7 +225,6 @@ class ProductCatalogue {
       image: data.containsKey('image')
           ? data['image']
           : data['urlimagen'] ?? 'https://default',
-      title: data.containsKey('title') ? data['title'] : data['titulo'] ?? '',
       description: data.containsKey('description')
           ? data['description']
           : data['descripcion'] ?? '',
@@ -276,7 +267,6 @@ class ProductCatalogue {
         "idMark": idMark,
         "nameMark": nameMark,
         "image": image,
-        "title": title,
         "description": description,
         "code": code,
         "category": category,
@@ -300,7 +290,6 @@ class ProductCatalogue {
     productoDefault.favorite = this.favorite;
     productoDefault.idMark = this.idMark;
     productoDefault.nameMark = this.nameMark;
-    productoDefault.title = this.title;
     productoDefault.description = this.description;
     productoDefault.code = this.code;
     productoDefault.upgrade = this.upgrade;

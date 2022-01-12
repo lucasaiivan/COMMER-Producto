@@ -391,11 +391,14 @@ class WelcomeController extends GetxController {
   void readProfileAccountStream({required String id}) {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
-      setProfileAccountSelected =
-          ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: event);
+      // set
+      setProfileAccountSelected = ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
+      // read catalogue product
       readCatalogueListProductsStream(id: getIdAccountSelecte);
+      // read catalogue categories
       readListCategoryListFuture();
+
     }).onError((error) {
       print('######################## readProfileBursinesStreaml: ' +
           error.toString());
@@ -513,14 +516,14 @@ class WelcomeController extends GetxController {
       Database.readProductsCatalogueStream(id: id).listen((value) {
         List<ProductCatalogue> list = [];
         //  get
-        value.docs.forEach(
-            (element) => list.add(ProductCatalogue.fromMap(element.data())));
+        value.docs.forEach( (element) => list.add(ProductCatalogue.fromMap(element.data())));
         //  set
         setCatalogueProducts = list;
         setCatalogueFilter = list;
         getCatalogueMoreLoad();
         _loadMarksAll(list: list);
         setLoadDataCatalogue = true;
+        
       }).onError((error) {
         print('######################## readCatalogueListProductsStream: ' +
             error.toString());

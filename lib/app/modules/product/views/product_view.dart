@@ -915,7 +915,7 @@ class ProductoCatalogueItem extends StatelessWidget {
                 placeholder: AssetImage("assets/loading.gif")),
             errorWidget: (context, url, error) => Center(
               child: Text(
-                producto.title.substring(0, 3),
+                producto.description.substring(0, 3),
                 style: TextStyle(fontSize: 24.0),
               ),
             ),
@@ -1014,7 +1014,7 @@ class ProductoItem extends StatelessWidget {
                     color: Colors.grey[100],
                     child: Center(
                       child: Text(
-                        producto.title.substring(0, 3),
+                        producto.description.substring(0, 3),
                         style: TextStyle(fontSize: 24.0,color: Colors.grey),
                       ),
                     ),
@@ -1095,7 +1095,7 @@ class WidgetImagen extends StatelessWidget {
                 height: MediaQuery.of(context).size.width,
                 child: Center(
                   child: Text(
-                    producto.title.substring(0, 3),
+                    producto.description.substring(0, 3),
                     style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.25),
                   ),

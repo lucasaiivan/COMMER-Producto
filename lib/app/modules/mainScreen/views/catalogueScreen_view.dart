@@ -93,8 +93,8 @@ class CatalogueScreenView extends StatelessWidget {
                     child: Text('No se encontro :('),
                   ),
                   filter: (product) => [
-                    product.title,
                     product.description,
+                    product.nameMark,
                   ],
                   builder: (product) => ListTile(
                     leading: FadeInImage(
@@ -104,7 +104,7 @@ class CatalogueScreenView extends StatelessWidget {
                       fit: BoxFit.cover,
                       width: 50.0,
                     ),
-                    title: Text(product.title),
+                    title: Text(product.nameMark),
                     subtitle: Text(product.description),
                     onTap: () {
                       Get.toNamed(Routes.PRODUCT,
