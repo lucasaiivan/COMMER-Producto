@@ -5,8 +5,7 @@ import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
 
 class LoginController extends GetxController {
-
-
+  // controllers
   SplashController homeController = Get.find<SplashController>();
 
   @override
@@ -22,18 +21,19 @@ class LoginController extends GetxController {
   @override
   void onClose() {}
 
-
   void login() async {
-    // visualizamos un diálogo alerta
+    // set state load
     CustomFullScreenDialog.showDialog();
 
     // Activar el flujo de autenticación
-    GoogleSignInAccount? googleSignInAccount = await homeController.googleSign.signIn();
+    GoogleSignInAccount? googleSignInAccount =
+        await homeController.googleSign.signIn();
     if (googleSignInAccount == null) {
       CustomFullScreenDialog.cancelDialog();
     } else {
       // Obtenga los detalles de autenticación de la solicitud
-      GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+      GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
       // Crea una nueva credencial
       OAuthCredential oAuthCredential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
