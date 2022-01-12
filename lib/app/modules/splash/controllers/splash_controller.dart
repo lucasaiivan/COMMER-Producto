@@ -1,4 +1,3 @@
-
 import 'package:get_storage/get_storage.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,26 +19,17 @@ class SplashController extends GetxController {
 
   @override
   void onReady() async {
-    
+
+    // Verificamos si tenemos una referencia de una cuenta guardada en storage
+    idAccount = GetStorage().read('idAccount') ?? '';
+
     ever(isSignIn, handleAuthStateChanged);
+
     // verificamos que alla un usaario autentificado
     isSignIn.value = firebaseAuth.currentUser != null;
     // escuchamos el cambio de estado de la autentifiación del usuario
     firebaseAuth.authStateChanges().listen((event) => isSignIn.value = event != null);
 
-    try {
-      idAccount = Get.arguments['idAccount'] as String;
-      // Verificamos si tenemos una referencia de una cuenta guardada en storage
-      if(idAccount==""){
-        GetStorage storage = GetStorage();
-        idAccount=storage.read('idAccount')??'';
-      }
-      
-    } catch (e) {
-      idAccount = '';
-      // Verificamos si tenemos una referencia de una cuenta guardada en storage
-      idAccount=GetStorage().read('idAccount')??'';
-    }
 
     super.onReady();
   }
@@ -51,15 +41,17 @@ class SplashController extends GetxController {
   void handleAuthStateChanged(isLoggedIn) async {
     // visualizamos un diálogo alerta
     CustomFullScreenDialog.showDialog();
-    // aquí, según el estado, redirigir al usuario a la vista correspondiente
+    // aquí, según el estado de autentificación redirigir al usuario a la vista correspondiente
     if (isLoggedIn) {
-      Future.delayed(Duration(seconds: 2)).then((_) {
-        Get.offAllNamed(Routes.WELCOME, arguments: {
-          'currentUser': firebaseAuth.currentUser,
-          'idAccount': idAccount,
-        });
+      // authentication
+      Get.offAllNamed(Routes.WELCOME, arguments: {
+        'currentUser': firebaseAuth.currentUser,
+        'idAccount': idAccount,
       });
     } else {
+      // no authentication
+      await GetStorage().write('idAccount', '');
+      await googleSign.signOut();
       Get.offAllNamed(Routes.LOGIN);
     }
     // finalizamos el diálogo alerta

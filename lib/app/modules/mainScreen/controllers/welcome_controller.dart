@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:loadany/loadany_widget.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
@@ -338,7 +337,9 @@ class WelcomeController extends GetxController {
     setUserAccountAuth = Get.arguments['currentUser'];
     Map map = Get.arguments as Map;
     // verificamos y cargamos datos de la cuenta
-    map.containsKey('idAccount')?setIdAccountSelected = Get.arguments['idAccount']:setIdAccountSelected = '';
+    map.containsKey('idAccount')
+        ? setIdAccountSelected = Get.arguments['idAccount']
+        : setIdAccountSelected = '';
 
     // cargamos los datos de la cuenta de autentificación
     if (getUserAccountAuth.uid != '') {
@@ -628,19 +629,11 @@ class WelcomeController extends GetxController {
             child: Text('si'),
             onPressed: () async {
               CustomFullScreenDialog.showDialog();
-              // instancias de GoogleSignIn para proceder a cerrar sesión en el proveedor de cuentas
-              late final GoogleSignIn googleSign = GoogleSignIn();
-              await googleSign.signOut().then((value) async {
-
-                // set values default 
-                GetStorage().write('idAccount', '');
-                // instancias de FirebaseAuth para proceder a cerrar sesión
-                final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-                firebaseAuth.signOut().then((value) {
-                  // value default
-                  GetStorage().write('idAccount', '');
+              // instancias de FirebaseAuth para proceder a cerrar sesión
+              final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+              Future.delayed(Duration(seconds: 2)).then((_) {
+                firebaseAuth.signOut().then((value) async{
                   CustomFullScreenDialog.cancelDialog();
-                  Get.offAllNamed(Routes.LOGIN);
                 });
               });
             }),

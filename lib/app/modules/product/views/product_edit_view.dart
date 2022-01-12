@@ -1141,14 +1141,14 @@ class _CreateMarkState extends State<CreateMark> {
               widget.mark.image = value;
               // mark save
               await Database.refFirestoreMark()
-                  .doc()
+                  .doc(widget.mark.id)
                   .set(widget.mark.toJson())
-                  .then((value) {
-                controllerProductsEdit.setMarkSelected = widget.mark;
-                // agregar el obj manualmente para evitar consulta a la db  innecesaria
-                controllerProductsEdit.getMarks.add(widget.mark);
-                Get.back();
-              });
+                  .whenComplete(() {
+                    controllerProductsEdit.setMarkSelected = widget.mark;
+                    // agregar el obj manualmente para evitar consulta a la db  innecesaria
+                    controllerProductsEdit.getMarks.add(widget.mark);
+                    Get.back();
+                  });
             })
             .onError((error, stackTrace) {})
             .catchError((_) {});

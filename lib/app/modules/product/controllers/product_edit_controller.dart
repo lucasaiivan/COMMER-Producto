@@ -253,8 +253,6 @@ class ControllerProductsEdit extends GetxController {
             Product newProduct = getProduct.convertProductoDefault();
             newProduct.idAccount =welcomeController.getProfileAccountSelected.id;
             newProduct.upgrade =  Timestamp.fromDate(new DateTime.now());
-            newProduct.idMark = getMarkSelected.id;
-            newProduct.nameMark = getMarkSelected.name;
 
             // firestore - save product public
             await Database.refFirestoreProductPublic()

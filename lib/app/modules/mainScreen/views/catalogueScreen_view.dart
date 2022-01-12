@@ -74,7 +74,11 @@ class CatalogueScreenView extends StatelessWidget {
             ))),
       ),
       actions: <Widget>[
-        IconButton(onPressed: (){controller.castIdCreationTime();}, icon: Icon(Icons.update)),
+        IconButton(
+            onPressed: () {
+              controller.castIdCreationTime();
+            },
+            icon: Icon(Icons.update)),
         IconButton(
             onPressed: () {
               showSearch(
@@ -134,7 +138,7 @@ class CatalogueScreenView extends StatelessWidget {
                 ),
               )),
       ],
-    /* bottom: controller.connectivityIntetnet ? PreferredSize(
+      /* bottom: controller.connectivityIntetnet ? PreferredSize(
     child: Container(width: double.infinity,child: Center(child: Text('Sin internet',style: TextStyle(color: Colors.white),)),color: Colors.red),
     preferredSize: Size.fromHeight(50),
   ) : null, */
@@ -196,6 +200,11 @@ class CatalogueScreenView extends StatelessWidget {
                 id: 'catalogue',
                 initState: (_) {},
                 builder: (_) {
+                  // controller.getLoadDataCatalogueMarks
+                  if (controller.getLoadDataCatalogueMarks==false) {
+                    return loadGridView();
+                  }
+
                   return controller.getCatalogueLoad.length == 0
                       ? Center(
                           child: Column(
@@ -225,6 +234,26 @@ class CatalogueScreenView extends StatelessWidget {
     );
   }
 
+  Widget loadGridView() {
+
+    final Color color1 = Colors.black26;
+    final Color color2 = Colors.grey;
+
+    return Shimmer.fromColors(
+      baseColor: color1,
+      highlightColor: color2,
+      child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 150,
+            childAspectRatio: 1 / 1.4,
+          ),
+          itemCount: 12,
+          itemBuilder: (BuildContext ctx, index) {
+            return Card(elevation: 0, color: Colors.grey.withOpacity(0.1));
+          }),
+    );
+  }
+
   Widget gridViewLoadAny() {
     //var
     int itemsDefault = 0;
@@ -246,38 +275,38 @@ class CatalogueScreenView extends StatelessWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                
                 // en la primera posición muestra el botón para agregar un nuevo objeto
-                if(index == 0){
+                if (index == 0) {
                   // item defaul add
-                    return Card(
-                      elevation: 0,
-                      color: Colors.grey.withOpacity(0.1),
-                      child: Stack(
-                        children: [
-                          Center(
-                              child: Icon(Icons.add,
-                                  color: Colors.grey.withOpacity(0.8),
-                                  size: 30)),
-                          Positioned.fill(
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
-                                    arguments: {'idProduct': ''}),
-                              ),
+                  return Card(
+                    elevation: 0,
+                    color: Colors.grey.withOpacity(0.1),
+                    child: Stack(
+                      children: [
+                        Center(
+                            child: Icon(Icons.add,
+                                color: Colors.grey.withOpacity(0.8), size: 30)),
+                        Positioned.fill(
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
+                                  arguments: {'idProduct': ''}),
                             ),
                           ),
-                        ],
-                      ),
-                    );
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
                 // mostramos 15 elementos vacíos de los cuales el primero tendrá un icono 'add'
-                if ((index ) <= controller.getCatalogueLoad.length) {
-                  return ProductoItem(producto: controller.getCatalogueLoad[index-1]);
+                if ((index) <= controller.getCatalogueLoad.length) {
+                  return ProductoItem(
+                      producto: controller.getCatalogueLoad[index - 1]);
                 } else {
-                  return Card(elevation: 0, color: Colors.grey.withOpacity(0.1));
+                  return Card(
+                      elevation: 0, color: Colors.grey.withOpacity(0.1));
                 }
               },
               childCount: controller.getCatalogueLoad.length + itemsDefault,
@@ -329,8 +358,7 @@ class CatalogueScreenView extends StatelessWidget {
                   backgroundColor: Colors.black26,
                   radius: 18.0,
                   child: Text(
-                      controller.getProfileAccountSelected.name
-                          .substring(0, 1),
+                      controller.getProfileAccountSelected.name.substring(0, 1),
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Colors.white,

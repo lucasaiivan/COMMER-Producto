@@ -416,20 +416,10 @@ class WidgetButtonListTile extends StatelessWidget {
             groupValue: 0,
             onChanged: (val) {
               controller.accountChange(idAccount: perfilNegocio.id);
-              /* Global.actualizarPerfilNegocio(
-                    perfilNegocio: perfilNegocio);
-                Navigator.of(buildContext).pushNamedAndRemoveUntil(
-                    '/page_principal', (Route<dynamic> route) => false); */
             },
           ),
           onTap: () {
             controller.accountChange(idAccount: perfilNegocio.id);
-            /* if (perfilNegocio.id != "") {
-                Global.actualizarPerfilNegocio(
-                    perfilNegocio: perfilNegocio);
-                Navigator.of(buildContext).pushNamedAndRemoveUntil(
-                    '/page_principal', (Route<dynamic> route) => false);
-              } */
           },
         ),
       ],
