@@ -13,6 +13,8 @@ import 'package:search_page/search_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'widgets/showDialog.dart';
+import 'package:flutter_offline/flutter_offline.dart';
+
 
 class CatalogueScreenView extends StatelessWidget {
   CatalogueScreenView({Key? key}) : super(key: key);
@@ -127,13 +129,25 @@ class CatalogueScreenView extends StatelessWidget {
                   },
                   child: Hero(
                     tag: "fotoperfiltoolbar",
-                    child: CircleAvatar(
+                    child: CachedNetworkImage(
+                      imageUrl: controller.getProfileAccountSelected.image,
+                      placeholder: (context, url) =>
+                          Icon(Icons.account_circle_rounded),
+                      imageBuilder: (context, image) => CircleAvatar(
+                        backgroundImage: image,
+                      ),
+                      errorWidget: (context, url, error) =>
+                          Icon(Icons.account_circle_rounded),
+                    ),
+
+                    /* CircleAvatar(
                       radius: 24,
                       backgroundColor: Colors.grey,
                       backgroundImage: CachedNetworkImageProvider(
                         controller.getProfileAccountSelected.image,
+                        errorListener: () => Icon(Icons.account_circle),
                       ),
-                    ),
+                    ), */
                   ),
                 ),
               )),
@@ -142,6 +156,20 @@ class CatalogueScreenView extends StatelessWidget {
     child: Container(width: double.infinity,child: Center(child: Text('Sin internet',style: TextStyle(color: Colors.white),)),color: Colors.red),
     preferredSize: Size.fromHeight(50),
   ) : null, */
+    );
+  }
+
+  Widget offline() {
+    return Container(
+      child: OfflineBuilder(
+        connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
+          final bool connected = connectivity != ConnectivityResult.none;
+          return Text("${connected ? 'ONLINE' : 'OFFLINE'}");
+        }),
     );
   }
 
@@ -178,6 +206,7 @@ class CatalogueScreenView extends StatelessWidget {
         },
         body: Column(
           children: <Widget>[
+            offline(),
             Divider(height: 0.0),
             TabBar(
               indicatorColor: Theme.of(buildContext).primaryColor,
@@ -200,8 +229,7 @@ class CatalogueScreenView extends StatelessWidget {
                 id: 'catalogue',
                 initState: (_) {},
                 builder: (_) {
-                  // controller.getLoadDataCatalogueMarks
-                  if (controller.getLoadDataCatalogueMarks==false) {
+                  if (controller.getLoadDataCatalogueMarks == false) {
                     return loadGridView();
                   }
 
@@ -235,7 +263,6 @@ class CatalogueScreenView extends StatelessWidget {
   }
 
   Widget loadGridView() {
-
     final Color color1 = Colors.black26;
     final Color color2 = Colors.grey;
 
@@ -354,26 +381,15 @@ class CatalogueScreenView extends StatelessWidget {
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: controller.getProfileAccountSelected.image == ""
-              ? CircleAvatar(
-                  backgroundColor: Colors.black26,
-                  radius: 18.0,
-                  child: Text(
-                      controller.getProfileAccountSelected.name.substring(0, 1),
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold)),
-                )
+              ? Icon(Icons.account_circle)
               : CachedNetworkImage(
                   imageUrl: controller.getProfileAccountSelected.image,
-                  placeholder: (context, url) => const CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    radius: 18.0,
-                  ),
-                  imageBuilder: (context, image) => CircleAvatar(
-                    backgroundImage: image,
-                    radius: 18.0,
-                  ),
+                  placeholder: (context, url) =>
+                      const Icon(Icons.account_circle),
+                  imageBuilder: (context, image) =>
+                      CircleAvatar(backgroundImage: image, radius: 18.0),
+                  errorWidget: (context, url, error) =>
+                      Icon(Icons.account_circle),
                 ),
           title: Text('Editar perfil'),
           onTap: () {

@@ -906,12 +906,15 @@ class ProductoCatalogueItem extends StatelessWidget {
                 fit: BoxFit.cover,
                 image: AssetImage("assets/loading.gif"),
                 placeholder: AssetImage("assets/loading.gif")),
-            errorWidget: (context, url, error) => Center(
-              child: Text(
-                producto.description.substring(0, 3),
-                style: TextStyle(fontSize: 24.0),
+            errorWidget: (context, url, error) => Container(
+                color: Colors.grey[100],
+                child: Center(
+                  child: Text(
+                    producto.description.substring(0,4),
+                    style: TextStyle(fontSize: 24.0,color: Colors.grey),
+                  ),
+                ),
               ),
-            ),
           )
         : Container(color: Color.fromARGB(255, 43, 45, 57));
   }

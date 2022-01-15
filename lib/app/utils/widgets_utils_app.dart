@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -112,35 +111,29 @@ Widget viewCircleImage(
     {required String url, required String texto, double size = 85.0}) {
   if (texto == '') texto = 'Image';
 
+  Widget imageDefault = CircleAvatar(
+    backgroundColor: Colors.black26,
+    radius: size,
+    child: Text(texto.substring(0, 1),
+        style: TextStyle(
+            fontSize: size / 2,
+            color: Colors.white,
+            fontWeight: FontWeight.bold)),
+  );
+
   return Container(
     width: size,
     height: size,
     child: url == "" || url == "default"
-        ? CircleAvatar(
-            backgroundColor: Colors.black26,
-            radius: size,
-            child: Text(texto.substring(0, 1),
-                style: TextStyle(
-                    fontSize: size / 2,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold)),
-          )
+        ? imageDefault
         : CachedNetworkImage(
             imageUrl: url,
-            placeholder: (context, url) => CircleAvatar(
-              backgroundColor: Colors.black26,
-              radius: size,
-              child: Text(texto.substring(0, 1),
-                  style: TextStyle(
-                      fontSize: size / 2,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
-            ),
+            placeholder: (context, url) => imageDefault,
             imageBuilder: (context, image) => CircleAvatar(
               backgroundImage: image,
               radius: size,
             ),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            errorWidget: (context, url, error) => imageDefault,
           ),
   );
 }
@@ -198,8 +191,8 @@ class ProductoItem extends StatelessWidget {
                 color: Colors.grey[100],
                 child: Center(
                   child: Text(
-                    producto.description.substring(0, 3),
-                    style: TextStyle(fontSize: 24.0),
+                    producto.description.substring(0,4),
+                    style: TextStyle(fontSize: 24.0,color: Colors.grey),
                   ),
                 ),
               ),
@@ -224,7 +217,7 @@ class ProductoItem extends StatelessWidget {
           Text(Publicaciones.getFormatoPrecio(monto: producto.salePrice),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 14.0,
+                  fontSize: 16.0,
                   color: Colors.black),
               overflow: TextOverflow.fade,
               softWrap: false),
@@ -272,8 +265,7 @@ class WidgetButtonListTile extends StatelessWidget {
               backgroundColor: Colors.black26,
               radius: 24.0,
               child: Text(
-                  controller.getProfileAccountSelected.name
-                      .substring(0, 1),
+                  controller.getProfileAccountSelected.name.substring(0, 1),
                   style: TextStyle(
                       fontSize: 18.0,
                       color: Colors.white,
@@ -285,8 +277,7 @@ class WidgetButtonListTile extends StatelessWidget {
                 backgroundColor: Colors.black26,
                 radius: 24.0,
                 child: Text(
-                    controller.getProfileAccountSelected.name
-                        .substring(0, 1),
+                    controller.getProfileAccountSelected.name.substring(0, 1),
                     style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.white,
@@ -343,8 +334,7 @@ class WidgetButtonListTile extends StatelessWidget {
   }
 
   Widget buttonListTileItemCuenta(
-      {
-      required ProfileAccountModel perfilNegocio,
+      {required ProfileAccountModel perfilNegocio,
       bool adminPropietario = false}) {
     if (perfilNegocio.id == '') {
       return Container();
@@ -354,8 +344,7 @@ class WidgetButtonListTile extends StatelessWidget {
         ListTile(
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(10000.0),
-            child: perfilNegocio.image != '' ||
-                    perfilNegocio.image.isNotEmpty
+            child: perfilNegocio.image != '' || perfilNegocio.image.isNotEmpty
                 ? CachedNetworkImage(
                     fadeInDuration: Duration(milliseconds: 200),
                     fit: BoxFit.cover,
