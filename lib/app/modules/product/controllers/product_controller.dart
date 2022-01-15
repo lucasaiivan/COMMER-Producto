@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
+import 'package:producto/app/utils/dynamicTheme_lb.dart';
 import '../../mainScreen/controllers/welcome_controller.dart';
 
 class ProductController extends GetxController {
@@ -16,14 +20,14 @@ class ProductController extends GetxController {
   set setProfileBusiness(ProfileAccountModel model) =>
       profileBusinessModel.value = model;
 
-  static Rx<ProductCatalogue> listSuggestedProducts = ProductCatalogue(upgrade: Timestamp.now(),creation: Timestamp.now()).obs;
+  static Rx<ProductCatalogue> listSuggestedProducts =
+      ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
   ProductCatalogue get getProduct => listSuggestedProducts.value;
   set setProduct(ProductCatalogue product) =>
       listSuggestedProducts.value = product;
 
-  static Rx<Mark> mark = Mark(
-          upgrade: Timestamp.now(), creation: Timestamp.now())
-      .obs;
+  static Rx<Mark> mark =
+      Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
   Mark get getMark => mark.value;
   set setMark(Mark value) => mark.value = value;
 
@@ -56,7 +60,8 @@ class ProductController extends GetxController {
 
   @override
   void onInit() async {
-    setProduct = Get.arguments['product']?? ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setProduct = Get.arguments['product'] ??
+        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     readCategory();
     readMarkProducts();
     readOthersProductsMark();
@@ -68,10 +73,38 @@ class ProductController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Get.theme.cardColor,
+        statusBarColor: Get.theme.scaffoldBackgroundColor,
+        statusBarBrightness: Get.theme.brightness,
+        statusBarIconBrightness: Get.theme.brightness,
+        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarDividerColor: Get.theme.cardColor,
+      ));
+    }
   }
 
   @override
-  void onClose() {}
+  void onClose() {
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Get.theme.brightness==Brightness.light
+            ? Themes.light.scaffoldBackgroundColor
+            : Themes.dark.scaffoldBackgroundColor,
+        statusBarColor: Get.theme.brightness==Brightness.light
+            ? Themes.light.scaffoldBackgroundColor
+            : Themes.dark.scaffoldBackgroundColor,
+        statusBarBrightness: Get.theme.brightness==Brightness.light?Brightness.light:Brightness.dark,
+        statusBarIconBrightness: Get.theme.brightness==Brightness.light?Brightness.dark:Brightness.light,
+        systemNavigationBarIconBrightness: Get.theme.brightness==Brightness.light?Brightness.dark:Brightness.light,
+        systemNavigationBarDividerColor: Get.theme.brightness==Brightness.light
+            ? Themes.light.scaffoldBackgroundColor
+            : Themes.dark.scaffoldBackgroundColor, 
+      ));
+    }
+  }
 
   void readCategory() {
     // aignamos los datos de la cátegoria y subcátegoria del producto
@@ -82,7 +115,7 @@ class ProductController extends GetxController {
         element.subcategories.forEach((key, value) {
           if (getProduct.subcategory == key) {
             // set subcategory
-            setSubcategory = Category(id: key,name: value);
+            setSubcategory = Category(id: key, name: value);
           }
         });
       }
@@ -111,16 +144,16 @@ class ProductController extends GetxController {
   }
 
   void readOthersProductsMark() {
-
     //esta verificación evita que cargue productos que no tengas especificada la marca
-    if( getProduct.idMark!=''){
-      Database.readProductsForMakFuture(idMark: getProduct.idMark).then((value) {
+    if (getProduct.idMark != '') {
+      Database.readProductsForMakFuture(idMark: getProduct.idMark)
+          .then((value) {
         List<Product> list = [];
         value.docs.forEach((element) {
           list.add(Product.fromMap(element.data()));
         });
         setListOthersProductsForMark = list.cast<Product>();
-    });
+      });
     }
   }
 

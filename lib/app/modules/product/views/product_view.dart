@@ -433,15 +433,13 @@ class Product extends GetView<ProductController> {
 
   Widget expandableContent(
       {required Color colorBackground, required Color colorText}) {
-    return Obx(() => ClipRRect(
-        borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
-        child: Container(
-            margin: EdgeInsets.all(0),
-            color: colorBackground,
-            padding: EdgeInsets.only(
-                bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
-            child: ultimosPreciosView())));
+    return Obx(() => Container(
+      width: double.infinity,
+        margin: EdgeInsets.all(0),
+        color: colorBackground,
+        padding: EdgeInsets.only(
+            bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
+        child: ultimosPreciosView()));
   }
   // WIDGETS COMPONENTS
 
@@ -545,108 +543,6 @@ class Product extends GetView<ProductController> {
                   )
                 ],
               );
-              return FutureBuilder(
-                  future: Database.readProfileBusinessModelFuture(
-                      controller.getListPricesForProduct[index].idAccount),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      ProfileAccountModel perfilNegocio =
-                          ProfileAccountModel.fromDocumentSnapshot(
-                              documentSnapshot:
-                                  snapshot.data as DocumentSnapshot);
-                      return Column(
-                        children: <Widget>[
-                          ListTile(
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 0.0),
-                            leading: controller.getListPricesForProduct[index]
-                                            .idAccount ==
-                                        "" ||
-                                    perfilNegocio.image == "default"
-                                ? CircleAvatar(
-                                    backgroundColor: Colors.black26,
-                                    radius: 24.0,
-                                    child: Text(
-                                        perfilNegocio.name.substring(0, 1),
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: colorText,
-                                            fontWeight: FontWeight.bold)),
-                                  )
-                                : CachedNetworkImage(
-                                    imageUrl: perfilNegocio.image,
-                                    placeholder: (context, url) =>
-                                        const CircleAvatar(
-                                      backgroundColor: Colors.grey,
-                                      radius: 24.0,
-                                    ),
-                                    imageBuilder: (context, image) =>
-                                        CircleAvatar(
-                                      backgroundImage: image,
-                                      radius: 24.0,
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const CircleAvatar(
-                                      backgroundColor: Colors.grey,
-                                      radius: 24.0,
-                                    ),
-                                  ),
-                            title: Text(
-                              Publicaciones.getFormatoPrecio(
-                                  monto: controller
-                                      .getListPricesForProduct[index].price),
-                              style: TextStyle(
-                                  color: colorText,
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            trailing: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Text(
-                                  Publicaciones.getFechaPublicacion(
-                                          controller
-                                              .getListPricesForProduct[index]
-                                              .time
-                                              .toDate(),
-                                          new DateTime.now())
-                                      .toLowerCase(),
-                                  textAlign: TextAlign.end,
-                                  style: TextStyle(
-                                      fontStyle: FontStyle.normal,
-                                      color: colorText),
-                                ),
-                                controller.getListPricesForProduct[index]
-                                            .town !=
-                                        ""
-                                    ? Text(
-                                        "En " +
-                                            controller
-                                                .getListPricesForProduct[index]
-                                                .town
-                                                .toString(),
-                                        style: TextStyle(
-                                            color: colorText,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    : Text("Ubicación desconocido",
-                                        style: TextStyle(
-                                            color: colorText,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12.0)),
-                              ],
-                            ),
-                            onTap: () {},
-                          ),
-                          SizedBox(
-                            height: 5.0,
-                          )
-                        ],
-                      );
-                    } else {
-                      return WidgetsLoad();
-                    }
-                  });
             },
           ),
         ],
@@ -656,7 +552,7 @@ class Product extends GetView<ProductController> {
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         child: Text(
           "Cargando ultimos precios registrados",
-          style: TextStyle(fontSize: 20.0),
+          style: TextStyle(fontSize: 20.0,color: Colors.grey.withOpacity(0.5)),
           textAlign: TextAlign.center,
         ),
       );

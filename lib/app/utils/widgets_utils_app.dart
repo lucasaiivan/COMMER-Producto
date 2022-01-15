@@ -24,10 +24,10 @@ class WidgetsUtilsApp extends StatelessWidget {
                 ? Icons.brightness_high
                 : Icons.brightness_3,
             color: color),
-        onPressed: ThemeService().switchTheme);
+        onPressed: ThemeService.switchTheme);
   }
 
-  Function() switchTheme() => ThemeService().switchTheme;
+  Function() switchTheme() => ThemeService.switchTheme;
 
   @override
   Widget build(BuildContext context) {

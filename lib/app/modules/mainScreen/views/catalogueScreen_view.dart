@@ -78,11 +78,6 @@ class CatalogueScreenView extends StatelessWidget {
       actions: <Widget>[
         IconButton(
             onPressed: () {
-              controller.castIdCreationTime();
-            },
-            icon: Icon(Icons.update)),
-        IconButton(
-            onPressed: () {
               showSearch(
                 context: context,
                 delegate: SearchPage<ProductCatalogue>(
@@ -139,15 +134,6 @@ class CatalogueScreenView extends StatelessWidget {
                       errorWidget: (context, url, error) =>
                           Icon(Icons.account_circle_rounded),
                     ),
-
-                    /* CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Colors.grey,
-                      backgroundImage: CachedNetworkImageProvider(
-                        controller.getProfileAccountSelected.image,
-                        errorListener: () => Icon(Icons.account_circle),
-                      ),
-                    ), */
                   ),
                 ),
               )),
@@ -156,20 +142,6 @@ class CatalogueScreenView extends StatelessWidget {
     child: Container(width: double.infinity,child: Center(child: Text('Sin internet',style: TextStyle(color: Colors.white),)),color: Colors.red),
     preferredSize: Size.fromHeight(50),
   ) : null, */
-    );
-  }
-
-  Widget offline() {
-    return Container(
-      child: OfflineBuilder(
-        connectivityBuilder: (
-          BuildContext context,
-          ConnectivityResult connectivity,
-          Widget child,
-        ) {
-          final bool connected = connectivity != ConnectivityResult.none;
-          return Text("${connected ? 'ONLINE' : 'OFFLINE'}");
-        }),
     );
   }
 
@@ -206,7 +178,6 @@ class CatalogueScreenView extends StatelessWidget {
         },
         body: Column(
           children: <Widget>[
-            offline(),
             Divider(height: 0.0),
             TabBar(
               indicatorColor: Theme.of(buildContext).primaryColor,

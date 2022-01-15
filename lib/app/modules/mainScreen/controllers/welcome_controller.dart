@@ -658,17 +658,4 @@ class WelcomeController extends GetxController {
     });
     return iscatalogue;
   }
-
-  void castIdCreationTime() {
-    getCataloProducts.forEach((element) {
-      element.creation = new Timestamp.now();
-      Database.refFirestoreCatalogueProduct(
-              idAccount: getProfileAccountSelected.id)
-          .doc(element.id)
-          .set(element.toJson())
-          .whenComplete(() async {})
-          .onError((error, stackTrace) => false)
-          .catchError((_) => false);
-    });
-  }
 }
