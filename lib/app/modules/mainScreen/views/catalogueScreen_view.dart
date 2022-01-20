@@ -12,9 +12,8 @@ import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:search_page/search_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../utils/dynamicTheme_lb.dart';
 import 'widgets/showDialog.dart';
-import 'package:flutter_offline/flutter_offline.dart';
-
 
 class CatalogueScreenView extends StatelessWidget {
   CatalogueScreenView({Key? key}) : super(key: key);
@@ -384,7 +383,10 @@ class CatalogueScreenView extends StatelessWidget {
           title: Text(Get.theme.brightness == Brightness.light
               ? 'Aplicar de tema oscuro'
               : 'Aplicar de tema claro'),
-          onTap: WidgetsUtilsApp().switchTheme(),
+          onTap: () {
+            ThemeService.switchTheme();
+            Get.back();
+          },
         ),
         Row(
           children: [
@@ -467,7 +469,9 @@ class CatalogueScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 

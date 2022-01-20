@@ -27,7 +27,6 @@ class WidgetsUtilsApp extends StatelessWidget {
         onPressed: ThemeService.switchTheme);
   }
 
-  Function() switchTheme() => ThemeService.switchTheme;
 
   @override
   Widget build(BuildContext context) {
@@ -144,32 +143,38 @@ class ProductoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: producto.id,
-      child: Card(
-        color: Colors.white,
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: contentImage()),
-                contentInfo(),
-              ],
-            ),
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => Get.toNamed(Routes.PRODUCT,
-                      arguments: {'product': producto}),
+
+    // aparición animada 
+    return ElasticIn(
+      // transición animada
+      child: Hero(
+        tag: producto.id,
+        // widget
+        child: Card(
+          color: Colors.white,
+          elevation: 3,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: contentImage()),
+                  contentInfo(),
+                ],
+              ),
+              Positioned.fill(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => Get.toNamed(Routes.PRODUCT,
+                        arguments: {'product': producto}),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

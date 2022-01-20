@@ -13,48 +13,57 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 export 'package:animate_do/animate_do.dart';
 
-class Themes {
-  static final light = ThemeData.light().copyWith(
-    scaffoldBackgroundColor: Color.fromARGB(255, 238, 238, 238),
+class ThemesDataApp {
+
+  static Color colorBlack = Color.fromARGB(255, 43, 45, 57);
+  static Color colorLight = Color.fromARGB(255, 238, 238, 238);
+  
+  static late dynamic  light = ThemeData.light().copyWith(
+    scaffoldBackgroundColor: colorLight,
   );
-  static final dark = ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: Color.fromARGB(255, 43, 45, 57),
+  static late dynamic  dark = ThemeData.dark().copyWith(
+    scaffoldBackgroundColor: colorBlack,
   );
 }
 
 class ThemeService {
-  static final _box = GetStorage();
+  static final _storage = GetStorage();
   static final _key = 'isDarkMode';
 
   /// Get isDarkMode info from local storage and return ThemeMode
-  ThemeMode get theme => _loadisDArkMode() ? ThemeMode.dark : ThemeMode.light;
+  ThemeMode get theme => loadisDArkMode() ? ThemeMode.dark : ThemeMode.light;
 
   /// Load isDArkMode from local storage and if it's empty, returns false (that means default theme is light)
-  static bool _loadisDArkMode() => _box.read(_key) ?? false;
+  static bool loadisDArkMode() => _storage.read(_key) ?? false;
 
   /// Save isDarkMode to local storage
-  static saveSsDarkMode(bool isDarkMode) => _box.write(_key, isDarkMode);
+  static saveSsDarkMode(bool isDarkMode) => _storage.write(_key, isDarkMode);
 
   /// Switch theme and save to local storage
   static void switchTheme() {
     if (Platform.isAndroid) {
+      
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: _loadisDArkMode()
-            ? Themes.light.scaffoldBackgroundColor
-            : Themes.dark.scaffoldBackgroundColor,
-        statusBarColor: _loadisDArkMode()
-            ? Themes.light.scaffoldBackgroundColor
-            : Themes.dark.scaffoldBackgroundColor,
-        statusBarBrightness: _loadisDArkMode()?Brightness.light:Brightness.dark,
-        statusBarIconBrightness: _loadisDArkMode()?Brightness.light:Brightness.dark,
-        systemNavigationBarIconBrightness: _loadisDArkMode()?Brightness.dark:Brightness.light,
-        systemNavigationBarDividerColor: _loadisDArkMode()
-            ? Themes.light.scaffoldBackgroundColor
-            : Themes.dark.scaffoldBackgroundColor, 
+        systemNavigationBarColor: loadisDArkMode()
+            ? ThemesDataApp.light.scaffoldBackgroundColor
+            : ThemesDataApp.dark.scaffoldBackgroundColor,
+        statusBarColor: loadisDArkMode()
+            ? ThemesDataApp.light.scaffoldBackgroundColor
+            : ThemesDataApp.dark.scaffoldBackgroundColor,
+        statusBarBrightness:
+            loadisDArkMode() ? Brightness.light : Brightness.dark,
+        statusBarIconBrightness:
+            loadisDArkMode() ? Brightness.light : Brightness.dark,
+        systemNavigationBarIconBrightness:
+            loadisDArkMode() ? Brightness.dark : Brightness.light,
+        systemNavigationBarDividerColor: loadisDArkMode()
+            ? ThemesDataApp.light.scaffoldBackgroundColor
+            : ThemesDataApp.dark.scaffoldBackgroundColor,
       ));
     }
-    
-    Get.changeThemeMode(_loadisDArkMode() ? ThemeMode.light : ThemeMode.dark);
-    saveSsDarkMode(!_loadisDArkMode());
+
+    Get.changeThemeMode(loadisDArkMode() ? ThemeMode.light : ThemeMode.dark);
+    saveSsDarkMode(!loadisDArkMode());
   }
 }
+

@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'app/modules/splash/bindings/splash_binding.dart';
 import 'app/routes/app_pages.dart';
+import 'app/utils/dynamicTheme_lb.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,18 +17,17 @@ void main() async {
   HomeBinding().dependencies();
   await GetStorage.init();
 
-  Color colorBlack = Color.fromARGB(255, 43, 45, 57);
-  Color colorLight = Color.fromARGB(255, 238, 238, 238);
+  
   bool isDark = (GetStorage().read('isDarkMode') ?? false);
 
   if (Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: isDark
-          ? colorBlack
-          : colorLight,
+          ? ThemesDataApp.colorBlack
+          : ThemesDataApp.colorLight,
       statusBarColor:isDark
-          ? colorBlack
-          : colorLight,
+          ? ThemesDataApp.colorBlack
+          : ThemesDataApp.colorLight,
       statusBarBrightness:
          isDark? Brightness.dark : Brightness.light,
       statusBarIconBrightness:
@@ -35,8 +35,8 @@ void main() async {
       systemNavigationBarIconBrightness:
          isDark? Brightness.light : Brightness.dark,
       systemNavigationBarDividerColor:isDark
-          ?colorBlack
-          : colorLight,
+          ?ThemesDataApp.colorBlack
+          : ThemesDataApp.colorLight,
     ));
   }
 
@@ -50,7 +50,7 @@ void main() async {
           : ThemeMode.light,
       theme: ThemeData(
         primaryColor: Colors.deepPurple,
-        scaffoldBackgroundColor: colorLight,
+        scaffoldBackgroundColor: ThemesDataApp.colorLight,
         backgroundColor: Colors.grey[200],
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
         cardColor: Color.fromARGB(255, 19, 20, 24),
@@ -69,7 +69,7 @@ void main() async {
       ),
       darkTheme: ThemeData.dark().copyWith(
         primaryColor: Colors.deepPurple,
-        scaffoldBackgroundColor: colorBlack,
+        scaffoldBackgroundColor: ThemesDataApp.colorBlack,
         backgroundColor: Color.fromRGBO(59, 24, 95, 1.0),
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
         cardColor: Color.fromARGB(255, 19, 20, 24),

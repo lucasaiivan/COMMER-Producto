@@ -91,17 +91,17 @@ class ProductController extends GetxController {
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Get.theme.brightness==Brightness.light
-            ? Themes.light.scaffoldBackgroundColor
-            : Themes.dark.scaffoldBackgroundColor,
+            ? ThemesDataApp.light.scaffoldBackgroundColor
+            : ThemesDataApp.dark.scaffoldBackgroundColor,
         statusBarColor: Get.theme.brightness==Brightness.light
-            ? Themes.light.scaffoldBackgroundColor
-            : Themes.dark.scaffoldBackgroundColor,
+            ? ThemesDataApp.light.scaffoldBackgroundColor
+            : ThemesDataApp.dark.scaffoldBackgroundColor,
         statusBarBrightness: Get.theme.brightness==Brightness.light?Brightness.light:Brightness.dark,
         statusBarIconBrightness: Get.theme.brightness==Brightness.light?Brightness.dark:Brightness.light,
         systemNavigationBarIconBrightness: Get.theme.brightness==Brightness.light?Brightness.dark:Brightness.light,
         systemNavigationBarDividerColor: Get.theme.brightness==Brightness.light
-            ? Themes.light.scaffoldBackgroundColor
-            : Themes.dark.scaffoldBackgroundColor, 
+            ? ThemesDataApp.light.scaffoldBackgroundColor
+            : ThemesDataApp.dark.scaffoldBackgroundColor, 
       ));
     }
   }

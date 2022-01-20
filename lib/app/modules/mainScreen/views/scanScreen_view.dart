@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
+import 'package:producto/app/utils/dynamicTheme_lb.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -317,7 +318,7 @@ class ScanScreenView extends StatelessWidget {
           title: Text(Get.theme.brightness == Brightness.light
               ? 'Aplicar de tema oscuro'
               : 'Aplicar de tema claro'),
-          onTap: WidgetsUtilsApp().switchTheme(),
+          onTap: ThemeService.switchTheme,
         ),
         Row(
           children: [
