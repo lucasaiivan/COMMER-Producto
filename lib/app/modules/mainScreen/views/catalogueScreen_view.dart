@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:loadany/loadany.dart';
@@ -137,10 +138,12 @@ class CatalogueScreenView extends StatelessWidget {
                 ),
               )),
       ],
-      /* bottom: controller.connectivityIntetnet ? PreferredSize(
-    child: Container(width: double.infinity,child: Center(child: Text('Sin internet',style: TextStyle(color: Colors.white),)),color: Colors.red),
-    preferredSize: Size.fromHeight(50),
-  ) : null, */
+      /* bottom: PreferredSize(
+        child: Container(width: double.infinity,
+          child: Center(child: Text("OFFLINE")),
+          color: Colors.red),
+        preferredSize: Size.fromHeight(50),
+      ) ,  */
     );
   }
 
@@ -199,7 +202,7 @@ class CatalogueScreenView extends StatelessWidget {
                 id: 'catalogue',
                 initState: (_) {},
                 builder: (_) {
-                  if (controller.getLoadDataCatalogueMarks == false) {
+                  if (_.getLoadDataCatalogue == false) {
                     return loadGridView();
                   }
 
@@ -338,7 +341,7 @@ class CatalogueScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 
@@ -469,9 +472,7 @@ class CatalogueScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 

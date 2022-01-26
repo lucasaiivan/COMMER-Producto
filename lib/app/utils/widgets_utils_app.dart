@@ -188,10 +188,15 @@ class ProductoItem extends StatelessWidget {
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
               imageUrl: producto.image,
-              placeholder: (context, url) => FadeInImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage("assets/loading.gif"),
-                  placeholder: AssetImage("assets/loading.gif")),
+              placeholder: (context, url) => Container(
+                color: Colors.grey[100],
+                child: Center(
+                  child: Text(
+                    producto.description.substring(0,4),
+                    style: TextStyle(fontSize: 24.0,color: Colors.grey),
+                  ),
+                ),
+              ),
               errorWidget: (context, url, error) => Container(
                 color: Colors.grey[100],
                 child: Center(
@@ -203,7 +208,15 @@ class ProductoItem extends StatelessWidget {
               ),
             ),
           )
-        : Container(color: Color.fromARGB(255, 43, 45, 57));
+        : Container(
+                color: Colors.grey[100],
+                child: Center(
+                  child: Text(
+                    producto.description.substring(0,4),
+                    style: TextStyle(fontSize: 24.0,color: Colors.grey),
+                  ),
+                ),
+              );
   }
 
   Widget contentInfo() {

@@ -590,30 +590,26 @@ class WelcomeController extends GetxController {
     // estado de nuestro widget 'LoadAny'
     setLoadGridCatalogueStatus = LoadStatus.loading;
     update(['catalogue']);
-    // duración por defecto de la carga de datos
-    Timer.periodic(Duration(milliseconds: 2000), (Timer timer) {
-      timer.cancel();
+    
+    // creamos una nueva variable con los datos ya mostrados al usuario
+    List<ProductCatalogue> listLoad = getCatalogueLoad;
 
-      // creamos una nueva variable con los datos ya mostrados al usuario
-      List<ProductCatalogue> listLoad = getCatalogueLoad;
-
-      // agregamos de a 15 elmentos
-      for (var i = 0; i < 15; ++i) {
-        // si nuestra carga es menor a una total  sigue agregando los elementos
-        if (listLoad.length < getCatalogueFilter.length) {
-          listLoad.add(getCatalogueFilter[listLoad.length]);
-        }
+    // agregamos de a 15 elmentos
+    for (var i = 0; i < 15; ++i) {
+      // si nuestra carga es menor a una total  sigue agregando los elementos
+      if (listLoad.length < getCatalogueFilter.length) {
+        listLoad.add(getCatalogueFilter[listLoad.length]);
       }
+    }
 
-      // cuando termina actualiza los datos
-      setCatalogueLoad = listLoad;
+    // cuando termina actualiza los datos
+    setCatalogueLoad = listLoad;
 
-      // tambien actualizamos el estado de nuestro widget 'LoadAny' para mostrar más elementos
-      setLoadGridCatalogueStatus = listLoad.length < getCatalogueFilter.length
-          ? LoadStatus.normal
-          : LoadStatus.completed;
-      update(['catalogue']);
-    });
+    // tambien actualizamos el estado de nuestro widget 'LoadAny' para mostrar más elementos
+    setLoadGridCatalogueStatus = listLoad.length < getCatalogueFilter.length
+        ? LoadStatus.normal
+        : LoadStatus.completed;
+    update(['catalogue']);
   }
 
   // cerrar sesión

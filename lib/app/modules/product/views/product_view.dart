@@ -141,9 +141,6 @@ class Product extends GetView<ProductController> {
     Color colorText = Get.theme.brightness == Brightness.dark
         ? Colors.white.withOpacity(0.90)
         : Colors.black.withOpacity(0.90);
-    Color colorCard = Get.theme.brightness == Brightness.dark
-        ? Get.theme.primaryColorDark
-        : Colors.white;
 
     // vista para la captura de la pantalla
     return SafeArea(
@@ -327,96 +324,90 @@ class Product extends GetView<ProductController> {
     });
   }
 
-  Widget persistentHeader(
-      {required Color colorBackground, required Color colorText}) {
+  Widget persistentHeader({required Color colorBackground, required Color colorText}) {
+
+    // view
     return ClipRRect(
       borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20), topRight: Radius.circular(20)),
       child: Container(
         color: colorBackground,
         margin: EdgeInsets.all(0),
-        padding:
-            EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
+        padding: EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               welcomeController.isCatalogue(id: controller.getProduct.id)
-                  ? Row(
+                  ? controller.getProduct.salePrice != 0.0
+                            ?Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       textDirection: TextDirection.ltr,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        controller.getProduct.salePrice != 0.0
-                            ? Column(
+                         Column(
+                            children: [
+                              Text(
+                                  Publicaciones.getFormatoPrecio(
+                                      monto:
+                                          controller.getProduct.salePrice),
+                                  style: TextStyle(
+                                      color: colorText,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.end),
+                              Row(
                                 children: [
-                                  Text(
-                                      Publicaciones.getFormatoPrecio(
-                                          monto:
-                                              controller.getProduct.salePrice),
-                                      style: TextStyle(
-                                          color: colorText,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.end),
-                                  Row(
-                                    children: [
-                                      controller.getProduct.purchasePrice != 0.0
-                                          ? Text(
-                                              sProcentaje(
-                                                  precioCompra: controller
-                                                      .getProduct.purchasePrice,
-                                                  precioVenta: controller
-                                                      .getProduct.salePrice),
-                                              style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontSize: 12.0,
-                                                  fontWeight: FontWeight.bold))
-                                          : Container(),
-                                      controller.getProduct.purchasePrice != 0.0
-                                          ? Text(" > ",
-                                              style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontSize: 12.0))
-                                          : Container(),
-                                      controller.getProduct.purchasePrice != 0.0
-                                          ? Text(
-                                              Publicaciones.sGanancia(
-                                                  precioCompra: controller
-                                                      .getProduct.purchasePrice,
-                                                  precioVenta: controller
-                                                      .getProduct.salePrice),
-                                              style: TextStyle(
-                                                  color: controller.getProduct
-                                                              .purchasePrice <
-                                                          controller.getProduct
-                                                              .salePrice
-                                                      ? Colors.green
-                                                      : Colors.red,
-                                                  fontSize: 12.0,
-                                                  fontWeight: FontWeight.bold))
-                                          : Container(),
-                                    ],
-                                  ),
+                                  controller.getProduct.purchasePrice != 0.0
+                                      ? Text(
+                                          sProcentaje(
+                                              precioCompra: controller
+                                                  .getProduct.purchasePrice,
+                                              precioVenta: controller
+                                                  .getProduct.salePrice),
+                                          style: TextStyle(
+                                              color: Colors.green,
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold))
+                                      : Container(),
+                                  controller.getProduct.purchasePrice != 0.0
+                                      ? Text(" > ",
+                                          style: TextStyle(
+                                              color: Colors.green,
+                                              fontSize: 12.0))
+                                      : Container(),
+                                  controller.getProduct.purchasePrice != 0.0
+                                      ? Text(
+                                          Publicaciones.sGanancia(
+                                              precioCompra: controller
+                                                  .getProduct.purchasePrice,
+                                              precioVenta: controller
+                                                  .getProduct.salePrice),
+                                          style: TextStyle(
+                                              color: controller.getProduct
+                                                          .purchasePrice <
+                                                      controller.getProduct
+                                                          .salePrice
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold))
+                                      : Container(),
                                 ],
-                              )
-                            : Container(),
+                              ),
+                            ],
+                          ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            Publicaciones.getFechaPublicacion(
-                                    controller.getProduct.upgrade.toDate(),
-                                    Timestamp.now().toDate())
-                                .toLowerCase(),
-                            style: TextStyle(
-                                fontStyle: FontStyle.normal,
-                                color: colorText.withOpacity(0.5)),
+                            Publicaciones.getFechaPublicacion(controller.getProduct.upgrade.toDate(),Timestamp.now().toDate()).toLowerCase(),
+                            style: TextStyle(fontStyle: FontStyle.normal,color: colorText.withOpacity(0.5)),
                           ),
                         ),
                       ],
-                    )
+                    ):Container()
                   : Container(),
               Icon(Icons.keyboard_arrow_up, color: colorText.withOpacity(0.5)),
               Text(
@@ -431,15 +422,8 @@ class Product extends GetView<ProductController> {
     );
   }
 
-  Widget expandableContent(
-      {required Color colorBackground, required Color colorText}) {
-    return Obx(() => Container(
-      width: double.infinity,
-        margin: EdgeInsets.all(0),
-        color: colorBackground,
-        padding: EdgeInsets.only(
-            bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
-        child: ultimosPreciosView()));
+  Widget expandableContent({required Color colorBackground, required Color colorText}) {
+    return Obx(() => Container(width: double.infinity,margin: EdgeInsets.all(0),color: colorBackground,padding: EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),child: ultimosPreciosView()));
   }
   // WIDGETS COMPONENTS
 
@@ -551,7 +535,7 @@ class Product extends GetView<ProductController> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         child: Text(
-          "Cargando ultimos precios registrados",
+          "Sin datos",
           style: TextStyle(fontSize: 20.0,color: Colors.grey.withOpacity(0.5)),
           textAlign: TextAlign.center,
         ),
