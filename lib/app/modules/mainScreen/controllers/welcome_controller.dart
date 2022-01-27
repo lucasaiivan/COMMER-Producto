@@ -11,9 +11,21 @@ import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
+import 'package:simple_connection_checker/simple_connection_checker.dart';
 
 class WelcomeController extends GetxController {
+
+  // controllers
   SplashController homeController = Get.find<SplashController>();
+  // state internet
+  bool _connection = false;
+  bool get getConnection => _connection;
+  set setConnection(bool state) {
+    _connection = state;
+    update(['connection']);
+  }
+  late StreamSubscription subscription;
+  SimpleConnectionChecker _simpleConnectionChecker = SimpleConnectionChecker()..setLookUpAddress('pub.dev');
 
   // text tab
   String _textTab = 'Todos';
@@ -333,6 +345,7 @@ class WelcomeController extends GetxController {
 
   @override
   void onInit() async {
+    super.onInit();
     // obtenemos por parametro los datos de la cuenta de atentificación
     setUserAccountAuth = Get.arguments['currentUser'];
     Map map = Get.arguments as Map;
@@ -354,7 +367,11 @@ class WelcomeController extends GetxController {
     // cargamos los datos de la app desde la db
     readListSuggestedProductsFuture();
 
-    super.onInit();
+    // estado de intenet
+    subscription = _simpleConnectionChecker.onConnectionChange.listen((connected) {
+      setConnection = connected;
+    });
+
   }
 
   @override
@@ -363,7 +380,9 @@ class WelcomeController extends GetxController {
   }
 
   @override
-  void onClose() {}
+  void onClose() {
+    subscription.cancel();
+  }
 
   void logout() async {
     // aca implementamos el cierre de sesión dentro de la función logout.

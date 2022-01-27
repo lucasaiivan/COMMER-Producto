@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:flutter_offline/flutter_offline.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:loadany/loadany.dart';
@@ -138,12 +137,6 @@ class CatalogueScreenView extends StatelessWidget {
                 ),
               )),
       ],
-      /* bottom: PreferredSize(
-        child: Container(width: double.infinity,
-          child: Center(child: Text("OFFLINE")),
-          color: Colors.red),
-        preferredSize: Size.fromHeight(50),
-      ) ,  */
     );
   }
 
