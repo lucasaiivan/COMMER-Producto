@@ -520,6 +520,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                         controllerProductsEdit.setCategory = categoria;
                         controllerProductsEdit.updateAll();
                         Get.back();
+                        SelectSubCategoria.show();
                       },
                       trailing: popupMenuItemCategoria(categoria: categoria),
                     ),
@@ -548,6 +549,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                         controllerProductsEdit.setCategory = categoria;
                         controllerProductsEdit.setSubcategory = Category();
                         Get.back();
+                        SelectSubCategoria.show();
                       },
                       trailing: popupMenuItemCategoria(categoria: categoria),
                     ),
@@ -990,7 +992,8 @@ class _CreateMarkState extends State<CreateMark> {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      title: Text(title),centerTitle: true,
+      title: Text(title),
+      centerTitle: true,
       actions: [
         newMark
             ? Container()
@@ -1146,11 +1149,11 @@ class _CreateMarkState extends State<CreateMark> {
                   .doc(widget.mark.id)
                   .set(widget.mark.toJson())
                   .whenComplete(() {
-                    controllerProductsEdit.setMarkSelected = widget.mark;
-                    // agregar el obj manualmente para evitar consulta a la db  innecesaria
-                    controllerProductsEdit.getMarks.add(widget.mark);
-                    Get.back();
-                  });
+                controllerProductsEdit.setMarkSelected = widget.mark;
+                // agregar el obj manualmente para evitar consulta a la db  innecesaria
+                controllerProductsEdit.getMarks.add(widget.mark);
+                Get.back();
+              });
             })
             .onError((error, stackTrace) {})
             .catchError((_) {});

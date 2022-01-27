@@ -159,68 +159,72 @@ class ControllerProductsEdit extends GetxController {
       if (getProduct.category != '') {
         if (getProduct.description != '') {
           if (getProduct.idMark != '' && getProduct.nameMark != '') {
+            if(getProduct.salePrice != 0 ){
+              // activate indicator load
+              setSaveIndicator = true;
+              setTextAppBar = 'Actualizando...';
+              updateAll();
 
-            // activate indicator load
-            setSaveIndicator = true;
-            setTextAppBar = 'Actualizando...';
-            updateAll();
+              // image
+              // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
+              if (getXFileImage.path != '') {
+                Reference ref = FirebaseStorage.instance
+                    .ref()
+                    .child("APP")
+                    .child("ARG")
+                    .child("PRODUCTOS")
+                    .child(getProduct.id);
+                UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
+                await uploadTask;
+                // obtenemos la url de la imagen guardada
+                await ref
+                    .getDownloadURL()
+                    .then((value) => getProduct.image = value);
+              }
+              // Mods - save data product global
+              if (getNewProduct || getEdit) {
+                getProduct.verified =true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                saveProductPublic();
+              }
 
-            // image
-            // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
-            if (getXFileImage.path != '') {
-              Reference ref = FirebaseStorage.instance
-                  .ref()
-                  .child("APP")
-                  .child("ARG")
-                  .child("PRODUCTOS")
-                  .child(getProduct.id);
-              UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
-              await uploadTask;
-              // obtenemos la url de la imagen guardada
-              await ref
-                  .getDownloadURL()
-                  .then((value) => getProduct.image = value);
-            }
-            // Mods - save data product global
-            if (getNewProduct || getEdit) {
-              getProduct.verified =true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
-              saveProductPublic();
-            }
-
-            // registra el precio en una colección publica para todos los usuarios
-            if (welcomeController.getProfileAccountSelected.id != "") {
-              Price precio = new Price(
-                id: welcomeController.getProfileAccountSelected.id,
-                idAccount: welcomeController.getProfileAccountSelected.id,
-                imageAccount: welcomeController.getProfileAccountSelected.image,
-                nameAccount: welcomeController.getProfileAccountSelected.name ,
-                price: getProduct.salePrice,
-                currencySign: getProduct.currencySign,
-                province:welcomeController.getProfileAccountSelected.province,
-                town: welcomeController.getProfileAccountSelected.town,
-                time: Timestamp.fromDate(new DateTime.now()),
-              );
-              // Firebase set
-              await Database.refFirestoreRegisterPrice(
-                      idProducto: getProduct.id, isoPAis: 'ARG')
-                  .doc(precio.id)
-                  .set(precio.toJson());
-            }
-            // add/update data product in catalogue
-            getProduct.upgrade = Timestamp.now();
-            Database.refFirestoreCatalogueProduct(
-                    idAccount: welcomeController.getProfileAccountSelected.id)
-                .doc(getProduct.id)
-                .set(getProduct.toJson())
-                .whenComplete(() async {
-                  await Future.delayed(Duration(seconds: 3)).then((value) {
-                    setSaveIndicator = false;
-                    Get.back();
-                    Get.back();
-                  });
-                })
-                .onError((error, stackTrace) => setSaveIndicator = false)
-                .catchError((_) => setSaveIndicator = false);
+              // registra el precio en una colección publica para todos los usuarios
+              if (welcomeController.getProfileAccountSelected.id != "") {
+                Price precio = new Price(
+                  id: welcomeController.getProfileAccountSelected.id,
+                  idAccount: welcomeController.getProfileAccountSelected.id,
+                  imageAccount: welcomeController.getProfileAccountSelected.image,
+                  nameAccount: welcomeController.getProfileAccountSelected.name ,
+                  price: getProduct.salePrice,
+                  currencySign: getProduct.currencySign,
+                  province:welcomeController.getProfileAccountSelected.province,
+                  town: welcomeController.getProfileAccountSelected.town,
+                  time: Timestamp.fromDate(new DateTime.now()),
+                );
+                // Firebase set
+                await Database.refFirestoreRegisterPrice(
+                        idProducto: getProduct.id, isoPAis: 'ARG')
+                    .doc(precio.id)
+                    .set(precio.toJson());
+              }
+              // add/update data product in catalogue
+              getProduct.upgrade = Timestamp.now();
+              Database.refFirestoreCatalogueProduct(
+                      idAccount: welcomeController.getProfileAccountSelected.id)
+                  .doc(getProduct.id)
+                  .set(getProduct.toJson())
+                  .whenComplete(() async {
+                    await Future.delayed(Duration(seconds: 3)).then((value) {
+                      setSaveIndicator = false;
+                      Get.back();
+                      Get.back();
+                    });
+                  })
+                  .onError((error, stackTrace) => setSaveIndicator = false)
+                  .catchError((_) => setSaveIndicator = false);
+          } else {
+            Get.snackbar(
+                '😐', 'debe proporcionar un precio');
+          }
           } else {
             Get.snackbar(
                 'No se puedo continuar 😐', 'debes seleccionar una marca');
