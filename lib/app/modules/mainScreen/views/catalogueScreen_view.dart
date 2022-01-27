@@ -82,16 +82,9 @@ class CatalogueScreenView extends StatelessWidget {
                 delegate: SearchPage<ProductCatalogue>(
                   items: controller.getCataloProducts,
                   searchLabel: 'Buscar producto',
-                  suggestion: Center(
-                    child: Text('ej. alfajor'),
-                  ),
-                  failure: Center(
-                    child: Text('No se encontro :('),
-                  ),
-                  filter: (product) => [
-                    product.description,
-                    product.nameMark,
-                  ],
+                  suggestion: Center(child: Text('ej. alfajor')),
+                  failure: Center(child: Text('No se encontro :(')),
+                  filter: (product) => [product.description,product.nameMark],
                   builder: (product) => ListTile(
                     leading: FadeInImage(
                       image: NetworkImage(product.image),

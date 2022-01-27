@@ -55,24 +55,24 @@ class ProductController extends GetxController {
 
   static RxList<Price> listPricesForProduct = <Price>[].obs;
   List<Price> get getListPricesForProduct => listPricesForProduct;
-  set setListPricesForProduct(List<Price> value) =>
-      listPricesForProduct.value = value;
+  set setListPricesForProduct(List<Price> value) {
+    listPricesForProduct.value = value;
+  }
 
   @override
   void onInit() async {
-    setProduct = Get.arguments['product'] ??
-        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setProduct = Get.arguments['product'] ??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     readCategory();
     readMarkProducts();
     readOthersProductsMark();
     readOthersProductsCategoryCatalogue();
     readListPricesForProduct();
+
     super.onInit();
   }
 
   @override
   void onReady() {
-    super.onReady();
 
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -84,26 +84,39 @@ class ProductController extends GetxController {
         systemNavigationBarDividerColor: Get.theme.cardColor,
       ));
     }
+
+    super.onReady();
   }
 
   @override
   void onClose() {
+    
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: Get.theme.brightness==Brightness.light
+        systemNavigationBarColor: Get.theme.brightness == Brightness.light
             ? ThemesDataApp.light.scaffoldBackgroundColor
             : ThemesDataApp.dark.scaffoldBackgroundColor,
-        statusBarColor: Get.theme.brightness==Brightness.light
+        statusBarColor: Get.theme.brightness == Brightness.light
             ? ThemesDataApp.light.scaffoldBackgroundColor
             : ThemesDataApp.dark.scaffoldBackgroundColor,
-        statusBarBrightness: Get.theme.brightness==Brightness.light?Brightness.light:Brightness.dark,
-        statusBarIconBrightness: Get.theme.brightness==Brightness.light?Brightness.dark:Brightness.light,
-        systemNavigationBarIconBrightness: Get.theme.brightness==Brightness.light?Brightness.dark:Brightness.light,
-        systemNavigationBarDividerColor: Get.theme.brightness==Brightness.light
-            ? ThemesDataApp.light.scaffoldBackgroundColor
-            : ThemesDataApp.dark.scaffoldBackgroundColor, 
+        statusBarBrightness: Get.theme.brightness == Brightness.light
+            ? Brightness.light
+            : Brightness.dark,
+        statusBarIconBrightness: Get.theme.brightness == Brightness.light
+            ? Brightness.dark
+            : Brightness.light,
+        systemNavigationBarIconBrightness:
+            Get.theme.brightness == Brightness.light
+                ? Brightness.dark
+                : Brightness.light,
+        systemNavigationBarDividerColor:
+            Get.theme.brightness == Brightness.light
+                ? ThemesDataApp.light.scaffoldBackgroundColor
+                : ThemesDataApp.dark.scaffoldBackgroundColor,
       ));
     }
+
+    super.onClose();
   }
 
   void readCategory() {

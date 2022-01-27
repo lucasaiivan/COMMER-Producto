@@ -444,7 +444,10 @@ class Product extends GetView<ProductController> {
 
   Widget ultimosPreciosView() {
     if (controller.getListPricesForProduct.length != 0) {
+
+
       Color colorText = Colors.white;
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -546,6 +549,8 @@ class Product extends GetView<ProductController> {
           ),
         ],
       );
+
+      
     } else {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),

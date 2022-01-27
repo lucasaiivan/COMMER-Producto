@@ -988,7 +988,9 @@ class _CreateMarkState extends State<CreateMark> {
 
   PreferredSizeWidget appbar() {
     return AppBar(
-      title: Text(title),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: Text(title),centerTitle: true,
       actions: [
         newMark
             ? Container()

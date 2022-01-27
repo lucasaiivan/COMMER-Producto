@@ -183,8 +183,7 @@ class ControllerProductsEdit extends GetxController {
             }
             // Mods - save data product global
             if (getNewProduct || getEdit) {
-              getProduct.verified =
-                  true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+              getProduct.verified =true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
               saveProductPublic();
             }
 
