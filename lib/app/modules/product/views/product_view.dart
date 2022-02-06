@@ -317,6 +317,13 @@ class Product extends GetView<ProductController> {
             SizedBox(height: 12),
             imageViewCard(),
             widgetDescripcion(contextBuilder),
+            Container(
+              color: Colors.red.withOpacity(5.0),
+              alignment: Alignment.center,
+              child: controller.adWidget,
+              width: controller.myBanner.size.width.toDouble(),
+              height: controller.myBanner.size.height.toDouble(),
+            ),
             otherProductsCatalogueListHorizontal(),
             otherBrandProductsListHorizontal(),
             const SizedBox(height: 200.0, width: 120.0),

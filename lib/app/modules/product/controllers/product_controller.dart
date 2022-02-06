@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/routes/app_pages.dart';
@@ -11,6 +12,26 @@ import 'package:producto/app/utils/dynamicTheme_lb.dart';
 import '../../mainScreen/controllers/welcome_controller.dart';
 
 class ProductController extends GetxController {
+
+
+  // admob 
+  final BannerAd myBanner = BannerAd(
+    adUnitId: BannerAd.testAdUnitId,
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(
+      onAdClosed: (ad) => print('############################## onAdClosed'),
+      onAdFailedToLoad: (ad,error) => print('############################## onAdFailedToLoad'),
+      onAdImpression: (ad) => print('############################## onAdImpression'),
+      onAdLoaded: (ad) => print('############################## onAdLoaded'),
+      onAdOpened: (ad) => print('############################## onAdOpened'),
+      onAdWillDismissScreen: (ad) => print('############################## onAdWillDismissScreen'),
+      onPaidEvent:  (ad,doubl,type,txt) => print('############################## onPaidEvent'),
+    ),
+  );
+  late AdWidget adWidget =  AdWidget(ad: myBanner);
+
+
   // controllers
   WelcomeController welcomeController = Get.find<WelcomeController>();
 
@@ -61,6 +82,7 @@ class ProductController extends GetxController {
 
   @override
   void onInit() async {
+    myBanner.load().then((_) =>adWidget = AdWidget(ad: myBanner));
     setProduct = Get.arguments['product'] ??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     readCategory();
     readMarkProducts();
