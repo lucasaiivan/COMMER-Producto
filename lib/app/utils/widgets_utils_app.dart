@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,7 +25,6 @@ class WidgetsUtilsApp extends StatelessWidget {
             color: color),
         onPressed: ThemeService.switchTheme);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -137,23 +135,32 @@ Widget viewCircleImage(
   );
 }
 
-class ProductoItem extends StatelessWidget {
+class ProductoItem extends StatefulWidget {
   final ProductCatalogue producto;
+
   ProductoItem({required this.producto});
 
   @override
-  Widget build(BuildContext context) {
+  State<ProductoItem> createState() => _ProductoItemState();
+}
 
-    // aparición animada 
+class _ProductoItemState extends State<ProductoItem> {
+  // controllers
+  final WelcomeController welcomeController = Get.find<WelcomeController>();
+
+  @override
+  Widget build(BuildContext context) {
+    // aparición animada
     return ElasticIn(
       // transición animada
       child: Hero(
-        tag: producto.id,
+        tag: widget.producto.id,
         // widget
         child: Card(
           color: Colors.white,
           elevation: 3,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
           clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [
@@ -169,10 +176,23 @@ class ProductoItem extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () => Get.toNamed(Routes.PRODUCT,
-                        arguments: {'product': producto}),
+                        arguments: {'product': widget.producto}),
                   ),
                 ),
               ),
+              Expanded(
+                child: InkWell(
+                    child: Container(
+                        color: widget.producto.select
+                            ? Colors.grey.withOpacity(0.4)
+                            : Colors.grey.withOpacity(0.8)),
+                    onTap: () {
+                      //welcomeController.selectProduct(id: widget.producto.id);
+                      setState(() {
+                        widget.producto.select = !widget.producto.select;
+                      });
+                    }),
+              )
             ],
           ),
         ),
@@ -181,19 +201,19 @@ class ProductoItem extends StatelessWidget {
   }
 
   Widget contentImage() {
-    return producto.image != ""
+    return widget.producto.image != ""
         ? Container(
             width: double.infinity,
             child: CachedNetworkImage(
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
-              imageUrl: producto.image,
+              imageUrl: widget.producto.image,
               placeholder: (context, url) => Container(
                 color: Colors.grey[100],
                 child: Center(
                   child: Text(
-                    producto.description.substring(0,4),
-                    style: TextStyle(fontSize: 24.0,color: Colors.grey),
+                    widget.producto.description.substring(0, 4),
+                    style: TextStyle(fontSize: 24.0, color: Colors.grey),
                   ),
                 ),
               ),
@@ -201,22 +221,22 @@ class ProductoItem extends StatelessWidget {
                 color: Colors.grey[100],
                 child: Center(
                   child: Text(
-                    producto.description.substring(0,4),
-                    style: TextStyle(fontSize: 24.0,color: Colors.grey),
+                    widget.producto.description.substring(0, 4),
+                    style: TextStyle(fontSize: 24.0, color: Colors.grey),
                   ),
                 ),
               ),
             ),
           )
         : Container(
-                color: Colors.grey[100],
-                child: Center(
-                  child: Text(
-                    producto.description.substring(0,4),
-                    style: TextStyle(fontSize: 24.0,color: Colors.grey),
-                  ),
-                ),
-              );
+            color: Colors.grey[100],
+            child: Center(
+              child: Text(
+                widget.producto.description.substring(0, 4),
+                style: TextStyle(fontSize: 24.0, color: Colors.grey),
+              ),
+            ),
+          );
   }
 
   Widget contentInfo() {
@@ -225,14 +245,14 @@ class ProductoItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(producto.description,
+          Text(widget.producto.description,
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14.0,
                   color: Colors.grey),
               overflow: TextOverflow.fade,
               softWrap: false),
-          Text(Publicaciones.getFormatoPrecio(monto: producto.salePrice),
+          Text(Publicaciones.getFormatoPrecio(monto: widget.producto.salePrice),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,

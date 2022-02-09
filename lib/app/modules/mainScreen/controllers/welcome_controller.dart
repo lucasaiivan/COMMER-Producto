@@ -14,7 +14,6 @@ import '../../splash/controllers/splash_controller.dart';
 import 'package:simple_connection_checker/simple_connection_checker.dart';
 
 class WelcomeController extends GetxController {
-
   // controllers
   SplashController homeController = Get.find<SplashController>();
   // state internet
@@ -24,8 +23,10 @@ class WelcomeController extends GetxController {
     _connection = state;
     update(['connection']);
   }
+
   late StreamSubscription subscription;
-  SimpleConnectionChecker _simpleConnectionChecker = SimpleConnectionChecker()..setLookUpAddress('pub.dev');
+  SimpleConnectionChecker _simpleConnectionChecker = SimpleConnectionChecker()
+    ..setLookUpAddress('pub.dev');
 
   // text tab
   String _textTab = 'Todos';
@@ -165,6 +166,7 @@ class WelcomeController extends GetxController {
     }
     update(['catalogue']);
   }
+
 
   void catalogueFilterReset() {
     // resetea los valores de los filtros para mostrar todos los productos
@@ -361,17 +363,17 @@ class WelcomeController extends GetxController {
       readManagerAccountsReference(idUser: _userAccountAuth.uid);
     }
     // verificamos que el usuario ha seleccionado una cuenta
-    /* if (getIdAccountSelecte != '') {
+    if (getIdAccountSelecte != '') {
       readProfileAccountStream(id: getIdAccountSelecte);
-    } */
+    }
     // cargamos los datos de la app desde la db
     readListSuggestedProductsFuture();
 
     // estado de intenet
-    subscription = _simpleConnectionChecker.onConnectionChange.listen((connected) {
+    subscription =
+        _simpleConnectionChecker.onConnectionChange.listen((connected) {
       setConnection = connected;
     });
-
   }
 
   @override
@@ -411,13 +413,13 @@ class WelcomeController extends GetxController {
     // creamos un ayente
     Database.readProfileBusinessModelStream(id).listen((event) {
       // set
-      setProfileAccountSelected = ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: event);
+      setProfileAccountSelected =
+          ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
       // read catalogue product
       readCatalogueListProductsStream(id: getIdAccountSelecte);
       // read catalogue categories
       readListCategoryListFuture();
-
     }).onError((error) {
       print('######################## readProfileBursinesStreaml: ' +
           error.toString());
@@ -535,14 +537,14 @@ class WelcomeController extends GetxController {
       Database.readProductsCatalogueStream(id: id).listen((value) {
         List<ProductCatalogue> list = [];
         //  get
-        value.docs.forEach( (element) => list.add(ProductCatalogue.fromMap(element.data())));
+        value.docs.forEach(
+            (element) => list.add(ProductCatalogue.fromMap(element.data())));
         //  set
         setCatalogueProducts = list;
         setCatalogueFilter = list;
         getCatalogueMoreLoad();
         _loadMarksAll(list: list);
         setLoadDataCatalogue = true;
-        
       }).onError((error) {
         print('######################## readCatalogueListProductsStream: ' +
             error.toString());
@@ -609,7 +611,7 @@ class WelcomeController extends GetxController {
     // estado de nuestro widget 'LoadAny'
     setLoadGridCatalogueStatus = LoadStatus.loading;
     update(['catalogue']);
-    
+
     // creamos una nueva variable con los datos ya mostrados al usuario
     List<ProductCatalogue> listLoad = getCatalogueLoad;
 
@@ -647,10 +649,13 @@ class WelcomeController extends GetxController {
             child: Text('si'),
             onPressed: () async {
               CustomFullScreenDialog.showDialog();
+
+              // set default
+              GetStorage().write('idAccount', '');
               // instancias de FirebaseAuth para proceder a cerrar sesión
               final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
               Future.delayed(Duration(seconds: 2)).then((_) {
-                firebaseAuth.signOut().then((value) async{
+                firebaseAuth.signOut().then((value) async {
                   CustomFullScreenDialog.cancelDialog();
                 });
               });

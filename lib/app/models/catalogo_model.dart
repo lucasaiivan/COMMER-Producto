@@ -180,10 +180,12 @@ class ProductCatalogue {
   // Datos del producto
   bool enabled = true;
   bool verified = false; // estado de verificación por un moderador
-  // Variables
+  // Var
   double salePrice = 0.0;
   double purchasePrice = 0.0;
   String currencySign= "\$"; // signo de la moneda
+  // var optional
+  bool select = false;
 
   ProductCatalogue({
     // Valores del producto
@@ -201,12 +203,14 @@ class ProductCatalogue {
     required this.upgrade,
     this.enabled = true,
 
-    // valores de la cuenta
+    // value account
     this.salePrice = 0.0,
     this.purchasePrice = 0.0,
     this.currencySign = "\$",
     this.idMark = '',
     this.nameMark = '',
+    this.select=false,
+
   });
 
   factory ProductCatalogue.fromMap(Map data) {
@@ -255,8 +259,8 @@ class ProductCatalogue {
       purchasePrice: data.containsKey('purchasePrice')
           ? data['purchasePrice']
           : data['precio_compra'] ?? 0.0,
-      currencySign:
-          data.containsKey('currencySign') ? data['currencySign'] : data['signo_moneda'] ?? '',
+      currencySign:data.containsKey('currencySign') ? data['currencySign'] : data['signo_moneda'] ?? '',
+      select:false,
     );
   }
 

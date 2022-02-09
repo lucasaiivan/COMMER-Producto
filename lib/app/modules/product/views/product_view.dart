@@ -318,7 +318,7 @@ class Product extends GetView<ProductController> {
             imageViewCard(),
             widgetDescripcion(contextBuilder),
             Container(
-              color: Colors.red.withOpacity(5.0),
+              color: Colors.red ,
               alignment: Alignment.center,
               child: controller.adWidget,
               width: controller.myBanner.size.width.toDouble(),
