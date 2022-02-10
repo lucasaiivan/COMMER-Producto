@@ -148,7 +148,6 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   }
 
   // menu options
-
   Widget dropdownButtonCategory({required Category categoria}) {
     final WelcomeController controller = Get.find();
 
@@ -209,6 +208,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
       },
     );
   }
+  
 
   showDialogSetCategoria({required Category categoria}) async {
     final WelcomeController controller = Get.find();

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -12,25 +11,39 @@ import 'package:producto/app/utils/dynamicTheme_lb.dart';
 import '../../mainScreen/controllers/welcome_controller.dart';
 
 class ProductController extends GetxController {
+  // admob
+  static bool stateAds = false;
+  bool get getstateAds => stateAds;
 
-
-  // admob 
-  final BannerAd myBanner = BannerAd(
-    adUnitId: BannerAd.testAdUnitId,
-    size: AdSize.banner,
-    request: AdRequest(),
-    listener: BannerAdListener(
-      onAdClosed: (ad) => print('############################## onAdClosed'),
-      onAdFailedToLoad: (ad,error) => print('############################## onAdFailedToLoad'),
-      onAdImpression: (ad) => print('############################## onAdImpression'),
-      onAdLoaded: (ad) => print('############################## onAdLoaded'),
-      onAdOpened: (ad) => print('############################## onAdOpened'),
-      onAdWillDismissScreen: (ad) => print('############################## onAdWillDismissScreen'),
-      onPaidEvent:  (ad,doubl,type,txt) => print('############################## onPaidEvent'),
-    ),
-  );
-  late AdWidget adWidget =  AdWidget(ad: myBanner);
-
+  final Rx<BannerAd> bannerAd =BannerAd(
+      adUnitId: 'ca-app-pub-8441738551183357/4747810514',
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          print('$ad loaded.');
+          stateAds = true;
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('$ad failedToLoad');
+          stateAds = false;
+        },
+        onAdOpened: (Ad ad) {
+          {
+            print('$ad onAdOpened.');
+            stateAds = false;
+          }
+        },
+        onAdClosed: (Ad ad) {
+          print('$ad onAdClosed.');
+          stateAds = false;
+        },
+        onAdWillDismissScreen: (Ad ad) {
+          print('$ad onAdWillDismissScreen.');
+          stateAds = false;
+        },
+      ),
+    ).obs;
 
   // controllers
   WelcomeController welcomeController = Get.find<WelcomeController>();
@@ -82,8 +95,9 @@ class ProductController extends GetxController {
 
   @override
   void onInit() async {
-    myBanner.load().then((_) =>adWidget = AdWidget(ad: myBanner));
-    setProduct = Get.arguments['product'] ??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    initAds();
+    setProduct = Get.arguments['product'] ??
+        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     readCategory();
     readMarkProducts();
     readOthersProductsMark();
@@ -95,7 +109,6 @@ class ProductController extends GetxController {
 
   @override
   void onReady() {
-
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Get.theme.cardColor,
@@ -112,7 +125,8 @@ class ProductController extends GetxController {
 
   @override
   void onClose() {
-    
+    bannerAd.value.dispose();
+
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Get.theme.brightness == Brightness.light
@@ -139,6 +153,11 @@ class ProductController extends GetxController {
     }
 
     super.onClose();
+  }
+
+// Functions
+  void initAds() {
+    bannerAd.value.load();
   }
 
   void readCategory() {

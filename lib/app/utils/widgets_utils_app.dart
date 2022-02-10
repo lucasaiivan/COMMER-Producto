@@ -158,7 +158,11 @@ class _ProductoItemState extends State<ProductoItem> {
         // widget
         child: Card(
           color: Colors.white,
-          elevation: 3,
+          elevation: welcomeController.getSelectItems
+              ? widget.producto.select
+                  ? 4
+                  : 0
+              : 3,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
           clipBehavior: Clip.antiAlias,
@@ -177,22 +181,46 @@ class _ProductoItemState extends State<ProductoItem> {
                   child: InkWell(
                     onTap: () => Get.toNamed(Routes.PRODUCT,
                         arguments: {'product': widget.producto}),
+                    onLongPress: () {
+                      welcomeController.setSelectItems =
+                          !welcomeController.getSelectItems;
+                      widget.producto.select = true;
+                    },
                   ),
                 ),
               ),
-              Expanded(
-                child: InkWell(
-                    child: Container(
-                        color: widget.producto.select
-                            ? Colors.grey.withOpacity(0.4)
-                            : Colors.grey.withOpacity(0.8)),
-                    onTap: () {
-                      //welcomeController.selectProduct(id: widget.producto.id);
-                      setState(() {
-                        widget.producto.select = !widget.producto.select;
-                      });
-                    }),
-              )
+              // state selecct item
+              welcomeController.getSelectItems
+                  ? Expanded(
+                      child: InkWell(
+                        child: Container(
+                            color: widget.producto.select
+                                ? Colors.grey.withOpacity(0.0)
+                                : Colors.grey.withOpacity(0.2)),
+                        onTap: () {
+                          //welcomeController.selectProduct(id: widget.producto.id);
+                          setState(() {
+                            widget.producto.select = !widget.producto.select;
+                            welcomeController.updateSelectItemsLength();
+                          });
+                        },
+                      ),
+                    )
+                  : Container(),
+              // icon notify selecct item
+              widget.producto.select
+                  ? Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.circle,
+                          color: Colors.green,
+                          size: 14,
+                        ),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         ),

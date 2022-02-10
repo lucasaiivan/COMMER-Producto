@@ -84,7 +84,7 @@ class CatalogueScreenView extends StatelessWidget {
                   searchLabel: 'Buscar producto',
                   suggestion: Center(child: Text('ej. alfajor')),
                   failure: Center(child: Text('No se encontro :(')),
-                  filter: (product) => [product.description,product.nameMark],
+                  filter: (product) => [product.description, product.nameMark],
                   builder: (product) => ListTile(
                     leading: FadeInImage(
                       image: NetworkImage(product.image),
@@ -142,6 +142,7 @@ class CatalogueScreenView extends StatelessWidget {
         physics: BouncingScrollPhysics(),
         headerSliverBuilder: (context, _) {
           return [
+            // atentos a cualquier cambio que surja en los datos de la lista de marcas
             GetBuilder<WelcomeController>(
               id: 'marks',
               init: WelcomeController(),
@@ -173,12 +174,56 @@ class CatalogueScreenView extends StatelessWidget {
               labelColor: Get.theme.brightness == Brightness.dark
                   ? Colors.white
                   : Colors.black,
-              onTap: (_) => ViewCategoria.show(buildContext: buildContext),
+              onTap: (_) {
+                if (!controller.getSelectItems) {
+                  ViewCategoria.show(buildContext: buildContext);
+                }
+              },
               tabs: [
                 GetBuilder<WelcomeController>(
                   init: WelcomeController(),
                   id: 'tab',
-                  builder: (_) => Tab(text: controller.getTextTab),
+                  builder: (_) => Stack(
+                    children: [
+                      Align(
+                        alignment: controller.getSelectItems
+                            ? Alignment.centerLeft
+                            : Alignment.center,
+                        child: controller.getSelectItems
+                            ? Tab(
+                                text: controller.getItemsSelectLength == 0
+                                    ? 'Seleccionar'
+                                    : controller.getItemsSelectLength == 1
+                                        ? '${controller.getItemsSelectLength} elemento seleccionado'
+                                        : '${controller.getItemsSelectLength} elementos seleccionados')
+                            : Tab(text: controller.getTextTab),
+                      ),
+                        Align(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              controller.getItemsSelectLength == 0
+                                  ? Container()
+                                  : IconButton(
+                                      icon: Icon(Icons.delete, color: Colors.red),
+                                      onPressed: controller.showDialogDeleteSelectedItems),
+                              // button - select all items
+                              !controller.getSelectItems?Container():IconButton(
+                                icon: Icon(Icons.done_all,color: controller.getStateSelectAll?Colors.orange:Colors.green),
+                                onPressed: ()=>controller.setStateSelectAll=!controller.getStateSelectAll,
+                              ),
+                              // button - exit of selections
+                              IconButton(
+                                  icon: Icon(controller.getSelectItems
+                                      ? Icons.close
+                                      : Icons.add_circle_outline),
+                                  onPressed: () => controller.setSelectItems =!controller.getSelectItems),
+                            ],
+                          ),
+                          alignment: Alignment.centerRight,
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),
@@ -327,7 +372,9 @@ class CatalogueScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 
@@ -458,7 +505,9 @@ class CatalogueScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 

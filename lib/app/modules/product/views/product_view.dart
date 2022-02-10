@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
@@ -114,9 +115,14 @@ class Product extends GetView<ProductController> {
                 builder: (_) {
                   return IconButton(
                     padding: EdgeInsets.all(12.0),
-                    icon: Icon( _.getConnection?welcomeController.isCatalogue(id: controller.getProduct.id) ? Icons.edit: Icons.add_box:Icons.wifi_off_outlined),
+                    icon: Icon(_.getConnection
+                        ? welcomeController.isCatalogue(
+                                id: controller.getProduct.id)
+                            ? Icons.edit
+                            : Icons.add_box
+                        : Icons.wifi_off_outlined),
                     onPressed: () {
-                      if( _.getConnection){
+                      if (_.getConnection) {
                         controller.toProductEdit();
                       }
                     },
@@ -311,24 +317,28 @@ class Product extends GetView<ProductController> {
   Widget background() {
     return Builder(builder: (contextBuilder) {
       return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 12),
-            imageViewCard(),
-            widgetDescripcion(contextBuilder),
-            Container(
-              color: Colors.red ,
-              alignment: Alignment.center,
-              child: controller.adWidget,
-              width: controller.myBanner.size.width.toDouble(),
-              height: controller.myBanner.size.height.toDouble(),
-            ),
-            otherProductsCatalogueListHorizontal(),
-            otherBrandProductsListHorizontal(),
-            const SizedBox(height: 200.0, width: 120.0),
-          ],
-        ),
+        child: Obx(() => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 12),
+                imageViewCard(),
+                widgetDescripcion(contextBuilder),
+                controller.getstateAds
+                    ? Center(
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: AdWidget(ad: controller.bannerAd.value),
+                          width: controller.bannerAd.value.size.width.toDouble(),
+                          height:
+                              controller.bannerAd.value.size.height.toDouble(),
+                        ),
+                    )
+                    : Container(),
+                otherProductsCatalogueListHorizontal(),
+                otherBrandProductsListHorizontal(),
+                const SizedBox(height: 200.0, width: 120.0),
+              ],
+            )),
       );
     });
   }
@@ -451,8 +461,6 @@ class Product extends GetView<ProductController> {
 
   Widget ultimosPreciosView() {
     if (controller.getListPricesForProduct.length != 0) {
-
-
       Color colorText = Colors.white;
 
       return Column(
@@ -556,8 +564,6 @@ class Product extends GetView<ProductController> {
           ),
         ],
       );
-
-      
     } else {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
@@ -606,7 +612,7 @@ class Product extends GetView<ProductController> {
                 ),
               ),
             ),
-            Obx(() => Padding(
+            Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CircleAvatar(
                     radius: 30,
@@ -619,7 +625,7 @@ class Product extends GetView<ProductController> {
                           texto: controller.getMark.name),
                     ),
                   ),
-                )),
+                ),
           ],
         ),
       ),

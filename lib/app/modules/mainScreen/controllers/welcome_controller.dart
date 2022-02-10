@@ -16,6 +16,61 @@ import 'package:simple_connection_checker/simple_connection_checker.dart';
 class WelcomeController extends GetxController {
   // controllers
   SplashController homeController = Get.find<SplashController>();
+
+  // app options : select items of catalogue
+  bool selectItems = false;
+  bool get getSelectItems => selectItems;
+  set setSelectItems(bool state) {
+    selectItems = state;
+    update(['tab']);
+    update(['catalogue']);
+  }
+
+  int _itemsSelectLength = 0;
+  int get getItemsSelectLength => _itemsSelectLength;
+  set setItemsSelectLength(int length) {
+    _itemsSelectLength = length;
+  }
+
+  // state select all
+  bool _stateSelectAll = false;
+  bool get getStateSelectAll => _stateSelectAll;
+  set setStateSelectAll(bool state) {
+    _stateSelectAll = state;
+    if (state) {
+      selectItemsAll();
+    } else {
+      resetSelectItems();
+    }
+    update(['tab']);
+    update(['catalogue']);
+  }
+
+  void resetSelectItems() {
+    setStateSelectAll = false;
+    _itemsSelectLength = 0;
+    for (var item in getCataloProducts) {
+      item.select = false;
+    }
+    updateSelectItemsLength();
+  }
+
+  void selectItemsAll() {
+    for (var item in getCataloProducts) {
+      item.select = true;
+    }
+    updateSelectItemsLength();
+  }
+
+  void updateSelectItemsLength() {
+    setItemsSelectLength = 0;
+    for (var item in getCataloProducts) {
+      if (item.select) {
+        setItemsSelectLength = getItemsSelectLength + 1;
+      }
+    }
+  }
+
   // state internet
   bool _connection = false;
   bool get getConnection => _connection;
@@ -166,7 +221,6 @@ class WelcomeController extends GetxController {
     }
     update(['catalogue']);
   }
-
 
   void catalogueFilterReset() {
     // resetea los valores de los filtros para mostrar todos los productos
@@ -349,8 +403,9 @@ class WelcomeController extends GetxController {
   void onInit() async {
     super.onInit();
     // obtenemos por parametro los datos de la cuenta de atentificación
-    setUserAccountAuth = Get.arguments['currentUser'];
     Map map = Get.arguments as Map;
+    setUserAccountAuth = map['currentUser'];
+
     // verificamos y cargamos datos de la cuenta
     map.containsKey('idAccount')
         ? setIdAccountSelected = Get.arguments['idAccount']
@@ -392,6 +447,7 @@ class WelcomeController extends GetxController {
     await homeController.firebaseAuth.signOut();
   }
 
+  // FUNCTIONS
   void toProductView({required Product porduct}) {
     Get.toNamed(Routes.PRODUCT,
         arguments: {'product': porduct.convertProductCatalogue()});
@@ -553,6 +609,43 @@ class WelcomeController extends GetxController {
     }
   }
 
+  // function - delete selected items
+  void showDialogDeleteSelectedItems() {
+    Widget widget = AlertDialog(
+      title: new Text("Eliminar elementos"),
+      content: new Text(
+          "¿Estás seguro de que quieres quitar estos elementos de tu catálogo?"),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        new TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text('cancelar')),
+        new TextButton(
+            child: Text('si'),
+            onPressed: () async {
+              // procede a eliminar los elementos seleccionados
+              for (var item in getCataloProducts) {
+                if (item.select) {
+                  Database.refFirestoreCatalogueProduct(
+                          idAccount: getProfileAccountSelected.id)
+                      .doc(item.id)
+                      .delete();
+                }
+              }
+              resetSelectItems();
+              update(['tab']);
+              Get.back();
+            }),
+      ],
+    );
+
+    Get.dialog(
+      widget,
+    );
+  }
+
   //  Función -  obtenemos los datos de la marca //
   // release
   // obtenemos un lista de las id de cada marca y procedemos a hacer una consulta en la db
@@ -651,7 +744,7 @@ class WelcomeController extends GetxController {
               CustomFullScreenDialog.showDialog();
 
               // set default
-              GetStorage().write('idAccount', '');
+              await GetStorage().write('idAccount', '');
               // instancias de FirebaseAuth para proceder a cerrar sesión
               final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
               Future.delayed(Duration(seconds: 2)).then((_) {

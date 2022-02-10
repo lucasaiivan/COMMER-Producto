@@ -41,6 +41,7 @@ void main() async {
   }
 
   runApp(
+    
     GetMaterialApp(
       title: "Producto",
       initialRoute: AppPages.INITIAL,
