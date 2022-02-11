@@ -19,7 +19,7 @@ class ViewCategoria extends StatefulWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 }
@@ -53,7 +53,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
           Expanded(
               child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text('Categoría', style: TextStyle(fontSize: 18)),
+            child: Text('Crear categoía', style: TextStyle(fontSize: 18)),
           )),
           IconButton(
               icon: Icon(Icons.add),
@@ -286,7 +286,7 @@ class ViewSubCategoria extends StatefulWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 }

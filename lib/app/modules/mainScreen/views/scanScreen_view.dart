@@ -24,11 +24,10 @@ class ScanScreenView extends StatelessWidget {
   }
 
   Scaffold scaffoldScan({required BuildContext buildContext}) {
-
     return Scaffold(
       appBar: appbar(),
       body: Center(
-        child: body(),
+        child: body(context: buildContext),
       ),
     );
   }
@@ -38,8 +37,6 @@ class ScanScreenView extends StatelessWidget {
     return AppBar(
       elevation: 0.0,
       backgroundColor: Get.theme.scaffoldBackgroundColor,
-      iconTheme: Get.theme.iconTheme
-          .copyWith(color: Get.theme.textTheme.bodyText1!.color),
       title: InkWell(
         onTap: () => showModalBottomSheetSelectAccount(),
         child: Padding(
@@ -47,14 +44,15 @@ class ScanScreenView extends StatelessWidget {
           child: Row(
             children: <Widget>[
               Text(
-                  controller.getProfileAccountSelected.id == ''
-                      ? "Seleccionar cuenta"
-                      : controller.getProfileAccountSelected.name != ""
-                          ? controller.getProfileAccountSelected.name
-                          : "Mi catalogo",
-                  style: TextStyle(color: Get.theme.textTheme.bodyText1!.color),
-                  overflow: TextOverflow.fade,
-                  softWrap: false),
+                controller.getProfileAccountSelected.id == ''
+                    ? "Seleccionar cuenta"
+                    : controller.getProfileAccountSelected.name != ""
+                        ? controller.getProfileAccountSelected.name
+                        : "Mi catalogo",
+                overflow: TextOverflow.fade,
+                softWrap: false,
+                style: TextStyle(color: Get.theme.textTheme.bodyText1!.color),
+              ),
               Icon(Icons.keyboard_arrow_down)
             ],
           ),
@@ -112,12 +110,9 @@ class ScanScreenView extends StatelessWidget {
     );
   }
 
-  Widget body() {
-
-    // var 
-    Color color = Get.theme.brightness == Brightness.dark
-        ? Colors.white54
-        : Colors.black38;
+  Widget body({required BuildContext context}) {
+    // var
+    Color color = Theme.of(context).textTheme.bodyText1!.color ?? Colors.purple;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -126,9 +121,10 @@ class ScanScreenView extends StatelessWidget {
         InkWell(
           borderRadius: BorderRadius.all(Radius.circular(30.0)),
           splashColor: Get.theme.primaryColor,
-          onTap: () => scanBarcodeNormal(),
+          onTap: scanBarcodeNormal,
           child: Container(
-            width: 200,height: 200,
+            width: 200,
+            height: 200,
             margin: const EdgeInsets.all(0.0),
             padding: const EdgeInsets.all(30.0),
             decoration: BoxDecoration(
@@ -145,13 +141,15 @@ class ScanScreenView extends StatelessWidget {
         ),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 40.0),
-          child: Text("Escanea un producto para conocer su precio",
-              style: TextStyle(
-                  fontFamily: "POPPINS_FONT",
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                  fontSize: 24.0),
-              textAlign: TextAlign.center),
+          child: TextButton(
+            child: Text("Escanear",
+                style: TextStyle(
+                    fontFamily: "POPPINS_FONT",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24.0),
+                textAlign: TextAlign.center),
+            onPressed: scanBarcodeNormal,
+          ),
         ),
         Obx(() => widgetSuggestions(list: controller.getListSuggestedProducts)),
       ],
@@ -305,20 +303,23 @@ class ScanScreenView extends StatelessWidget {
       children: <Widget>[
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
-          leading: Icon(Icons.logout),
-          title: Text('Cerrar sesión'),
-          onTap: controller.showDialogCerrarSesion,
-        ),
-        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-        ListTile(
-          contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Get.theme.brightness != Brightness.light
               ? Icons.brightness_high
               : Icons.brightness_3),
           title: Text(Get.theme.brightness == Brightness.light
               ? 'Aplicar de tema oscuro'
               : 'Aplicar de tema claro'),
-          onTap: ThemeService.switchTheme,
+          onTap: () {
+            ThemeService.switchTheme();
+            Get.back();
+          },
+        ),
+        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Icon(Icons.logout),
+          title: Text('Cerrar sesión'),
+          onTap: controller.showDialogCerrarSesion,
         ),
         Row(
           children: [

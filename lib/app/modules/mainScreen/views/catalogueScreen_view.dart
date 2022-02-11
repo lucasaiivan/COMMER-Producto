@@ -49,8 +49,7 @@ class CatalogueScreenView extends StatelessWidget {
     return AppBar(
       elevation: 0.0,
       backgroundColor: Get.theme.scaffoldBackgroundColor,
-      iconTheme: Get.theme.iconTheme
-          .copyWith(color: Get.theme.textTheme.bodyText1!.color),
+      iconTheme: Get.theme.iconTheme.copyWith(color: Get.theme.textTheme.bodyText1!.color),
       title: InkWell(
         onTap: () => showModalBottomSheetSelectAccount(),
         child: Obx(() => RichText(
@@ -203,14 +202,14 @@ class CatalogueScreenView extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               // button - delete
-                              !controller.getSelectItems?Container():controller.getItemsSelectLength == 0
+                              controller.getItemsSelectLength == 0
                                   ? Container()
                                   : IconButton(
                                       icon: Icon(Icons.delete, color: Colors.red),
                                       onPressed: controller.showDialogDeleteSelectedItems),
                               // button - select all items
                               !controller.getSelectItems?Container():IconButton(
-                                icon: Icon(Icons.done_all,color: controller.getStateSelectAll?null:Colors.green),
+                                icon: Icon(Icons.done_all,color: !controller.getStateSelectAll?null:Colors.green),
                                 onPressed: ()=>controller.setStateSelectAll=!controller.getStateSelectAll,
                               ),
                               // button - exit of selections
@@ -382,9 +381,7 @@ class CatalogueScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 
@@ -516,9 +513,7 @@ class CatalogueScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 

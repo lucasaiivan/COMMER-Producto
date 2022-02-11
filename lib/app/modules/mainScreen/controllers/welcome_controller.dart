@@ -22,7 +22,7 @@ class WelcomeController extends GetxController {
   bool get getSelectItems => selectItems;
   set setSelectItems(bool state) {
     selectItems = state;
-    setStateSelectAll = state;
+    defaultSelectItems();
     update(['tab']);
     update(['catalogue']);
   }
@@ -39,9 +39,9 @@ class WelcomeController extends GetxController {
   set setStateSelectAll(bool state) {
     _stateSelectAll = state;
     if (state)
-      defaultSelectItems();
-    else
       selectItemsAll();
+    else
+      defaultSelectItems();
   }
 
   void defaultSelectItems() {
@@ -106,9 +106,9 @@ class WelcomeController extends GetxController {
     idAccountSelected.value = value;
     if (value != '') {
       readProfileAccountStream(id: value);
-      
-    }else{
-      setProfileAccountSelected=ProfileAccountModel(creation: Timestamp.now()) ;
+    } else {
+      setProfileAccountSelected =
+          ProfileAccountModel(creation: Timestamp.now());
     }
     // actualizamos la vista
     update(['accountUpdate']);
@@ -320,6 +320,7 @@ class WelcomeController extends GetxController {
   List<Category> get getCatalogueCategoryList => _categoryList;
   set setCatalogueCategoryList(List<Category> value) {
     _categoryList.value = value;
+    update(['tab']);
   }
 
   // subcategory list selected

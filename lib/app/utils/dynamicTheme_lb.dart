@@ -61,7 +61,6 @@ class ThemeService {
             : ThemesDataApp.dark.scaffoldBackgroundColor,
       ));
     }
-
     Get.changeThemeMode(loadisDArkMode() ? ThemeMode.light : ThemeMode.dark);
     saveSsDarkMode(!loadisDArkMode());
   }

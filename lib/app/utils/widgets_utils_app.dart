@@ -185,28 +185,30 @@ class _ProductoItemState extends State<ProductoItem> {
                       welcomeController.setSelectItems =
                           !welcomeController.getSelectItems;
                       widget.producto.select = true;
+                      welcomeController.updateSelectItemsLength();
                     },
                   ),
                 ),
               ),
               // state selecct item
               welcomeController.getSelectItems
-                  ? Expanded(
+                  ?Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
                       child: InkWell(
                         child: Container(
                             color: widget.producto.select
                                 ? Colors.grey.withOpacity(0.0)
                                 : Colors.grey.withOpacity(0.2)),
                         onTap: () {
-                          //welcomeController.selectProduct(id: widget.producto.id);
                           setState(() {
                             widget.producto.select = !widget.producto.select;
                             welcomeController.updateSelectItemsLength();
                           });
                         },
                       ),
-                    )
-                  : Container(),
+                    ),
+              ): Container(),
               // icon notify selecct item
               widget.producto.select
                   ? Align(
@@ -479,59 +481,6 @@ class WidgetButtonListTile extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Widget _getAdminUserData({required String idNegocio}) {
-    return Text(idNegocio);
-    /* return FutureBuilder(
-      future: Global.getDataAdminUserNegocio(idNegocio: idNegocio, idUserAdmin: firebaseUser.uid)
-          .getDataAdminUsuarioCuenta(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          AdminUsuarioCuenta adminUsuarioCuenta = snapshot.data;
-          switch (adminUsuarioCuenta.tipocuenta) {
-            case 0:
-              return Row(
-                children: [
-                  Icon(
-                    Icons.security,
-                    size: 12.0,
-                    color: Theme.of(context).hintColor,
-                  ),
-                  SizedBox(width: 2.0),
-                  Text("Administrador")
-                ],
-              );
-            case 1:
-              return Row(
-                children: [
-                  Icon(
-                    Icons.account_circle,
-                    size: 12.0,
-                    color: Theme.of(context).hintColor,
-                  ),
-                  SizedBox(width: 2.0),
-                  Text("Estandar")
-                ],
-              );
-            default:
-              return Row(
-                children: [
-                  Icon(
-                    Icons.account_circle,
-                    size: 12.0,
-                    color: Theme.of(context).hintColor,
-                  ),
-                  SizedBox(width: 2.0),
-                  Text("Estandar")
-                ],
-              );
-          }
-        } else {
-          return Text("Cargando datos...");
-        }
-      },
-    ); */
   }
 }
 
