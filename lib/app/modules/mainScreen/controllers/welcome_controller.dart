@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -70,17 +71,6 @@ class WelcomeController extends GetxController {
     update(['catalogue']);
   }
 
-  // state internet
-  bool _connection = false;
-  bool get getConnection => _connection;
-  set setConnection(bool state) {
-    _connection = state;
-    update(['connection']);
-  }
-
-  late StreamSubscription subscription;
-  SimpleConnectionChecker _simpleConnectionChecker = SimpleConnectionChecker()
-    ..setLookUpAddress('pub.dev');
 
   // text tab
   String _textTab = 'Todos';
@@ -426,12 +416,6 @@ class WelcomeController extends GetxController {
     }
     // cargamos los datos de la app desde la db
     readListSuggestedProductsFuture();
-
-    // estado de intenet
-    subscription =
-        _simpleConnectionChecker.onConnectionChange.listen((connected) {
-      setConnection = connected;
-    });
   }
 
   @override
@@ -441,7 +425,6 @@ class WelcomeController extends GetxController {
 
   @override
   void onClose() {
-    subscription.cancel();
   }
 
   void logout() async {
@@ -451,6 +434,7 @@ class WelcomeController extends GetxController {
   }
 
   // FUNCTIONS
+
   void toProductView({required Product porduct}) {
     Get.toNamed(Routes.PRODUCT,
         arguments: {'product': porduct.convertProductCatalogue()});

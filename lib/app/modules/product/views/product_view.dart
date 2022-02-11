@@ -109,26 +109,16 @@ class Product extends GetView<ProductController> {
                       });
                 },
               ),
-              GetBuilder<WelcomeController>(
-                id: 'connection',
-                init: WelcomeController(),
-                builder: (_) {
-                  return IconButton(
+              IconButton(
                     padding: EdgeInsets.all(12.0),
-                    icon: Icon(_.getConnection
-                        ? welcomeController.isCatalogue(
+                    icon: Icon(welcomeController.isCatalogue(
                                 id: controller.getProduct.id)
                             ? Icons.edit
-                            : Icons.add_box
-                        : Icons.wifi_off_outlined),
+                            : Icons.add),
                     onPressed: () {
-                      if (_.getConnection) {
-                        controller.toProductEdit();
-                      }
+                       controller.toProductEdit();
                     },
-                  );
-                },
-              ),
+                  ),
             ],
     );
   }
@@ -325,14 +315,15 @@ class Product extends GetView<ProductController> {
                 widgetDescripcion(contextBuilder),
                 controller.getstateAds
                     ? Center(
-                      child: Container(
+                        child: Container(
                           alignment: Alignment.center,
                           child: AdWidget(ad: controller.bannerAd.value),
-                          width: controller.bannerAd.value.size.width.toDouble(),
+                          width:
+                              controller.bannerAd.value.size.width.toDouble(),
                           height:
                               controller.bannerAd.value.size.height.toDouble(),
                         ),
-                    )
+                      )
                     : Container(),
                 otherProductsCatalogueListHorizontal(),
                 otherBrandProductsListHorizontal(),
@@ -613,19 +604,19 @@ class Product extends GetView<ProductController> {
               ),
             ),
             Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Get.theme.scaffoldBackgroundColor,
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: utilsWidget.viewCircleImage(
-                          size: 60,
-                          url: controller.getMark.image,
-                          texto: controller.getMark.name),
-                    ),
-                  ),
+              padding: const EdgeInsets.all(8.0),
+              child: CircleAvatar(
+                radius: 30,
+                backgroundColor: Get.theme.scaffoldBackgroundColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: utilsWidget.viewCircleImage(
+                      size: 60,
+                      url: controller.getMark.image,
+                      texto: controller.getMark.name),
                 ),
+              ),
+            ),
           ],
         ),
       ),

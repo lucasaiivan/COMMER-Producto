@@ -53,7 +53,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
           Expanded(
               child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text('Crear categoía', style: TextStyle(fontSize: 18)),
+            child: Text('Crear categoría', style: TextStyle(fontSize: 18)),
           )),
           IconButton(
               icon: Icon(Icons.add),
