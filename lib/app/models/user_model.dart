@@ -50,27 +50,28 @@ class ProfileAccountModel {
 
   ProfileAccountModel({
     // account info
+    // informacion de cuenta
+    // location
+    // data user creation
     this.id = "",
+    this.username='',
     this.image = "",
     this.name = "",
     this.description = "",
     this.currencySign = "\$",
-    // informacion de cuenta
     this.blockingAccount = false,
     this.blockingMessage = "",
     this.verifiedAccount = false, // Cuenta verificada
-
-    // location
     this.countrycode = "",
     this.country = "",
     this.province = "",
     this.town = "",
     this.address = "",
-
-    // data user creation
+    required this.creation,
     this.idAuthUserCreation = '',
-    required this.creation, // Fecha en la que se creo la cuenta
   });
+
+
   ProfileAccountModel.fromMap(Map data) {
     id = data['id'];
     username = data['username'];

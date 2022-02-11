@@ -196,24 +196,25 @@ class CatalogueScreenView extends StatelessWidget {
                                     : controller.getItemsSelectLength == 1
                                         ? '${controller.getItemsSelectLength} elemento seleccionado'
                                         : '${controller.getItemsSelectLength} elementos seleccionados')
-                            : Tab(text: controller.getTextTab),
+                            : Tab(text: controller.getCatalogueCategoryList.length==0?'Agregar categoría': controller.getTextTab),
                       ),
                         Align(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              controller.getItemsSelectLength == 0
+                              // button - delete
+                              !controller.getSelectItems?Container():controller.getItemsSelectLength == 0
                                   ? Container()
                                   : IconButton(
                                       icon: Icon(Icons.delete, color: Colors.red),
                                       onPressed: controller.showDialogDeleteSelectedItems),
                               // button - select all items
                               !controller.getSelectItems?Container():IconButton(
-                                icon: Icon(Icons.done_all,color: controller.getStateSelectAll?Colors.orange:Colors.green),
+                                icon: Icon(Icons.done_all,color: controller.getStateSelectAll?null:Colors.green),
                                 onPressed: ()=>controller.setStateSelectAll=!controller.getStateSelectAll,
                               ),
                               // button - exit of selections
-                              IconButton(
+                              controller.getCatalogueLoad.length==0?Container():IconButton(
                                   icon: Icon(controller.getSelectItems
                                       ? Icons.close
                                       : Icons.add_circle_outline),
@@ -368,7 +369,16 @@ class CatalogueScreenView extends StatelessWidget {
 
     // muestre la hoja inferior modal de getx
     Get.bottomSheet(
-      widget,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          widget,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton(onPressed: controller.catalogueExit, child: Text('Salir de mi cátalogo')),
+          )
+        ],
+      ),
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
@@ -384,6 +394,20 @@ class CatalogueScreenView extends StatelessWidget {
       shrinkWrap: true,
       padding: EdgeInsets.symmetric(vertical: 15.0),
       children: <Widget>[
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Icon(Get.theme.brightness != Brightness.light
+              ? Icons.brightness_high
+              : Icons.brightness_3),
+          title: Text(Get.theme.brightness == Brightness.light
+              ? 'Aplicar de tema oscuro'
+              : 'Aplicar de tema claro'),
+          onTap: () {
+            ThemeService.switchTheme();
+            Get.back();
+          },
+        ),
+        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: controller.getProfileAccountSelected.image == ""
@@ -410,20 +434,7 @@ class CatalogueScreenView extends StatelessWidget {
           title: Text('Cerrar sesión'),
           onTap: controller.showDialogCerrarSesion,
         ),
-        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-        ListTile(
-          contentPadding: EdgeInsets.all(12.0),
-          leading: Icon(Get.theme.brightness != Brightness.light
-              ? Icons.brightness_high
-              : Icons.brightness_3),
-          title: Text(Get.theme.brightness == Brightness.light
-              ? 'Aplicar de tema oscuro'
-              : 'Aplicar de tema claro'),
-          onTap: () {
-            ThemeService.switchTheme();
-            Get.back();
-          },
-        ),
+        
         Row(
           children: [
             Padding(

@@ -22,6 +22,7 @@ class WelcomeController extends GetxController {
   bool get getSelectItems => selectItems;
   set setSelectItems(bool state) {
     selectItems = state;
+    setStateSelectAll = state;
     update(['tab']);
     update(['catalogue']);
   }
@@ -37,17 +38,13 @@ class WelcomeController extends GetxController {
   bool get getStateSelectAll => _stateSelectAll;
   set setStateSelectAll(bool state) {
     _stateSelectAll = state;
-    if (state) {
+    if (state)
+      defaultSelectItems();
+    else
       selectItemsAll();
-    } else {
-      resetSelectItems();
-    }
-    update(['tab']);
-    update(['catalogue']);
   }
 
-  void resetSelectItems() {
-    setStateSelectAll = false;
+  void defaultSelectItems() {
     _itemsSelectLength = 0;
     for (var item in getCataloProducts) {
       item.select = false;
@@ -69,6 +66,8 @@ class WelcomeController extends GetxController {
         setItemsSelectLength = getItemsSelectLength + 1;
       }
     }
+    update(['tab']);
+    update(['catalogue']);
   }
 
   // state internet
@@ -107,6 +106,9 @@ class WelcomeController extends GetxController {
     idAccountSelected.value = value;
     if (value != '') {
       readProfileAccountStream(id: value);
+      
+    }else{
+      setProfileAccountSelected=ProfileAccountModel(creation: Timestamp.now()) ;
     }
     // actualizamos la vista
     update(['accountUpdate']);
@@ -634,7 +636,7 @@ class WelcomeController extends GetxController {
                       .delete();
                 }
               }
-              resetSelectItems();
+              defaultSelectItems();
               update(['tab']);
               Get.back();
             }),
@@ -724,6 +726,14 @@ class WelcomeController extends GetxController {
         ? LoadStatus.normal
         : LoadStatus.completed;
     update(['catalogue']);
+  }
+
+  // salir del cátalogo
+  void catalogueExit() async {
+    // set default
+    await GetStorage().write('idAccount', '');
+    setIdAccountSelected = '';
+    Get.back();
   }
 
   // cerrar sesión
