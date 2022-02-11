@@ -305,7 +305,7 @@ class ProductEdit extends StatelessWidget {
           flex: 1,
           child: OutlinedButton(
             onPressed:
-                controller.getSaveIndicator ? null : SelectSubCategoria.show,
+                controller.getSaveIndicator ? null : controller.getCategory.id==''?null:SelectSubCategoria.show,
             child: textSubcategory,
             style: ButtonStyle(
                 padding:
@@ -431,7 +431,9 @@ class SelectCategory extends StatefulWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 }
@@ -465,7 +467,7 @@ class _SelectCategoryState extends State<SelectCategory> {
           Expanded(
               child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text('Categoría', style: TextStyle(fontSize: 18)),
+            child: Text('Crear categoría', style: TextStyle(fontSize: 18)),
           )),
           IconButton(
               icon: Icon(Icons.add),
@@ -689,7 +691,9 @@ class SelectSubCategoria extends StatefulWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 }
@@ -718,19 +722,10 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
   @override
   Widget build(BuildContext buildContext) {
     if (categoriaSelected.subcategories.length == 0) {
-      return Row(
-        children: [
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text('Categoría', style: TextStyle(fontSize: 18)),
-          )),
-          IconButton(
-              icon: Icon(Icons.add),
-              padding: const EdgeInsets.all(20.0),
-              onPressed: () =>
-                  showDialogSetSubcategoria(subcategoria: Category()))
-        ],
+      return ListTile(
+        title: Text('Crear subategoría', style: TextStyle(fontSize: 18)),
+        trailing:  Icon(Icons.add),
+        onTap: () => showDialogSetSubcategoria(subcategoria: Category() ),
       );
     }
 

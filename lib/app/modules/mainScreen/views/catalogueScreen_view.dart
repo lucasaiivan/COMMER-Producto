@@ -63,7 +63,7 @@ class CatalogueScreenView extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: controller.getProfileAccountSelected.id == ''
+                  text: controller.getIdAccountSelecte == ''
                       ? "Seleccionar cuenta"
                       : controller.getProfileAccountSelected.name != ""
                           ? controller.getProfileAccountSelected.name
