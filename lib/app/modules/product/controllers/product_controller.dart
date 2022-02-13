@@ -15,35 +15,35 @@ class ProductController extends GetxController {
   static bool stateAds = false;
   bool get getstateAds => stateAds;
 
-  final Rx<BannerAd> bannerAd =BannerAd(
-      adUnitId: 'ca-app-pub-8441738551183357/4747810514',
-      request: AdRequest(),
-      size: AdSize.banner,
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          print('$ad loaded.');
-          stateAds = true;
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('$ad failedToLoad');
+  final Rx<BannerAd> bannerAd = BannerAd(
+    adUnitId: 'ca-app-pub-8441738551183357/4747810514',
+    request: AdRequest(),
+    size: AdSize.banner,
+    listener: BannerAdListener(
+      onAdLoaded: (Ad ad) {
+        print('$ad loaded.');
+        stateAds = true;
+      },
+      onAdFailedToLoad: (Ad ad, LoadAdError error) {
+        print('$ad failedToLoad');
+        stateAds = false;
+      },
+      onAdOpened: (Ad ad) {
+        {
+          print('$ad onAdOpened.');
           stateAds = false;
-        },
-        onAdOpened: (Ad ad) {
-          {
-            print('$ad onAdOpened.');
-            stateAds = false;
-          }
-        },
-        onAdClosed: (Ad ad) {
-          print('$ad onAdClosed.');
-          stateAds = false;
-        },
-        onAdWillDismissScreen: (Ad ad) {
-          print('$ad onAdWillDismissScreen.');
-          stateAds = false;
-        },
-      ),
-    ).obs;
+        }
+      },
+      onAdClosed: (Ad ad) {
+        print('$ad onAdClosed.');
+        stateAds = false;
+      },
+      onAdWillDismissScreen: (Ad ad) {
+        print('$ad onAdWillDismissScreen.');
+        stateAds = false;
+      },
+    ),
+  ).obs;
 
   // controllers
   WelcomeController welcomeController = Get.find<WelcomeController>();
@@ -102,31 +102,20 @@ class ProductController extends GetxController {
     readMarkProducts();
     readOthersProductsMark();
     readOthersProductsCategoryCatalogue();
-    readListPricesForProduct();
-
+    readListPricesForProduct(limit: true);
+    setTheme();
     super.onInit();
   }
 
   @override
   void onReady() {
-    if (Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: Get.theme.cardColor,
-        statusBarColor: Get.theme.scaffoldBackgroundColor,
-        statusBarBrightness: Get.theme.brightness,
-        statusBarIconBrightness: Get.theme.brightness,
-        systemNavigationBarIconBrightness: Brightness.light,
-        systemNavigationBarDividerColor: Get.theme.cardColor,
-      ));
-    }
-
+    setTheme();
     super.onReady();
   }
 
   @override
   void onClose() {
     bannerAd.value.dispose();
-
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Get.theme.brightness == Brightness.light
@@ -158,6 +147,19 @@ class ProductController extends GetxController {
 // Functions
   void initAds() {
     bannerAd.value.load();
+  }
+
+  void setTheme() {
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Get.theme.cardColor,
+        statusBarColor: Get.theme.scaffoldBackgroundColor,
+        statusBarBrightness: Get.theme.brightness,
+        statusBarIconBrightness: Get.theme.brightness,
+        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarDividerColor: Get.theme.cardColor,
+      ));
+    }
   }
 
   void readCategory() {
@@ -211,8 +213,11 @@ class ProductController extends GetxController {
     }
   }
 
-  void readListPricesForProduct() {
-    Database.readListPricesProductFuture(id: getProduct.id).then((value) {
+  void readListPricesForProduct({bool limit = false}) {
+    // devuelve una lista con los precios más actualizados del producto
+    Database.readListPricesProductFuture(
+            id: getProduct.id, limit: limit ? 9 : 25)
+        .then((value) {
       List<Price> list = [];
       value.docs.forEach((element) {
         list.add(Price.fromMap(element.data()));

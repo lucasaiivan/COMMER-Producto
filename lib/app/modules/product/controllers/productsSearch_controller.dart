@@ -5,6 +5,7 @@ import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
+import 'package:producto/app/utils/dynamicTheme_lb.dart';
 
 class ButtonData {
   Color colorButton = Colors.purple;
@@ -41,7 +42,7 @@ class ControllerProductsSearch extends GetxController {
 
   @override
   void onClose() {
-    // llamado justo antes de que el controlador se elimine de la memoria - ej. closeStream();
+    ThemeService.switchThemeDefault();
     super.onClose();
   }
 
@@ -60,7 +61,8 @@ class ControllerProductsSearch extends GetxController {
 
   // TextEditingController
   TextEditingController textEditingController = new TextEditingController();
-  set setTextEditingController(TextEditingController editingController) =>  textEditingController = editingController;
+  set setTextEditingController(TextEditingController editingController) =>
+      textEditingController = editingController;
   TextEditingController get getTextEditingController => textEditingController;
 
   // color component textfield
@@ -79,11 +81,13 @@ class ControllerProductsSearch extends GetxController {
   bool _productDoesNotExist = false;
   set setproductDoesNotExist(bool state) {
     if (state) {
+      ThemeService.switchThemeColor(color: Colors.red);
       setColorFondo = Colors.red;
       setColorTextField = Colors.white;
       setButtonData(colorButton: Colors.white, colorText: Colors.black);
       _productDoesNotExist = state;
     } else {
+      ThemeService.switchThemeDefault();
       _productDoesNotExist = false;
     }
   }
@@ -133,7 +137,7 @@ class ControllerProductsSearch extends GetxController {
 
   void clean() {
     textEditingController.clear();
-    _productDoesNotExist = false;
+    setproductDoesNotExist = false;
     setButtonData(colorButton: Get.theme.primaryColor, colorText: Colors.white);
     setColorFondo = Get.theme.scaffoldBackgroundColor;
     setColorTextField =
@@ -152,9 +156,14 @@ class ControllerProductsSearch extends GetxController {
   }
 
   void toProductView({required ProductCatalogue porduct}) {
-    Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct});
+    Get.toNamed(Routes.PRODUCT, arguments: {'product': porduct});
   }
+
   void toProductNew({required String id}) {
-    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': ProductCatalogue(id: id,code: id,upgrade: Timestamp.now(),creation: Timestamp.now())});
+    Get.back();
+    Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {
+      'product': ProductCatalogue(
+          id: id, code: id, upgrade: Timestamp.now(), creation: Timestamp.now())
+    });
   }
 }

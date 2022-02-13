@@ -1,4 +1,4 @@
-import 'package:animate_do/animate_do.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,7 +53,7 @@ class ScanScreenView extends StatelessWidget {
                 softWrap: false,
                 style: TextStyle(color: Get.theme.textTheme.bodyText1!.color),
               ),
-              Icon(Icons.keyboard_arrow_down)
+              Icon(Icons.keyboard_arrow_down,color:  Get.theme.textTheme.bodyText1!.color,)
             ],
           ),
         ),
@@ -129,7 +129,7 @@ class ScanScreenView extends StatelessWidget {
             padding: const EdgeInsets.all(30.0),
             decoration: BoxDecoration(
                 color: Colors.transparent,
-                border: Border.all(width: 0.5, color: color),
+                border: Border.all(width: 3, color: color),
                 borderRadius: BorderRadius.all(Radius.circular(30.0))),
             child: Image(
                 color: color,
@@ -140,14 +140,16 @@ class ScanScreenView extends StatelessWidget {
           ),
         ),
         Container(
+          margin: EdgeInsets.symmetric(horizontal: 75),
+          child: Text('Enfoque al código de barras del producto',
+            style: Get.theme.textTheme.subtitle1,
+            textAlign: TextAlign.center),
+        ),
+        Container(
           margin: EdgeInsets.symmetric(horizontal: 40.0),
           child: TextButton(
             child: Text("Escanear",
-                style: TextStyle(
-                    fontFamily: "POPPINS_FONT",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24.0),
-                textAlign: TextAlign.center),
+                textAlign: TextAlign.center,style: TextStyle(fontSize:20)),
             onPressed: scanBarcodeNormal,
           ),
         ),
@@ -179,7 +181,7 @@ class ScanScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))),
     );
   }
 
@@ -192,7 +194,7 @@ class ScanScreenView extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Text("sugerencias para ti"),
+          child: Text("sugerencias para ti",style: Get.theme.textTheme.subtitle1,),
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -403,7 +405,7 @@ class ScanScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))),
     );
   }
 

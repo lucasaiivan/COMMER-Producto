@@ -110,22 +110,22 @@ class Product extends GetView<ProductController> {
                 },
               ),
               IconButton(
-                    padding: EdgeInsets.all(12.0),
-                    icon: Icon(welcomeController.isCatalogue(
-                                id: controller.getProduct.id)
-                            ? Icons.edit
-                            : Icons.add),
-                    onPressed: () {
-                       controller.toProductEdit();
-                    },
-                  ),
+                padding: EdgeInsets.all(12.0),
+                icon: Icon(
+                    welcomeController.isCatalogue(id: controller.getProduct.id)
+                        ? Icons.edit
+                        : Icons.add),
+                onPressed: () {
+                  controller.toProductEdit();
+                },
+              ),
             ],
     );
   }
 
   Widget body() {
     return ExpandableBottomSheet(
-      onIsExtendedCallback: () => print('extended'),
+      onIsExtendedCallback: () => controller.setTheme(),
       background: background(),
       persistentHeader: persistentHeader(
           colorBackground: Get.theme.cardColor, colorText: Colors.white),
@@ -327,7 +327,7 @@ class Product extends GetView<ProductController> {
                     : Container(),
                 otherProductsCatalogueListHorizontal(),
                 otherBrandProductsListHorizontal(),
-                const SizedBox(height: 200.0, width: 120.0),
+                const SizedBox(height: 150.0, width: 120.0),
               ],
             )),
       );
@@ -444,8 +444,7 @@ class Product extends GetView<ProductController> {
         width: double.infinity,
         margin: EdgeInsets.all(0),
         color: colorBackground,
-        padding:
-            EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
+        padding:EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
         child: ultimosPreciosView()));
   }
   // WIDGETS COMPONENTS
@@ -548,7 +547,14 @@ class Product extends GetView<ProductController> {
                   ),
                   SizedBox(
                     height: 5.0,
-                  )
+                  ),
+                  (index + 1) == 9  && controller.getListPricesForProduct.length==9
+                      ? TextButton(
+                          onPressed: () {
+                            controller.readListPricesForProduct(limit: false);
+                          },
+                          child: Text('Ver todos'))
+                      : Container(),
                 ],
               );
             },
@@ -673,7 +679,7 @@ class Product extends GetView<ProductController> {
   Widget otherProductsCatalogueListHorizontal() {
     // mostramos otros productos del cátalogo de la misma cátegoria
     return Obx(
-        () => controller.getListOthersProductsForCategoryCatalogue.length == 0
+        () => controller.getListOthersProductsForCategoryCatalogue.length == 0 || controller.getCategory.id ==''
             ? Container()
             : Column(
                 mainAxisSize: MainAxisSize.min,

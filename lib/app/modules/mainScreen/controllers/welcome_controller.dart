@@ -71,7 +71,6 @@ class WelcomeController extends GetxController {
     update(['catalogue']);
   }
 
-
   // text tab
   String _textTab = 'Todos';
   String get getTextTab => _textTab;
@@ -97,8 +96,13 @@ class WelcomeController extends GetxController {
     if (value != '') {
       readProfileAccountStream(id: value);
     } else {
+      // default
       setProfileAccountSelected =
           ProfileAccountModel(creation: Timestamp.now());
+      setMarkSelect = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+      setCategorySelect = Category();
+      setsubCategorySelect = Category();
+      setCatalogueProducts = [];
     }
     // actualizamos la vista
     update(['accountUpdate']);
@@ -424,8 +428,7 @@ class WelcomeController extends GetxController {
   }
 
   @override
-  void onClose() {
-  }
+  void onClose() {}
 
   void logout() async {
     // aca implementamos el cierre de sesión dentro de la función logout.
@@ -715,7 +718,7 @@ class WelcomeController extends GetxController {
 
   // salir del cátalogo
   void catalogueExit() async {
-    // set default
+    // default values
     await GetStorage().write('idAccount', '');
     setIdAccountSelected = '';
     Get.back();

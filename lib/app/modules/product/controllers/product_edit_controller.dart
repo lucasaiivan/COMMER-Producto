@@ -17,6 +17,15 @@ class ControllerProductsEdit extends GetxController {
   // others controllers
   final WelcomeController welcomeController = Get.find();
 
+  // state account auth
+  bool _accountAuth = false;
+  set setAccountAuth(value) {
+    _accountAuth = value;
+    update(['updateAll']);
+  }
+
+  bool get getAccountAuth => _accountAuth;
+
   // text appbar
   String _textAppbar = 'Editar';
   set setTextAppBar(String value) => _textAppbar = value;
@@ -33,18 +42,17 @@ class ControllerProductsEdit extends GetxController {
   bool get getNewProduct => _newProduct;
 
   // variable para editar el documento en modo de moderador
-  bool _edit = false;
-  set setEdit(bool value) {
-    _edit = value;
+  bool _editModerator = false;
+  set setEditModerator(bool value) {
+    _editModerator = value;
     update(['updateAll']);
   }
 
-  bool get getEdit => _edit;
+  bool get getEditModerator => _editModerator;
 
   // parameter
-  ProductCatalogue _product = ProductCatalogue(
-      upgrade: Timestamp.now(),
-      creation: Timestamp.now());
+  ProductCatalogue _product =
+      ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
   set setProduct(ProductCatalogue product) => _product = product;
   ProductCatalogue get getProduct => _product;
 
@@ -57,8 +65,8 @@ class ControllerProductsEdit extends GetxController {
       MoneyMaskedTextController();
 
   // marca
-  Mark _markSelected = Mark(
-      upgrade: Timestamp.now(), creation: Timestamp.now());
+  Mark _markSelected =
+      Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
   set setMarkSelected(Mark value) {
     _markSelected = value;
     getProduct.idMark = value.id;
@@ -108,18 +116,15 @@ class ControllerProductsEdit extends GetxController {
 
   @override
   void onInit() {
-    // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi(); //
+    // llamado inmediatamente después de que se asigna memoria al widget
+
+    // state account auth
+    setAccountAuth = welcomeController.getIdAccountSelecte != '';
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
     setProduct = Get.arguments['product'] ??
-        ProductCatalogue(
-            upgrade: Timestamp.now(),
-            creation: Timestamp.now());
-    if (getProduct.description == '') {
-      setNewProduct = true;
-    } else {
-      setNewProduct = false;
-    }
+        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setNewProduct = getProduct.description == '';
     // load data product
     if (getNewProduct == false) {
       // el documento existe
@@ -155,48 +160,48 @@ class ControllerProductsEdit extends GetxController {
   }
 
   Future<void> save() async {
+
     if (getProduct.id != '') {
-      if (getProduct.category != '') {
+      if (getProduct.category != '' && getAccountAuth || getProduct.category == '' && getAccountAuth==false) {
         if (getProduct.description != '') {
           if (getProduct.idMark != '' && getProduct.nameMark != '') {
-            if(getProduct.salePrice != 0 ){
-              // activate indicator load
+            if (getProduct.salePrice != 0 && getAccountAuth || getProduct.salePrice == 0 && getAccountAuth==false) {
+              // update view
               setSaveIndicator = true;
-              setTextAppBar = 'Actualizando...';
+              setTextAppBar = 'Espere por favor...';
               updateAll();
 
-              // image
-              // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
+              // set
+              getProduct.upgrade = Timestamp.now();
+              
+              // image - Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
               if (getXFileImage.path != '') {
-                Reference ref = FirebaseStorage.instance
-                    .ref()
-                    .child("APP")
-                    .child("ARG")
-                    .child("PRODUCTOS")
-                    .child(getProduct.id);
+                Reference ref = FirebaseStorage.instance.ref().child("APP").child("ARG").child("PRODUCTOS").child(getProduct.id);
                 UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
                 await uploadTask;
                 // obtenemos la url de la imagen guardada
-                await ref
-                    .getDownloadURL()
-                    .then((value) => getProduct.image = value);
+                await ref.getDownloadURL().then((value) => getProduct.image = value);
               }
-              // Mods - save data product global
-              if (getNewProduct || getEdit) {
-                getProduct.verified =true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
-                saveProductPublic();
-              }
+              if (getAccountAuth) {
+                // procede agregrar el producto en el cátalogo
 
-              // registra el precio en una colección publica para todos los usuarios
-              if (welcomeController.getProfileAccountSelected.id != "") {
+                // Mods - save data product global
+                if (getNewProduct || getEditModerator) {
+                  getProduct.verified = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                  saveProductPublic();
+                }
+
+                // registra el precio en una colección publica para todos los usuarios
                 Price precio = new Price(
                   id: welcomeController.getProfileAccountSelected.id,
                   idAccount: welcomeController.getProfileAccountSelected.id,
-                  imageAccount: welcomeController.getProfileAccountSelected.image,
-                  nameAccount: welcomeController.getProfileAccountSelected.name ,
+                  imageAccount:
+                      welcomeController.getProfileAccountSelected.image,
+                  nameAccount: welcomeController.getProfileAccountSelected.name,
                   price: getProduct.salePrice,
                   currencySign: getProduct.currencySign,
-                  province:welcomeController.getProfileAccountSelected.province,
+                  province:
+                      welcomeController.getProfileAccountSelected.province,
                   town: welcomeController.getProfileAccountSelected.town,
                   time: Timestamp.fromDate(new DateTime.now()),
                 );
@@ -205,78 +210,67 @@ class ControllerProductsEdit extends GetxController {
                         idProducto: getProduct.id, isoPAis: 'ARG')
                     .doc(precio.id)
                     .set(precio.toJson());
-              }
+
               // add/update data product in catalogue
-              getProduct.upgrade = Timestamp.now();
               Database.refFirestoreCatalogueProduct(
-                      idAccount: welcomeController.getProfileAccountSelected.id)
-                  .doc(getProduct.id)
-                  .set(getProduct.toJson())
-                  .whenComplete(() async {
-                    await Future.delayed(Duration(seconds: 3)).then((value) {
-                      setSaveIndicator = false;
-                      Get.back();
-                      Get.back();
-                    });
-                  })
-                  .onError((error, stackTrace) => setSaveIndicator = false)
-                  .catchError((_) => setSaveIndicator = false);
-          } else {
-            Get.snackbar(
-                '😐', 'debe proporcionar un precio');
-          }
-          } else {
-            Get.snackbar(
-                'No se puedo continuar 😐', 'debes seleccionar una marca');
-          }
-        } else {
-          Get.snackbar('No se puedo continuar 👎',
-              'debes escribir una descripción del producto');
-        }
-      } else {
-        Get.snackbar(
-            'No se puedo guardar los datos', 'debes seleccionar una categoría');
-      }
+                    idAccount: welcomeController.getProfileAccountSelected.id)
+                .doc(getProduct.id)
+                .set(getProduct.toJson())
+                .whenComplete(() async {
+                  await Future.delayed(Duration(seconds: 3)).then((value) {
+                    setSaveIndicator = false;
+                    Get.back();
+                    Get.back();
+                  });
+                })
+                .onError((error, stackTrace) => setSaveIndicator = false)
+                .catchError((_) => setSaveIndicator = false);
+              }else{
+                getProduct.verified = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                saveProductPublic();
+              }
+              
+            } else { Get.snackbar('Antes de continuar 😐', 'debe proporcionar un precio');}
+          } else {Get.snackbar('No se puedo continuar 😐', 'debes seleccionar una marca');}
+        } else {Get.snackbar('No se puedo continuar 👎','debes escribir una descripción del producto');}
+      } else {Get.snackbar('No se puedo guardar los datos', 'debes seleccionar una categoría');}
     }
   }
 
   // DEVELOPER OPTIONS
   Future<void> saveProductPublic() async {
+    // esta función procede a guardar el documento de una colleción publica
+
     if (getProduct.id != '') {
-      if (getProduct.category != '') {
-        if (getProduct.description != '') {
+      if (getProduct.description != '') {
           if (getProduct.idMark != '') {
 
             // activate indicator load
             setSaveIndicator = true;
-            setTextAppBar = 'Actualizando...';
+            setTextAppBar = 'Espere por favor...';
             updateAll();
 
             // set
             Product newProduct = getProduct.convertProductoDefault();
             newProduct.idAccount =welcomeController.getProfileAccountSelected.id;
-            newProduct.upgrade =  Timestamp.fromDate(new DateTime.now());
+            newProduct.upgrade = Timestamp.fromDate(new DateTime.now());
 
             // firestore - save product public
             await Database.refFirestoreProductPublic()
                 .doc(newProduct.id)
                 .set(newProduct.toJson())
                 .whenComplete(() {
-              Get.back();
-              Get.back();
-            });
+                  Get.back();
+                  Get.back();
+                   Get.snackbar('Estupendo 😃', 'Gracias por contribuir a la comunidad');
+                });
           } else {
-            Get.snackbar(
-                'No se puedo continuar 😐', 'debes seleccionar una marca');
+            Get.snackbar('No se puedo continuar 😐', 'debes seleccionar una marca');
           }
         } else {
           Get.snackbar('No se puedo continuar 👎',
               'debes escribir una descripción del producto');
         }
-      } else {
-        Get.snackbar(
-            'No se puedo guardar los datos', 'debes seleccionar una categoría');
-      }
     }
   }
 
@@ -321,11 +315,11 @@ class ControllerProductsEdit extends GetxController {
       getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
       update(['updateAll']);
     }).onError((error, stackTrace) {
-      setMarkSelected = Mark(
-          upgrade: Timestamp.now(), creation: Timestamp.now());
+      setMarkSelected =
+          Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
     }).catchError((_) {
-      setMarkSelected = Mark(
-          upgrade: Timestamp.now(), creation: Timestamp.now());
+      setMarkSelected =
+          Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
     });
   }
 
@@ -459,7 +453,9 @@ class ControllerProductsEdit extends GetxController {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 }

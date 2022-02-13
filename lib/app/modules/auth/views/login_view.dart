@@ -107,7 +107,7 @@ class AuthView extends GetView<LoginController> {
     List<Widget> _pages = [
       componente(
           iconData: Icons.search,
-          texto: "ESCANEAR",
+          texto: "ESCANEA",
           descripcion:
               "Solo tenes que enfocar el producto para obtenes la información en el acto",
           brightness: Get.theme.brightness),
@@ -115,7 +115,7 @@ class AuthView extends GetView<LoginController> {
           iconData: Icons.monetization_on,
           texto: "¿QUERES SABER EL PRECIO?",
           descripcion:
-              "Compara el precios de diferentes comerciantes o compartir el tuyo",
+              "Compara el precios de diferentes comerciantes o podes compartir el tuyo",
           brightness: Get.theme.brightness),
       componente(
           iconData: Icons.category,

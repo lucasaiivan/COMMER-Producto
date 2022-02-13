@@ -129,7 +129,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                       child: Text(
                         "El producto aún no existe, ayúdenos a registrar nuevos productos para que esta aplicación sea aún más útil para la comunidad 💪",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14.0),
+                        style: TextStyle(fontSize: 14.0,color: controller.getColorTextField),
                       ),
                     )
                   : Container(),

@@ -64,5 +64,43 @@ class ThemeService {
     Get.changeThemeMode(loadisDArkMode() ? ThemeMode.light : ThemeMode.dark);
     saveSsDarkMode(!loadisDArkMode());
   }
+  static void switchThemeColor({required Color color}) {
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: color,
+        statusBarColor: color,
+        statusBarBrightness: Get.theme.brightness,
+        statusBarIconBrightness: Get.theme.brightness,
+        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarDividerColor: color,
+      ));
+    }
+  }
+  static void switchThemeDefault() {
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Get.theme.brightness == Brightness.light
+            ? ThemesDataApp.light.scaffoldBackgroundColor
+            : ThemesDataApp.dark.scaffoldBackgroundColor,
+        statusBarColor: Get.theme.brightness == Brightness.light
+            ? ThemesDataApp.light.scaffoldBackgroundColor
+            : ThemesDataApp.dark.scaffoldBackgroundColor,
+        statusBarBrightness: Get.theme.brightness == Brightness.light
+            ? Brightness.light
+            : Brightness.dark,
+        statusBarIconBrightness: Get.theme.brightness == Brightness.light
+            ? Brightness.dark
+            : Brightness.light,
+        systemNavigationBarIconBrightness:
+            Get.theme.brightness == Brightness.light
+                ? Brightness.dark
+                : Brightness.light,
+        systemNavigationBarDividerColor:
+            Get.theme.brightness == Brightness.light
+                ? ThemesDataApp.light.scaffoldBackgroundColor
+                : ThemesDataApp.dark.scaffoldBackgroundColor,
+      ));
+    }
+  }
 }
 
