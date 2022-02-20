@@ -46,7 +46,7 @@ class ProductController extends GetxController {
   ).obs;
 
   // controllers
-  WelcomeController welcomeController = Get.find<WelcomeController>();
+  static WelcomeController welcomeController = Get.find<WelcomeController>();
 
   static Rx<ProfileAccountModel> profileBusinessModel =
       ProfileAccountModel(creation: Timestamp.now()).obs;
@@ -54,14 +54,12 @@ class ProductController extends GetxController {
   set setProfileBusiness(ProfileAccountModel model) =>
       profileBusinessModel.value = model;
 
-  static Rx<ProductCatalogue> listSuggestedProducts =
-      ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+  static Rx<ProductCatalogue> listSuggestedProducts = ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
   ProductCatalogue get getProduct => listSuggestedProducts.value;
   set setProduct(ProductCatalogue product) =>
       listSuggestedProducts.value = product;
 
-  static Rx<Mark> mark =
-      Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+  static Rx<Mark> mark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
   Mark get getMark => mark.value;
   set setMark(Mark value) => mark.value = value;
 
@@ -74,14 +72,18 @@ class ProductController extends GetxController {
   set setSubcategory(Category value) => subcategory.value = value;
 
   // otros productos de la misma marca
-  static RxList<Product> listOthersProductsForMark = <Product>[].obs;
-  List<Product> get getListOthersProductsForMark => listOthersProductsForMark;
+  static RxList<Product> _listOthersProductsForMark = <Product>[].obs;
+  List<Product> get getListOthersProductsForMark => _listOthersProductsForMark;
   set setListOthersProductsForMark(List<Product> value) =>
-      listOthersProductsForMark.value = value;
+      _listOthersProductsForMark.value = value;
+
+  static RxBool _stateViewProductsMark = false.obs;
+  bool get getStateViewProductsMark => _stateViewProductsMark.value;
+  set setStateViewProductsMark(bool value) =>
+      _stateViewProductsMark.value = value;
 
   // otros productos de la misma categoria del cátalogo
-  static RxList<ProductCatalogue> listOthersProductsForCategoryCatalogue =
-      <ProductCatalogue>[].obs;
+  static RxList<ProductCatalogue> listOthersProductsForCategoryCatalogue = <ProductCatalogue>[].obs;
   List<ProductCatalogue> get getListOthersProductsForCategoryCatalogue =>
       listOthersProductsForCategoryCatalogue;
   set setListOthersProductsForCategoryCatalogue(List<ProductCatalogue> value) =>
@@ -95,12 +97,18 @@ class ProductController extends GetxController {
 
   @override
   void onInit() async {
+    print('########################### onInit');
+    listPricesForProduct = <Price>[].obs;
+    listOthersProductsForCategoryCatalogue = <ProductCatalogue>[].obs;
+    _stateViewProductsMark = false.obs;
+    mark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+    setStateViewProductsMark = false;
+    listSuggestedProducts = ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
     initAds();
     setProduct = Get.arguments['product'] ??
         ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     readCategory();
-    readMarkProducts();
-    readOthersProductsMark();
+    readMark();
     readOthersProductsCategoryCatalogue();
     readListPricesForProduct(limit: true);
     setTheme();
@@ -109,12 +117,17 @@ class ProductController extends GetxController {
 
   @override
   void onReady() {
+    print('########################### onReady value: ${_listOthersProductsForMark.length}');
     setTheme();
     super.onReady();
   }
 
   @override
   void onClose() {
+    
+    print('########################### onClose');
+    _listOthersProductsForMark = <Product>[].obs;
+    stateAds = false;
     bannerAd.value.dispose();
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -140,9 +153,10 @@ class ProductController extends GetxController {
                 : ThemesDataApp.dark.scaffoldBackgroundColor,
       ));
     }
-
     super.onClose();
   }
+
+  
 
 // Functions
   void initAds() {
@@ -178,7 +192,7 @@ class ProductController extends GetxController {
     });
   }
 
-  void readMarkProducts() {
+  void readMark() {
     Database.readMarkFuture(id: getProduct.idMark)
         .then((value) => setMark = Mark.fromMap(value.data() as Map));
   }
@@ -200,6 +214,7 @@ class ProductController extends GetxController {
   }
 
   void readOthersProductsMark() {
+    setStateViewProductsMark = true;
     //esta verificación evita que cargue productos que no tengas especificada la marca
     if (getProduct.idMark != '') {
       Database.readProductsForMakFuture(idMark: getProduct.idMark)

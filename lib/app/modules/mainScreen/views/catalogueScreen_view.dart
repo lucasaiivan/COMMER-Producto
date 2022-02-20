@@ -49,7 +49,8 @@ class CatalogueScreenView extends StatelessWidget {
     return AppBar(
       elevation: 0.0,
       backgroundColor: Get.theme.scaffoldBackgroundColor,
-      iconTheme: Get.theme.iconTheme.copyWith(color: Get.theme.textTheme.bodyText1!.color),
+      iconTheme: Get.theme.iconTheme
+          .copyWith(color: Get.theme.textTheme.bodyText1!.color),
       title: InkWell(
         onTap: () => showModalBottomSheetSelectAccount(),
         child: Obx(() => RichText(
@@ -195,32 +196,54 @@ class CatalogueScreenView extends StatelessWidget {
                                     : controller.getItemsSelectLength == 1
                                         ? '${controller.getItemsSelectLength} elemento seleccionado'
                                         : '${controller.getItemsSelectLength} elementos seleccionados')
-                            : Tab(text: controller.getCatalogueCategoryList.length==0?'Agregar categoría': controller.getTextTab),
+                            : Tab(
+                                text: controller
+                                            .getCatalogueCategoryList.length ==
+                                        0
+                                    ? 'Agregar categoría'
+                                    : controller.getTextTab),
                       ),
-                        Align(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              // button - delete
-                              controller.getItemsSelectLength == 0
-                                  ? Container()
-                                  : IconButton(
-                                      icon: Icon(Icons.delete, color: Colors.red),
-                                      onPressed: controller.showDialogDeleteSelectedItems),
-                              // button - select all items
-                              !controller.getSelectItems?Container():IconButton(
-                                icon: Icon(Icons.done_all,color: !controller.getStateSelectAll?null:Colors.green),
-                                onPressed: ()=>controller.setStateSelectAll=!controller.getStateSelectAll,
-                              ),
-                              // button - exit of selections
-                              controller.getCatalogueLoad.length==0?Container():IconButton(
-                                  icon: Icon(controller.getSelectItems
-                                      ? Icons.close
-                                      : Icons.add_circle_outline),
-                                  onPressed: () => controller.setSelectItems =!controller.getSelectItems),
-                            ],
-                          ),
-                          alignment: Alignment.centerRight,
+                      Align(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // button - delete
+                            controller.getItemsSelectLength == 0
+                                ? Container()
+                                : IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: controller
+                                        .showDialogDeleteSelectedItems),
+                            // button - select all items
+                            !controller.getSelectItems
+                                ? Container()
+                                : IconButton(
+                                    icon: Icon(Icons.done_all,
+                                        color: !controller.getStateSelectAll
+                                            ? null
+                                            : Colors.green),
+                                    onPressed: () =>
+                                        controller.setStateSelectAll =
+                                            !controller.getStateSelectAll,
+                                  ),
+                            // button - exit of selections
+                            controller.getCatalogueLoad.length == 0
+                                ? Container()
+                                : IconButton(
+                                    icon: Icon(controller.getSelectItems
+                                        ? Icons.close
+                                        : Icons.rule),
+                                    onPressed: () {
+                                      if (controller.getSelectItems) {
+                                        controller.setSelectItems = false;
+                                      } else {
+                                        controller.setSelectItems = true;
+                                        controller.setStateSelectAll = false;
+                                      }
+                                    }),
+                          ],
+                        ),
+                        alignment: Alignment.centerRight,
                       ),
                     ],
                   ),
@@ -374,14 +397,18 @@ class CatalogueScreenView extends StatelessWidget {
           widget,
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextButton(onPressed: controller.catalogueExit, child: Text('Salir de mi cátalogo')),
+            child: TextButton(
+                onPressed: controller.catalogueExit,
+                child: Text('Salir de mi cátalogo')),
           )
         ],
       ),
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 
@@ -431,7 +458,6 @@ class CatalogueScreenView extends StatelessWidget {
           title: Text('Cerrar sesión'),
           onTap: controller.showDialogCerrarSesion,
         ),
-        
         Row(
           children: [
             Padding(
@@ -513,7 +539,9 @@ class CatalogueScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 

@@ -444,7 +444,8 @@ class Product extends GetView<ProductController> {
         width: double.infinity,
         margin: EdgeInsets.all(0),
         color: colorBackground,
-        padding:EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
+        padding:
+            EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
         child: ultimosPreciosView()));
   }
   // WIDGETS COMPONENTS
@@ -548,7 +549,8 @@ class Product extends GetView<ProductController> {
                   SizedBox(
                     height: 5.0,
                   ),
-                  (index + 1) == 9  && controller.getListPricesForProduct.length==9
+                  (index + 1) == 9 &&
+                          controller.getListPricesForProduct.length == 9
                       ? TextButton(
                           onPressed: () {
                             controller.readListPricesForProduct(limit: false);
@@ -631,55 +633,65 @@ class Product extends GetView<ProductController> {
 
   Widget otherBrandProductsListHorizontal() {
     // mostramos en un lista horizontal otros productos de la misma marca
-    return Obx(() => controller.getListOthersProductsForMark.length == 0
-        ? Container()
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                child: Text(
-                    controller.getMark.name == ''
-                        ? 'Otros'
-                        : controller.getMark.name,
-                    style: TextStyle(
-                        fontSize: 18.0, fontWeight: FontWeight.normal)),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              ),
-              Container(
-                height: 220,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: controller.getListOthersProductsForMark.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                          bottom: 8,
-                          top: 8,
-                          left: index == 0 ? 12 : 0,
-                          right:
-                              controller.getListOthersProductsForMark.length ==
-                                      (index + 1)
-                                  ? 12
-                                  : 0),
-                      child: ProductoItem(
-                          producto: controller
-                              .getListOthersProductsForMark[index]
-                              .convertProductCatalogue()),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ));
+    return Container(
+      width: double.infinity,height: 300,
+      child: Obx(() => controller.getStateViewProductsMark==false
+          ? Center(
+              child: TextButton(
+                child: Text('Mostrar más de ${controller.getMark.name}'),
+                onPressed: controller.readOthersProductsMark,
+              ))
+          : controller.getListOthersProductsForMark.length == 0
+              ? Container()
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      child: Text(
+                          controller.getMark.name == ''
+                              ? 'Otros'
+                              : controller.getMark.name,
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.normal)),
+                      padding:
+                          const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    ),
+                    Container(
+                      height: 220,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: controller.getListOthersProductsForMark.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                bottom: 8,
+                                top: 8,
+                                left: index == 0 ? 12 : 0,
+                                right: controller.getListOthersProductsForMark
+                                            .length ==
+                                        (index + 1)
+                                    ? 12
+                                    : 0),
+                            child: ProductoItem(
+                                producto: controller
+                                    .getListOthersProductsForMark[index]
+                                    .convertProductCatalogue()),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                )),
+    );
   }
 
   Widget otherProductsCatalogueListHorizontal() {
     // mostramos otros productos del cátalogo de la misma cátegoria
-    return Obx(
-        () => controller.getListOthersProductsForCategoryCatalogue.length == 0 || controller.getCategory.id ==''
+    return Obx(() =>
+        controller.getListOthersProductsForCategoryCatalogue.length == 0 ||
+                controller.getCategory.id == ''
             ? Container()
             : Column(
                 mainAxisSize: MainAxisSize.min,
@@ -944,17 +956,15 @@ class ProductoItem extends StatelessWidget {
 
   Widget contentInfo() {
     return Padding(
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(producto.description,
+          Text(producto.description,maxLines: 2,
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14.0,
-                  color: Colors.grey),
-              overflow: TextOverflow.fade,
-              softWrap: false),
+                  color: Colors.grey),),
         ],
       ),
     );

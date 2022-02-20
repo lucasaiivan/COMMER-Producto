@@ -17,6 +17,8 @@ class ButtonData {
 }
 
 class ControllerProductsSearch extends GetxController {
+
+  // controllers
   late final WelcomeController welcomeController;
 
   @override
@@ -156,11 +158,12 @@ class ControllerProductsSearch extends GetxController {
   }
 
   void toProductView({required ProductCatalogue porduct}) {
+    Get.back();
     Get.toNamed(Routes.PRODUCT, arguments: {'product': porduct});
   }
 
   void toProductNew({required String id}) {
-    Get.back();
+    clean();
     Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {
       'product': ProductCatalogue(
           id: id, code: id, upgrade: Timestamp.now(), creation: Timestamp.now())

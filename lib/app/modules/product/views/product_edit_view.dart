@@ -47,23 +47,18 @@ class ProductEdit extends StatelessWidget {
 
   // WIDGETS VIEWS
   PreferredSizeWidget appBar({required BuildContext contextPrincipal}) {
-    
-    
     Color? colorAccent = Get.theme.textTheme.bodyText1!.color;
 
     return AppBar(
       elevation: 0.0,
       backgroundColor: Get.theme.scaffoldBackgroundColor,
-      iconTheme: Theme.of(contextPrincipal).iconTheme.copyWith(color: colorAccent),
+      iconTheme:
+          Theme.of(contextPrincipal).iconTheme.copyWith(color: colorAccent),
       title: controller.getSaveIndicator
           ? Text(controller.getTextAppBar,
-              style: TextStyle(
-                  fontSize: 18.0,
-                  color:colorAccent))
+              style: TextStyle(fontSize: 18.0, color: colorAccent))
           : Text(controller.getIsCatalogue ? 'Editar' : 'Nuevo',
-              style: TextStyle(
-                  fontSize: 18.0,
-                  color:colorAccent)),
+              style: TextStyle(fontSize: 18.0, color: colorAccent)),
       actions: <Widget>[
         controller.getSaveIndicator
             ? Container()
@@ -247,6 +242,22 @@ class ProductEdit extends StatelessWidget {
                             child: Divider(
                                 height: 1.0, endIndent: 12.0, indent: 12.0))
                       ],
+                    ),
+                    SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
+                    FilterChip(
+                      labelStyle: TextStyle(color: Colors.white),
+                      checkmarkColor: Colors.white,
+                      selectedColor: controller.getSaveIndicator?null:controller.getEditModerator?Colors.amber:Colors.grey,
+                      selected: controller.getProduct.favorite,
+                      label: Text(controller.getProduct.favorite?'Destacado':'Agregar a destacado'),
+                      onSelected: (bool value) {
+                        if(controller.getEditModerator){
+                          if(!controller.getSaveIndicator){
+                          controller.isFavorite();
+                        }
+                        }
+                        
+                      },
                     ),
                     SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
                     controller.getSaveIndicator
@@ -1012,13 +1023,15 @@ class _CreateMarkState extends State<CreateMark> {
   }
 
   PreferredSizeWidget appbar() {
-
     Color? colorAccent = Get.theme.textTheme.bodyText1!.color;
 
     return AppBar(
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       elevation: 0,
-      title: Text(title,style: TextStyle(color: colorAccent),),
+      title: Text(
+        title,
+        style: TextStyle(color: colorAccent),
+      ),
       centerTitle: true,
       iconTheme: Get.theme.iconTheme.copyWith(color: colorAccent),
       actions: [
@@ -1187,14 +1200,14 @@ class _CreateMarkState extends State<CreateMark> {
       } else {
         // mark save
         await Database.refFirestoreMark()
-          .doc(widget.mark.id)
-          .set(widget.mark.toJson())
-          .whenComplete(() {
-            controllerProductsEdit.setMarkSelected = widget.mark;
-            // agregar el obj manualmente para evitar consulta a la db  innecesaria
-            controllerProductsEdit.getMarks.add(widget.mark);
-            Get.back();
-          });
+            .doc(widget.mark.id)
+            .set(widget.mark.toJson())
+            .whenComplete(() {
+          controllerProductsEdit.setMarkSelected = widget.mark;
+          // agregar el obj manualmente para evitar consulta a la db  innecesaria
+          controllerProductsEdit.getMarks.add(widget.mark);
+          Get.back();
+        });
       }
     } else {
       Get.snackbar('', 'Debes escribir un nombre de la marca');
@@ -1233,7 +1246,9 @@ class _SelectMarkState extends State<SelectMark> {
   }
 
   Widget widgetView() {
-
+    if (list.length == 0) {
+      return widgetAdd();
+    }
     return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       shrinkWrap: true,
@@ -1243,62 +1258,7 @@ class _SelectMarkState extends State<SelectMark> {
         if (index == 0) {
           return Column(
             children: [
-              Column(
-                children: <Widget>[
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: 12, left: 12, right: 12),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child:
-                                Text('Marcas', style: TextStyle(fontSize: 18))),
-                        IconButton(
-                            onPressed: () {
-                              Get.back();
-                              Get.to(() => CreateMark(
-                                  mark: Mark(
-                                      upgrade: Timestamp.now(),
-                                      creation: Timestamp.now())));
-                            },
-                            icon: Icon(Icons.add)),
-                        IconButton(
-                          icon: Icon(Icons.search),
-                          onPressed: () {
-                            Get.back();
-                            showSearch(
-                              context: context,
-                              delegate: SearchPage<Mark>(
-                                items: list,
-                                searchLabel: 'Buscar marca',
-                                suggestion: Center(
-                                  child: Text('ej. Miller'),
-                                ),
-                                failure: Center(
-                                  child: Text('No se encontro :('),
-                                ),
-                                filter: (product) => [
-                                  product.name,
-                                  product.description,
-                                ],
-                                builder: (mark) => Column(
-                                  children: <Widget>[
-                                    listTile(marcaSelect: mark),
-                                    Divider(
-                                        endIndent: 12.0,
-                                        indent: 12.0,
-                                        height: 0),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              widgetAdd(),
               listTile(marcaSelect: marcaSelect),
               Divider(endIndent: 12.0, indent: 12.0, height: 0),
             ],
@@ -1315,6 +1275,59 @@ class _SelectMarkState extends State<SelectMark> {
   }
 
   // WIDGETS COMPONENT
+  Widget widgetAdd() {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+          child: Row(
+            children: [
+              Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
+              IconButton(
+                  onPressed: () {
+                    Get.back();
+                    Get.to(() => CreateMark(
+                        mark: Mark(
+                            upgrade: Timestamp.now(),
+                            creation: Timestamp.now())));
+                  },
+                  icon: Icon(Icons.add)),
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  Get.back();
+                  showSearch(
+                    context: context,
+                    delegate: SearchPage<Mark>(
+                      items: list,
+                      searchLabel: 'Buscar marca',
+                      suggestion: Center(
+                        child: Text('ej. Miller'),
+                      ),
+                      failure: Center(
+                        child: Text('No se encontro :('),
+                      ),
+                      filter: (product) => [
+                        product.name,
+                        product.description,
+                      ],
+                      builder: (mark) => Column(
+                        children: <Widget>[
+                          listTile(marcaSelect: mark),
+                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget listTile({required Mark marcaSelect}) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),

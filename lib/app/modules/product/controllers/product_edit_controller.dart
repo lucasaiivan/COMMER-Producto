@@ -160,12 +160,13 @@ class ControllerProductsEdit extends GetxController {
   }
 
   Future<void> save() async {
-
     if (getProduct.id != '') {
-      if (getProduct.category != '' && getAccountAuth || getProduct.category == '' && getAccountAuth==false) {
+      if (getProduct.category != '' && getAccountAuth ||
+          getProduct.category == '' && getAccountAuth == false) {
         if (getProduct.description != '') {
           if (getProduct.idMark != '' && getProduct.nameMark != '') {
-            if (getProduct.salePrice != 0 && getAccountAuth || getProduct.salePrice == 0 && getAccountAuth==false) {
+            if (getProduct.salePrice != 0 && getAccountAuth ||
+                getProduct.salePrice == 0 && getAccountAuth == false) {
               // update view
               setSaveIndicator = true;
               setTextAppBar = 'Espere por favor...';
@@ -173,21 +174,29 @@ class ControllerProductsEdit extends GetxController {
 
               // set
               getProduct.upgrade = Timestamp.now();
-              
+
               // image - Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
               if (getXFileImage.path != '') {
-                Reference ref = FirebaseStorage.instance.ref().child("APP").child("ARG").child("PRODUCTOS").child(getProduct.id);
+                Reference ref = FirebaseStorage.instance
+                    .ref()
+                    .child("APP")
+                    .child("ARG")
+                    .child("PRODUCTOS")
+                    .child(getProduct.id);
                 UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
                 await uploadTask;
                 // obtenemos la url de la imagen guardada
-                await ref.getDownloadURL().then((value) => getProduct.image = value);
+                await ref
+                    .getDownloadURL()
+                    .then((value) => getProduct.image = value);
               }
               if (getAccountAuth) {
                 // procede agregrar el producto en el cátalogo
 
                 // Mods - save data product global
                 if (getNewProduct || getEditModerator) {
-                  getProduct.verified = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                  getProduct.verified =
+                      true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
                   saveProductPublic();
                 }
 
@@ -211,66 +220,84 @@ class ControllerProductsEdit extends GetxController {
                     .doc(precio.id)
                     .set(precio.toJson());
 
-              // add/update data product in catalogue
-              Database.refFirestoreCatalogueProduct(
-                    idAccount: welcomeController.getProfileAccountSelected.id)
-                .doc(getProduct.id)
-                .set(getProduct.toJson())
-                .whenComplete(() async {
-                  await Future.delayed(Duration(seconds: 3)).then((value) {
-                    setSaveIndicator = false;
-                    Get.back();
-                    Get.back();
-                  });
-                })
-                .onError((error, stackTrace) => setSaveIndicator = false)
-                .catchError((_) => setSaveIndicator = false);
-              }else{
-                getProduct.verified = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                // add/update data product in catalogue
+                Database.refFirestoreCatalogueProduct(
+                        idAccount:
+                            welcomeController.getProfileAccountSelected.id)
+                    .doc(getProduct.id)
+                    .set(getProduct.toJson())
+                    .whenComplete(() async {
+                      await Future.delayed(Duration(seconds: 3)).then((value) {
+                        setSaveIndicator = false;
+                        Get.back();
+                        Get.back();
+                      });
+                    })
+                    .onError((error, stackTrace) => setSaveIndicator = false)
+                    .catchError((_) => setSaveIndicator = false);
+              } else {
+                getProduct.verified =
+                    true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
                 saveProductPublic();
               }
-              
-            } else { Get.snackbar('Antes de continuar 😐', 'debe proporcionar un precio');}
-          } else {Get.snackbar('No se puedo continuar 😐', 'debes seleccionar una marca');}
-        } else {Get.snackbar('No se puedo continuar 👎','debes escribir una descripción del producto');}
-      } else {Get.snackbar('No se puedo guardar los datos', 'debes seleccionar una categoría');}
-    }
-  }
-
-  // DEVELOPER OPTIONS
-  Future<void> saveProductPublic() async {
-    // esta función procede a guardar el documento de una colleción publica
-
-    if (getProduct.id != '') {
-      if (getProduct.description != '') {
-          if (getProduct.idMark != '') {
-
-            // activate indicator load
-            setSaveIndicator = true;
-            setTextAppBar = 'Espere por favor...';
-            updateAll();
-
-            // set
-            Product newProduct = getProduct.convertProductoDefault();
-            newProduct.idAccount =welcomeController.getProfileAccountSelected.id;
-            newProduct.upgrade = Timestamp.fromDate(new DateTime.now());
-
-            // firestore - save product public
-            await Database.refFirestoreProductPublic()
-                .doc(newProduct.id)
-                .set(newProduct.toJson())
-                .whenComplete(() {
-                  Get.back();
-                  Get.back();
-                   Get.snackbar('Estupendo 😃', 'Gracias por contribuir a la comunidad');
-                });
+            } else {
+              Get.snackbar(
+                  'Antes de continuar 😐', 'debe proporcionar un precio');
+            }
           } else {
-            Get.snackbar('No se puedo continuar 😐', 'debes seleccionar una marca');
+            Get.snackbar(
+                'No se puedo continuar 😐', 'debes seleccionar una marca');
           }
         } else {
           Get.snackbar('No se puedo continuar 👎',
               'debes escribir una descripción del producto');
         }
+      } else {
+        Get.snackbar(
+            'No se puedo guardar los datos', 'debes seleccionar una categoría');
+      }
+    }
+  }
+
+  // DEVELOPER OPTIONS
+  isFavorite() {
+    getProduct.favorite = !getProduct.favorite;
+    update(['updateAll']);
+  }
+
+  Future<void> saveProductPublic() async {
+    // esta función procede a guardar el documento de una colleción publica
+
+    if (getProduct.id != '') {
+      if (getProduct.description != '') {
+        if (getProduct.idMark != '') {
+          // activate indicator load
+          setSaveIndicator = true;
+          setTextAppBar = 'Espere por favor...';
+          updateAll();
+
+          // set
+          Product newProduct = getProduct.convertProductoDefault();
+          newProduct.idAccount = welcomeController.getProfileAccountSelected.id;
+          newProduct.upgrade = Timestamp.fromDate(new DateTime.now());
+
+          // firestore - save product public
+          await Database.refFirestoreProductPublic()
+              .doc(newProduct.id)
+              .set(newProduct.toJson())
+              .whenComplete(() {
+            Get.back();
+            Get.snackbar(
+                'Estupendo 😃', 'Gracias por contribuir a la comunidad');
+          });
+        } else {
+          Get.snackbar(
+              'No se puedo continuar 😐', 'debes seleccionar una marca');
+        }
+      } else {
+        Get.snackbar('No se puedo continuar 👎',
+            'debes escribir una descripción del producto');
+      }
     }
   }
 
@@ -388,23 +415,23 @@ class ControllerProductsEdit extends GetxController {
       // se visualiza la imagen del producto
       return AspectRatio(
         aspectRatio: 1 / 1,
-        child: CachedNetworkImage(
-          fit: BoxFit.cover,
-          imageUrl: getProduct.image,
-          placeholder: (context, url) => Container(
-            color: Colors.grey.withOpacity(0.3),
-            child: Center(child: Icon(Icons.cloud, color: Colors.white)),
-          ),
-          imageBuilder: (context, image) => Container(
-            child: Image(image: image),
-          ),
-          errorWidget: (context, url, error) => Container(
-            color: Colors.grey.withOpacity(0.3),
-            child: Center(
-              child: Icon(Icons.error, color: Colors.white),
-            ),
-          ),
-        ),
+        child: getProduct.image == ''
+            ? Container(color: Colors.grey.withOpacity(0.2))
+            : CachedNetworkImage(
+                fit: BoxFit.cover,
+                imageUrl: getProduct.image,
+                placeholder: (context, url) => Container(
+                  color: Colors.grey.withOpacity(0.3),
+                  child: Center(child: Icon(Icons.cloud, color: Colors.white)),
+                ),
+                imageBuilder: (context, image) => Container(
+                  child: Image(image: image),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey.withOpacity(0.3),
+                  child: Center(child: Icon(Icons.error, color: Colors.white)),
+                ),
+              ),
       );
     }
   }

@@ -199,7 +199,7 @@ class _ProductoItemState extends State<ProductoItem> {
                         child: Container(
                             color: widget.producto.select
                                 ? Colors.grey.withOpacity(0.0)
-                                : Colors.grey.withOpacity(0.2)),
+                                : Colors.grey.withOpacity(0.4)),
                         onTap: () {
                           setState(() {
                             widget.producto.select = !widget.producto.select;
