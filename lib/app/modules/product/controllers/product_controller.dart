@@ -97,7 +97,6 @@ class ProductController extends GetxController {
 
   @override
   void onInit() async {
-    print('########################### onInit');
     listPricesForProduct = <Price>[].obs;
     listOthersProductsForCategoryCatalogue = <ProductCatalogue>[].obs;
     _stateViewProductsMark = false.obs;
@@ -117,15 +116,12 @@ class ProductController extends GetxController {
 
   @override
   void onReady() {
-    print('########################### onReady value: ${_listOthersProductsForMark.length}');
     setTheme();
     super.onReady();
   }
 
   @override
   void onClose() {
-    
-    print('########################### onClose');
     _listOthersProductsForMark = <Product>[].obs;
     stateAds = false;
     bannerAd.value.dispose();

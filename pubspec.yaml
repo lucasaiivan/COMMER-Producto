@@ -60,7 +60,7 @@ dependencies:
   flutter_masked_text2: ^0.9.1 # Entrada de texto enmascarado para aleteo.
   screenshot: ^1.2.3 # Un paquete simple para capturar widgets como imágenes. ¡Ahora también puede capturar los widgets que no se muestran en la pantalla!
   path_provider: ^2.0.8 # Un complemento de Flutter para encontrar ubicaciones de uso común en el sistema de archivos. Soporta Android, iOS, Linux, macOS y Windows. No todos los métodos son compatibles con todas las plataformas.
-  share_plus: ^3.0.4 # Un complemento de Flutter para compartir contenido desde su aplicación Flutter a través del cuadro de diálogo para compartir de la plataforma.
+  share_plus: ^3.1.0 # Un complemento de Flutter para compartir contenido desde su aplicación Flutter a través del cuadro de diálogo para compartir de la plataforma.
   simple_connection_checker: ^0.2.1 # verificar cuando el dispositivo está conectado (conectividad) a Internet. También proporcione un método para escuchar los cambios de estado de la conexión.
 
 flutter_icons:

@@ -9,6 +9,7 @@ import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/utils/dynamicTheme_lb.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../routes/app_pages.dart';
@@ -59,53 +60,7 @@ class ScanScreenView extends StatelessWidget {
         ),
       ),
       actions: <Widget>[
-        Container(
-          padding: EdgeInsets.all(12.0),
-          child: InkWell(
-            customBorder: new CircleBorder(),
-            splashColor: Colors.red,
-            onTap: () {
-              showModalBottomSheetSetting();
-            },
-            child: Hero(
-              tag: "fotoperfiltoolbar",
-              child: CircleAvatar(
-                radius: 17,
-                child: CircleAvatar(
-                  radius: 15,
-                  backgroundColor: Colors.white,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10000.0),
-                    child: CachedNetworkImage(
-                      width: 35.0,
-                      height: 35.0,
-                      fadeInDuration: Duration(milliseconds: 200),
-                      fit: BoxFit.cover,
-                      imageUrl:
-                          controller.getUserAccountAuth.photoURL ?? 'https',
-                      placeholder: (context, url) => FadeInImage(
-                          image: AssetImage("assets/loading.gif"),
-                          placeholder: AssetImage("assets/loading.gif")),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey,
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.width,
-                        child: Center(
-                          child: Text(
-                            controller.getUserAccountAuth.displayName
-                                .toString()
-                                .substring(0, 1),
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        )
+        IconButton(onPressed: showModalBottomSheetSetting, icon: Icon(Icons.view_headline,color: Get.theme.textTheme.bodyText1!.color)),
       ],
     );
   }
@@ -347,9 +302,9 @@ class ScanScreenView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6.0),
               child: FaIcon(FontAwesomeIcons.instagram)),
           title: Text('Instagram'),
-          subtitle: Text('Contacta con el desarrollador 👨‍💻'),
+          subtitle: Text('Déjanos una sugerencia'),
           onTap: () async {
-            String url = "https://www.instagram.com/logica.booleana/";
+            String url = "https://www.instagram.com/logica.booleana.producto/";
             if (await canLaunch(url)) {
               await launch(url);
             } else {
@@ -364,7 +319,7 @@ class ScanScreenView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6.0),
               child: FaIcon(FontAwesomeIcons.googlePlay)),
           title: Text(
-            'Déjanos un comentario o sugerencia',
+            'Califícanos ⭐',
           ),
           onTap: () async {
             String url =
@@ -381,17 +336,13 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: FaIcon(FontAwesomeIcons.blogger)),
+              child: Icon(Icons.share_outlined)),
           title: Text(
-            'Más información',
+            'Cuentale a un amigo',
           ),
           onTap: () async {
-            String url = "https://logicabooleanaapps.blogspot.com/";
-            /* if (await canLaunch(url)) {
-              await launch(url);
-            } else {
-              throw 'Could not launch $url';
-            } */
+            String url = "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
+            Share.share('Hey uso esta gran aplicación que te permite comparar los precios 🧐 $url');
           },
         ),
         SizedBox(width: 50.0, height: 50.0),

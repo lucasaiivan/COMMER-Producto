@@ -10,6 +10,7 @@ import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.d
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:search_page/search_page.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/dynamicTheme_lb.dart';
@@ -482,9 +483,9 @@ class CatalogueScreenView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6.0),
               child: FaIcon(FontAwesomeIcons.instagram)),
           title: Text('Instagram'),
-          subtitle: Text('Contacta con el desarrollador 👨‍💻'),
+          subtitle: Text('Déjanos una sugerencia'),
           onTap: () async {
-            String url = "https://www.instagram.com/logica.booleana/";
+            String url = "https://www.instagram.com/logica.booleana.producto/";
             if (await canLaunch(url)) {
               await launch(url);
             } else {
@@ -499,7 +500,7 @@ class CatalogueScreenView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6.0),
               child: FaIcon(FontAwesomeIcons.googlePlay)),
           title: Text(
-            'Déjanos un comentario o sugerencia',
+            'Califícanos ⭐',
           ),
           onTap: () async {
             String url =
@@ -516,17 +517,13 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: FaIcon(FontAwesomeIcons.blogger)),
+              child: Icon(Icons.share_outlined)),
           title: Text(
-            'Acerca de',
+            'Cuentale a un amigo',
           ),
           onTap: () async {
-            String url = "https://logicabooleanaapps.blogspot.com/";
-            if (await canLaunch(url)) {
-              await launch(url);
-            } else {
-              throw 'Could not launch $url';
-            }
+            String url = "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
+            Share.share('Hey uso esta gran aplicación que te permite comparar los precios 🧐 $url');
           },
         ),
       ],
