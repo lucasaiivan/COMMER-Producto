@@ -384,31 +384,6 @@ class ProductEdit extends StatelessWidget {
     ));
   }
 
-  // TODO: OPCIONES PARA EL DESARROLLADOR ( Eliminar para producción )
-  /* Widget buttonAddFavorite({@required BuildContext context}) {
-    return this.producto.favorite? SizedBox(
-            width: double.infinity,
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {setState(() {this.producto.favorite=!this.producto.favorite;});},
-                style: ElevatedButton.styleFrom(padding:EdgeInsets.all(12.0),primary: Colors.grey[900],onPrimary: Colors.white30,textStyle: TextStyle(color: Colors.black)),
-                icon: Icon(Icons.favorite, color: Colors.white),
-                label: Text("Quitar de favoritos",style: TextStyle(color: Colors.white)),
-              ),
-            ),
-          )
-        : SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {setState(() {this.producto.favorite=!this.producto.favorite;});},
-              style: ElevatedButton.styleFrom(padding:EdgeInsets.all(12.0),primary: Colors.orange[400],onPrimary: Colors.white30,textStyle: TextStyle(color: Colors.black)),
-              icon: Icon(Icons.favorite, color: Colors.white),
-              label: Text("Agregar a favoritos",style: TextStyle( color: Colors.white)),
-            ),
-          );
-  } */
-
   void showDialogDeleteOPTDeveloper() {
     Get.dialog(AlertDialog(
       title: new Text(
@@ -1283,6 +1258,7 @@ class _SelectMarkState extends State<SelectMark> {
           child: Row(
             children: [
               Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
+              // TODO : delete icon 'add new mark for release'
               IconButton(
                   onPressed: () {
                     Get.back();

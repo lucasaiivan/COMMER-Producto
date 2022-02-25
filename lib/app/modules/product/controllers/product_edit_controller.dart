@@ -195,8 +195,7 @@ class ControllerProductsEdit extends GetxController {
 
                 // Mods - save data product global
                 if (getNewProduct || getEditModerator) {
-                  getProduct.verified =
-                      true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                  getProduct.verified = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
                   saveProductPublic();
                 }
 
@@ -236,8 +235,7 @@ class ControllerProductsEdit extends GetxController {
                     .onError((error, stackTrace) => setSaveIndicator = false)
                     .catchError((_) => setSaveIndicator = false);
               } else {
-                getProduct.verified =
-                    true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                getProduct.verified = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
                 saveProductPublic();
               }
             } else {

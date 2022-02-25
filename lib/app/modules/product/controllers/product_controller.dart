@@ -16,30 +16,30 @@ class ProductController extends GetxController {
   bool get getstateAds => stateAds;
 
   final Rx<BannerAd> bannerAd = BannerAd(
-    adUnitId: 'ca-app-pub-8441738551183357/4747810514',
+    adUnitId: 'ca-app-pub-3940256099942544/6300978111',//TODO : release: 'ca-app-pub-8441738551183357/4747810514' , test: 'ca-app-pub-3940256099942544/6300978111',
     request: AdRequest(),
     size: AdSize.banner,
     listener: BannerAdListener(
       onAdLoaded: (Ad ad) {
-        print('$ad loaded.');
+        print('################################## onAdLoaded:  $ad.');
         stateAds = true;
       },
       onAdFailedToLoad: (Ad ad, LoadAdError error) {
-        print('$ad failedToLoad');
+        print('################################## onAdFailedToLoad: $ad ');
         stateAds = false;
       },
       onAdOpened: (Ad ad) {
         {
-          print('$ad onAdOpened.');
+          print('################################## onAdOpened. $ad');
           stateAds = false;
         }
       },
       onAdClosed: (Ad ad) {
-        print('$ad onAdClosed.');
+        print('################################## onAdClosed.  $ad');
         stateAds = false;
       },
       onAdWillDismissScreen: (Ad ad) {
-        print('$ad onAdWillDismissScreen.');
+        print('################################## onAdWillDismissScreen. $ad');
         stateAds = false;
       },
     ),
