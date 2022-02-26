@@ -165,7 +165,7 @@ class ProductCatalogue {
   bool favorite = false;
   String idMark = ""; // ID de la marca por defecto esta vacia
   String nameMark = ''; // nombre de la marca
-  String image = "https://default"; // URL imagen
+  String image = ""; // URL imagen
   String description = ""; // Información
   String code = "";
   String category = ""; // ID de la categoria del producto

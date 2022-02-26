@@ -769,4 +769,6 @@ class WelcomeController extends GetxController {
     });
     return iscatalogue;
   }
+
+  
 }
