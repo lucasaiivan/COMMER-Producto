@@ -104,7 +104,17 @@ class ProductEdit extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          !controller.getAccountAuth ? Container() : buttonsCategory(),
+          space,
+          TextField(
+            enabled: !controller.getSaveIndicator,
+            minLines: 1,
+            maxLines: 5,
+            keyboardType: TextInputType.multiline,
+            onChanged: (value) => controller.getProduct.description = value,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(), labelText: "Descripción"),
+            controller: controller.controllerTextEdit_descripcion,
+          ),
           space,
           SizedBox(
             width: double.infinity,
@@ -117,37 +127,30 @@ class ProductEdit extends StatelessWidget {
               child: controller.getMarkSelected.id == ''
                   ? Text("Seleccionar marca")
                   : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        utilsWidget.viewCircleImage(
-                            size: 25,
-                            url: controller.getMarkSelected.image,
-                            texto: controller.getMarkSelected.name),
-                        SizedBox(width: 5),
-                        Text(controller.getMarkSelected.name,
-                            style: TextStyle(
-                                color: controller.getNewProduct ||
-                                        controller.getEditModerator
-                                    ? null
-                                    : Colors.grey))
-                      ],
-                    ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  utilsWidget.viewCircleImage(
+                      size: 25,
+                      url: controller.getMarkSelected.image,
+                      texto: controller.getMarkSelected.name),
+                  SizedBox(width: 5),
+                  Text(controller.getMarkSelected.name,
+                      style: TextStyle(
+                          color: controller.getNewProduct ||
+                              controller.getEditModerator
+                              ? null
+                              : Colors.grey))
+                ],
+              ),
               style: ButtonStyle(
+                  side: controller.getEditModerator||controller.getNewProduct?null:MaterialStateProperty.all(BorderSide(color:Get.theme.scaffoldBackgroundColor)),
                   padding: MaterialStateProperty.all<EdgeInsets>(
                       EdgeInsets.all(16))),
             ),
           ),
+          !controller.getAccountAuth ? Container() :space,
+          !controller.getAccountAuth ? Container() : buttonsCategory(),
           space,
-          TextField(
-            enabled: !controller.getSaveIndicator,
-            minLines: 1,
-            maxLines: 5,
-            keyboardType: TextInputType.multiline,
-            onChanged: (value) => controller.getProduct.description = value,
-            decoration: InputDecoration(
-                border: OutlineInputBorder(), labelText: "Descripción"),
-            controller: controller.controllerTextEdit_descripcion,
-          ),
           !controller.getAccountAuth
               ? Container()
               : Column(
@@ -1137,6 +1140,9 @@ class _CreateMarkState extends State<CreateMark> {
       load = true;
       title = newMark ? 'Guardando...' : 'Actualizando...';
     });
+
+    // set values
+    widget.mark.verified=true;
     if (widget.mark.id == '')
       widget.mark.id = new DateTime.now().millisecondsSinceEpoch.toString();
     if (widget.mark.name != '') {
@@ -1225,7 +1231,7 @@ class _SelectMarkState extends State<SelectMark> {
       return widgetAdd();
     }
     return ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 15.0),
+      padding: EdgeInsets.only(bottom: 12),
       shrinkWrap: true,
       itemCount: list.length,
       itemBuilder: (BuildContext context, int index) {
@@ -1254,7 +1260,7 @@ class _SelectMarkState extends State<SelectMark> {
     return Column(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+          padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12,top: 12),
           child: Row(
             children: [
               Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
@@ -1307,26 +1313,9 @@ class _SelectMarkState extends State<SelectMark> {
   Widget listTile({required Mark marcaSelect}) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      leading: viewCircleImage(
-          texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
+      leading: viewCircleImage(texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
       dense: true,
-      title: Row(
-        children: <Widget>[
-          marcaSelect.verified == true
-              ? Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: new Image.asset('assets/icon_verificado.png',
-                      width: 16.0, height: 16.0))
-              : new Container(),
-          Expanded(
-            child: Text(marcaSelect.name,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: Get.theme.textTheme.bodyText1!.color)),
-          ),
-        ],
-      ),
+      title: Text(marcaSelect.name,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 16.0,color: Get.theme.textTheme.bodyText1!.color)),
       onTap: () {
         controllerProductsEdit.setMarkSelected = marcaSelect;
         Get.back();

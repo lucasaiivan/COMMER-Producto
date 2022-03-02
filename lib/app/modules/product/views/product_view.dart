@@ -337,105 +337,136 @@ class Product extends GetView<ProductController> {
   Widget persistentHeader(
       {required Color colorBackground, required Color colorText}) {
     // view
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-      child: Container(
-        color: colorBackground,
-        margin: EdgeInsets.all(0),
-        padding:
-            EdgeInsets.only(bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              welcomeController.isCatalogue(id: controller.getProduct.id)
-                  ? controller.getProduct.salePrice != 0.0
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          textDirection: TextDirection.ltr,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Column(
+    return Obx(() => ClipRRect(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          child: Container(
+            color: colorBackground,
+            margin: EdgeInsets.all(0),
+            padding: EdgeInsets.only(
+                bottom: 12.0, left: 12.0, right: 12.0, top: 12.0),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  welcomeController.isCatalogue(id: controller.getProduct.id)
+                      ? controller.getProduct.salePrice != 0.0
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              textDirection: TextDirection.ltr,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                    Publicaciones.getFormatoPrecio(
-                                        monto: controller.getProduct.salePrice),
-                                    style: TextStyle(
-                                        color: colorText,
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.end),
-                                Row(
+                                Column(
                                   children: [
-                                    controller.getProduct.purchasePrice != 0.0
-                                        ? Text(
-                                            sProcentaje(
-                                                precioCompra: controller
-                                                    .getProduct.purchasePrice,
-                                                precioVenta: controller
-                                                    .getProduct.salePrice),
-                                            style: TextStyle(
-                                                color: Colors.green,
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.bold))
-                                        : Container(),
-                                    controller.getProduct.purchasePrice != 0.0
-                                        ? Text(" > ",
-                                            style: TextStyle(
-                                                color: Colors.green,
-                                                fontSize: 12.0))
-                                        : Container(),
-                                    controller.getProduct.purchasePrice != 0.0
-                                        ? Text(
-                                            Publicaciones.sGanancia(
-                                                precioCompra: controller
-                                                    .getProduct.purchasePrice,
-                                                precioVenta: controller
-                                                    .getProduct.salePrice),
-                                            style: TextStyle(
-                                                color: controller.getProduct
-                                                            .purchasePrice <
-                                                        controller.getProduct
-                                                            .salePrice
-                                                    ? Colors.green
-                                                    : Colors.red,
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.bold))
-                                        : Container(),
+                                    Text(
+                                        Publicaciones.getFormatoPrecio(
+                                            monto: controller
+                                                .getProduct.salePrice),
+                                        style: TextStyle(
+                                            color: colorText,
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.bold),
+                                        textAlign: TextAlign.end),
+                                    Row(
+                                      children: [
+                                        controller.getProduct.purchasePrice !=
+                                                0.0
+                                            ? Text(
+                                                sProcentaje(
+                                                    precioCompra: controller
+                                                        .getProduct
+                                                        .purchasePrice,
+                                                    precioVenta: controller
+                                                        .getProduct.salePrice),
+                                                style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontSize: 12.0,
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                            : Container(),
+                                        controller.getProduct.purchasePrice !=
+                                                0.0
+                                            ? Text(" > ",
+                                                style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontSize: 12.0))
+                                            : Container(),
+                                        controller.getProduct.purchasePrice !=
+                                                0.0
+                                            ? Text(
+                                                Publicaciones.sGanancia(
+                                                    precioCompra: controller
+                                                        .getProduct
+                                                        .purchasePrice,
+                                                    precioVenta: controller
+                                                        .getProduct.salePrice),
+                                                style: TextStyle(
+                                                    color: controller.getProduct
+                                                                .purchasePrice <
+                                                            controller
+                                                                .getProduct
+                                                                .salePrice
+                                                        ? Colors.green
+                                                        : Colors.red,
+                                                    fontSize: 12.0,
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                            : Container(),
+                                      ],
+                                    ),
                                   ],
                                 ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    Publicaciones.getFechaPublicacion(
+                                            controller.getProduct.upgrade
+                                                .toDate(),
+                                            Timestamp.now().toDate())
+                                        .toLowerCase(),
+                                    style: TextStyle(
+                                        fontStyle: FontStyle.normal,
+                                        color: colorText.withOpacity(0.5)),
+                                  ),
+                                ),
                               ],
-                            ),
-                            Padding(
+                            )
+                          : Container()
+                      : controller.getEveragePrice == 0
+                          ? Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                Publicaciones.getFechaPublicacion(
-                                        controller.getProduct.upgrade.toDate(),
-                                        Timestamp.now().toDate())
-                                    .toLowerCase(),
-                                style: TextStyle(
-                                    fontStyle: FontStyle.normal,
-                                    color: colorText.withOpacity(0.5)),
+                              child: Text('%',
+                                  style: TextStyle(
+                                      color: Colors.green.withOpacity(0.5),
+                                      fontSize: 20)),
+                            )
+                          : Container(
+                              child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  controller.getProduct.currencySign +
+                                      controller.getEveragePrice.toString(),
+                                  style: TextStyle(
+                                      color: Colors.green.withOpacity(0.5),
+                                      fontSize: 20),
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : Container()
-                  : Container(),
-              Icon(Icons.keyboard_arrow_up, color: colorText.withOpacity(0.5)),
-              Text(
-                'Deslice hacia arriba para ver los últimos precios publicados',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: colorText.withOpacity(0.5)),
+                            )),
+                  Icon(Icons.keyboard_arrow_up,
+                      color: colorText.withOpacity(0.5)),
+                  Text(
+                    'Deslice hacia arriba para ver los últimos precios publicados',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: colorText.withOpacity(0.5)),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget expandableContent(
@@ -634,13 +665,14 @@ class Product extends GetView<ProductController> {
   Widget otherBrandProductsListHorizontal() {
     // mostramos en un lista horizontal otros productos de la misma marca
     return Container(
-      width: double.infinity,height: 300,
-      child: Obx(() => controller.getStateViewProductsMark==false
+      width: double.infinity,
+      height: 300,
+      child: Obx(() => controller.getStateViewProductsMark == false
           ? Center(
               child: TextButton(
-                child: Text('Mostrar más de ${controller.getMark.name}'),
-                onPressed: controller.readOthersProductsMark,
-              ))
+              child: Text('Mostrar más de ${controller.getMark.name}'),
+              onPressed: controller.readOthersProductsMark,
+            ))
           : controller.getListOthersProductsForMark.length == 0
               ? Container()
               : Column(
@@ -654,15 +686,16 @@ class Product extends GetView<ProductController> {
                               : controller.getMark.name,
                           style: TextStyle(
                               fontSize: 18.0, fontWeight: FontWeight.normal)),
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 12),
                     ),
                     Container(
                       height: 220,
                       child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
-                        itemCount: controller.getListOthersProductsForMark.length,
+                        itemCount:
+                            controller.getListOthersProductsForMark.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: EdgeInsets.only(
@@ -907,11 +940,11 @@ class ProductoItem extends StatelessWidget {
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => Get.offNamed(Routes.PRODUCT,
-                      arguments: {'product': producto},
-                      preventDuplicates: false),
-                ),
+                child: InkWell(onTap: () {
+                  Get.offAndToNamed(Routes.PRODUCT,
+                      arguments: {'product': producto});
+
+                }),
               ),
             ),
           ],
@@ -960,11 +993,14 @@ class ProductoItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(producto.description,maxLines: 2,
-              style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                  color: Colors.grey),),
+          Text(
+            producto.description,
+            maxLines: 2,
+            style: TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 14.0,
+                color: Colors.grey),
+          ),
         ],
       ),
     );

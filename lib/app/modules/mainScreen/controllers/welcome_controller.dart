@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,6 @@ import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
-import 'package:simple_connection_checker/simple_connection_checker.dart';
 
 class WelcomeController extends GetxController {
   // controllers
@@ -762,7 +760,8 @@ class WelcomeController extends GetxController {
   // Fuctions
   bool isCatalogue({required String id}) {
     bool iscatalogue = false;
-    getCataloProducts.forEach((element) {
+    List list = getCataloProducts;
+    list.forEach((element) {
       if (element.id == id) {
         iscatalogue = true;
       }
@@ -770,5 +769,13 @@ class WelcomeController extends GetxController {
     return iscatalogue;
   }
 
-  
+  ProductCatalogue getProductCatalogue({required String id}) {
+    ProductCatalogue product=ProductCatalogue(creation: Timestamp.now(),upgrade: Timestamp.now());
+    getCataloProducts.forEach((element) {
+      if (element.id == id) {
+        product = element;
+      }
+    });
+    return product;
+  }
 }

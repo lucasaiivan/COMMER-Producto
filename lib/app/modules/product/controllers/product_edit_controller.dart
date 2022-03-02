@@ -122,8 +122,7 @@ class ControllerProductsEdit extends GetxController {
     setAccountAuth = welcomeController.getIdAccountSelecte != '';
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ??
-        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setProduct = Get.arguments['product']??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     setNewProduct = getProduct.description == '';
     // load data product
     if (getNewProduct == false) {
@@ -483,4 +482,5 @@ class ControllerProductsEdit extends GetxController {
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
+
 }

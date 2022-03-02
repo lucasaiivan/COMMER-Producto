@@ -12,8 +12,8 @@ import '../../mainScreen/controllers/welcome_controller.dart';
 
 class ProductController extends GetxController {
   // admob
-  static bool stateAds = false;
-  bool get getstateAds => stateAds;
+  static bool _stateAds = false;
+  bool get getstateAds => _stateAds;
 
   final Rx<BannerAd> bannerAd = BannerAd(
     adUnitId: 'ca-app-pub-3940256099942544/6300978111',//TODO : release: 'ca-app-pub-8441738551183357/4747810514' , test: 'ca-app-pub-3940256099942544/6300978111',
@@ -22,25 +22,25 @@ class ProductController extends GetxController {
     listener: BannerAdListener(
       onAdLoaded: (Ad ad) {
         print('################################## onAdLoaded:  $ad.');
-        stateAds = true;
+        _stateAds = true;
       },
       onAdFailedToLoad: (Ad ad, LoadAdError error) {
         print('################################## onAdFailedToLoad: $ad ');
-        stateAds = false;
+        _stateAds = false;
       },
       onAdOpened: (Ad ad) {
         {
           print('################################## onAdOpened. $ad');
-          stateAds = false;
+          _stateAds = false;
         }
       },
       onAdClosed: (Ad ad) {
         print('################################## onAdClosed.  $ad');
-        stateAds = false;
+        _stateAds = false;
       },
       onAdWillDismissScreen: (Ad ad) {
         print('################################## onAdWillDismissScreen. $ad');
-        stateAds = false;
+        _stateAds = false;
       },
     ),
   ).obs;
@@ -48,28 +48,28 @@ class ProductController extends GetxController {
   // controllers
   static WelcomeController welcomeController = Get.find<WelcomeController>();
 
-  static Rx<ProfileAccountModel> profileBusinessModel =
+  static Rx<ProfileAccountModel> _profileBusinessModel =
       ProfileAccountModel(creation: Timestamp.now()).obs;
-  ProfileAccountModel get getProfileBusiness => profileBusinessModel.value;
+  ProfileAccountModel get getProfileBusiness => _profileBusinessModel.value;
   set setProfileBusiness(ProfileAccountModel model) =>
-      profileBusinessModel.value = model;
+      _profileBusinessModel.value = model;
 
-  static Rx<ProductCatalogue> listSuggestedProducts = ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
-  ProductCatalogue get getProduct => listSuggestedProducts.value;
+  static Rx<ProductCatalogue> _listSuggestedProducts = ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+  ProductCatalogue get getProduct => _listSuggestedProducts.value;
   set setProduct(ProductCatalogue product) =>
-      listSuggestedProducts.value = product;
+      _listSuggestedProducts.value = product;
 
-  static Rx<Mark> mark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
-  Mark get getMark => mark.value;
-  set setMark(Mark value) => mark.value = value;
+  static Rx<Mark> _mark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+  Mark get getMark => _mark.value;
+  set setMark(Mark value) => _mark.value = value;
 
-  static Rx<Category> category = Category(id: '', name: '').obs;
-  Category get getCategory => category.value;
-  set setCategory(Category value) => category.value = value;
+  static Rx<Category> _category = Category(id: '', name: '').obs;
+  Category get getCategory => _category.value;
+  set setCategory(Category value) => _category.value = value;
 
-  static Rx<Category> subcategory = Category(id: '', name: '').obs;
-  Category get getSubcategory => subcategory.value;
-  set setSubcategory(Category value) => subcategory.value = value;
+  static Rx<Category> _subcategory = Category(id: '', name: '').obs;
+  Category get getSubcategory => _subcategory.value;
+  set setSubcategory(Category value) => _subcategory.value = value;
 
   // otros productos de la misma marca
   static RxList<Product> _listOthersProductsForMark = <Product>[].obs;
@@ -83,29 +83,41 @@ class ProductController extends GetxController {
       _stateViewProductsMark.value = value;
 
   // otros productos de la misma categoria del cátalogo
-  static RxList<ProductCatalogue> listOthersProductsForCategoryCatalogue = <ProductCatalogue>[].obs;
+  static RxList<ProductCatalogue> _listOthersProductsForCategoryCatalogue = <ProductCatalogue>[].obs;
   List<ProductCatalogue> get getListOthersProductsForCategoryCatalogue =>
-      listOthersProductsForCategoryCatalogue;
+      _listOthersProductsForCategoryCatalogue;
   set setListOthersProductsForCategoryCatalogue(List<ProductCatalogue> value) =>
-      listOthersProductsForCategoryCatalogue.value = value;
+      _listOthersProductsForCategoryCatalogue.value = value;
 
-  static RxList<Price> listPricesForProduct = <Price>[].obs;
-  List<Price> get getListPricesForProduct => listPricesForProduct;
-  set setListPricesForProduct(List<Price> value) {
-    listPricesForProduct.value = value;
+  static RxList<Price> _listPricesForProduct = <Price>[].obs;
+  List<Price> get getListPricesForProduct => _listPricesForProduct;
+  set setListPricesForProduct(List<Price> value) =>_listPricesForProduct.value = value;
+
+  static RxInt _everagePrice =  0.obs;
+  int get getEveragePrice => _everagePrice.value;
+  set setEveragePrice(int value) {
+    _everagePrice.value = value;
   }
 
   @override
   void onInit() async {
-    listPricesForProduct = <Price>[].obs;
-    listOthersProductsForCategoryCatalogue = <ProductCatalogue>[].obs;
+
+    // set - values default
+    setEveragePrice=0;
+    _listPricesForProduct = <Price>[].obs;
+    _listOthersProductsForCategoryCatalogue = <ProductCatalogue>[].obs;
     _stateViewProductsMark = false.obs;
-    mark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+    _mark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
     setStateViewProductsMark = false;
-    listSuggestedProducts = ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+    _listSuggestedProducts = ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+
+    // init
     initAds();
-    setProduct = Get.arguments['product'] ??
-        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setProduct = Get.arguments['product']??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    if(welcomeController.isCatalogue(id:getProduct.id)){
+      //  verigicamos si esta en el cátalogo
+      setProduct = welcomeController.getProductCatalogue(id: getProduct.id);
+    }
     readCategory();
     readMark();
     readOthersProductsCategoryCatalogue();
@@ -123,7 +135,7 @@ class ProductController extends GetxController {
   @override
   void onClose() {
     _listOthersProductsForMark = <Product>[].obs;
-    stateAds = false;
+   _stateAds = false;
     bannerAd.value.dispose();
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -189,8 +201,7 @@ class ProductController extends GetxController {
   }
 
   void readMark() {
-    Database.readMarkFuture(id: getProduct.idMark)
-        .then((value) => setMark = Mark.fromMap(value.data() as Map));
+    Database.readMarkFuture(id: getProduct.idMark).then((value) => setMark = Mark.fromMap(value.data() as Map));
   }
 
   void readProfileBusiness({required String id}) {
@@ -226,14 +237,18 @@ class ProductController extends GetxController {
 
   void readListPricesForProduct({bool limit = false}) {
     // devuelve una lista con los precios más actualizados del producto
-    Database.readListPricesProductFuture(
-            id: getProduct.id, limit: limit ? 9 : 25)
-        .then((value) {
-      List<Price> list = [];
-      value.docs.forEach((element) {
-        list.add(Price.fromMap(element.data()));
+    Database.readListPricesProductFuture(id: getProduct.id, limit: limit ? 9 : 25)
+        .then(( value) {
+          int averagePrice = 0;
+          List<Price> list = [];
+          value.docs.forEach((element) {
+          Price price = Price.fromMap(element.data());
+          list.add(price);
+          averagePrice=averagePrice+price.price.toInt();
       });
-      setListPricesForProduct = list.cast<Price>();
+          setEveragePrice= averagePrice~/list.length;
+          setListPricesForProduct = list.cast<Price>();
+
     });
   }
 
@@ -241,4 +256,5 @@ class ProductController extends GetxController {
   void toProductEdit() {
     Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {'product': getProduct});
   }
+
 }

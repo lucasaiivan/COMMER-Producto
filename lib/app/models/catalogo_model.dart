@@ -7,7 +7,7 @@ class Product {
   bool favorite = false;
   String idMark = ""; // ID de la marca por defecto esta vacia
   String nameMark = '';
-  String image = "https://default"; // URL imagen
+  String image = ""; // URL imagen
   String description = ""; // Informacion
   double salePrice = 0.0;
   double purchasePrice = 0.0;
