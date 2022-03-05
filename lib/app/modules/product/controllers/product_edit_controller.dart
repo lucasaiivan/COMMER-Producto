@@ -261,6 +261,10 @@ class ControllerProductsEdit extends GetxController {
     getProduct.favorite = !getProduct.favorite;
     update(['updateAll']);
   }
+  checkProduct() {
+    getProduct.verified = !getProduct.verified;
+    update(['updateAll']);
+  }
 
   Future<void> saveProductPublic() async {
     // esta función procede a guardar el documento de una colleción publica
@@ -283,6 +287,7 @@ class ControllerProductsEdit extends GetxController {
               .doc(newProduct.id)
               .set(newProduct.toJson())
               .whenComplete(() {
+            Get.back();
             Get.back();
             Get.snackbar(
                 'Estupendo 😃', 'Gracias por contribuir a la comunidad');

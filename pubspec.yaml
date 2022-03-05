@@ -36,7 +36,7 @@ dependencies:
   google_sign_in: ^5.1.0
   # gestor de estados
   provider: ^5.0.0
-  get: ^4.3.8 # GetX es una solución potente y extraligera para Flutter. Combina la gestión del estado de alto rendimiento, la inyección inteligente de dependencias y la gestión de rutas de forma rápida y práctica.
+  get: ^4.6.1 # GetX es una solución potente y extraligera para Flutter. Combina la gestión del estado de alto rendimiento, la inyección inteligente de dependencias y la gestión de rutas de forma rápida y práctica.
   # storage
   get_storage: ^2.0.3 # Un valor clave rápido, extra ligero y sincrónico en la memoria, que realiza una copia de seguridad de los datos en el disco en cada operación.
 

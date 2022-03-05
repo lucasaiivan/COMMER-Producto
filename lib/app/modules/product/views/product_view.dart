@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +14,6 @@ import 'package:producto/app/utils/functions.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../routes/app_pages.dart';
 
 class Product extends GetView<ProductController> {
   Product({Key? key}) : super(key: key);
@@ -40,23 +38,11 @@ class Product extends GetView<ProductController> {
       iconTheme: Theme.of(context)
           .iconTheme
           .copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
-      title: Obx(() => Row(
-            children: <Widget>[
-              controller.getProduct.verified == true
-                  ? Padding(
-                      padding: const EdgeInsets.only(right: 3.0),
-                      child: new Image.asset('assets/icon_verificado.png',
-                          width: 18.0, height: 18.0))
-                  : new Container(),
-              Expanded(
-                child: Text(controller.getMark.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: 18.0,
-                        color: Theme.of(context).textTheme.bodyText1!.color)),
-              ),
-            ],
-          )),
+      title: Obx(() => Text(controller.getMark.name==''?'Cargando...':controller.getMark.name,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              fontSize: 18.0,
+              color: Theme.of(context).textTheme.bodyText1!.color))),
       actions: welcomeController.getProfileAccountSelected.id == ''
           ? []
           : [
@@ -276,7 +262,7 @@ class Product extends GetView<ProductController> {
                   child: Text(controller.getProduct.description,
                       style: TextStyle(
                           height: 1,
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold)),
                 )
               : Container(),
@@ -288,7 +274,12 @@ class Product extends GetView<ProductController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(Icons.qr_code_2_rounded, size: 14),
+                      controller.getProduct.verified == true
+                        ? Padding(
+                            padding: const EdgeInsets.only(right: 1.0),
+                            child: new Image.asset('assets/icon_verificado.png',
+                                width: 15.0, height: 15.0))
+                        : new Icon(Icons.qr_code_2_rounded, size: 14),
                       SizedBox(width: 5),
                       Text(controller.getProduct.code,
                           style: TextStyle(
@@ -307,6 +298,7 @@ class Product extends GetView<ProductController> {
   Widget background() {
     return Builder(builder: (contextBuilder) {
       return SingleChildScrollView(
+        controller: controller.scrollController,
         child: Obx(() => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -437,7 +429,7 @@ class Product extends GetView<ProductController> {
                       : controller.getEveragePrice == 0
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text('%',
+                              child: Text('',
                                   style: TextStyle(
                                       color: Colors.green.withOpacity(0.5),
                                       fontSize: 20)),
@@ -596,9 +588,9 @@ class Product extends GetView<ProductController> {
       );
     } else {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
         child: Text(
-          "Sin datos",
+          "Aun no se registró ningún precio para este producto",
           style: TextStyle(fontSize: 20.0, color: Colors.grey.withOpacity(0.5)),
           textAlign: TextAlign.center,
         ),
@@ -623,7 +615,9 @@ class Product extends GetView<ProductController> {
               height: Get.width,
               fadeInDuration: Duration(milliseconds: 200),
               fit: BoxFit.cover,
-              imageUrl: controller.getProduct.image,
+              imageUrl: controller.getProduct.image == ''
+                  ? 'https://www.barcelonabeta.org/sites/default/files/2018-04/default-image_0.png'
+                  : controller.getProduct.image,
               placeholder: (context, url) => FadeInImage(
                 image: AssetImage("assets/loading.gif"),
                 placeholder: AssetImage("assets/loading.gif"),
@@ -817,6 +811,9 @@ class ProductoCatalogueItem extends StatelessWidget {
   final ProductCatalogue producto;
   ProductoCatalogueItem({required this.producto});
 
+  // controllers
+  final ProductController productController = Get.find<ProductController>();
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -839,9 +836,7 @@ class ProductoCatalogueItem extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Get.offNamed(Routes.PRODUCT,
-                      arguments: {'product': producto},
-                      preventDuplicates: false),
+                  onTap: () => productController.readData(productCatalogue: producto),
                 ),
               ),
             ),
@@ -906,6 +901,7 @@ class ProductoItem extends StatelessWidget {
 
   // controllers
   final WelcomeController welcomeController = Get.find<WelcomeController>();
+  final ProductController productController = Get.find<ProductController>();
 
   @override
   Widget build(BuildContext context) {
@@ -941,8 +937,7 @@ class ProductoItem extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(onTap: () {
-                  Get.offAndToNamed(Routes.PRODUCT,
-                      arguments: {'product': producto});
+                  productController.readData(productCatalogue: producto);
 
                 }),
               ),

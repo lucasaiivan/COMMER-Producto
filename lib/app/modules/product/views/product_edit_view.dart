@@ -247,7 +247,7 @@ class ProductEdit extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
-                    FilterChip(
+                    FilterChip( 
                       labelStyle: TextStyle(color: Colors.white),
                       checkmarkColor: Colors.white,
                       selectedColor: controller.getSaveIndicator?null:controller.getEditModerator?Colors.amber:Colors.grey,
@@ -257,6 +257,22 @@ class ProductEdit extends StatelessWidget {
                         if(controller.getEditModerator){
                           if(!controller.getSaveIndicator){
                           controller.isFavorite();
+                        }
+                        }
+                        
+                      },
+                    ),
+                    SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
+                    FilterChip(
+                      labelStyle: TextStyle(color: Colors.white),
+                      checkmarkColor: Colors.white,
+                      selectedColor: controller.getSaveIndicator?null:controller.getEditModerator?Colors.blue:Colors.grey,
+                      selected: controller.getProduct.verified,
+                      label: Text(controller.getProduct.verified?'Verificado':'Quitar de verificados'),
+                      onSelected: (bool value) {
+                        if(controller.getEditModerator){
+                          if(!controller.getSaveIndicator){
+                          controller.checkProduct();
                         }
                         }
                         
