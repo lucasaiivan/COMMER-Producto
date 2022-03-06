@@ -68,7 +68,12 @@ class AccountView extends GetView<AccountController> {
   // WIDGET
   PreferredSizeWidget appBar() {
     return AppBar(
-      title: Text('Perfil'),
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      elevation: 0,
+      iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
+      title: Text('Perfil',style: TextStyle(
+              fontSize: 18.0,
+              color: Theme.of(context).textTheme.bodyText1!.color)),
       actions: <Widget>[
         IconButton(
               icon: controller.getSavingIndicator

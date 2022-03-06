@@ -9,16 +9,9 @@ class Product {
   String nameMark = '';
   String image = ""; // URL imagen
   String description = ""; // Informacion
-  double salePrice = 0.0;
-  double purchasePrice = 0.0;
   String code = "";
-  String category = ""; // ID de la categoria del producto
-  String subcategory = ""; // ID de la subcategoria del producto
-  bool enabled = true;
-  Timestamp creation =
-      Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
-  Timestamp upgrade =
-      Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
+  Timestamp creation = Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
+  Timestamp upgrade = Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
   Product({
     this.id = "",
@@ -29,12 +22,7 @@ class Product {
     this.nameMark = '',
     this.image = "",
     this.description = "",
-    this.salePrice = 0.0,
-    this.purchasePrice = 0.0,
     this.code = "",
-    this.category = "",
-    this.subcategory = "",
-    this.enabled = true,
     required this.upgrade,
     required this.creation,
   });
@@ -48,14 +36,9 @@ class Product {
         'nameMark': nameMark,
         "image": image,
         "description": description,
-        "salePrice": salePrice,
-        "purchasePrice": purchasePrice,
         "code": code,
-        "category": category,
-        "subcategory": subcategory,
         "creation": creation,
         "upgrade": upgrade,
-        "enabled": enabled,
       };
 
   factory Product.fromMap(Map data) {
@@ -76,26 +59,13 @@ class Product {
       description: data.containsKey('description')
           ? data['description']
           : data['descripcion'] ?? '',
-      salePrice: data.containsKey('salePrice')
-          ? data['salePrice']
-          : data['precio_venta'] ?? 0.0,
-      purchasePrice: data.containsKey('purchasePrice')
-          ? data['purchasePrice']
-          : data['precio_compra'] ?? 0.0,
       code: data.containsKey('code') ? data['code'] : data['codigo'] ?? '',
-      category: data.containsKey('category')
-          ? data['category']
-          : data['categoria'] ?? '',
-      subcategory: data.containsKey('subcategory')
-          ? data['subcategory']
-          : data['subcategoria'] ?? '',
       upgrade: data.containsKey('upgrade')
           ? data['upgrade']
           : data['timestamp_actualizacion'] ?? Timestamp.now(),
       creation: data.containsKey('creation')
           ? data['creation']
           : data['timestamp_creation'] ?? Timestamp.now(),
-      enabled: data['enabled'] ?? true,
     );
   }
   Product.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
@@ -117,26 +87,13 @@ class Product {
     description = data.containsKey('description')
         ? data['description']
         : data['descripcion'] ?? '';
-    salePrice = data.containsKey('salePrice')
-        ? data['salePrice']
-        : data['precio_venta'] ?? 0.0;
-    purchasePrice = data.containsKey('purchasePrice')
-        ? data['purchasePrice']
-        : data['precio_compra'] ?? 0.0;
     code = data.containsKey('code') ? data['code'] : data['codigo'] ?? '';
-    category = data.containsKey('category')
-        ? data['category']
-        : data['categoria'] ?? '';
-    subcategory = data.containsKey('subcategory')
-        ? data['subcategory']
-        : data['subcategoria'] ?? '';
     upgrade = data.containsKey('upgrade')
         ? data['upgrade']
         : data['timestamp_actualizacion'] ?? Timestamp.now();
     creation = data.containsKey('creation')
         ? data['creation']
         : data['timestamp_creation'] ?? Timestamp.now();
-    enabled = data['enabled'] ?? true;
   }
   ProductCatalogue convertProductCatalogue() {
     ProductCatalogue productoNegocio = new ProductCatalogue(
@@ -149,11 +106,6 @@ class Product {
     productoNegocio.nameMark = this.nameMark;
     productoNegocio.description = this.description;
     productoNegocio.code = this.code;
-    productoNegocio.category = this.category;
-    productoNegocio.subcategory = this.subcategory;
-    productoNegocio.enabled = this.enabled;
-    productoNegocio.salePrice = this.salePrice;
-    productoNegocio.purchasePrice = this.purchasePrice;
 
     return productoNegocio;
   }
@@ -172,13 +124,10 @@ class ProductCatalogue {
   String nameCategory = ""; // name category
   String subcategory = ""; // ID de la subcategoria del producto
   String nameSubcategory = ""; // name subcategory
-  Timestamp creation =
-      Timestamp.now(); // Marca de tiempo ( hora en que se creo el documento )
-  Timestamp upgrade =
-      Timestamp.now(); // Marca de tiempo ( hora en que se actualizaron los datos )
+  Timestamp creation = Timestamp.now(); // Marca de tiempo ( hora en que se creo el documento )
+  Timestamp upgrade = Timestamp.now(); // Marca de tiempo ( hora en que se actualizaron los datos )
 
   // Datos del producto
-  bool enabled = true;
   bool verified = false; // estado de verificación por un moderador
   // Var
   double salePrice = 0.0;
@@ -201,7 +150,6 @@ class ProductCatalogue {
     this.nameSubcategory = '',
     required this.creation,
     required this.upgrade,
-    this.enabled = true,
 
     // value account
     this.salePrice = 0.0,
@@ -251,7 +199,6 @@ class ProductCatalogue {
       creation: data.containsKey('creation')
           ? data['creation']
           : data['timestamp_creation'] ?? Timestamp.now(),
-      enabled: data['enabled'] ?? true,
       // valores de la cuenta
       salePrice: data.containsKey('salePrice')
           ? data['salePrice']
@@ -277,7 +224,6 @@ class ProductCatalogue {
         "nameCategory": nameCategory,
         "subcategory": subcategory,
         "nameSubcategory": nameSubcategory,
-        "enabled": enabled,
         "salePrice": salePrice,
         "purchasePrice": purchasePrice,
         "creation": creation,
@@ -298,7 +244,6 @@ class ProductCatalogue {
     productoDefault.code = this.code;
     productoDefault.upgrade = this.upgrade;
     productoDefault.creation = this.creation;
-    productoDefault.enabled = this.enabled;
 
     return productoDefault;
   }
@@ -397,7 +342,6 @@ class Mark {
   String description = "";
   String image = "";
   bool verified = false;
-
   // Datos de la creación
   String idUsuarioCreador = ""; // ID el usuaruio que creo el productos
   Timestamp creation = Timestamp.now(); // Marca de tiempo de la creacion del documento

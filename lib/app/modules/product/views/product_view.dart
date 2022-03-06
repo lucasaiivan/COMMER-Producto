@@ -35,9 +35,7 @@ class Product extends GetView<ProductController> {
     return AppBar(
       elevation: 0.0,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      iconTheme: Theme.of(context)
-          .iconTheme
-          .copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
+      iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
       title: Obx(() => Text(controller.getMark.name==''?'Cargando...':controller.getMark.name,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
