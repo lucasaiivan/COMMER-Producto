@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,14 +7,17 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:loadany/loadany.dart';
-import 'package:producto/app/models/catalogo_model.dart';
-import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
-import 'package:producto/app/routes/app_pages.dart';
-import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:search_page/search_page.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+import 'package:producto/app/models/catalogo_model.dart';
+import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
+import 'package:producto/app/routes/app_pages.dart';
+import 'package:producto/app/utils/widgets_utils_app.dart';
+
 import '../../../utils/dynamicTheme_lb.dart';
 import 'widgets/showDialog.dart';
 
@@ -117,16 +122,19 @@ class CatalogueScreenView extends StatelessWidget {
                   },
                   child: Hero(
                     tag: "fotoperfiltoolbar",
-                    child: CachedNetworkImage(
-                      imageUrl: controller.getProfileAccountSelected.image,
-                      placeholder: (context, url) =>
-                          Icon(Icons.account_circle_rounded),
-                      imageBuilder: (context, image) => CircleAvatar(
-                        backgroundImage: image,
-                      ),
-                      errorWidget: (context, url, error) =>
-                          Icon(Icons.account_circle_rounded),
-                    ),
+                    child: controller.getProfileAccountSelected.image == ''
+                        ? Icon(Icons.account_circle_rounded)
+                        : CachedNetworkImage(
+                            imageUrl:
+                                controller.getProfileAccountSelected.image,
+                            placeholder: (context, url) =>
+                                Icon(Icons.account_circle_rounded),
+                            imageBuilder: (context, image) => CircleAvatar(
+                              backgroundImage: image,
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.account_circle_rounded),
+                          ),
                   ),
                 ),
               )),
@@ -522,8 +530,10 @@ class CatalogueScreenView extends StatelessWidget {
             'Cuentale a un amigo',
           ),
           onTap: () async {
-            String url = "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
-            Share.share('Hey uso esta gran aplicación que te permite comparar los precios 🧐 $url');
+            String url =
+                "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
+            Share.share(
+                'Hey uso esta gran aplicación que te permite comparar los precios 🧐 $url');
           },
         ),
       ],
@@ -714,6 +724,35 @@ class WidgetsListaHorizontalMarksLoadAnim extends StatelessWidget {
               );
             }),
       ),
+    );
+  }
+}
+
+class WebViewApp extends StatefulWidget {
+  late String url;
+  WebViewApp({
+    Key? key,
+    required this.url,
+  }) : super(key: key);
+  @override
+  WebViewAppState createState() => WebViewAppState(url: url);
+}
+
+class WebViewAppState extends State<WebViewApp> {
+  late String url;
+  WebViewAppState({required url});
+
+  @override
+  void initState() {
+    super.initState();
+    // Enable virtual display.
+    if (Platform.isAndroid) WebView.platform = AndroidWebView();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WebView(
+      initialUrl: url,
     );
   }
 }

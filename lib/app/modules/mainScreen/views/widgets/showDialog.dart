@@ -48,18 +48,10 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   @override
   Widget build(BuildContext buildContext) {
     if (controller.getCatalogueCategoryList.length == 0) {
-      return Row(
-        children: [
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text('Crear categoría', style: TextStyle(fontSize: 18)),
-          )),
-          IconButton(
-              icon: Icon(Icons.add),
-              padding: const EdgeInsets.all(20.0),
-              onPressed: () => showDialogSetCategoria(categoria: Category()))
-        ],
+      return ListTile(
+        onTap:() => showDialogSetCategoria(categoria: Category()),
+        title: Text('Crear categoría', style: TextStyle(fontSize: 18)),
+        trailing: Icon(Icons.add),
       );
     }
     return Obx(

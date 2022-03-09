@@ -12,8 +12,10 @@ class AccountController extends GetxController {
   // controllers
   late final WelcomeController welcomeController;
 
-  // variable para validar si se trata de una cuenta nueva
-  bool isNew = false;
+  // state validation accoun
+  bool newAccount = false;
+  // state loading
+  bool stateLoding = true;
 
   void refresh() => update(['load']);
 
@@ -71,8 +73,9 @@ class AccountController extends GetxController {
   List<String> get getCountries => _listountries;
 
   // account profile
-  Rx<ProfileAccountModel> _profileAccount = ProfileAccountModel(creation: Timestamp.now()).obs;
-  ProfileAccountModel get getProfileAccount => _profileAccount.value;
+  Rx<ProfileAccountModel> _profileAccount =
+      ProfileAccountModel(creation: Timestamp.now()).obs;
+  ProfileAccountModel get profileAccount => _profileAccount.value;
   set setProfileAccount(ProfileAccountModel user) =>
       _profileAccount.value = user;
 
@@ -83,12 +86,6 @@ class AccountController extends GetxController {
     _savingIndicator.value = value;
     update(['load']);
   }
-
-  /* void sleep() async {
-    setSavingIndicator = true;
-    await Future.delayed(Duration(seconds: 3))
-        .then((value) => setSavingIndicator = false);
-  } */
 
   // image update
   final RxBool _imageUpdate = false.obs;
@@ -113,21 +110,7 @@ class AccountController extends GetxController {
   void onInit() async {
     // obtenemos los datos del controlador principal
     welcomeController = Get.find();
-    // set
-    setProfileAccount = welcomeController.getProfileAccountSelected;
-    if (getProfileAccount.id == '') {
-      getProfileAccount.id = welcomeController.getUserAccountAuth.uid;
-      isNew = true;
-    } else {
-      isNew = false;
-    }
-
-    setControllerTextEditProvincia =
-        TextEditingController(text: getProfileAccount.province);
-    setControllerTextEditPais =
-        TextEditingController(text: getProfileAccount.country);
-    setControllerTextEditSignoMoneda =
-        TextEditingController(text: getProfileAccount.currencySign);
+    verifyAccount(idAccount: welcomeController.getUserAccountAuth.uid);
 
     super.onInit();
   }
@@ -140,116 +123,111 @@ class AccountController extends GetxController {
   @override
   void onClose() {}
 
+  void verifyAccount({required String idAccount}) {
+    Database.readProfileAccountModelFuture(idAccount).then((value) {
+      if (value.exists) {
+        // get
+        ProfileAccountModel accountProfile =
+            ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
+        // set
+        setProfileAccount = accountProfile;
+        newAccount = false;
+        setControllerTextEditProvincia =
+            TextEditingController(text: profileAccount.province);
+        setControllerTextEditPais =
+            TextEditingController(text: profileAccount.country);
+        setControllerTextEditSignoMoneda =
+            TextEditingController(text: profileAccount.currencySign);
+        stateLoding = false;
+        update(['load']);
+      } else {
+        profileAccount.id = idAccount;
+        newAccount = true;
+        stateLoding = false;
+        update(['load']);
+      }
+    }).catchError((error) {
+      Get.back();
+      Get.snackbar('Mi perfil',
+          'Se ha producido un error, compruebe su conexión a Internet');
+    });
+  }
+
   void saveAccount() async {
-    if (getProfileAccount.id != "") {
-      if (getProfileAccount.name != "") {
-        if (getControllerTextEditProvincia.text != "") {
-          if (getControllerTextEditPais.text != "") {
-            // get
-            _profileAccount.value.province =
-                getControllerTextEditProvincia.text;
-            _profileAccount.value.country = getControllerTextEditPais.text;
-            _profileAccount.value.currencySign =
-                getControllerTextEditSignoMoneda.text;
-            setSavingIndicator = true;
+    if (profileAccount.name != "") {
+      if (getControllerTextEditProvincia.text != "") {
+        if (getControllerTextEditPais.text != "") {
+          // get
+          _profileAccount.value.province = getControllerTextEditProvincia.text;
+          _profileAccount.value.country = getControllerTextEditPais.text;
+          _profileAccount.value.currencySign =
+              getControllerTextEditSignoMoneda.text;
+          setSavingIndicator = true;
 
-            // si se cargo una nueva imagen procede a guardar la imagen en Storage
-            if (getImageUpdate) {
-              UploadTask uploadTask =
-                  Database.referenceStorageAccountImageProfile(
-                          id: getProfileAccount.id == ''
-                              ? welcomeController.getUserAccountAuth.uid
-                              : getProfileAccount.id)
-                      .putFile(File(getxFile.path));
-              // para obtener la URL de la imagen de firebase storage
-              getProfileAccount.image =
-                  await (await uploadTask).ref.getDownloadURL();
-            }
-
-            // Cuando se crea una cuenta , se copia referencias del id de usuario de la cuenta
-            if (isNew) {
-              getProfileAccount.id = welcomeController.getUserAccountAuth.uid;
-
-              // guarda la referencia del id de la cuenta en una colección de cunetas administradas en los datos del usuario
-              await saveIdAccountRefForUserData(
-                  data: {'id': getProfileAccount.id});
-
-              // guarda la referencia del usuario en una colección de administradores en los datos de la cuenta
-              await saveIdUserRefForAccountData(
-                  data: AdminUser(
-                          idAccount: getProfileAccount.id,
-                          idUser: getProfileAccount.id,
-                          permitType: 1,
-                          activated: true)
-                      .toJson());
-
-              // crear una nueva cuenta
-              createAccount(data: getProfileAccount.toJson());
-              Future.delayed(Duration(seconds: 3)).then((value) => welcomeController.accountChange(idAccount: getProfileAccount.id));
-            } else {
-              // actualizar los datos
-              updateAccount(data: getProfileAccount.toJson());
-              Future.delayed(Duration(seconds: 3)).then((value) => Get.back());
-            }
-          } else {
-            Get.snackbar('', 'Debe proporcionar un pais de origen');
+          // comprobar existencia de creacion de cuenta
+          if (newAccount) {
+            profileAccount.id = welcomeController.getUserAccountAuth.uid;
           }
+          // si se cargo una nueva imagen procede a guardar la imagen en Storage
+          if (getImageUpdate) {
+            UploadTask uploadTask =
+                Database.referenceStorageAccountImageProfile(
+                        id: profileAccount.id)
+                    .putFile(File(getxFile.path));
+            // para obtener la URL de la imagen de firebase storage
+            profileAccount.image =
+                await (await uploadTask).ref.getDownloadURL();
+          }
+
+          // actualizar los datos
+          newAccount
+              ? createAccount(data: profileAccount.toJson())
+              : updateAccount(data: profileAccount.toJson());
         } else {
-          Get.snackbar('', 'Debe proporcionar una provincia');
+          Get.snackbar('', 'Debe proporcionar un pais de origen');
         }
       } else {
-        Get.snackbar('', 'Debe proporcionar un nombre');
+        Get.snackbar('', 'Debe proporcionar una provincia');
       }
     } else {
-      Get.snackbar('', 'El ID del usuario de proveedor es NULO');
+      Get.snackbar('', 'Debe proporcionar un nombre');
     }
   }
 
-  Future<void> saveIdAccountRefForUserData(
-      {required Map<String, dynamic> data}) async {
-    // Esto guarda una referencia en los datos de la cuenta en la lista de cuentas administradas del usuario
-    var documentReferencer = Database.refFirestoreUserAdmin(idUser: data['id'])
-        .doc(getProfileAccount.id);
-    await documentReferencer
-        .set(data)
-        .whenComplete(() => print(
-            "######################## FIREBASE saveIdAccountRefForUserData whenComplete"))
-        .catchError((e) => print(
-            "######################## FIREBASE saveIdAccountRefForUserData catchError: $e"));
-  }
-
-  Future<void> saveIdUserRefForAccountData(
-      {required Map<String, dynamic> data}) async {
-    // Esto guarda una referencia en los datos del usurio en los datos de la cuenta administrada por el mismo
-    var documentReferencer =
-        Database.refFirestoreAccountAdmin(idAccount: getProfileAccount.id)
-            .doc(welcomeController.getUserAccountAuth.uid);
-    await documentReferencer
-        .set(data)
-        .whenComplete(() => print(
-            "######################## FIREBASE saveIdUserRefForAccountData whenComplete"))
-        .catchError((e) => print(
-            "######################## FIREBASE saveIdUserRefForAccountData catchError: $e"));
-  }
-
   Future<void> updateAccount({required Map<String, dynamic> data}) async {
-    // Esto guarda una referencia en los datos del usurio en los datos de la cuenta administrada por el mismo
-    var documentReferencer =
-        Database.refFirestoreAccount().doc(getProfileAccount.id);
-    // Actualizamos los datos de la cuenta
-    documentReferencer.update(Map<String, dynamic>.from(data)).whenComplete(() {
-      print("######################## FIREBASE updateAccount whenComplete");
-    }).catchError((e) => print(
-        "######################## FIREBASE updateAccount catchError: $e"));
+    if (data['id'] != '') {
+      // db ref
+      var documentReferencer = Database.refFirestoreAccount().doc(data['id']);
+      // Actualizamos los datos de la cuenta
+      documentReferencer
+          .update(Map<String, dynamic>.from(data))
+          .whenComplete(() {
+        Get.back();
+        print("######################## FIREBASE updateAccount whenComplete");
+      }).catchError((e) {
+        setSavingIndicator = false;
+        Get.snackbar('No se puedo guardar los datos',
+            'Puede ser un problema de conexión');
+        print("######################## FIREBASE updateAccount catchError: $e");
+      });
+    }
   }
 
   Future<void> createAccount({required Map<String, dynamic> data}) async {
     // Esto guarda un documento con los datos de la cuenta por crear
-    var documentReferencer =
-        Database.refFirestoreAccount().doc(getProfileAccount.id);
-    await documentReferencer.set(data).whenComplete(() {
-      print("######################## FIREBASE saveAccount whenComplete");
-    }).catchError((e) =>
-        print("######################## FIREBASE saveAccount catchError: $e"));
+    if (data['id'] != '') {
+      // db ref
+      var documentReferencer = Database.refFirestoreAccount().doc(data['id']);
+      await documentReferencer.set(data).whenComplete(() {
+        welcomeController.accountChange(idAccount: data['id']);
+        Get.back();
+        print("######################## FIREBASE saveAccount whenComplete");
+      }).catchError((e) {
+        setSavingIndicator = false;
+        Get.snackbar('No se puedo guardar los datos',
+            'Puede ser un problema de conexión');
+        print("######################## FIREBASE saveAccount catchError: $e");
+      });
+    }
   }
 }

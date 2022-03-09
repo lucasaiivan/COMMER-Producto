@@ -53,6 +53,12 @@ class ProductController extends GetxController {
   // controllers
   static WelcomeController welcomeController = Get.find<WelcomeController>();
 
+  // state - el producto se encuentra en el catálogo
+  static bool _isInCatalogue = false;
+  bool get getIsInCatalogue => _isInCatalogue;
+  set setIsInCatalogue(bool value) => _isInCatalogue = value;
+
+  // account profile
   static Rx<ProfileAccountModel> _profileBusinessModel =
       ProfileAccountModel(creation: Timestamp.now()).obs;
   ProfileAccountModel get getProfileBusiness => _profileBusinessModel.value;
@@ -171,7 +177,10 @@ class ProductController extends GetxController {
     }
 
     // set - verificamos si se encuentra en el cátalogo de la cuenta
-    setProduct = welcomeController.isCatalogue(id: productCatalogue.id)? welcomeController.getProductCatalogue(id: productCatalogue.id): productCatalogue;
+    setIsInCatalogue = welcomeController.isCatalogue(id: productCatalogue.id);
+    setProduct = welcomeController.isCatalogue(id: productCatalogue.id)
+        ? welcomeController.getProductCatalogue(id: productCatalogue.id)
+        : productCatalogue;
 
     readCategory();
     readMark();
@@ -179,7 +188,7 @@ class ProductController extends GetxController {
     readOthersProductsCategoryCatalogue();
     if (scrollController.hasClients)
       scrollController.animateTo(0,
-          duration: const Duration(milliseconds: 500), curve: Curves.linear); 
+          duration: const Duration(milliseconds: 500), curve: Curves.linear);
   }
 
   void initAds() => bannerAd.value.load();
@@ -218,7 +227,7 @@ class ProductController extends GetxController {
   }
 
   void readProfileBusiness({required String id}) {
-    Database.readProfileBusinessModelFuture(id).then((value) =>
+    Database.readProfileAccountModelFuture(id).then((value) =>
         setProfileBusiness = ProfileAccountModel.fromMap(value.data() as Map));
   }
 

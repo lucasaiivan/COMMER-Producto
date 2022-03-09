@@ -123,7 +123,7 @@ class ControllerProductsEdit extends GetxController {
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
     setProduct = Get.arguments['product']??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
-    setNewProduct = getProduct.description == '';
+    setNewProduct = getProduct.id == '';
     // load data product
     if (getNewProduct == false) {
       // el documento existe
@@ -173,21 +173,15 @@ class ControllerProductsEdit extends GetxController {
 
               // set
               getProduct.upgrade = Timestamp.now();
-
-              // image - Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
+              // iamge 
               if (getXFileImage.path != '') {
-                Reference ref = FirebaseStorage.instance
-                    .ref()
-                    .child("APP")
-                    .child("ARG")
-                    .child("PRODUCTOS")
-                    .child(getProduct.id);
+              // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
+              // si es asi procede a guardar la imagen en la base de la app
+                Reference ref = Database.referenceStorageProductPublic(id:getProduct.id);
                 UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
                 await uploadTask;
                 // obtenemos la url de la imagen guardada
-                await ref
-                    .getDownloadURL()
-                    .then((value) => getProduct.image = value);
+                await ref.getDownloadURL().then((value) => getProduct.image = value);
               }
               if (getAccountAuth) {
                 // procede agregrar el producto en el cátalogo
@@ -213,10 +207,7 @@ class ControllerProductsEdit extends GetxController {
                   time: Timestamp.fromDate(new DateTime.now()),
                 );
                 // Firebase set
-                await Database.refFirestoreRegisterPrice(
-                        idProducto: getProduct.id, isoPAis: 'ARG')
-                    .doc(precio.id)
-                    .set(precio.toJson());
+                await Database.refFirestoreRegisterPrice(idProducto: getProduct.id, isoPAis: 'ARG').doc(precio.id).set(precio.toJson());
 
                 // add/update data product in catalogue
                 Database.refFirestoreCatalogueProduct(

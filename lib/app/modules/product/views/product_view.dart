@@ -15,6 +15,8 @@ import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../routes/app_pages.dart';
+
 class Product extends GetView<ProductController> {
   Product({Key? key}) : super(key: key);
 
@@ -26,91 +28,25 @@ class Product extends GetView<ProductController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appbar(context: context),
-      body: body(),
+      body: body(buildContext: context),
     );
   }
 
   // WIDGETS VIEWS
+
   PreferredSizeWidget appbar({required BuildContext context}) {
     return AppBar(
       elevation: 0.0,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
-      title: Obx(() => Text(controller.getMark.name==''?'Cargando...':controller.getMark.name,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-              fontSize: 18.0,
-              color: Theme.of(context).textTheme.bodyText1!.color))),
-      actions: welcomeController.getProfileAccountSelected.id == ''
-          ? []
-          : [
-              IconButton(
-                padding: EdgeInsets.all(12.0),
-                icon: Icon(Icons.share),
-                onPressed: () {
-                  showGeneralDialog(
-                      context: context,
-                      barrierDismissible: true,
-                      barrierLabel: MaterialLocalizations.of(context)
-                          .modalBarrierDismissLabel,
-                      barrierColor: Colors.black45,
-                      transitionDuration: const Duration(milliseconds: 200),
-                      pageBuilder: (BuildContext buildContext,
-                          Animation animation, Animation secondaryAnimation) {
-                        Timer(Duration(seconds: 1), () async {
-                          // note: La imagen capturada puede verse pixelada. Puede solucionar este problema configurando el valor de pixelRatio
-                          double pixelRatio =
-                              MediaQuery.of(context).devicePixelRatio;
-                          // Captura de widgets
-                          await screenshotController
-                              .capture(
-                                  delay: const Duration(milliseconds: 1),
-                                  pixelRatio: pixelRatio)
-                              .then((image) async {
-                            if (image != null) {
-                              final directory =
-                                  await getApplicationDocumentsDirectory();
-                              final imagePath =
-                                  await File('${directory.path}/image.png')
-                                      .create();
-                              await imagePath.writeAsBytes(image);
-
-                              /// Share Plugin
-                              await Share.shareFiles([imagePath.path]);
-                              Get.back();
-                            }
-                          });
-                        });
-
-                        // Get available height and width of the build area of this widget. Make a choice depending on the size.
-                        var height = MediaQuery.of(buildContext).size.height;
-                        var width = MediaQuery.of(buildContext).size.width;
-
-                        return Screenshot(
-                          controller: screenshotController,
-                          child: viewProducto(height: height, width: width),
-                        );
-                      });
-                },
-              ),
-              IconButton(
-                padding: EdgeInsets.all(12.0),
-                icon: Icon(
-                    welcomeController.isCatalogue(id: controller.getProduct.id)
-                        ? Icons.edit
-                        : Icons.add),
-                onPressed: () {
-                  controller.toProductEdit();
-                },
-              ),
-            ],
+      toolbarHeight: 0,
     );
   }
 
-  Widget body() {
+  Widget body({required BuildContext buildContext}) {
     return ExpandableBottomSheet(
       onIsExtendedCallback: () => controller.setTheme(),
-      background: background(),
+      background: background(buildContext: buildContext),
       persistentHeader: persistentHeader(
           colorBackground: Get.theme.cardColor, colorText: Colors.white),
       expandableContent: expandableContent(
@@ -209,7 +145,7 @@ class Product extends GetView<ProductController> {
     );
   }
 
-  Widget widgetDescripcion(BuildContext context) {
+  Widget widgetDescripcion() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12, right: 12, left: 12, top: 24),
       child: Column(
@@ -273,11 +209,13 @@ class Product extends GetView<ProductController> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       controller.getProduct.verified == true
-                        ? Padding(
-                            padding: const EdgeInsets.only(right: 1.0),
-                            child: new Image.asset('assets/icon_verificado.png',
-                                width: 15.0, height: 15.0))
-                        : new Icon(Icons.qr_code_2_rounded, size: 14),
+                          ? Padding(
+                              padding: const EdgeInsets.only(right: 1.0),
+                              child: new Image.asset(
+                                  'assets/icon_verificado.png',
+                                  width: 15.0,
+                                  height: 15.0))
+                          : new Icon(Icons.qr_code_2_rounded, size: 14),
                       SizedBox(width: 5),
                       Text(controller.getProduct.code,
                           style: TextStyle(
@@ -293,39 +231,132 @@ class Product extends GetView<ProductController> {
     );
   }
 
-  Widget background() {
-    return Builder(builder: (contextBuilder) {
-      return SingleChildScrollView(
-        controller: controller.scrollController,
-        child: Obx(() => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget background({required BuildContext buildContext}) {
+    return Obx(() => Column(
+          children: [
+            Row(
               children: [
-                SizedBox(height: 12),
-                imageViewCard(),
-                widgetDescripcion(contextBuilder),
-                controller.getstateAds
-                    ? Center(
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: AdWidget(ad: controller.bannerAd.value),
-                          width:
-                              controller.bannerAd.value.size.width.toDouble(),
-                          height:
-                              controller.bannerAd.value.size.height.toDouble(),
+                IconButton(onPressed: Get.back, icon: Icon(Icons.arrow_back)),
+                Text(
+                    controller.getMark.name == ''
+                        ? 'Cargando...'
+                        : controller.getMark.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 18.0,
+                        color: Get.theme.textTheme.bodyText1!.color)),
+                Expanded(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        IconButton(
+                          padding: EdgeInsets.all(12.0),
+                          icon: Icon(Icons.share_outlined),
+                          onPressed: () {
+                            showGeneralDialog(
+                                context: buildContext,
+                                barrierDismissible: true,
+                                barrierLabel:
+                                    MaterialLocalizations.of(buildContext)
+                                        .modalBarrierDismissLabel,
+                                barrierColor: Colors.black45,
+                                transitionDuration:
+                                    const Duration(milliseconds: 200),
+                                pageBuilder: (BuildContext buildContext,
+                                    Animation animation,
+                                    Animation secondaryAnimation) {
+                                  Timer(Duration(seconds: 1), () async {
+                                    // note: La imagen capturada puede verse pixelada. Puede solucionar este problema configurando el valor de pixelRatio
+                                    double pixelRatio =
+                                        MediaQuery.of(buildContext)
+                                            .devicePixelRatio;
+                                    // Captura de widgets
+                                    await screenshotController
+                                        .capture(
+                                            delay:
+                                                const Duration(milliseconds: 1),
+                                            pixelRatio: pixelRatio)
+                                        .then((image) async {
+                                      if (image != null) {
+                                        final directory =
+                                            await getApplicationDocumentsDirectory();
+                                        final imagePath = await File(
+                                                '${directory.path}/image.png')
+                                            .create();
+                                        await imagePath.writeAsBytes(image);
+
+                                        /// Share Plugin
+                                        await Share.shareFiles(
+                                            [imagePath.path]);
+                                        Get.back();
+                                      }
+                                    });
+                                  });
+
+                                  // Get available height and width of the build area of this widget. Make a choice depending on the size.
+                                  var height =
+                                      MediaQuery.of(buildContext).size.height;
+                                  var width =
+                                      MediaQuery.of(buildContext).size.width;
+
+                                  return Screenshot(
+                                    controller: screenshotController,
+                                    child: viewProducto(
+                                        height: height, width: width),
+                                  );
+                                });
+                          },
                         ),
-                      )
-                    : Container(),
-                otherProductsCatalogueListHorizontal(),
-                otherBrandProductsListHorizontal(),
-                const SizedBox(height: 150.0, width: 120.0),
+                        welcomeController.getIdAccountSelecte==''?Container():
+                        IconButton(
+                          padding: EdgeInsets.all(12.0),
+                          icon: Icon(controller.getIsInCatalogue
+                              ? Icons.edit
+                              : Icons.add),
+                          onPressed: () {
+                            controller.toProductEdit();
+                          },
+                        ),
+                      ]),
+                ),
               ],
-            )),
-      );
-    });
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: controller.scrollController,
+                child: Obx(() => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 12),
+                        imageViewCard(),
+                        widgetDescripcion(),
+                        controller.getstateAds
+                            ? Center(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  child:
+                                      AdWidget(ad: controller.bannerAd.value),
+                                  width: controller.bannerAd.value.size.width
+                                      .toDouble(),
+                                  height: controller.bannerAd.value.size.height
+                                      .toDouble(),
+                                ),
+                              )
+                            : Container(),
+                        otherProductsCatalogueListHorizontal(),
+                        otherBrandProductsListHorizontal(),
+                        const SizedBox(height: 150.0, width: 120.0),
+                      ],
+                    )),
+              ),
+            ),
+          ],
+        ));
   }
 
-  Widget persistentHeader(
-      {required Color colorBackground, required Color colorText}) {
+  Widget persistentHeader({required Color colorBackground, required Color colorText}) {
     // view
     return Obx(() => ClipRRect(
           borderRadius: BorderRadius.only(
@@ -340,111 +371,92 @@ class Product extends GetView<ProductController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  welcomeController.isCatalogue(id: controller.getProduct.id)
-                      ? controller.getProduct.salePrice != 0.0
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              textDirection: TextDirection.ltr,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                        Publicaciones.getFormatoPrecio(
-                                            monto: controller
-                                                .getProduct.salePrice),
-                                        style: TextStyle(
-                                            color: colorText,
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.end),
-                                    Row(
-                                      children: [
-                                        controller.getProduct.purchasePrice !=
-                                                0.0
-                                            ? Text(
-                                                sProcentaje(
-                                                    precioCompra: controller
-                                                        .getProduct
-                                                        .purchasePrice,
-                                                    precioVenta: controller
-                                                        .getProduct.salePrice),
-                                                style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontSize: 12.0,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                            : Container(),
-                                        controller.getProduct.purchasePrice !=
-                                                0.0
-                                            ? Text(" > ",
-                                                style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontSize: 12.0))
-                                            : Container(),
-                                        controller.getProduct.purchasePrice !=
-                                                0.0
-                                            ? Text(
-                                                Publicaciones.sGanancia(
-                                                    precioCompra: controller
-                                                        .getProduct
-                                                        .purchasePrice,
-                                                    precioVenta: controller
-                                                        .getProduct.salePrice),
-                                                style: TextStyle(
-                                                    color: controller.getProduct
-                                                                .purchasePrice <
-                                                            controller
-                                                                .getProduct
-                                                                .salePrice
-                                                        ? Colors.green
-                                                        : Colors.red,
-                                                    fontSize: 12.0,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                            : Container(),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    Publicaciones.getFechaPublicacion(
-                                            controller.getProduct.upgrade
-                                                .toDate(),
-                                            Timestamp.now().toDate())
-                                        .toLowerCase(),
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.normal,
-                                        color: colorText.withOpacity(0.5)),
+                  welcomeController.getIdAccountSelecte!=''?
+                    welcomeController.isCatalogue(id: controller.getProduct.id)
+                        ? controller.getProduct.salePrice != 0.0? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                textDirection: TextDirection.ltr,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                          Publicaciones.getFormatoPrecio(
+                                              monto: controller
+                                                  .getProduct.salePrice),
+                                          style: TextStyle(
+                                              color: colorText,
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.bold),
+                                          textAlign: TextAlign.end),
+                                      Row(
+                                        children: [
+                                          controller.getProduct.purchasePrice !=
+                                                  0.0
+                                              ? Text(
+                                                  sProcentaje(
+                                                      precioCompra: controller
+                                                          .getProduct
+                                                          .purchasePrice,
+                                                      precioVenta: controller
+                                                          .getProduct.salePrice),
+                                                  style: TextStyle(
+                                                      color: Colors.green,
+                                                      fontSize: 12.0,
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                              : Container(),
+                                          controller.getProduct.purchasePrice !=
+                                                  0.0
+                                              ? Text(" > ",
+                                                  style: TextStyle(
+                                                      color: Colors.green,
+                                                      fontSize: 12.0))
+                                              : Container(),
+                                          controller.getProduct.purchasePrice !=
+                                                  0.0
+                                              ? Text(
+                                                  Publicaciones.sGanancia(
+                                                      precioCompra: controller
+                                                          .getProduct
+                                                          .purchasePrice,
+                                                      precioVenta: controller
+                                                          .getProduct.salePrice),
+                                                  style: TextStyle(
+                                                      color: controller.getProduct
+                                                                  .purchasePrice <
+                                                              controller
+                                                                  .getProduct
+                                                                  .salePrice
+                                                          ? Colors.green
+                                                          : Colors.red,
+                                                      fontSize: 12.0,
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                              : Container(),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            )
-                          : Container()
-                      : controller.getEveragePrice == 0
-                          ? Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text('',
-                                  style: TextStyle(
-                                      color: Colors.green.withOpacity(0.5),
-                                      fontSize: 20)),
-                            )
-                          : Container(
-                              child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  controller.getProduct.currencySign +
-                                      controller.getEveragePrice.toString(),
-                                  style: TextStyle(
-                                      color: Colors.green.withOpacity(0.5),
-                                      fontSize: 20),
-                                ),
-                              ),
-                            )),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      Publicaciones.getFechaPublicacion(
+                                              controller.getProduct.upgrade
+                                                  .toDate(),
+                                              Timestamp.now().toDate())
+                                          .toLowerCase(),
+                                      style: TextStyle(
+                                          fontStyle: FontStyle.normal,
+                                          color: colorText.withOpacity(0.5)),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Container()
+                        : TextButton(onPressed: controller.toProductEdit, child:Text('Agregar a mi catálogo'))
+                      :TextButton(onPressed: ()=>Get.toNamed(Routes.ACCOUNT), child:Text('Crear mi catálogo')),
                   Icon(Icons.keyboard_arrow_up,
                       color: colorText.withOpacity(0.5)),
                   Text(
@@ -548,21 +560,11 @@ class Product extends GetView<ProductController> {
                           style: TextStyle(
                               fontStyle: FontStyle.normal, color: colorText),
                         ),
-                        controller.getListPricesForProduct[index].town != ""
-                            ? Text(
-                                "En " +
-                                    controller
-                                        .getListPricesForProduct[index].town
-                                        .toString(),
-                                style: TextStyle(
-                                    color: colorText,
-                                    fontWeight: FontWeight.bold),
-                              )
-                            : Text("Ubicación desconocido",
-                                style: TextStyle(
-                                    color: colorText,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.0)),
+                        Text("En "+controller.getListPricesForProduct[index].town.toString() ==""
+                                ? controller.getListPricesForProduct[index].province.toString()
+                                : controller.getListPricesForProduct[index].town.toString(),
+                            style: TextStyle(
+                                color: colorText, fontWeight: FontWeight.bold)),
                       ],
                     ),
                     onTap: () {},
@@ -834,7 +836,8 @@ class ProductoCatalogueItem extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => productController.readData(productCatalogue: producto),
+                  onTap: () =>
+                      productController.readData(productCatalogue: producto),
                 ),
               ),
             ),
@@ -936,7 +939,6 @@ class ProductoItem extends StatelessWidget {
                 color: Colors.transparent,
                 child: InkWell(onTap: () {
                   productController.readData(productCatalogue: producto);
-
                 }),
               ),
             ),

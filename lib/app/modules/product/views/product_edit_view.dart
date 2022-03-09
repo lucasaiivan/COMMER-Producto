@@ -106,13 +106,19 @@ class ProductEdit extends StatelessWidget {
         children: <Widget>[
           space,
           TextField(
-            enabled: !controller.getSaveIndicator,
+            enabled: controller.getSaveIndicator
+                ? false
+                : controller.getEditModerator || controller.getNewProduct,
             minLines: 1,
             maxLines: 5,
             keyboardType: TextInputType.multiline,
             onChanged: (value) => controller.getProduct.description = value,
             decoration: InputDecoration(
-                border: OutlineInputBorder(), labelText: "Descripción"),
+                disabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                ),
+                border: OutlineInputBorder(),
+                labelText: "Descripción"),
             controller: controller.controllerTextEdit_descripcion,
           ),
           space,
@@ -127,30 +133,35 @@ class ProductEdit extends StatelessWidget {
               child: controller.getMarkSelected.id == ''
                   ? Text("Seleccionar marca")
                   : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  utilsWidget.viewCircleImage(
-                      size: 25,
-                      url: controller.getMarkSelected.image,
-                      texto: controller.getMarkSelected.name),
-                  SizedBox(width: 5),
-                  Text(controller.getMarkSelected.name,
-                      style: TextStyle(
-                          color: controller.getNewProduct ||
-                              controller.getEditModerator
-                              ? null
-                              : Colors.grey))
-                ],
-              ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        utilsWidget.viewCircleImage(
+                            size: 25,
+                            url: controller.getMarkSelected.image,
+                            texto: controller.getMarkSelected.name),
+                        SizedBox(width: 8),
+                        Text(controller.getMarkSelected.name,
+                            style: TextStyle(
+                                color: controller.getNewProduct ||
+                                        controller.getEditModerator
+                                    ? null
+                                    : Colors.grey))
+                      ],
+                    ),
               style: ButtonStyle(
-                  side: controller.getEditModerator||controller.getNewProduct?null:MaterialStateProperty.all(BorderSide(color:Get.theme.scaffoldBackgroundColor)),
+                  side: controller.getEditModerator || controller.getNewProduct
+                      ? null
+                      : MaterialStateProperty.all(
+                          BorderSide(color: Get.theme.scaffoldBackgroundColor)),
                   padding: MaterialStateProperty.all<EdgeInsets>(
                       EdgeInsets.all(16))),
             ),
           ),
-          !controller.getAccountAuth ? Container() :space,
+          // buttons categoty
+          !controller.getAccountAuth ? Container() : space,
           !controller.getAccountAuth ? Container() : buttonsCategory(),
           space,
+          // textfield prices
           !controller.getAccountAuth
               ? Container()
               : Column(
@@ -236,46 +247,60 @@ class ProductEdit extends StatelessWidget {
                       children: [
                         Expanded(
                             child: Divider(
-                          height: 2.0,
+                          height: 3.0,
                           endIndent: 12.0,
                           indent: 12.0,
+                          thickness: 2,
                         )),
-                        Text("Opciones para moderador"),
+                        Text("OPCIONES PARA MODERADOR"),
                         Expanded(
                             child: Divider(
-                                height: 1.0, endIndent: 12.0, indent: 12.0))
+                                thickness: 2,
+                                height: 3.0,
+                                endIndent: 12.0,
+                                indent: 12.0))
                       ],
                     ),
                     SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
-                    FilterChip( 
+                    FilterChip(
                       labelStyle: TextStyle(color: Colors.white),
                       checkmarkColor: Colors.white,
-                      selectedColor: controller.getSaveIndicator?null:controller.getEditModerator?Colors.amber:Colors.grey,
+                      selectedColor: controller.getSaveIndicator
+                          ? null
+                          : controller.getEditModerator
+                              ? Colors.amber
+                              : Colors.grey,
                       selected: controller.getProduct.favorite,
-                      label: Text(controller.getProduct.favorite?'Destacado':'Agregar a destacado'),
+                      label: Text(controller.getProduct.favorite
+                          ? 'Destacado'
+                          : 'Agregar a destacado'),
                       onSelected: (bool value) {
-                        if(controller.getEditModerator){
-                          if(!controller.getSaveIndicator){
-                          controller.isFavorite();
+                        if (controller.getEditModerator) {
+                          if (!controller.getSaveIndicator) {
+                            controller.isFavorite();
+                          }
                         }
-                        }
-                        
                       },
                     ),
                     SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
                     FilterChip(
                       labelStyle: TextStyle(color: Colors.white),
                       checkmarkColor: Colors.white,
-                      selectedColor: controller.getSaveIndicator?null:controller.getEditModerator?Colors.blue:Colors.grey,
+                      selectedColor: controller.getSaveIndicator
+                          ? null
+                          : controller.getEditModerator
+                              ? Colors.blue
+                              : Colors.grey,
                       selected: controller.getProduct.verified,
-                      label: Text(controller.getProduct.verified?'Verificado':'Quitar de verificados'),
+                      label: Text(controller.getProduct.verified
+                          ? 'Verificado'
+                          : 'Quitar de verificados'),
                       onSelected: (bool value) {
-                        if(controller.getEditModerator){
-                          if(!controller.getSaveIndicator){
-                          controller.checkProduct();
+                        if (controller.getEditModerator) {
+                          if (!controller.getSaveIndicator) {
+                            controller.checkProduct();
+                          }
                         }
-                        }
-                        
                       },
                     ),
                     SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
@@ -495,18 +520,10 @@ class _SelectCategoryState extends State<SelectCategory> {
   @override
   Widget build(BuildContext buildContext) {
     if (welcomeController.getCatalogueCategoryList.length == 0) {
-      return Row(
-        children: [
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text('Crear categoría', style: TextStyle(fontSize: 18)),
-          )),
-          IconButton(
-              icon: Icon(Icons.add),
-              padding: const EdgeInsets.all(20.0),
-              onPressed: () => showDialogSetCategoria(categoria: Category()))
-        ],
+      return ListTile(
+        onTap: () => showDialogSetCategoria(categoria: Category()),
+        title: Text('Crear categoría', style: TextStyle(fontSize: 18)),
+        trailing: Icon(Icons.add),
       );
     }
 
@@ -697,8 +714,12 @@ class _SelectCategoryState extends State<SelectCategory> {
                     // save
                     await controller
                         .categoryUpdate(categoria: categoria)
-                        .whenComplete(() => Get.back())
-                        .catchError((error, stackTrace) =>
+                        .whenComplete(() {
+                      welcomeController.getCatalogueCategoryList.add(categoria);
+                      setState(() {
+                        Get.back();
+                      });
+                    }).catchError((error, stackTrace) =>
                             setState(() => loadSave = false));
                   }
                 })
@@ -1129,14 +1150,9 @@ class _CreateMarkState extends State<CreateMark> {
       title = 'Eliminando...';
     });
 
-    // delele archive storage
     if (widget.mark.id != '') {
-      await FirebaseStorage.instance
-          .ref()
-          .child("APP")
-          .child("ARG")
-          .child("MARCAS")
-          .child(widget.mark.id)
+      // delele archive storage
+      await Database.referenceStorageProductPublic(id: widget.mark.id)
           .delete()
           .catchError((_) => null);
       // delete document firestore
@@ -1158,19 +1174,15 @@ class _CreateMarkState extends State<CreateMark> {
     });
 
     // set values
-    widget.mark.verified=true;
+    widget.mark.verified = true;
     if (widget.mark.id == '')
       widget.mark.id = new DateTime.now().millisecondsSinceEpoch.toString();
     if (widget.mark.name != '') {
       // image save
       // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
       if (xFile.path != '') {
-        Reference ref = FirebaseStorage.instance
-            .ref()
-            .child("APP")
-            .child("ARG")
-            .child("MARCAS")
-            .child(widget.mark.id);
+        Reference ref =
+            Database.referenceStorageProductPublic(id: widget.mark.id);
         // referencia de la imagen
         UploadTask uploadTask = ref.putFile(File(xFile.path));
         // cargamos la imagen a storage
@@ -1276,7 +1288,8 @@ class _SelectMarkState extends State<SelectMark> {
     return Column(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12,top: 12),
+          padding:
+              const EdgeInsets.only(bottom: 12, left: 12, right: 12, top: 12),
           child: Row(
             children: [
               Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
@@ -1329,9 +1342,13 @@ class _SelectMarkState extends State<SelectMark> {
   Widget listTile({required Mark marcaSelect}) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      leading: viewCircleImage(texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
+      leading: viewCircleImage(
+          texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
       dense: true,
-      title: Text(marcaSelect.name,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 16.0,color: Get.theme.textTheme.bodyText1!.color)),
+      title: Text(marcaSelect.name,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              fontSize: 16.0, color: Get.theme.textTheme.bodyText1!.color)),
       onTap: () {
         controllerProductsEdit.setMarkSelected = marcaSelect;
         Get.back();

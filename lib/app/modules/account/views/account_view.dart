@@ -34,7 +34,7 @@ class AccountView extends GetView<AccountController> {
         builder: (_) {
           return Scaffold(
             appBar: appBar(),
-            body: ListView(
+            body: controller.stateLoding?Center(child: Text('cargando...'),):ListView(
               padding: EdgeInsets.all(12.0),
               children: [
                 Column(
@@ -71,7 +71,7 @@ class AccountView extends GetView<AccountController> {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       elevation: 0,
       iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
-      title: Text('Perfil',style: TextStyle(
+      title: Text(controller.newAccount?'Crear perfil':'Perfil',style: TextStyle(
               fontSize: 18.0,
               color: Theme.of(context).textTheme.bodyText1!.color)),
       actions: <Widget>[
@@ -124,9 +124,12 @@ class AccountView extends GetView<AccountController> {
           child: Column(
             children: [
               controller.getImageUpdate == false
-                  ? CachedNetworkImage(
+                  ? controller.profileAccount.image==''?CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        radius: 75.0,
+                      ):CachedNetworkImage(
                       fit: BoxFit.cover,
-                      imageUrl: controller.getProfileAccount.image==''?'default':controller.getProfileAccount.image,
+                      imageUrl: controller.profileAccount.image==''?'default':controller.profileAccount.image,
                       placeholder: (context, url) => CircleAvatar(
                         backgroundColor: Colors.grey,
                         radius: 75.0,
@@ -170,13 +173,13 @@ class AccountView extends GetView<AccountController> {
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
                 onChanged: (value) =>
-                    controller.getProfileAccount.name = value,
+                    controller.profileAccount.name = value,
                 decoration: InputDecoration(
                   filled: true,
                   labelText: "Nombre",
                 ),
                 controller: TextEditingController(
-                    text: controller.getProfileAccount.name),
+                    text: controller.profileAccount.name),
                 textInputAction: TextInputAction.next,
                 focusNode: focusTextEdiNombre,
                 onSubmitted: (term) {
@@ -191,13 +194,13 @@ class AccountView extends GetView<AccountController> {
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
                 onChanged: (value) =>
-                    controller.getProfileAccount.description = value,
+                    controller.profileAccount.description = value,
                 decoration: InputDecoration(
                   filled: true,
                   labelText: "Descripción",
                 ),
                 controller: TextEditingController(
-                    text: controller.getProfileAccount.description),
+                    text: controller.profileAccount.description),
                 textInputAction: TextInputAction.next,
                 focusNode: focusTextEditDescripcion,
                 onSubmitted: (term) {
@@ -219,7 +222,7 @@ class AccountView extends GetView<AccountController> {
                   ),
                   controller: controller.getControllerTextEditSignoMoneda,
                   onChanged: (value) =>
-                      controller.getProfileAccount.currencySign = value,
+                      controller.profileAccount.currencySign = value,
                 ),
               ),
               SizedBox(
@@ -232,13 +235,13 @@ class AccountView extends GetView<AccountController> {
               TextField(
                 enabled: !controller.getSavingIndicator,
                 onChanged: (value) =>
-                    controller.getProfileAccount.address = value,
+                    controller.profileAccount.address = value,
                 decoration: InputDecoration(
                   labelText: "Dirección (ocional)",
                   filled: true,
                 ),
                 controller: TextEditingController(
-                    text: controller.getProfileAccount.address),
+                    text: controller.profileAccount.address),
                 textInputAction: TextInputAction.next,
                 focusNode: focusTextEditDireccion,
                 onSubmitted: (term) {
@@ -250,16 +253,16 @@ class AccountView extends GetView<AccountController> {
               TextField(
                 enabled: !controller.getSavingIndicator,
                 onChanged: (value) =>
-                    controller.getProfileAccount.town = value,
+                    controller.profileAccount.town = value,
                 decoration: InputDecoration(
                   labelText: "Ciudad (ocional)",
                   filled: true,
                 ),
-                controller: TextEditingController(text: controller.getProfileAccount.town),
+                controller: TextEditingController(text: controller.profileAccount.town),
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
-                onTap: () => controller.getProfileAccount.country == ''
+                onTap: () => controller.profileAccount.country == ''
                     ? _bottomPickerSelectCountries(
                         list: controller.getCountries)
                     : _bottomPickerSelectCities(list: controller.getCities),
@@ -274,7 +277,7 @@ class AccountView extends GetView<AccountController> {
                     ),
                     controller: controller.getControllerTextEditProvincia,
                     onChanged: (value) {
-                      controller.getProfileAccount.province = value;
+                      controller.profileAccount.province = value;
                     }),
               ),
               Divider(color: Colors.transparent, thickness: 1),
@@ -292,7 +295,7 @@ class AccountView extends GetView<AccountController> {
                   ),
                   controller: controller.getControllerTextEditPais,
                   onChanged: (value) =>
-                      controller.getProfileAccount.country = value,
+                      controller.profileAccount.country = value,
                 ),
               ),
               SizedBox(width: 50.0, height: 50.0),
@@ -333,7 +336,7 @@ class AccountView extends GetView<AccountController> {
                 child: Text("Ok"),
                 onPressed: () {
                   controller.getControllerTextEditProvincia.text = list[_index];
-                  controller.getProfileAccount.province = list[_index];
+                  controller.profileAccount.province = list[_index];
                   Navigator.pop(context);
                 },
               ),
@@ -375,7 +378,7 @@ class AccountView extends GetView<AccountController> {
               CupertinoButton(
                 child: Text("Ok"),
                 onPressed: () {
-                  controller.getProfileAccount.country = list[_index];
+                  controller.profileAccount.country = list[_index];
                   controller.getControllerTextEditPais.text = list[_index];
                   Get.back();
                 },
@@ -418,7 +421,7 @@ class AccountView extends GetView<AccountController> {
               CupertinoButton(
                 child: Text("Ok"),
                 onPressed: () {
-                  controller.getProfileAccount.currencySign =list[_index];
+                  controller.profileAccount.currencySign =list[_index];
                   controller.getControllerTextEditSignoMoneda.text = list[_index];
                   Navigator.pop(context);
                 },

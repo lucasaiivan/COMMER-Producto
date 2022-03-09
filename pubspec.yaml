@@ -62,7 +62,9 @@ dependencies:
   path_provider: ^2.0.8 # Un complemento de Flutter para encontrar ubicaciones de uso común en el sistema de archivos. Soporta Android, iOS, Linux, macOS y Windows. No todos los métodos son compatibles con todas las plataformas.
   share_plus: ^3.1.0 # Un complemento de Flutter para compartir contenido desde su aplicación Flutter a través del cuadro de diálogo para compartir de la plataforma.
   simple_connection_checker: ^0.2.1 # verificar cuando el dispositivo está conectado (conectividad) a Internet. También proporcione un método para escuchar los cambios de estado de la conexión.
+  webview_flutter: ^3.0.1
 
+  
 flutter_icons:
   android: true
   ios: false
