@@ -122,8 +122,8 @@ class ControllerProductsEdit extends GetxController {
     setAccountAuth = welcomeController.getIdAccountSelecte != '';
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product']??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
-    setNewProduct = getProduct.id == '';
+    setProduct = Get.arguments['product'] ?? ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setNewProduct = getProduct.description == '';
     // load data product
     if (getNewProduct == false) {
       // el documento existe
@@ -173,22 +173,26 @@ class ControllerProductsEdit extends GetxController {
 
               // set
               getProduct.upgrade = Timestamp.now();
-              // iamge 
+              // iamge
               if (getXFileImage.path != '') {
-              // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
-              // si es asi procede a guardar la imagen en la base de la app
-                Reference ref = Database.referenceStorageProductPublic(id:getProduct.id);
+                // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
+                // si es asi procede a guardar la imagen en la base de la app
+                Reference ref =
+                    Database.referenceStorageProductPublic(id: getProduct.id);
                 UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
                 await uploadTask;
                 // obtenemos la url de la imagen guardada
-                await ref.getDownloadURL().then((value) => getProduct.image = value);
+                await ref
+                    .getDownloadURL()
+                    .then((value) => getProduct.image = value);
               }
               if (getAccountAuth) {
                 // procede agregrar el producto en el cátalogo
 
                 // Mods - save data product global
                 if (getNewProduct || getEditModerator) {
-                  getProduct.verified = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                  getProduct.verified =
+                      true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
                   saveProductPublic();
                 }
 
@@ -207,7 +211,10 @@ class ControllerProductsEdit extends GetxController {
                   time: Timestamp.fromDate(new DateTime.now()),
                 );
                 // Firebase set
-                await Database.refFirestoreRegisterPrice(idProducto: getProduct.id, isoPAis: 'ARG').doc(precio.id).set(precio.toJson());
+                await Database.refFirestoreRegisterPrice(
+                        idProducto: getProduct.id, isoPAis: 'ARG')
+                    .doc(precio.id)
+                    .set(precio.toJson());
 
                 // add/update data product in catalogue
                 Database.refFirestoreCatalogueProduct(
@@ -225,7 +232,8 @@ class ControllerProductsEdit extends GetxController {
                     .onError((error, stackTrace) => setSaveIndicator = false)
                     .catchError((_) => setSaveIndicator = false);
               } else {
-                getProduct.verified = true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                getProduct.verified =
+                    true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
                 saveProductPublic();
               }
             } else {
@@ -252,6 +260,7 @@ class ControllerProductsEdit extends GetxController {
     getProduct.favorite = !getProduct.favorite;
     update(['updateAll']);
   }
+
   checkProduct() {
     getProduct.verified = !getProduct.verified;
     update(['updateAll']);
@@ -478,5 +487,4 @@ class ControllerProductsEdit extends GetxController {
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
-
 }

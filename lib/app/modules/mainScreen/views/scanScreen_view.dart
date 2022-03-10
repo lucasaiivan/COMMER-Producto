@@ -1,6 +1,6 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -54,13 +54,19 @@ class ScanScreenView extends StatelessWidget {
                 softWrap: false,
                 style: TextStyle(color: Get.theme.textTheme.bodyText1!.color),
               ),
-              Icon(Icons.keyboard_arrow_down,color:  Get.theme.textTheme.bodyText1!.color,)
+              Icon(
+                Icons.keyboard_arrow_down,
+                color: Get.theme.textTheme.bodyText1!.color,
+              )
             ],
           ),
         ),
       ),
       actions: <Widget>[
-        IconButton(onPressed: showModalBottomSheetSetting, icon: Icon(Icons.view_headline,color: Get.theme.textTheme.bodyText1!.color)),
+        IconButton(
+            onPressed: showModalBottomSheetSetting,
+            icon: Icon(Icons.view_headline,
+                color: Get.theme.textTheme.bodyText1!.color)),
       ],
     );
   }
@@ -69,47 +75,54 @@ class ScanScreenView extends StatelessWidget {
     // var
     Color color = Theme.of(context).textTheme.bodyText1!.color ?? Colors.purple;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        InkWell(
-          borderRadius: BorderRadius.all(Radius.circular(30.0)),
-          splashColor: Get.theme.primaryColor,
-          onTap: scanBarcodeNormal,
-          child: Container(
-            width: 200,
-            height: 200,
-            margin: const EdgeInsets.all(0.0),
-            padding: const EdgeInsets.all(30.0),
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(width: 3, color: color),
-                borderRadius: BorderRadius.all(Radius.circular(30.0))),
-            child: Image(
-                color: color,
-                height: 200.0,
-                width: 200.0,
-                image: AssetImage('assets/barcode.png'),
-                fit: BoxFit.contain),
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 75),
-          child: Text('Enfoque al código de barras del producto',
-            style: Get.theme.textTheme.subtitle1,
-            textAlign: TextAlign.center),
-        ),
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 40.0),
-          child: TextButton(
-            child: Text("Escanear",
-                textAlign: TextAlign.center,style: TextStyle(fontSize:20)),
-            onPressed: scanBarcodeNormal,
-          ),
-        ),
-        Obx(() => widgetSuggestions(list: controller.getListSuggestedProducts)),
-      ],
+    return GetBuilder<WelcomeController>(
+      id: 'scanScreen',
+      builder: (_) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            InkWell(
+              borderRadius: BorderRadius.all(Radius.circular(30.0)),
+              splashColor: Get.theme.primaryColor,
+              onTap: scanBarcodeNormal,
+              child: Container(
+                width: 200,
+                height: 200,
+                margin: const EdgeInsets.all(0.0),
+                padding: const EdgeInsets.all(30.0),
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(width: 3, color: color),
+                    borderRadius: BorderRadius.all(Radius.circular(30.0))),
+                child: Image(
+                    color: color,
+                    height: 200.0,
+                    width: 200.0,
+                    image: AssetImage('assets/barcode.png'),
+                    fit: BoxFit.contain),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 75),
+              child: Text('Enfoque al código de barras del producto',
+                  style: Get.theme.textTheme.subtitle1,
+                  textAlign: TextAlign.center),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 40.0),
+              child: TextButton(
+                child: Text("Escanear",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20)),
+                onPressed: scanBarcodeNormal,
+              ),
+            ),
+            WidgetSuggestionProduct(
+                list: controller.getListSuggestedProducts, searchButton: true),
+          ],
+        );
+      },
     );
   }
 
@@ -136,119 +149,9 @@ class ScanScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))),
-    );
-  }
-
-  Widget widgetSuggestions({required List<Product> list}) {
-    if (list.length == 0) return Container();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Text("sugerencias para ti",style: Get.theme.textTheme.subtitle1,),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-              onTap: () =>
-                  Get.toNamed(Routes.PRODUCTS_SEARCH, arguments: {'id': ''}),
-              borderRadius: BorderRadius.circular(50),
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: FadeInLeft(
-                  child: CircleAvatar(
-                      child: CircleAvatar(
-                          child:
-                              Icon(Icons.search, color: Get.theme.primaryColor),
-                          radius: 24,
-                          backgroundColor: Colors.white),
-                      radius: 26,
-                      backgroundColor: Get.theme.primaryColor),
-                ),
-              ),
-            ),
-            Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 0),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[0]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[0].image,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 40),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[1]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[1].image,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 80),
-                  child: InkWell(
-                    onTap: () => controller.toProductView(porduct: list[2]),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInRight(
-                        child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                      imageUrl: list[2].image,
-                                      fit: BoxFit.cover),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                radius: 24),
-                            radius: 26,
-                            backgroundColor: Get.theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 
@@ -341,8 +244,10 @@ class ScanScreenView extends StatelessWidget {
             'Cuentale a un amigo',
           ),
           onTap: () async {
-            String url = "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
-            Share.share('Hey uso esta gran aplicación que te permite comparar los precios 🧐 $url');
+            String url =
+                "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
+            Share.share(
+                'Hey uso esta gran aplicación que te permite comparar los precios 🧐 $url');
           },
         ),
         SizedBox(width: 50.0, height: 50.0),
@@ -356,7 +261,9 @@ class ScanScreenView extends StatelessWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 

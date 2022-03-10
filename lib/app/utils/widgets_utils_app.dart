@@ -192,23 +192,24 @@ class _ProductoItemState extends State<ProductoItem> {
               ),
               // state selecct item
               welcomeController.getSelectItems
-                  ?Positioned.fill(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        child: Container(
-                            color: widget.producto.select
-                                ? Colors.grey.withOpacity(0.0)
-                                : Colors.grey.withOpacity(0.4)),
-                        onTap: () {
-                          setState(() {
-                            widget.producto.select = !widget.producto.select;
-                            welcomeController.updateSelectItemsLength();
-                          });
-                        },
+                  ? Positioned.fill(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          child: Container(
+                              color: widget.producto.select
+                                  ? Colors.grey.withOpacity(0.0)
+                                  : Colors.grey.withOpacity(0.4)),
+                          onTap: () {
+                            setState(() {
+                              widget.producto.select = !widget.producto.select;
+                              welcomeController.updateSelectItemsLength();
+                            });
+                          },
+                        ),
                       ),
-                    ),
-              ): Container(),
+                    )
+                  : Container(),
               // icon notify selecct item
               widget.producto.select
                   ? Align(
@@ -521,4 +522,92 @@ PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
           minHeight: 6.0,
           backgroundColor: Colors.white.withOpacity(0.3),
           valueColor: new AlwaysStoppedAnimation<Color>(color)));
+}
+
+class WidgetSuggestionProduct extends StatelessWidget {
+   bool searchButton = false;
+   List<Product> list = <Product>[];
+  WidgetSuggestionProduct({required this.list,this.searchButton=false});
+
+  @override
+  Widget build(BuildContext context) {
+    // controllers
+    WelcomeController welcomeController = Get.find<WelcomeController>();
+    if (list.length == 0) return Container();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            "sugerencias para ti",
+            style: Get.theme.textTheme.subtitle1,
+          ),
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            !searchButton?Container():InkWell(
+              onTap: () =>
+                  Get.toNamed(Routes.PRODUCTS_SEARCH, arguments: {'id': ''}),
+              borderRadius: BorderRadius.circular(50),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: FadeInLeft(
+                  child: CircleAvatar(
+                      child: CircleAvatar(
+                          child:
+                              Icon(Icons.search, color: Get.theme.primaryColor),
+                          radius: 24,
+                          backgroundColor: Colors.white),
+                      radius: 26,
+                      backgroundColor: Get.theme.primaryColor),
+                ),
+              ),
+            ),
+            Container(
+                width: 200,
+                height: 100,
+                child: Center(
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: list.length,
+                      itemBuilder: (context, index) {
+                        return Align(
+                          widthFactor: 0.5,
+                          child: InkWell(
+                            onTap: () => welcomeController.toProductView(
+                                porduct: list[index]),
+                            borderRadius: BorderRadius.circular(50),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: FadeInRight(
+                                child: CircleAvatar(
+                                    child: CircleAvatar(
+                                        child: ClipRRect(
+                                          child: CachedNetworkImage(
+                                              imageUrl: list[index].image,
+                                              fit: BoxFit.cover),
+                                          borderRadius:
+                                              BorderRadius.circular(999),
+                                        ),
+                                        radius: 24),
+                                    radius: 26,
+                                    backgroundColor: Get.theme.primaryColor),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                )),
+          ],
+        ),
+      ],
+    );
+  }
 }

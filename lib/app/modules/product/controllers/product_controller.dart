@@ -14,6 +14,7 @@ import '../../mainScreen/controllers/welcome_controller.dart';
 class ProductController extends GetxController {
   //  controller
   ScrollController scrollController = ScrollController();
+  static WelcomeController welcomeController = Get.find<WelcomeController>();
 
   // admob
   static bool _stateAds = false;
@@ -50,13 +51,22 @@ class ProductController extends GetxController {
     ),
   ).obs;
 
-  // controllers
-  static WelcomeController welcomeController = Get.find<WelcomeController>();
+  //  state add product
+  static RxBool _stateCheckProductInCatalogue = false.obs;
+  bool get getStateCheckProductInCatalogue =>
+      _stateCheckProductInCatalogue.value;
+  set setStateCheckProductInCatalogue(bool value) =>
+      _stateCheckProductInCatalogue.value = value;
+  //  state add product
+  static RxBool _stateLoadButtonAddProduct = false.obs;
+  bool get getStateLoadButtonAddProduct => _stateLoadButtonAddProduct.value;
+  set setStateLoadButtonAddProduct(bool value) =>
+      _stateLoadButtonAddProduct.value = value;
 
   // state - el producto se encuentra en el catálogo
-  static bool _isInCatalogue = false;
-  bool get getIsInCatalogue => _isInCatalogue;
-  set setIsInCatalogue(bool value) => _isInCatalogue = value;
+  static bool _inCatalogue = false;
+  bool get getInCatalogue => _inCatalogue;
+  set setInCatalogue(bool value) => _inCatalogue = value;
 
   // account profile
   static Rx<ProfileAccountModel> _profileBusinessModel =
@@ -166,6 +176,7 @@ class ProductController extends GetxController {
 // Functions
   void readData({required ProductCatalogue productCatalogue}) {
     //  values default
+    setStateCheckProductInCatalogue = false;
     setEveragePrice = 0;
     setListPricesForProduct = <Price>[];
     setListOthersProductsForCategoryCatalogue = <ProductCatalogue>[];
@@ -177,8 +188,8 @@ class ProductController extends GetxController {
     }
 
     // set - verificamos si se encuentra en el cátalogo de la cuenta
-    setIsInCatalogue = welcomeController.isCatalogue(id: productCatalogue.id);
-    setProduct = welcomeController.isCatalogue(id: productCatalogue.id)
+    setInCatalogue = welcomeController.isCatalogue(id: productCatalogue.id);
+    setProduct = getInCatalogue
         ? welcomeController.getProductCatalogue(id: productCatalogue.id)
         : productCatalogue;
 
@@ -272,6 +283,30 @@ class ProductController extends GetxController {
       setEveragePrice =
           averagePrice == 0 ? averagePrice : averagePrice ~/ list.length;
       setListPricesForProduct = list.cast<Price>();
+    });
+  }
+
+  void checkProducInCatalogue() {
+    setStateLoadButtonAddProduct = true;
+    // verificamos si el producto existe en el catálogo de la cuenta
+    Database.readProductCatalogueFuture(
+            idAccount: welcomeController.getUserAccountAuth.uid,
+            idProduct: getProduct.id)
+        .then((value) {
+      if (value.exists) {
+        setStateCheckProductInCatalogue = true;
+        setStateLoadButtonAddProduct = false;
+        Get.snackbar('😀 genial!', 'Este producto ya existe en tu catálogo');
+      } else {
+        setStateCheckProductInCatalogue = false;
+        setStateLoadButtonAddProduct = false;
+        welcomeController.setDataAccount(
+            id: welcomeController.getUserAccountAuth.uid);
+        toProductEdit();
+      }
+    }).catchError((error) {
+      setStateLoadButtonAddProduct = false;
+      Get.snackbar('Error', 'Comprobar la conexión a Internet');
     });
   }
 

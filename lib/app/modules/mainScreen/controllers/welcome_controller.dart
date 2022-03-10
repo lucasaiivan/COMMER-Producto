@@ -90,7 +90,8 @@ class WelcomeController extends GetxController {
       readProfileAccountStream(id: value);
     } else {
       // default
-      setProfileAccountSelected = ProfileAccountModel(creation: Timestamp.now());
+      setProfileAccountSelected =
+          ProfileAccountModel(creation: Timestamp.now());
       setMarkSelect = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
       setCategorySelect = Category();
       setsubCategorySelect = Category();
@@ -355,6 +356,9 @@ class WelcomeController extends GetxController {
   set setManagedAccountData(List<ProfileAccountModel> value) =>
       _managedAccountDataList.value = value;
   void addManagedAccount({required ProfileAccountModel profileData}) {
+    // default values
+    _managedAccountDataList = <ProfileAccountModel>[].obs;
+    // agregamos la nueva cuenta
     return _managedAccountDataList.add(profileData);
   }
 
@@ -376,12 +380,25 @@ class WelcomeController extends GetxController {
 
     // obtenemos por parametro los datos de la cuenta de atentificación
     Map map = Get.arguments as Map;
-    setUserAccountAuth = map['currentUser'];
 
-    // verificamos y cargamos datos de la cuenta
+    // verificamos y obtenemos los datos pasados por parametro
+    setUserAccountAuth = map['currentUser'];
     map.containsKey('idAccount')
-        ? setIdAccountSelected = Get.arguments['idAccount']
-        : setIdAccountSelected = '';
+        ? setDataAccount(id: Get.arguments['idAccount'])
+        : setDataAccount(id: '');
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {}
+
+  void setDataAccount({required String id}) {
+    // account
+    setIdAccountSelected = id;
 
     // verificamos si el usuario ha seleccionado una cuenta
     if (getIdAccountSelecte != '') {
@@ -393,14 +410,6 @@ class WelcomeController extends GetxController {
     // cargamos los datos de la app desde la db
     readListSuggestedProductsFuture();
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {}
 
   void logout() async {
     // aca implementamos el cierre de sesión dentro de la función logout.
@@ -458,7 +467,8 @@ class WelcomeController extends GetxController {
       Database.readProfileAccountModelFuture(idAccount).then((value) {
         //get
         if (value.exists) {
-          ProfileAccountModel profileAccount = ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
+          ProfileAccountModel profileAccount =
+              ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
           //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
           if (profileAccount.id != '') {
             addManagedAccount(profileData: profileAccount);
@@ -484,11 +494,12 @@ class WelcomeController extends GetxController {
 
   void readListSuggestedProductsFuture() {
     // obtenemos tres primeros obj(productos) desctacados para mostrarle al usuario
-    Database.readProductsFuture(limit: 3).then((value) {
+    Database.readProductsFavoritesFuture(limit: 4).then((value) {
       List<Product> list = [];
       value.docs
           .forEach((element) => list.add(Product.fromMap(element.data())));
       setListSuggestedProducts = list;
+      update(['scanScreen']);
     });
   }
 
@@ -657,7 +668,7 @@ class WelcomeController extends GetxController {
               CustomFullScreenDialog.showDialog();
 
               // set default
-               GetStorage().write('idAccount', '');
+              GetStorage().write('idAccount', '');
               setIdAccountSelected = '';
               // instancias de FirebaseAuth para proceder a cerrar sesión
               final FirebaseAuth firebaseAuth = FirebaseAuth.instance;

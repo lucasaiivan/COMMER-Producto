@@ -54,7 +54,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
         FadeInRight(
           child: controller.getproductDoesNotExist
               ? Container()
-              : widgetSuggestions(list: controller.getListProductsSuggestions),
+              : WidgetSuggestionProduct(list: controller.getListProductsSuggestions),
         ),
         Padding(
           padding: const EdgeInsets.all(20.0),

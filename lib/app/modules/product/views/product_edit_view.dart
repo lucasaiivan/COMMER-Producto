@@ -78,14 +78,15 @@ class ProductEdit extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          // button
           controller.getSaveIndicator
               ? Container()
               : controller.getNewProduct || controller.getEditModerator
-                  ? IconButton(
-                      onPressed: controller.getLoadImageCamera,
-                      icon: Icon(Icons.camera_alt, color: Colors.grey))
+                  ? IconButton(onPressed: controller.getLoadImageCamera,icon: Icon(Icons.camera_alt, color: Colors.grey))
                   : Container(),
+          //  image
           controller.loadImage(),
+          //  button
           controller.getSaveIndicator
               ? Container()
               : controller.getNewProduct || controller.getEditModerator

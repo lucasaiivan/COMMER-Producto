@@ -148,7 +148,7 @@ class ControllerProductsSearch extends GetxController {
   }
 
   void queryProductSuggestion() {
-    Database.readProductsFuture(limit: 4).then((value) {
+    Database.readProductsFuture(limit: 5).then((value) {
       List<Product> newList = [];
       value.docs
           .forEach((element) => newList.add(Product.fromMap(element.data())));

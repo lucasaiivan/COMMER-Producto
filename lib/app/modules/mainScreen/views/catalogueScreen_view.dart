@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +10,6 @@ import 'package:search_page/search_page.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/routes/app_pages.dart';
@@ -728,31 +725,4 @@ class WidgetsListaHorizontalMarksLoadAnim extends StatelessWidget {
   }
 }
 
-class WebViewApp extends StatefulWidget {
-  late String url;
-  WebViewApp({
-    Key? key,
-    required this.url,
-  }) : super(key: key);
-  @override
-  WebViewAppState createState() => WebViewAppState(url: url);
-}
 
-class WebViewAppState extends State<WebViewApp> {
-  late String url;
-  WebViewAppState({required url});
-
-  @override
-  void initState() {
-    super.initState();
-    // Enable virtual display.
-    if (Platform.isAndroid) WebView.platform = AndroidWebView();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return WebView(
-      initialUrl: url,
-    );
-  }
-}
