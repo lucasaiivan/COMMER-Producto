@@ -74,6 +74,7 @@ class ScanScreenView extends StatelessWidget {
   Widget body({required BuildContext context}) {
     // var
     Color color = Theme.of(context).textTheme.bodyText1!.color ?? Colors.purple;
+    Size size = Get.size;
 
     return GetBuilder<WelcomeController>(
       id: 'scanScreen',
@@ -87,8 +88,8 @@ class ScanScreenView extends StatelessWidget {
               splashColor: Get.theme.primaryColor,
               onTap: scanBarcodeNormal,
               child: Container(
-                width: 200,
-                height: 200,
+                width: size.width*0.5,
+                height: size.width*0.5,
                 margin: const EdgeInsets.all(0.0),
                 padding: const EdgeInsets.all(30.0),
                 decoration: BoxDecoration(
@@ -97,8 +98,6 @@ class ScanScreenView extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(30.0))),
                 child: Image(
                     color: color,
-                    height: 200.0,
-                    width: 200.0,
                     image: AssetImage('assets/barcode.png'),
                     fit: BoxFit.contain),
               ),

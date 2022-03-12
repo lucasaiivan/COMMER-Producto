@@ -11,7 +11,8 @@ class Product {
   String description = ""; // Informacion
   String code = "";
   Timestamp creation = Timestamp.now(); // Marca de tiempo ( hora en que se creo el producto )
-  Timestamp upgrade = Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
+  Timestamp upgrade =
+      Timestamp.now(); // Marca de tiempo ( hora en que se edito el producto )
 
   Product({
     this.id = "",
@@ -124,15 +125,17 @@ class ProductCatalogue {
   String nameCategory = ""; // name category
   String subcategory = ""; // ID de la subcategoria del producto
   String nameSubcategory = ""; // name subcategory
-  Timestamp creation = Timestamp.now(); // Marca de tiempo ( hora en que se creo el documento )
-  Timestamp upgrade = Timestamp.now(); // Marca de tiempo ( hora en que se actualizaron los datos )
+  Timestamp creation =
+      Timestamp.now(); // Marca de tiempo ( hora en que se creo el documento )
+  Timestamp upgrade = Timestamp
+      .now(); // Marca de tiempo ( hora en que se actualizaron los datos )
 
   // Datos del producto
   bool verified = false; // estado de verificación por un moderador
   // Var
   double salePrice = 0.0;
   double purchasePrice = 0.0;
-  String currencySign= "\$"; // signo de la moneda
+  String currencySign = "\$"; // signo de la moneda
   // var optional
   bool select = false;
 
@@ -157,8 +160,7 @@ class ProductCatalogue {
     this.currencySign = "\$",
     this.idMark = '',
     this.nameMark = '',
-    this.select=false,
-
+    this.select = false,
   });
 
   factory ProductCatalogue.fromMap(Map data) {
@@ -206,8 +208,10 @@ class ProductCatalogue {
       purchasePrice: data.containsKey('purchasePrice')
           ? data['purchasePrice']
           : data['precio_compra'] ?? 0.0,
-      currencySign:data.containsKey('currencySign') ? data['currencySign'] : data['signo_moneda'] ?? '',
-      select:false,
+      currencySign: data.containsKey('currencySign')
+          ? data['currencySign']
+          : data['signo_moneda'] ?? '',
+      select: false,
     );
   }
 
@@ -233,7 +237,8 @@ class ProductCatalogue {
 
   Product convertProductoDefault() {
     // convertimos en el modelo para producto global
-    Product productoDefault = new Product(upgrade: Timestamp.now(), creation: Timestamp.now());
+    Product productoDefault =
+        new Product(upgrade: Timestamp.now(), creation: Timestamp.now());
     productoDefault.id = this.id;
     productoDefault.image = this.image;
     productoDefault.verified = this.verified;
@@ -282,7 +287,9 @@ class Price {
     nameAccount = data['nameAccount'] ?? '';
     price = data.containsKey('price') ? data['price'] : data['precio'] ?? 0.0;
     time = data.containsKey('time') ? data['time'] : data['timestamp'];
-    currencySign = data.containsKey('currencySign') ? data['currencySign'] : data['moneda'] ?? '';
+    currencySign = data.containsKey('currencySign')
+        ? data['currencySign']
+        : data['moneda'] ?? '';
     province = data.containsKey('province')
         ? data['province']
         : data['provincia'] ?? '';
@@ -329,10 +336,10 @@ class Category {
     Map data = documentSnapshot.data() as Map;
 
     id = data['id'] ?? '';
-    name =  data.containsKey('name') ? data['name'] : data['nombre'] ?? '';
-    subcategories =data.containsKey('subcategories')
-          ? data['subcategories']
-          : data['subcategorias'] ?? new Map<String, dynamic>();
+    name = data.containsKey('name') ? data['name'] : data['nombre'] ?? '';
+    subcategories = data.containsKey('subcategories')
+        ? data['subcategories']
+        : data['subcategorias'] ?? new Map<String, dynamic>();
   }
 }
 
@@ -344,8 +351,10 @@ class Mark {
   bool verified = false;
   // Datos de la creación
   String idUsuarioCreador = ""; // ID el usuaruio que creo el productos
-  Timestamp creation = Timestamp.now(); // Marca de tiempo de la creacion del documento
-  Timestamp upgrade = Timestamp.now(); // Marca de tiempo de la ultima actualizacion
+  Timestamp creation =
+      Timestamp.now(); // Marca de tiempo de la creacion del documento
+  Timestamp upgrade =
+      Timestamp.now(); // Marca de tiempo de la ultima actualizacion
 
   Mark({
     this.id = "",
@@ -359,19 +368,70 @@ class Mark {
   Mark.fromMap(Map data) {
     id = data['id'] ?? '';
     name = data.containsKey('name') ? data['name'] : data['titulo'] ?? '';
-    description = data.containsKey('description') ? data['description'] : data['descripcion'] ?? '';
-    image = data.containsKey('image') ? data['image'] : data['url_imagen'] ?? '';
-    verified = data.containsKey('verified') ? data['verified'] : data['verificado'] ?? false;
-    creation = data.containsKey('creation') ? data['creation'] :data['timestampCreacion'] ?? Timestamp.now();
-    upgrade = data.containsKey('upgrade') ? data['upgrade'] :data['timestampUpdate'] ?? Timestamp.now();
+    description = data.containsKey('description')
+        ? data['description']
+        : data['descripcion'] ?? '';
+    image =
+        data.containsKey('image') ? data['image'] : data['url_imagen'] ?? '';
+    verified = data.containsKey('verified')
+        ? data['verified']
+        : data['verificado'] ?? false;
+    creation = data.containsKey('creation')
+        ? data['creation']
+        : data['timestampCreacion'] ?? Timestamp.now();
+    upgrade = data.containsKey('upgrade')
+        ? data['upgrade']
+        : data['timestampUpdate'] ?? Timestamp.now();
   }
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "description": description,
-    "image": image,
-    "verified": verified,
-    "creation": creation,
-    "upgrade": upgrade,
-  };
+        "id": id,
+        "name": name,
+        "description": description,
+        "image": image,
+        "verified": verified,
+        "creation": creation,
+        "upgrade": upgrade,
+      };
+}
+
+class ReportProduct {
+  String id = ''; // idUser=idUserReport
+  String idProduct = '';
+  String idUserReport = '';
+  String description = '';
+  late Timestamp time ; // Marca de tiempo ( hora en que se reporto el producto )
+
+  ReportProduct({
+    this.id = "",
+    this.idProduct = "",
+    this.idUserReport = "",
+    this.description = "",
+    required this.time,
+  });
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "idProduct": idProduct,
+        "idUserReport": idUserReport,
+        "description": description,
+        "time": time,
+      };
+  factory ReportProduct.fromMap(Map<String, dynamic> data) {
+    return ReportProduct(
+      id: data['id'] ?? '',
+      idProduct: data['name'] ?? '',
+      idUserReport: data['idUserReport'] ?? '',
+      description: data['description'] ?? '',
+      time: data['time'],
+    );
+  }
+  ReportProduct.fromDocumentSnapshot(
+      {required DocumentSnapshot documentSnapshot}) {
+    Map data = documentSnapshot.data() as Map;
+
+    id = data['id'] ?? '';
+    idProduct = data['name'] ?? '';
+    idUserReport = data['idUserReport'] ?? '';
+    description = data['description'] ?? '';
+    time = data['time'] ;
+  }
 }

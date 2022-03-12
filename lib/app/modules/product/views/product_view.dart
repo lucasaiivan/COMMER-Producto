@@ -236,6 +236,7 @@ class Product extends GetView<ProductController> {
   Widget background({required BuildContext buildContext}) {
     return Obx(() => Column(
           children: [
+            // AppBar
             Row(
               children: [
                 IconButton(onPressed: Get.back, icon: Icon(Icons.arrow_back)),
@@ -253,6 +254,10 @@ class Product extends GetView<ProductController> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisSize: MainAxisSize.max,
                       children: [
+                        IconButton(
+                          onPressed: controller.showDialogReportProduct,
+                          icon: Icon(Icons.report_outlined),
+                        ),
                         IconButton(
                           padding: EdgeInsets.all(12.0),
                           icon: Icon(Icons.share_outlined),
@@ -326,6 +331,7 @@ class Product extends GetView<ProductController> {
                 ),
               ],
             ),
+            // body
             Expanded(
               child: SingleChildScrollView(
                 controller: controller.scrollController,

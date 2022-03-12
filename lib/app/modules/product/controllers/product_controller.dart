@@ -63,6 +63,11 @@ class ProductController extends GetxController {
   set setStateLoadButtonAddProduct(bool value) =>
       _stateLoadButtonAddProduct.value = value;
 
+  //  state report product
+  static RxBool _stateReportProduct = false.obs;
+  bool get getStateReportProduct => _stateReportProduct.value;
+  set setStateReportProduct(bool value) => _stateReportProduct.value = value;
+
   // state - el producto se encuentra en el catálogo
   static bool _inCatalogue = false;
   bool get getInCatalogue => _inCatalogue;
@@ -308,6 +313,74 @@ class ProductController extends GetxController {
       setStateLoadButtonAddProduct = false;
       Get.snackbar('Error', 'Comprobar la conexión a Internet');
     });
+  }
+
+  void showDialogReportProduct() {
+    const String option1 =
+        'La información no corresponde al código de identificación (código de barras)';
+    const String option2 = 'La imagen no corresponde a este producto';
+    const String option3 = 'La marca no corresponde a este producto';
+    const String option4 = 'Otro';
+
+    Widget widget = SimpleDialog(
+      title: const Text('Seleccione una opción que corresponda'),
+      children: <Widget>[
+        SimpleDialogOption(
+          onPressed: () {
+            Get.back();
+            reportPorduct(option: option1);
+          },
+          child: const Text(option1),
+        ),
+        SimpleDialogOption(
+          onPressed: () {
+            Get.back();
+            reportPorduct(option: option2);
+          },
+          child: const Text(option2),
+        ),
+        SimpleDialogOption(
+          onPressed: () {
+            Get.back();
+            reportPorduct(option: option3);
+          },
+          child: const Text(option3),
+        ),
+        SimpleDialogOption(
+          onPressed: () {
+            Get.back();
+            reportPorduct(option: option4);
+          },
+          child: const Text(option4),
+        ),
+        TextButton(
+          child: Text('Cancelar'),
+          onPressed: Get.back,
+        ),
+      ],
+    );
+    //  show
+    Get.dialog(
+      widget,
+    );
+  }
+
+  void reportPorduct({required String option}) {
+    setStateReportProduct = true;
+    CollectionReference refReport = Database.refFirestoreReportProduct();
+    ReportProduct report = ReportProduct(
+      time: Timestamp.now(),
+      id: welcomeController.getUserAccountAuth.uid + getProduct.id,
+      idProduct: getProduct.id,
+      idUserReport: welcomeController.getUserAccountAuth.uid,
+      description: option,
+    );
+    if(report.id!=''){
+      refReport.doc(report.id).set(report.toJson());
+      Get.snackbar('Reporte enviado 👍', 'Gracias por su colaboración para mejorar la calidad de la información',animationDuration: Duration(seconds: 2));
+    }else{
+      Get.snackbar('Reporte no enviar', 'Lo sentimos el informe no se pudo enviar');
+    }
   }
 
   // navigator
