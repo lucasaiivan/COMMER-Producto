@@ -313,7 +313,7 @@ class ProductEdit extends StatelessWidget {
                             icon: Icon(Icons.security, color: Colors.white),
                             onPressed: () {
                               if (controller.getEditModerator) {
-                                showDialogSaveOPTDeveloper();
+                                controller.showDialogSaveOPTDeveloper();
                               }
                               controller.setEditModerator =
                                   !controller.getEditModerator;
@@ -333,7 +333,7 @@ class ProductEdit extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 0, vertical: 5),
                             icon: Icon(Icons.security, color: Colors.white),
-                            onPressed: showDialogDeleteOPTDeveloper,
+                            onPressed: controller.showDialogDeleteOPTDeveloper,
                             colorAccent: Colors.white,
                             colorButton: Colors.red,
                             text: "Eliminar documento",
@@ -427,53 +427,7 @@ class ProductEdit extends StatelessWidget {
         ),
       ),
     ));
-  }
-
-  void showDialogDeleteOPTDeveloper() {
-    Get.dialog(AlertDialog(
-      title: new Text(
-          "¿Seguro que quieres eliminar este documento definitivamente? (Mods)"),
-      content: new Text(
-          "El producto será eliminado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
-      actions: <Widget>[
-        // usually buttons at the bottom of the dialog
-        new TextButton(
-          child: new Text("Cancelar"),
-          onPressed: () => Get.back(),
-        ),
-        new TextButton(
-          child: new Text("Borrar"),
-          onPressed: () {
-            Get.back();
-            controller.deleteProducPublic();
-          },
-        ),
-      ],
-    ));
-  }
-
-  void showDialogSaveOPTDeveloper() {
-    Get.dialog(AlertDialog(
-      title: new Text("¿Seguro que quieres actualizar este docuemnto? (Mods)"),
-      content: new Text(
-          "El producto será actualizado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
-      actions: <Widget>[
-        // usually buttons at the bottom of the dialog
-        new TextButton(
-          child: new Text("Cancelar"),
-          onPressed: () => Get.back(),
-        ),
-        new TextButton(
-          child: new Text("Actualizar"),
-          onPressed: () {
-            Get.back();
-            controller.saveProductPublic();
-          },
-        ),
-      ],
-    ));
-  }
-}
+  }}
 
 // category
 class SelectCategory extends StatefulWidget {

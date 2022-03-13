@@ -1,7 +1,9 @@
 import 'dart:math';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/modules/auth/controller/login_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // RELEASE
 // En esta pantalla de inicio de sesión, agregaremos un logotipo, dos campos de texto y firmaremos con el botón de Google
@@ -10,8 +12,8 @@ class AuthView extends GetView<LoginController> {
   AuthView({Key? key}) : super(key: key);
 
   // var
-  Color colorFondo = Colors.deepPurple, colorAccent = Colors.deepPurple;
-  PageController _controller = PageController(initialPage: 0);
+  static Color colorFondo = Colors.deepPurple, colorAccent = Colors.deepPurple;
+  static PageController _controller = PageController(initialPage: 0);
   late Size
       screenSize; // Obtenemos las vavriables de la dimension de la pantalla
 
@@ -73,14 +75,57 @@ class AuthView extends GetView<LoginController> {
             onPressed: controller.login,
           ),
         ),
-        SizedBox(
-          height: 20.0,
-        ),
+        widgetCheckAcceptPrivacyAndUsePolicy(),
       ],
     );
   }
 
   /// WIDGETS COMPONENT
+  Widget widgetCheckAcceptPrivacyAndUsePolicy() {
+    TextStyle defaultStyle = TextStyle(color: Get.theme.textTheme.bodyText1!.color);
+    TextStyle linkStyle = TextStyle(color: Colors.blue);
+    RichText text = RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        style: defaultStyle,
+        children: <TextSpan>[
+          TextSpan(
+              text: 'Al hacer clic en INICIAR SESIÓN, usted ah leído y acepta nuestros '),
+          TextSpan(
+              text: 'Términos y condiciones de uso',
+              style: linkStyle,
+              recognizer: TapGestureRecognizer()
+                ..onTap = () async{
+                  String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso";
+                  if (await canLaunch(url)) {await launch(url);} else {throw 'Could not launch $url';
+            }
+                }),
+          TextSpan(text: ' y '),
+          TextSpan(
+              text: 'Política de privacidad',
+              style: linkStyle,
+              recognizer: TapGestureRecognizer()
+                ..onTap = () async{
+                  String url = "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";
+                  if (await canLaunch(url)) {await launch(url);} else {throw 'Could not launch $url';}
+                }),
+        ],
+      ),
+    );
+
+    return Obx(() => Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CheckboxListTile(
+        checkColor: Colors.white,
+        activeColor: Colors.blue,
+            title: text,
+            value: controller.getStateCheckAcceptPrivacyAndUsePolicy,
+            onChanged: (value) =>
+                controller.setStateCheckAcceptPrivacyAndUsePolicy = value!,
+          ),
+    ));
+  }
+
   Widget dotsIndicator(
       {required BuildContext context,
       required PageController pageController,
@@ -106,22 +151,22 @@ class AuthView extends GetView<LoginController> {
 
     List<Widget> _pages = [
       componente(
-          iconData: Icons.search,
-          texto: "ESCANEA",
+          iconData: Icons.qr_code_scanner_rounded,
+          texto: "ESCANEA CON TU CÁMARA",
           descripcion:
-              "Solo tenes que enfocar el producto para obtenes la información en el acto",
+              "Solo tienes que enfocar tu cámara \nal código de barra de tu producto \npara obtener la información en el acto 👌",
           brightness: Get.theme.brightness),
       componente(
           iconData: Icons.monetization_on,
           texto: "¿QUERES SABER EL PRECIO?",
           descripcion:
-              "Compara el precios de diferentes comerciantes o podes compartir el tuyo",
+              "Compara precios de diferentes comerciantes o puedes compartir los tuyos",
           brightness: Get.theme.brightness),
       componente(
           iconData: Icons.category,
           texto: "Crea tu catálogo",
-          descripcion: "Arma tu catalogo con tus productos",
-          brightness:Get.theme.brightness),
+          descripcion: "Arma tu catálogo con tus productos \n 🍫🍬🥫🍾",
+          brightness: Get.theme.brightness),
     ];
 
     return Container(
@@ -149,7 +194,6 @@ class AuthView extends GetView<LoginController> {
       required String texto,
       required String descripcion,
       Brightness brightness = Brightness.light}) {
-
     // var
     Color colorPrimary = Get.theme.brightness == Brightness.dark
         ? Colors.white
@@ -162,17 +206,18 @@ class AuthView extends GetView<LoginController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(iconData, size: 100.0, color: colorPrimary),
-            SizedBox(height: 12.0),
+            Icon(iconData, size: 100.0, color: colorPrimary.withOpacity(0.5)),
+            SizedBox(height: 20.0),
             Text(texto,
                 style: TextStyle(fontSize: 24.0, color: colorPrimary),
                 textAlign: TextAlign.center),
+            SizedBox(height: 12.0),
             descripcion != ""
                 ? Text(
                     descripcion,
                     style: TextStyle(
                       fontSize: 16.0,
-                      color: colorPrimary,
+                      color: colorPrimary.withOpacity(0.8),
                     ),
                     textAlign: TextAlign.center,
                   )

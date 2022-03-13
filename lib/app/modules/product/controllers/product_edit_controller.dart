@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/services/database.dart';
-
 import '../views/product_edit_view.dart';
 
 class ControllerProductsEdit extends GetxController {
@@ -191,8 +189,7 @@ class ControllerProductsEdit extends GetxController {
 
                 // Mods - save data product global
                 if (getNewProduct || getEditModerator) {
-                  getProduct.verified =
-                      true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                  getProduct.verified = true; // TODO: Para desarrollo verificado es TRUE // Cambiar esto cuando se lanze a producción A FALSE
                   saveProductPublic();
                 }
 
@@ -233,7 +230,7 @@ class ControllerProductsEdit extends GetxController {
                     .catchError((_) => setSaveIndicator = false);
               } else {
                 getProduct.verified =
-                    true; // TODO: Para desarrollo verificado es FALSE // Cambiar esto cuando se lanze a producción
+                    true; // TODO: Para desarrollo verificado es TRUE // Cambiar esto cuando se lanze a producción a FALSE
                 saveProductPublic();
               }
             } else {
@@ -253,17 +250,6 @@ class ControllerProductsEdit extends GetxController {
             'No se puedo guardar los datos', 'debes seleccionar una categoría');
       }
     }
-  }
-
-  // DEVELOPER OPTIONS
-  isFavorite() {
-    getProduct.favorite = !getProduct.favorite;
-    update(['updateAll']);
-  }
-
-  checkProduct() {
-    getProduct.verified = !getProduct.verified;
-    update(['updateAll']);
   }
 
   Future<void> saveProductPublic() async {
@@ -487,4 +473,62 @@ class ControllerProductsEdit extends GetxController {
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
+
+
+  // DEVELOPER OPTIONS
+  isFavorite() {
+    getProduct.favorite = !getProduct.favorite;
+    update(['updateAll']);
+  }
+
+  checkProduct() {
+    getProduct.verified = !getProduct.verified;
+    update(['updateAll']);
+  }
+  void showDialogDeleteOPTDeveloper() {
+    Get.dialog(AlertDialog(
+      title: new Text(
+          "¿Seguro que quieres eliminar este documento definitivamente? (Mods)"),
+      content: new Text(
+          "El producto será eliminado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        new TextButton(
+          child: new Text("Cancelar"),
+          onPressed: () => Get.back(),
+        ),
+        new TextButton(
+          child: new Text("Borrar"),
+          onPressed: () {
+            Get.back();
+            deleteProducPublic();
+          },
+        ),
+      ],
+    ));
+  }
+
+  void showDialogSaveOPTDeveloper() {
+    Get.dialog(AlertDialog(
+      title: new Text("¿Seguro que quieres actualizar este docuemnto? (Mods)"),
+      content: new Text(
+          "El producto será actualizado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        new TextButton(
+          child: new Text("Cancelar"),
+          onPressed: () => Get.back(),
+        ),
+        new TextButton(
+          child: new Text("Actualizar"),
+          onPressed: () {
+            Get.back();
+            saveProductPublic();
+          },
+        ),
+      ],
+    ));
+  }
+
+
 }
