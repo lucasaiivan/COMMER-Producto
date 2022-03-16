@@ -83,7 +83,7 @@ class WelcomeController extends GetxController {
   set setUserAccountAuth(User user) => _userAccountAuth = user;
 
   // profile of the selected account
-  RxString idAccountSelected = ''.obs;
+  static RxString idAccountSelected = ''.obs;
   set setIdAccountSelected(String value) {
     idAccountSelected.value = value;
     if (value != '') {
@@ -699,8 +699,7 @@ class WelcomeController extends GetxController {
   }
 
   ProductCatalogue getProductCatalogue({required String id}) {
-    ProductCatalogue product =
-        ProductCatalogue(creation: Timestamp.now(), upgrade: Timestamp.now());
+    ProductCatalogue product = ProductCatalogue(creation: Timestamp.now(), upgrade: Timestamp.now());
     getCataloProducts.forEach((element) {
       if (element.id == id) {
         product = element;

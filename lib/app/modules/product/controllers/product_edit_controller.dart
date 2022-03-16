@@ -461,7 +461,7 @@ class ControllerProductsEdit extends GetxController {
   }
 
   showModalSelectMarca() {
-    Widget widget = SelectMark();
+    Widget widget = WidgetSelectMark();
     // muestre la hoja inferior modal de getx
     Get.bottomSheet(
       widget,

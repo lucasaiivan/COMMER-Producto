@@ -249,6 +249,54 @@ class ScanScreenView extends StatelessWidget {
                 'Hey uso esta gran aplicación que te permite comparar los precios 🧐 $url');
           },
         ),
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text("Información legal",
+                  style:
+                      TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+            ),
+            Expanded(
+              child: Divider(
+                endIndent: 12.0,
+                indent: 12.0,
+                height: 2.0,
+                thickness: 2.0,
+              ),
+            ),
+          ],
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              child: Icon(Icons.assignment_outlined)),
+          title: Text('Términos y condiciones de uso'),
+          onTap: () async {
+            String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
+            if (await canLaunch(url)) {
+              await launch(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.all(12.0),
+          leading: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              child: Icon(Icons.privacy_tip_outlined)),
+          title: Text('Política de privacidad'),
+          onTap: () async {
+            String url = "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";
+            if (await canLaunch(url)) {
+              await launch(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+        ),
         SizedBox(width: 50.0, height: 50.0),
       ],
     );

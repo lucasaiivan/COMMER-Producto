@@ -47,8 +47,7 @@ void main() async {
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
-      themeMode: isDark? ThemeMode.dark
-          : ThemeMode.light,
+      themeMode: isDark? ThemeMode.dark:ThemeMode.light,
       theme: ThemeData(
         primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor: ThemesDataApp.colorLight,

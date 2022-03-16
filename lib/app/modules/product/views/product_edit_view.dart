@@ -14,6 +14,8 @@ import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:search_page/search_page.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
 
 class ProductEdit extends StatelessWidget {
   ProductEdit({Key? key}) : super(key: key);
@@ -82,7 +84,9 @@ class ProductEdit extends StatelessWidget {
           controller.getSaveIndicator
               ? Container()
               : controller.getNewProduct || controller.getEditModerator
-                  ? IconButton(onPressed: controller.getLoadImageCamera,icon: Icon(Icons.camera_alt, color: Colors.grey))
+                  ? IconButton(
+                      onPressed: controller.getLoadImageCamera,
+                      icon: Icon(Icons.camera_alt, color: Colors.grey))
                   : Container(),
           //  image
           controller.loadImage(),
@@ -427,7 +431,8 @@ class ProductEdit extends StatelessWidget {
         ),
       ),
     ));
-  }}
+  }
+}
 
 // category
 class SelectCategory extends StatefulWidget {
@@ -965,6 +970,7 @@ class _CreateMarkState extends State<CreateMark> {
   final ControllerProductsEdit controllerProductsEdit = Get.find();
 
   //var
+  var uuid = Uuid();
   bool newMark = false;
   String title = 'Crear nueva marca';
   bool load = false;
@@ -1130,8 +1136,12 @@ class _CreateMarkState extends State<CreateMark> {
 
     // set values
     widget.mark.verified = true;
-    if (widget.mark.id == '')
-      widget.mark.id = new DateTime.now().millisecondsSinceEpoch.toString();
+    if (widget.mark.id == '') {
+      widget.mark.id = uuid.v1();
+      if (widget.mark.id == '') {
+        widget.mark.id = new DateTime.now().millisecondsSinceEpoch.toString();
+      }
+    }
     if (widget.mark.name != '') {
       // image save
       // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
@@ -1180,14 +1190,14 @@ class _CreateMarkState extends State<CreateMark> {
 }
 
 // select mark
-class SelectMark extends StatefulWidget {
-  SelectMark({Key? key}) : super(key: key);
+class WidgetSelectMark extends StatefulWidget {
+  WidgetSelectMark({Key? key}) : super(key: key);
 
   @override
-  _SelectMarkState createState() => _SelectMarkState();
+  _WidgetSelectMarkState createState() => _WidgetSelectMarkState();
 }
 
-class _SelectMarkState extends State<SelectMark> {
+class _WidgetSelectMarkState extends State<WidgetSelectMark> {
   //  controllers
   ControllerProductsEdit controllerProductsEdit = Get.find();
   //  var

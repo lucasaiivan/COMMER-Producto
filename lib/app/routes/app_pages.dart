@@ -11,9 +11,7 @@ import 'package:producto/app/modules/mainScreen/bindings/welcome_binding.dart';
 import 'package:producto/app/modules/mainScreen/views/mainScreen_view.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/modules/splash/views/splash_view.dart';
-
 import '../modules/auth/views/login_view.dart';
-
 part 'app_routes.dart';
 
 class AppPages {

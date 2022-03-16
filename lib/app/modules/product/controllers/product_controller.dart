@@ -14,7 +14,7 @@ import '../../mainScreen/controllers/welcome_controller.dart';
 class ProductController extends GetxController {
   //  controller
   ScrollController scrollController = ScrollController();
-  static WelcomeController welcomeController = Get.find<WelcomeController>();
+  WelcomeController welcomeController = Get.find<WelcomeController>();
 
   // admob
   static bool _stateAds = false;
@@ -193,7 +193,7 @@ class ProductController extends GetxController {
     }
 
     // set - verificamos si se encuentra en el cátalogo de la cuenta
-    setInCatalogue = welcomeController.isCatalogue(id: productCatalogue.id);
+    setInCatalogue = welcomeController.isCatalogue(id: getProduct.id);
     setProduct = getInCatalogue
         ? welcomeController.getProductCatalogue(id: productCatalogue.id)
         : productCatalogue;
@@ -238,17 +238,17 @@ class ProductController extends GetxController {
   }
 
   void readMark() {
-    Database.readMarkFuture(id: getProduct.idMark)
-        .then((value) => setMark = Mark.fromMap(value.data() as Map));
-  }
-
-  void readProfileBusiness({required String id}) {
-    Database.readProfileAccountModelFuture(id).then((value) =>
-        setProfileBusiness = ProfileAccountModel.fromMap(value.data() as Map));
+    Database.readMarkFuture(id: getProduct.idMark).then((value) {
+      if (value.exists) {
+        setMark = Mark.fromMap(value.data() as Map);
+      } else {
+        setMark = Mark.fromMap(value.data() as Map);
+      }
+    });
   }
 
   void readOthersProductsCategoryCatalogue() {
-    List<ProductCatalogue> list = [];
+    List<dynamic> list = [];
     welcomeController.getCataloProducts.forEach((element) {
       if (getCategory.id == element.category ||
           getSubcategory.id == element.subcategory) {
@@ -375,11 +375,14 @@ class ProductController extends GetxController {
       idUserReport: welcomeController.getUserAccountAuth.uid,
       description: option,
     );
-    if(report.id!=''){
+    if (report.id != '') {
       refReport.doc(report.id).set(report.toJson());
-      Get.snackbar('Reporte enviado 👍', 'Gracias por su colaboración para mejorar la calidad de la información',animationDuration: Duration(seconds: 2));
-    }else{
-      Get.snackbar('Reporte no enviar', 'Lo sentimos el informe no se pudo enviar');
+      Get.snackbar('Reporte enviado 👍',
+          'Gracias por su colaboración para mejorar la calidad de la información',
+          animationDuration: Duration(seconds: 2));
+    } else {
+      Get.snackbar(
+          'Reporte no enviar', 'Lo sentimos el informe no se pudo enviar');
     }
   }
 

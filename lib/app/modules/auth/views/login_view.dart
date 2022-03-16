@@ -96,7 +96,7 @@ class AuthView extends GetView<LoginController> {
               style: linkStyle,
               recognizer: TapGestureRecognizer()
                 ..onTap = () async{
-                  String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso";
+                  String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
                   if (await canLaunch(url)) {await launch(url);} else {throw 'Could not launch $url';
             }
                 }),
@@ -164,7 +164,7 @@ class AuthView extends GetView<LoginController> {
           brightness: Get.theme.brightness),
       componente(
           iconData: Icons.category,
-          texto: "Crea tu catálogo",
+          texto: "CREA TU CATÁLOGO",
           descripcion: "Arma tu catálogo con tus productos \n 🍫🍬🥫🍾",
           brightness: Get.theme.brightness),
     ];
