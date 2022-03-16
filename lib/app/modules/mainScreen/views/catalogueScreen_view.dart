@@ -365,8 +365,7 @@ class CatalogueScreenView extends StatelessWidget {
                   return ProductoItem(
                       producto: controller.getCatalogueLoad[index - 1]);
                 } else {
-                  return Card(
-                      elevation: 0, color: Colors.grey.withOpacity(0.1));
+                  return Card(elevation: 0, color: Colors.grey.withOpacity(0.1));
                 }
               },
               childCount: controller.getCatalogueLoad.length + itemsDefault,

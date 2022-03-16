@@ -11,7 +11,6 @@ class AccountView extends GetView<AccountController> {
 
 
   // VAriables
-  late final BuildContext context;
 
   final FocusNode focusTextEdiNombre = FocusNode();
   final FocusNode focusTextEditDescripcion = FocusNode();
@@ -23,9 +22,8 @@ class AccountView extends GetView<AccountController> {
 
   @override
   Widget build(BuildContext buildContext) {
-    context = buildContext;
 
-    return scaffold(buildContext: context);
+    return scaffold(buildContext: buildContext);
   }
 
   Widget scaffold({required BuildContext buildContext}) {
@@ -33,7 +31,7 @@ class AccountView extends GetView<AccountController> {
         id: 'load',
         builder: (_) {
           return Scaffold(
-            appBar: appBar(),
+            appBar: appBar(context: buildContext),
             body: controller.stateLoding?Center(child: Text('cargando...'),):ListView(
               padding: EdgeInsets.all(12.0),
               children: [
@@ -56,7 +54,7 @@ class AccountView extends GetView<AccountController> {
                     SizedBox(
                       height: 24.0,
                     ),
-                    widgetFormEditText(),
+                    widgetFormEditText(context: buildContext),
                   ],
                 ),
               ],
@@ -66,7 +64,7 @@ class AccountView extends GetView<AccountController> {
   }
 
   // WIDGET
-  PreferredSizeWidget appBar() {
+  PreferredSizeWidget appBar({required BuildContext context}) {
     return AppBar(
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       elevation: 0,
@@ -162,7 +160,7 @@ class AccountView extends GetView<AccountController> {
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
-  Widget widgetFormEditText() {
+  Widget widgetFormEditText({required BuildContext context}) {
     return Obx(() => Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,7 +174,7 @@ class AccountView extends GetView<AccountController> {
                     controller.profileAccount.name = value,
                 decoration: InputDecoration(
                   filled: true,
-                  labelText: "Nombre",
+                  labelText: "Nombre del Negocio",
                 ),
                 controller: TextEditingController(
                     text: controller.profileAccount.name),
@@ -197,7 +195,7 @@ class AccountView extends GetView<AccountController> {
                     controller.profileAccount.description = value,
                 decoration: InputDecoration(
                   filled: true,
-                  labelText: "Descripción",
+                  labelText: "Descripción (opcional)",
                 ),
                 controller: TextEditingController(
                     text: controller.profileAccount.description),
@@ -210,7 +208,7 @@ class AccountView extends GetView<AccountController> {
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
-                onTap: () => _bottomPickerSelectCurreny(list: ["\$"]),
+                onTap: () => _bottomPickerSelectCurreny(list: ["\$"],context: context),
                 child: TextField(
                   minLines: 1,
                   maxLines: 5,
@@ -264,8 +262,8 @@ class AccountView extends GetView<AccountController> {
               InkWell(
                 onTap: () => controller.profileAccount.country == ''
                     ? _bottomPickerSelectCountries(
-                        list: controller.getCountries)
-                    : _bottomPickerSelectCities(list: controller.getCities),
+                        list: controller.getCountries,context: context)
+                    : _bottomPickerSelectCities(list: controller.getCities,context: context),
                 child: TextField(
                     minLines: 1,
                     maxLines: 5,
@@ -283,7 +281,7 @@ class AccountView extends GetView<AccountController> {
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
                 onTap: () =>
-                    _bottomPickerSelectCountries(list: controller.getCountries),
+                    _bottomPickerSelectCountries(list: controller.getCountries,context:context ),
                 child: TextField(
                   minLines: 1,
                   maxLines: 5,
@@ -304,7 +302,7 @@ class AccountView extends GetView<AccountController> {
         ));
   }
 
-  void _bottomPickerSelectCities({required List list}) async {
+  void _bottomPickerSelectCities({required List list,required BuildContext context}) async {
     //  el usuario va a seleccionar una opción
     int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal
@@ -347,7 +345,7 @@ class AccountView extends GetView<AccountController> {
     );
   }
 
-  void _bottomPickerSelectCountries({required List list}) async {
+  void _bottomPickerSelectCountries({required List list,required BuildContext context}) async {
     //  el usuario va a seleccionar una opción
     int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal
@@ -390,7 +388,7 @@ class AccountView extends GetView<AccountController> {
     );
   }
 
-  void _bottomPickerSelectCurreny({required List list}) async {
+  void _bottomPickerSelectCurreny({required List list,required BuildContext context}) async {
     //  el usuario va a seleccionar una opción
     int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal

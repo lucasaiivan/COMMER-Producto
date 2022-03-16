@@ -478,7 +478,7 @@ class Product extends GetView<ProductController> {
                       : welcomeController.getManagedAccountData.length == 0
                           ? TextButton(
                               onPressed: () => Get.toNamed(Routes.ACCOUNT),
-                              child: Text('Crear mi catálogo'))
+                              child: Text('Agregar a mi catálogo'))
                           : controller.getStateLoadButtonAddProduct
                               ? CircularProgressIndicator()
                               : TextButton(
@@ -593,17 +593,9 @@ class Product extends GetView<ProductController> {
                           style: TextStyle(
                               fontStyle: FontStyle.normal, color: colorText),
                         ),
-                        Text(
-                            "En " +
-                                        controller
-                                            .getListPricesForProduct[index].town
-                                            .toString() ==
-                                    ""
-                                ? controller
-                                    .getListPricesForProduct[index].province
-                                    .toString()
-                                : controller.getListPricesForProduct[index].town
-                                    .toString(),
+                        Text("En " + (controller.getListPricesForProduct[index].town.isEmpty
+                                ? controller .getListPricesForProduct[index].province.toString()
+                                : controller.getListPricesForProduct[index].town.toString()),
                             style: TextStyle(
                                 color: colorText, fontWeight: FontWeight.bold)),
                       ],
