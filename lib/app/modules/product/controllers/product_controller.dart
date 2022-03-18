@@ -52,77 +52,71 @@ class ProductController extends GetxController {
   ).obs;
 
   //  state add product
-  static RxBool _stateCheckProductInCatalogue = false.obs;
+  RxBool _stateCheckProductInCatalogue = false.obs;
   bool get getStateCheckProductInCatalogue =>
       _stateCheckProductInCatalogue.value;
   set setStateCheckProductInCatalogue(bool value) =>
       _stateCheckProductInCatalogue.value = value;
   //  state add product
-  static RxBool _stateLoadButtonAddProduct = false.obs;
+  RxBool _stateLoadButtonAddProduct = false.obs;
   bool get getStateLoadButtonAddProduct => _stateLoadButtonAddProduct.value;
   set setStateLoadButtonAddProduct(bool value) =>
       _stateLoadButtonAddProduct.value = value;
 
   //  state report product
-  static RxBool _stateReportProduct = false.obs;
+  RxBool _stateReportProduct = false.obs;
   bool get getStateReportProduct => _stateReportProduct.value;
   set setStateReportProduct(bool value) => _stateReportProduct.value = value;
 
   // state - el producto se encuentra en el catálogo
-  static bool _inCatalogue = false;
+  bool _inCatalogue = false;
   bool get getInCatalogue => _inCatalogue;
   set setInCatalogue(bool value) => _inCatalogue = value;
 
-  // account profile
-  static Rx<ProfileAccountModel> _profileBusinessModel =
-      ProfileAccountModel(creation: Timestamp.now()).obs;
-  ProfileAccountModel get getProfileBusiness => _profileBusinessModel.value;
-  set setProfileBusiness(ProfileAccountModel model) =>
-      _profileBusinessModel.value = model;
 
-  static Rx<ProductCatalogue> _product =
+  Rx<ProductCatalogue> _product =
       ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
   ProductCatalogue get getProduct => _product.value;
   set setProduct(ProductCatalogue product) => _product.value = product;
 
-  static Rx<Mark> _mark =
+  Rx<Mark> _mark =
       Mark(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
   Mark get getMark => _mark.value;
   set setMark(Mark value) => _mark.value = value;
 
-  static Rx<Category> _category = Category(id: '', name: '').obs;
+  Rx<Category> _category = Category(id: '', name: '').obs;
   Category get getCategory => _category.value;
   set setCategory(Category value) => _category.value = value;
 
-  static Rx<Category> _subcategory = Category(id: '', name: '').obs;
+  Rx<Category> _subcategory = Category(id: '', name: '').obs;
   Category get getSubcategory => _subcategory.value;
   set setSubcategory(Category value) => _subcategory.value = value;
 
   // otros productos de la misma marca
-  static RxList<Product> _listOthersProductsForMark = <Product>[].obs;
+  RxList<Product> _listOthersProductsForMark = <Product>[].obs;
   List<Product> get getListOthersProductsForMark => _listOthersProductsForMark;
   set setListOthersProductsForMark(List<Product> value) =>
       _listOthersProductsForMark.value = value;
 
-  static RxBool _stateViewProductsMark = false.obs;
+  RxBool _stateViewProductsMark = false.obs;
   bool get getStateViewProductsMark => _stateViewProductsMark.value;
   set setStateViewProductsMark(bool value) =>
       _stateViewProductsMark.value = value;
 
   // otros productos de la misma categoria del cátalogo
-  static RxList<ProductCatalogue> _listOthersProductsForCategoryCatalogue =
+  RxList<ProductCatalogue> _listOthersProductsForCategoryCatalogue =
       <ProductCatalogue>[].obs;
   List<ProductCatalogue> get getListOthersProductsForCategoryCatalogue =>
       _listOthersProductsForCategoryCatalogue;
   set setListOthersProductsForCategoryCatalogue(List<ProductCatalogue> value) =>
       _listOthersProductsForCategoryCatalogue.value = value;
 
-  static RxList<Price> _listPricesForProduct = <Price>[].obs;
+  RxList<Price> _listPricesForProduct = <Price>[].obs;
   List<Price> get getListPricesForProduct => _listPricesForProduct;
   set setListPricesForProduct(List<Price> value) =>
       _listPricesForProduct.value = value;
 
-  static RxInt _everagePrice = 0.obs;
+  RxInt _everagePrice = 0.obs;
   int get getEveragePrice => _everagePrice.value;
   set setEveragePrice(int value) {
     _everagePrice.value = value;
@@ -191,17 +185,16 @@ class ProductController extends GetxController {
       setListOthersProductsForMark = <Product>[];
       setStateViewProductsMark = false;
     }
-
     // set - verificamos si se encuentra en el cátalogo de la cuenta
-    setInCatalogue = welcomeController.isCatalogue(id: getProduct.id);
-    setProduct = getInCatalogue
-        ? welcomeController.getProductCatalogue(id: productCatalogue.id)
-        : productCatalogue;
-
-    readCategory();
-    readMark();
-    readListPricesForProduct();
-    readOthersProductsCategoryCatalogue();
+    setInCatalogue = welcomeController.isCatalogue(id: productCatalogue.id);
+    setProduct = getInCatalogue?welcomeController.getProductCatalogue(id: productCatalogue.id): productCatalogue;
+    if(!getProduct.id.isEmpty){
+      readCategory();
+      readMark();
+      readListPricesForProduct();
+      readOthersProductsCategoryCatalogue();
+    }
+    
     if (scrollController.hasClients)
       scrollController.animateTo(0,
           duration: const Duration(milliseconds: 500), curve: Curves.linear);
@@ -238,13 +231,16 @@ class ProductController extends GetxController {
   }
 
   void readMark() {
-    Database.readMarkFuture(id: getProduct.idMark).then((value) {
-      if (value.exists) {
-        setMark = Mark.fromMap(value.data() as Map);
-      } else {
-        setMark = Mark.fromMap(value.data() as Map);
-      }
-    });
+    if(!getProduct.idMark.isEmpty){
+      Database.readMarkFuture(id: getProduct.idMark).then((value) {
+        if (value.exists) {
+          setMark = Mark.fromMap(value.data() as Map);
+        } else {
+          setMark = Mark.fromMap(value.data() as Map);
+        }
+      });
+    }
+    
   }
 
   void readOthersProductsCategoryCatalogue() {

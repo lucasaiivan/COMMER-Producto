@@ -459,6 +459,7 @@ class WelcomeController extends GetxController {
         .then((value) => Mark.fromMap(value.data() as Map))
         .catchError((error) =>
             Mark(upgrade: Timestamp.now(), creation: Timestamp.now()));
+    
   }
 
   void readAccountsData({required String idAccount}) {
@@ -571,7 +572,7 @@ class WelcomeController extends GetxController {
     // obtenemos la marca de cada producto en un nueva lista
     // y finamente la agregamos con los datos cargados para mostrar al usuario
     for (var productoNegocio in list) {
-      if (productoNegocio.idMark != '') {
+      if (!productoNegocio.idMark.isEmpty) {
         readMark(id: productoNegocio.idMark)
             .then((value) => addMark(markParam: value));
       }

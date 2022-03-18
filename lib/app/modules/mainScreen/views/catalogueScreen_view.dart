@@ -317,7 +317,7 @@ class CatalogueScreenView extends StatelessWidget {
   Widget gridViewLoadAny() {
     //var
     int itemsDefault = 0;
-    if (controller.getCatalogueLoad.length < 15) itemsDefault = 12;
+    if (controller.getCatalogueLoad.length <= 15) itemsDefault = 12;
     if (controller.getCatalogueLoad.length > 15) itemsDefault = 3;
 
     return LoadAny(

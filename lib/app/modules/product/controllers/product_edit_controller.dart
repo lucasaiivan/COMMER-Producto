@@ -12,6 +12,7 @@ import 'package:producto/app/services/database.dart';
 import '../views/product_edit_view.dart';
 
 class ControllerProductsEdit extends GetxController {
+
   // others controllers
   final WelcomeController welcomeController = Get.find();
 
@@ -55,8 +56,7 @@ class ControllerProductsEdit extends GetxController {
   ProductCatalogue get getProduct => _product;
 
   // TextEditingController
-  TextEditingController controllerTextEdit_descripcion =
-      TextEditingController();
+  TextEditingController controllerTextEdit_descripcion = TextEditingController();
   MoneyMaskedTextController controllerTextEdit_precio_venta =
       MoneyMaskedTextController();
   MoneyMaskedTextController controllerTextEdit_precio_compra =
@@ -325,7 +325,8 @@ class ControllerProductsEdit extends GetxController {
   }
 
   void readMarkProducts() {
-    Database.readMarkFuture(id: getProduct.idMark).then((value) {
+    if(!getProduct.idMark.isEmpty){
+      Database.readMarkFuture(id: getProduct.idMark).then((value) {
       setMarkSelected = Mark.fromMap(value.data() as Map);
       getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
       update(['updateAll']);
@@ -336,6 +337,8 @@ class ControllerProductsEdit extends GetxController {
       setMarkSelected =
           Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
     });
+    }
+    
   }
 
   void readCategory() {

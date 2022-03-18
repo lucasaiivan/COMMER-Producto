@@ -588,13 +588,15 @@ class WidgetSuggestionProduct extends StatelessWidget {
                               padding: const EdgeInsets.all(5.0),
                               child: FadeInRight(
                                 child: CircleAvatar(
+                                    foregroundColor: Colors.grey,
                                     child: CircleAvatar(
+                                      foregroundColor: Colors.grey,
                                         child: ClipRRect(
                                           child: CachedNetworkImage(
                                               imageUrl: list[index].image,
-                                              fit: BoxFit.cover),
+                                              fadeInDuration: Duration(milliseconds: 200),fit: BoxFit.cover,),
                                           borderRadius:
-                                              BorderRadius.circular(999),
+                                              BorderRadius.circular(50),
                                         ),
                                         radius: 24),
                                     radius: 26,

@@ -124,6 +124,7 @@ class ProductEdit extends StatelessWidget {
                 ),
                 border: OutlineInputBorder(),
                 labelText: "Descripción"),
+                textInputAction: TextInputAction.done,
             controller: controller.controllerTextEdit_descripcion,
           ),
           space,
@@ -182,6 +183,7 @@ class ProductEdit extends StatelessWidget {
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "Precio de compra"),
+                      textInputAction: TextInputAction.next,
                       //style: textStyle,
                       controller: controller.controllerTextEdit_precio_compra,
                     ),
@@ -196,6 +198,7 @@ class ProductEdit extends StatelessWidget {
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "Precio de venta"),
+                      textInputAction: TextInputAction.done,
                       //style: textStyle,
                       controller: controller.controllerTextEdit_precio_venta,
                     ),

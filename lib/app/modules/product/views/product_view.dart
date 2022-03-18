@@ -364,12 +364,9 @@ class Product extends GetView<ProductController> {
         ));
   }
 
-  Widget persistentHeader(
-      {required Color colorBackground, required Color colorText}) {
-    // view
+  Widget persistentHeader({required Color colorBackground, required Color colorText}) {
     return Obx(() => ClipRRect(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
           child: Container(
             color: colorBackground,
             margin: EdgeInsets.all(0),
@@ -381,8 +378,7 @@ class Product extends GetView<ProductController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   welcomeController.getIdAccountSelecte != ''
-                      ? welcomeController.isCatalogue(
-                              id: controller.getProduct.id)
+                      ? welcomeController.isCatalogue(id: controller.getProduct.id)
                           ? controller.getProduct.salePrice != 0.0
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
