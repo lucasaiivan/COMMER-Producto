@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clipboard/clipboard.dart';
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -54,7 +59,8 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
         FadeInRight(
           child: controller.getproductDoesNotExist
               ? Container()
-              : WidgetSuggestionProduct(list: controller.getListProductsSuggestions),
+              : WidgetSuggestionProduct(
+                  list: controller.getListProductsSuggestions),
         ),
         Padding(
           padding: const EdgeInsets.all(20.0),
@@ -129,7 +135,9 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                       child: Text(
                         "El producto aún no existe, ayúdenos a registrar nuevos productos para que esta aplicación sea aún más útil para la comunidad 💪",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14.0,color: controller.getColorTextField),
+                        style: TextStyle(
+                            fontSize: 14.0,
+                            color: controller.getColorTextField),
                       ),
                     )
                   : Container(),
@@ -145,6 +153,23 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                       colorButton: controller.getButtonData.colorButton,
                     )
                   : Container(),
+              SizedBox(height: 12.0),
+              button(
+                icon: Icon(Icons.explicit_outlined,
+                    color: controller.getButtonData.colorText),
+                onPressed: () {
+                  if (controller.getListExcelToJson.length == 0) {
+                    controller.convert();
+                  } else {
+                    controller.openDialogListExcel();
+                  }
+                },
+                text: controller.getListExcelToJson.length == 0
+                    ? "Cargar Archivo Excel de productos"
+                    : 'ver lista de excel',
+                colorAccent: controller.getButtonData.colorText,
+                colorButton: controller.getButtonData.colorButton,
+              ),
               SizedBox(width: 50.0, height: 50.0),
             ],
           ),
@@ -234,7 +259,8 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
             Padding(
               padding: const EdgeInsets.only(left: 0),
               child: InkWell(
-                onTap: () => controller.toProductView(porduct: list[0].convertProductCatalogue()),
+                onTap: () => controller.toProductView(
+                    porduct: list[0].convertProductCatalogue()),
                 borderRadius: BorderRadius.circular(50),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -243,8 +269,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         child: CircleAvatar(
                             child: ClipRRect(
                               child: CachedNetworkImage(
-                                  imageUrl: list[0].image,
-                                  fit: BoxFit.cover),
+                                  imageUrl: list[0].image, fit: BoxFit.cover),
                               borderRadius: BorderRadius.circular(999),
                             ),
                             radius: 24),
@@ -257,7 +282,8 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
             Padding(
               padding: const EdgeInsets.only(left: 40),
               child: InkWell(
-                onTap: () => controller.toProductView(porduct: list[1].convertProductCatalogue()),
+                onTap: () => controller.toProductView(
+                    porduct: list[1].convertProductCatalogue()),
                 borderRadius: BorderRadius.circular(50),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -266,8 +292,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         child: CircleAvatar(
                             child: ClipRRect(
                               child: CachedNetworkImage(
-                                  imageUrl: list[1].image,
-                                  fit: BoxFit.cover),
+                                  imageUrl: list[1].image, fit: BoxFit.cover),
                               borderRadius: BorderRadius.circular(999),
                             ),
                             radius: 24),
@@ -280,7 +305,8 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
             Padding(
               padding: const EdgeInsets.only(left: 80),
               child: InkWell(
-                onTap: () => controller.toProductView(porduct: list[2].convertProductCatalogue()),
+                onTap: () => controller.toProductView(
+                    porduct: list[2].convertProductCatalogue()),
                 borderRadius: BorderRadius.circular(50),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -289,8 +315,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         child: CircleAvatar(
                             child: ClipRRect(
                               child: CachedNetworkImage(
-                                  imageUrl: list[2].image,
-                                  fit: BoxFit.cover),
+                                  imageUrl: list[2].image, fit: BoxFit.cover),
                               borderRadius: BorderRadius.circular(999),
                             ),
                             radius: 24),
@@ -303,7 +328,8 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
             Padding(
               padding: const EdgeInsets.only(left: 120),
               child: InkWell(
-                onTap: () => controller.toProductView(porduct: list[3].convertProductCatalogue()),
+                onTap: () => controller.toProductView(
+                    porduct: list[3].convertProductCatalogue()),
                 borderRadius: BorderRadius.circular(50),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -312,8 +338,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         child: CircleAvatar(
                             child: ClipRRect(
                               child: CachedNetworkImage(
-                                  imageUrl: list[3].image,
-                                  fit: BoxFit.cover),
+                                  imageUrl: list[3].image, fit: BoxFit.cover),
                               borderRadius: BorderRadius.circular(999),
                             ),
                             radius: 24),

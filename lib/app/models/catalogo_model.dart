@@ -237,8 +237,7 @@ class ProductCatalogue {
 
   Product convertProductoDefault() {
     // convertimos en el modelo para producto global
-    Product productoDefault =
-        new Product(upgrade: Timestamp.now(), creation: Timestamp.now());
+    Product productoDefault = new Product(upgrade: Timestamp.now(), creation: Timestamp.now());
     productoDefault.id = this.id;
     productoDefault.image = this.image;
     productoDefault.verified = this.verified;
@@ -251,6 +250,21 @@ class ProductCatalogue {
     productoDefault.creation = this.creation;
 
     return productoDefault;
+  }
+  ProductCatalogue updateData({required Product}) {
+    // actualizamos los datos del documento publico
+    this.id = Product.id;
+    this.image = Product.image;
+    this.verified = Product.verified;
+    this.favorite = Product.favorite;
+    this.idMark = Product.idMark;
+    this.nameMark = Product.nameMark;
+    this.description = Product.description;
+    this.code = Product.code;
+    this.upgrade = Product.upgrade;
+    this.creation = Product.creation;
+
+    return this;
   }
 }
 

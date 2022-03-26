@@ -15,7 +15,6 @@ import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:search_page/search_page.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/uuid_util.dart';
 
 class ProductEdit extends StatelessWidget {
   ProductEdit({Key? key}) : super(key: key);
@@ -124,7 +123,7 @@ class ProductEdit extends StatelessWidget {
                 ),
                 border: OutlineInputBorder(),
                 labelText: "Descripción"),
-                textInputAction: TextInputAction.done,
+            textInputAction: TextInputAction.done,
             controller: controller.controllerTextEdit_descripcion,
           ),
           space,

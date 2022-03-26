@@ -1,4 +1,9 @@
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
@@ -17,7 +22,6 @@ class ButtonData {
 }
 
 class ControllerProductsSearch extends GetxController {
-
   // controllers
   late final WelcomeController welcomeController;
 
@@ -47,6 +51,16 @@ class ControllerProductsSearch extends GetxController {
     ThemeService.switchThemeDefault();
     super.onClose();
   }
+
+  // product
+  ProductCatalogue productSelect =
+      ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+
+  // list excel to json
+  static List<Map<String, dynamic>> listExcelToJson = [];
+  set setListExcelToJson(List<Map<String, dynamic>> value) =>
+      listExcelToJson = value;
+  List<Map<String, dynamic>> get getListExcelToJson => listExcelToJson;
 
   // result text
   String _codeBarParameter = "";
@@ -138,6 +152,7 @@ class ControllerProductsSearch extends GetxController {
   }
 
   void clean() {
+    setStateSearch = false;
     textEditingController.clear();
     setproductDoesNotExist = false;
     setButtonData(colorButton: Get.theme.primaryColor, colorText: Colors.white);
@@ -164,9 +179,105 @@ class ControllerProductsSearch extends GetxController {
 
   void toProductNew({required String id}) {
     clean();
-    Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {
-      'product': ProductCatalogue(
-          id: id, code: id, upgrade: Timestamp.now(), creation: Timestamp.now())
-    });
+    Get.toNamed(Routes.PRODUCTS_EDIT,
+        arguments: {'new': true, 'product': productSelect});
+  }
+
+  // TODO : eliminar para release
+  convert() async {
+    FilePickerResult? file = await FilePicker.platform.pickFiles(
+        type: FileType.custom, allowedExtensions: ['xlsx', 'csv', 'xls']);
+    if (file != null && file.files.isNotEmpty) {
+      var bytes = File(file.files.first.path!).readAsBytesSync();
+      var excel = Excel.decodeBytes(bytes);
+      int i = 0;
+      List<dynamic> keys = <dynamic>[];
+      List<Map<String, dynamic>> json = <Map<String, dynamic>>[];
+      for (var table in excel.tables.keys) {
+        // leer las filas
+        for (var row in excel.tables[table]?.rows ?? []) {
+          try {
+            if (i == 0) {
+              keys = row; // columnas
+              i++;
+            } else {
+              Map<String, dynamic> temp = Map<String, dynamic>();
+              int j = 0;
+              String tk = '';
+              // definimos cuantas columnas queremos recorrer
+              for (var key in keys) {
+                tk = key.value;
+                temp[tk] = (row[j].runtimeType == String)
+                    ? "\u201C" + row[j].value + "\u201D"
+                    : row[j].value;
+                // las columnas que quiero obtener
+                if (j == 3) break;
+                j++;
+              }
+              json.add(temp);
+            }
+          } catch (ex) {
+            printError(info: ex.toString());
+          }
+        }
+      }
+
+      setListExcelToJson = json;
+    } else {
+      setListExcelToJson = [];
+    }
+    update(['updateAll']);
+  }
+
+  void openDialogListExcel() {
+    Widget widget = ListView.builder(
+      itemCount: getListExcelToJson.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          trailing: Icon(Icons.check_circle,
+              color: welcomeController.isCatalogue(
+                      id: getListExcelToJson[index]['Código'])
+                  ? Colors.green
+                  : null),
+          title: Text(
+            getListExcelToJson[index]['Producto'],
+            maxLines: 2,
+          ),
+          subtitle: Text(getListExcelToJson[index]['Código']),
+          onTap: () {
+            //  set
+            productSelect.id = getListExcelToJson[index]['Código'];
+            productSelect.code = getListExcelToJson[index]['Código'];
+            productSelect.description = getListExcelToJson[index]['Producto'];
+            productSelect.purchasePrice = double.tryParse(
+                    getListExcelToJson[index]['P. Costo']
+                        .toString()
+                        .replaceAll('\$', '')
+                        .replaceAll(',', '.')) ??
+                0.0;
+            productSelect.salePrice = double.tryParse(getListExcelToJson[index]
+                        ['P. Venta']
+                    .toString()
+                    .replaceAll('\$', '')
+                    .replaceAll(',', '.')) ??
+                0.0;
+            Get.back();
+            textEditingController.text = productSelect.id;
+            queryProduct(id: productSelect.id);
+          },
+        );
+      },
+    );
+    Get.dialog(
+      AlertDialog(
+        content: Container(width: 500, height: double.infinity, child: widget),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Get.back(),
+          ),
+        ],
+      ),
+    );
   }
 }

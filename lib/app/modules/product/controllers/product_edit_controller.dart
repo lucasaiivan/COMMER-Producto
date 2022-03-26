@@ -12,7 +12,6 @@ import 'package:producto/app/services/database.dart';
 import '../views/product_edit_view.dart';
 
 class ControllerProductsEdit extends GetxController {
-
   // others controllers
   final WelcomeController welcomeController = Get.find();
 
@@ -56,7 +55,8 @@ class ControllerProductsEdit extends GetxController {
   ProductCatalogue get getProduct => _product;
 
   // TextEditingController
-  TextEditingController controllerTextEdit_descripcion = TextEditingController();
+  TextEditingController controllerTextEdit_descripcion =
+      TextEditingController();
   MoneyMaskedTextController controllerTextEdit_precio_venta =
       MoneyMaskedTextController();
   MoneyMaskedTextController controllerTextEdit_precio_compra =
@@ -121,11 +121,12 @@ class ControllerProductsEdit extends GetxController {
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
     setProduct = Get.arguments['product'] ?? ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
-    setNewProduct = getProduct.description == '';
+    setNewProduct =  Get.arguments['new'] ?? false;
     // load data product
+    loadDataProduct();
     if (getNewProduct == false) {
       // el documento existe
-      loadDataProduct();
+      getDataProduct(id: getProduct.id);
       isCatalogue();
     }
 
@@ -175,8 +176,7 @@ class ControllerProductsEdit extends GetxController {
               if (getXFileImage.path != '') {
                 // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
                 // si es asi procede a guardar la imagen en la base de la app
-                Reference ref =
-                    Database.referenceStorageProductPublic(id: getProduct.id);
+                Reference ref = Database.referenceStorageProductPublic(id: getProduct.id);
                 UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
                 await uploadTask;
                 // obtenemos la url de la imagen guardada
@@ -189,7 +189,7 @@ class ControllerProductsEdit extends GetxController {
 
                 // Mods - save data product global
                 if (getNewProduct || getEditModerator) {
-                  getProduct.verified = true; // TODO: Para desarrollo verificado es TRUE // Cambiar esto cuando se lanze a producción A FALSE
+                  getProduct.verified =true; // TODO: Para desarrollo verificado es TRUE // Cambiar esto cuando se lanze a producción A FALSE
                   saveProductPublic();
                 }
 
@@ -310,6 +310,21 @@ class ControllerProductsEdit extends GetxController {
     });
   }
 
+  void getDataProduct({required String id}) {
+    Database.readProductGlobalFuture(id: id).then((value) {
+      //  get
+      Product product = Product.fromMap(value.data() as Map);
+      //  set
+      setProduct = getProduct.updateData(Product: product);
+      loadDataProduct();
+    }).catchError((error) {
+      printError(info: error.toString());
+    }).onError((error, stackTrace) {
+      loadDataProduct();
+      printError(info: error.toString());
+    });
+  }
+
   void loadDataProduct() {
     // set
     controllerTextEdit_descripcion =
@@ -325,20 +340,19 @@ class ControllerProductsEdit extends GetxController {
   }
 
   void readMarkProducts() {
-    if(!getProduct.idMark.isEmpty){
+    if (!getProduct.idMark.isEmpty) {
       Database.readMarkFuture(id: getProduct.idMark).then((value) {
-      setMarkSelected = Mark.fromMap(value.data() as Map);
-      getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
-      update(['updateAll']);
-    }).onError((error, stackTrace) {
-      setMarkSelected =
-          Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
-    }).catchError((_) {
-      setMarkSelected =
-          Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
-    });
+        setMarkSelected = Mark.fromMap(value.data() as Map);
+        getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
+        update(['updateAll']);
+      }).onError((error, stackTrace) {
+        setMarkSelected =
+            Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+      }).catchError((_) {
+        setMarkSelected =
+            Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+      });
     }
-    
   }
 
   void readCategory() {
@@ -477,7 +491,6 @@ class ControllerProductsEdit extends GetxController {
     );
   }
 
-
   // DEVELOPER OPTIONS
   isFavorite() {
     getProduct.favorite = !getProduct.favorite;
@@ -488,6 +501,7 @@ class ControllerProductsEdit extends GetxController {
     getProduct.verified = !getProduct.verified;
     update(['updateAll']);
   }
+
   void showDialogDeleteOPTDeveloper() {
     Get.dialog(AlertDialog(
       title: new Text(
@@ -526,12 +540,10 @@ class ControllerProductsEdit extends GetxController {
           child: new Text("Actualizar"),
           onPressed: () {
             Get.back();
-            saveProductPublic();
+            save();
           },
         ),
       ],
     ));
   }
-
-
 }

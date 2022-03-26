@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:producto/app/models/catalogo_model.dart';
-import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/dynamicTheme_lb.dart';
