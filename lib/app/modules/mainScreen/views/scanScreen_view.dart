@@ -181,6 +181,7 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Icons.logout,color:  Utils.getRandomColor()[300],),
           title: Text('Cerrar sesión'),
+          subtitle: Text(controller.getUserAccountAuth.email??controller.getUserAccountAuth.displayName??''),
           onTap: controller.showDialogCerrarSesion,
         ),
         Row(

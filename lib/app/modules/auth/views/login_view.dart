@@ -100,7 +100,7 @@ class AuthView extends GetView<LoginController> {
                   if (await canLaunch(url)) {await launch(url);} else {throw 'Could not launch $url';
             }
                 }),
-          TextSpan(text: ' y '),
+          TextSpan(text: ' así también como la '),
           TextSpan(
               text: 'Política de privacidad',
               style: linkStyle,

@@ -106,16 +106,19 @@ class DashedCirclePainter extends CustomPainter {
 
 Widget viewCircleImage(
     {required String url, required String texto, double size = 85.0}) {
+  //values
+  MaterialColor color = Utils.getRandomColor();
   if (texto == '') texto = 'Image';
 
   Widget imageDefault = CircleAvatar(
-    backgroundColor: Colors.black26,
+    backgroundColor: color.withOpacity(0.1),
     radius: size,
     child: Text(texto.substring(0, 1),
         style: TextStyle(
-            fontSize: size / 2,
-            color: Colors.white,
-            fontWeight: FontWeight.bold)),
+          fontSize: size / 2,
+          color: color,
+          fontWeight: FontWeight.bold,
+        )),
   );
 
   return Container(
@@ -525,9 +528,9 @@ PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
 }
 
 class WidgetSuggestionProduct extends StatelessWidget {
-   bool searchButton = false;
-   List<Product> list = <Product>[];
-  WidgetSuggestionProduct({required this.list,this.searchButton=false});
+  bool searchButton = false;
+  List<Product> list = <Product>[];
+  WidgetSuggestionProduct({required this.list, this.searchButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -551,24 +554,26 @@ class WidgetSuggestionProduct extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            !searchButton?Container():InkWell(
-              onTap: () =>
-                  Get.toNamed(Routes.PRODUCTS_SEARCH, arguments: {'id': ''}),
-              borderRadius: BorderRadius.circular(50),
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: FadeInLeft(
-                  child: CircleAvatar(
-                      child: CircleAvatar(
-                          child:
-                              Icon(Icons.search, color: Get.theme.primaryColor),
-                          radius: 24,
-                          backgroundColor: Colors.white),
-                      radius: 26,
-                      backgroundColor: Get.theme.primaryColor),
-                ),
-              ),
-            ),
+            !searchButton
+                ? Container()
+                : InkWell(
+                    onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
+                        arguments: {'id': ''}),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FadeInLeft(
+                        child: CircleAvatar(
+                            child: CircleAvatar(
+                                child: Icon(Icons.search,
+                                    color: Get.theme.primaryColor),
+                                radius: 28,
+                                backgroundColor: Colors.white),
+                            radius: 30,
+                            backgroundColor: Get.theme.primaryColor),
+                      ),
+                    ),
+                  ),
             Container(
                 width: 200,
                 height: 100,
@@ -590,16 +595,19 @@ class WidgetSuggestionProduct extends StatelessWidget {
                                 child: CircleAvatar(
                                     foregroundColor: Colors.grey,
                                     child: CircleAvatar(
-                                      foregroundColor: Colors.grey,
+                                        foregroundColor: Colors.grey,
                                         child: ClipRRect(
                                           child: CachedNetworkImage(
-                                              imageUrl: list[index].image,
-                                              fadeInDuration: Duration(milliseconds: 200),fit: BoxFit.cover,),
+                                            imageUrl: list[index].image,
+                                            fadeInDuration:
+                                                Duration(milliseconds: 200),
+                                            fit: BoxFit.cover,
+                                          ),
                                           borderRadius:
                                               BorderRadius.circular(50),
                                         ),
-                                        radius: 24),
-                                    radius: 26,
+                                        radius: 28),
+                                    radius: 30,
                                     backgroundColor: Get.theme.primaryColor),
                               ),
                             ),
