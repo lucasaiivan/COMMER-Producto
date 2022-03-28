@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Buscardor {
@@ -125,5 +128,27 @@ class Publicaciones {
       ganancia = precioVenta - precioCompra;
     }
     return Publicaciones.getFormatoPrecio(monto: ganancia);
+  }
+}
+class Utils {
+  // Devuelve un color Random
+  static MaterialColor getRandomColor() {
+    List<MaterialColor> lista_color = [
+      Colors.amber,
+      Colors.blue,
+      Colors.blueGrey,
+      Colors.brown,
+      Colors.cyan,
+      Colors.deepOrange,
+      Colors.deepPurple,
+      Colors.green,
+      Colors.grey,
+      Colors.indigo,
+      Colors.red,
+      Colors.lime,
+      Colors.pink,
+    ];
+
+    return lista_color[Random().nextInt(lista_color.length)];
   }
 }

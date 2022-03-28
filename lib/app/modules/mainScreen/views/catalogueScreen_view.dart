@@ -16,6 +16,7 @@ import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 
 import '../../../utils/dynamicTheme_lb.dart';
+import '../../../utils/functions.dart';
 import 'widgets/showDialog.dart';
 
 class CatalogueScreenView extends StatelessWidget {
@@ -427,7 +428,8 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Get.theme.brightness != Brightness.light
               ? Icons.brightness_high
-              : Icons.brightness_3),
+              : Icons.brightness_3,
+              color: Utils.getRandomColor()[300],),
           title: Text(Get.theme.brightness == Brightness.light
               ? 'Aplicar de tema oscuro'
               : 'Aplicar de tema claro'),
@@ -440,15 +442,14 @@ class CatalogueScreenView extends StatelessWidget {
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: controller.getProfileAccountSelected.image == ""
-              ? Icon(Icons.account_circle)
+              ? Icon(Icons.account_circle,color: Utils.getRandomColor()[300],)
               : CachedNetworkImage(
                   imageUrl: controller.getProfileAccountSelected.image,
-                  placeholder: (context, url) =>
-                      const Icon(Icons.account_circle),
+                  placeholder: (context, url) => Icon(Icons.account_circle,color: Utils.getRandomColor()[300],),
                   imageBuilder: (context, image) =>
                       CircleAvatar(backgroundImage: image, radius: 18.0),
                   errorWidget: (context, url, error) =>
-                      Icon(Icons.account_circle),
+                      Icon(Icons.account_circle,color: Utils.getRandomColor()[300],),
                 ),
           title: Text('Editar perfil'),
           onTap: () {
@@ -459,7 +460,7 @@ class CatalogueScreenView extends StatelessWidget {
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
-          leading: Icon(Icons.logout),
+          leading: Icon(Icons.logout,color: Utils.getRandomColor()[300],),
           title: Text('Cerrar sesión'),
           onTap: controller.showDialogCerrarSesion,
         ),
@@ -485,7 +486,7 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: FaIcon(FontAwesomeIcons.instagram)),
+              child: FaIcon(FontAwesomeIcons.instagram,color: Utils.getRandomColor()[300],)),
           title: Text('Instagram'),
           subtitle: Text('Déjanos una sugerencia'),
           onTap: () async {
@@ -502,7 +503,7 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: FaIcon(FontAwesomeIcons.googlePlay)),
+              child: FaIcon(FontAwesomeIcons.googlePlay,color: Utils.getRandomColor()[300],)),
           title: Text(
             'Califícanos ⭐',
           ),
@@ -519,9 +520,7 @@ class CatalogueScreenView extends StatelessWidget {
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
-          leading: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: Icon(Icons.share_outlined)),
+          leading: Padding(padding: EdgeInsets.symmetric(horizontal: 6.0),child: Icon(Icons.share_outlined,color: Utils.getRandomColor()[400],)),
           title: Text(
             'Cuentale a un amigo',
           ),
@@ -554,7 +553,7 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: Icon(Icons.assignment_outlined)),
+              child: Icon(Icons.assignment_outlined,color: Utils.getRandomColor()[400],)),
           title: Text('Términos y condiciones de uso'),
           onTap: () async {
             String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
@@ -569,7 +568,7 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: Icon(Icons.privacy_tip_outlined)),
+              child: Icon(Icons.privacy_tip_outlined,color: Utils.getRandomColor()[400],)),
           title: Text('Política de privacidad'),
           onTap: () async {
             String url = "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";

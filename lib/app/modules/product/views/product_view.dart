@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:producto/app/models/catalogo_model.dart';
@@ -14,6 +14,7 @@ import 'package:producto/app/utils/functions.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:snapping_sheet/snapping_sheet.dart';
 
 import '../../../routes/app_pages.dart';
 
@@ -27,32 +28,47 @@ class Product extends GetView<ProductController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appbar(context: context),
-      body: body(buildContext: context),
+      body: SafeArea(child: body(context: context)),
     );
   }
 
   // WIDGETS VIEWS
-
-  PreferredSizeWidget appbar({required BuildContext context}) {
-    return AppBar(
-      elevation: 0.0,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      iconTheme: Theme.of(context)
-          .iconTheme
-          .copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
-      toolbarHeight: 0,
-    );
-  }
-
-  Widget body({required BuildContext buildContext}) {
-    return ExpandableBottomSheet(
-      onIsExtendedCallback: () => controller.setTheme(),
-      background: background(buildContext: buildContext),
-      persistentHeader: persistentHeader(
+  Widget body({required BuildContext context}) {
+    // controllers
+    final ScrollController listViewController = new ScrollController();
+  
+    return SnappingSheet(
+      child: background(buildContext: context),
+      lockOverflowDrag: true,
+      snappingPositions: [
+        SnappingPosition.factor(
+          positionFactor: 0.0,
+          snappingCurve: Curves.easeOutExpo,
+          snappingDuration: Duration(seconds: 1),
+          grabbingContentOffset: GrabbingContentOffset.top,
+        ),
+        SnappingPosition.factor(
+          snappingCurve: Curves.elasticOut,
+          snappingDuration: Duration(milliseconds: 1750),
+          positionFactor: 0.5,
+        ),
+        SnappingPosition.factor(
+          grabbingContentOffset: GrabbingContentOffset.bottom,
+          snappingCurve: Curves.easeInExpo,
+          snappingDuration: Duration(seconds: 1),
+          positionFactor: 1,
+        ),
+      ],
+      grabbing: persistentHeader(
           colorBackground: Get.theme.cardColor, colorText: Colors.white),
-      expandableContent: expandableContent(
-          colorBackground: Get.theme.cardColor, colorText: Colors.white),
+      grabbingHeight: 170,
+      sheetAbove: null,
+      sheetBelow: SnappingSheetContent(
+        draggable: true,
+        childScrollController: listViewController,
+        child: expandableContent(
+            colorBackground: Get.theme.cardColor, colorText: Colors.white),
+      ),
     );
   }
 
@@ -148,6 +164,10 @@ class Product extends GetView<ProductController> {
   }
 
   Widget widgetDescripcion() {
+    // values
+    MaterialColor colorChip0 = Utils.getRandomColor();
+    MaterialColor colorChip1 = Utils.getRandomColor();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12, right: 12, left: 12, top: 24),
       child: Column(
@@ -160,34 +180,38 @@ class Product extends GetView<ProductController> {
                   direction: Axis.horizontal, // main axis (rows or columns)
                   children: <Widget>[
                     controller.getCategory.name != ""
-                        ? Chip(
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            avatar: CircleAvatar(
-                                backgroundColor: Colors.grey.shade800,
-                                child: Text(
-                                    controller.getCategory.name.substring(0, 1),
-                                    style: TextStyle(color: Colors.grey))),
-                            label: Text(controller.getCategory.name,
-                                overflow: TextOverflow.ellipsis),
-                          )
+                        ? ElasticIn(
+                          child: Chip(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              avatar: CircleAvatar(
+                                  backgroundColor:colorChip0.withOpacity(0.2),
+                                  child: Text(
+                                      controller.getCategory.name.substring(0, 1),
+                                      style: TextStyle(color: colorChip0))),
+                              label: Text(controller.getCategory.name,
+                                  overflow: TextOverflow.ellipsis),
+                            ),
+                        )
                         : Container(),
                     controller.getSubcategory.name != ""
-                        ? Chip(
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            avatar: CircleAvatar(
-                              backgroundColor: Colors.grey.shade800,
-                              child: Text(
-                                  controller.getSubcategory.name
-                                      .substring(0, 1),
-                                  style: TextStyle(color: Colors.grey)),
+                        ? ElasticIn(
+                          child: Chip(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              avatar: CircleAvatar(
+                                backgroundColor: colorChip1.withOpacity(0.2),
+                                child: Text(
+                                    controller.getSubcategory.name
+                                        .substring(0, 1),
+                                    style: TextStyle(color: colorChip1)),
+                              ),
+                              label: Text(
+                                controller.getSubcategory.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                            label: Text(
-                              controller.getSubcategory.name,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
+                        )
                         : Container(),
                   ],
                 )
@@ -364,9 +388,11 @@ class Product extends GetView<ProductController> {
         ));
   }
 
-  Widget persistentHeader({required Color colorBackground, required Color colorText}) {
+  Widget persistentHeader(
+      {required Color colorBackground, required Color colorText}) {
     return Obx(() => ClipRRect(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
           child: Container(
             color: colorBackground,
             margin: EdgeInsets.all(0),
@@ -376,9 +402,11 @@ class Product extends GetView<ProductController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   welcomeController.getIdAccountSelecte != ''
-                      ? welcomeController.isCatalogue(id: controller.getProduct.id)
+                      ? welcomeController.isCatalogue(
+                              id: controller.getProduct.id)
                           ? controller.getProduct.salePrice != 0.0
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -462,7 +490,7 @@ class Product extends GetView<ProductController> {
                                             .toLowerCase(),
                                         style: TextStyle(
                                             fontStyle: FontStyle.normal,
-                                            color: colorText.withOpacity(0.5)),
+                                            color: colorText.withOpacity(0.6)),
                                       ),
                                     ),
                                   ],
@@ -487,11 +515,11 @@ class Product extends GetView<ProductController> {
                                           ? 'Ya existe en tu catálogo 👍'
                                           : 'Agregar a mi catálogo')),
                   Icon(Icons.keyboard_arrow_up,
-                      color: colorText.withOpacity(0.5)),
+                      color: colorText.withOpacity(0.7)),
                   Text(
                     'Deslice hacia arriba para ver los últimos precios publicados',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: colorText.withOpacity(0.5)),
+                    style: TextStyle(color: colorText.withOpacity(0.4)),
                   ),
                 ],
               ),
@@ -514,6 +542,7 @@ class Product extends GetView<ProductController> {
 
   Widget ultimosPreciosView() {
     if (controller.getListPricesForProduct.length != 0) {
+      // values
       Color colorText = Colors.white;
 
       return Column(
@@ -530,88 +559,104 @@ class Product extends GetView<ProductController> {
                   ),
                 )
               : Container(),
-          ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.symmetric(vertical: 0.16),
-            shrinkWrap: true,
-            itemCount: controller.getListPricesForProduct.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: <Widget>[
-                  ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
-                    leading: controller
-                                    .getListPricesForProduct[index].idAccount ==
-                                "" ||
-                            controller.getListPricesForProduct[index]
-                                    .imageAccount ==
-                                ""
-                        ? CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            radius: 24.0,
-                          )
-                        : CachedNetworkImage(
-                            imageUrl: controller
-                                .getListPricesForProduct[index].imageAccount,
-                            placeholder: (context, url) => const CircleAvatar(
+          Expanded(
+            child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(vertical: 0.16),
+              shrinkWrap: true,
+              itemCount: controller.getListPricesForProduct.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: <Widget>[
+                    ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
+                      leading: controller.getListPricesForProduct[index]
+                                      .idAccount ==
+                                  "" ||
+                              controller.getListPricesForProduct[index]
+                                      .imageAccount ==
+                                  ""
+                          ? CircleAvatar(
                               backgroundColor: Colors.grey,
                               radius: 24.0,
+                            )
+                          : CachedNetworkImage(
+                              imageUrl: controller
+                                  .getListPricesForProduct[index].imageAccount,
+                              placeholder: (context, url) => const CircleAvatar(
+                                backgroundColor: Colors.grey,
+                                radius: 24.0,
+                              ),
+                              imageBuilder: (context, image) => CircleAvatar(
+                                backgroundImage: image,
+                                radius: 24.0,
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const CircleAvatar(
+                                backgroundColor: Colors.grey,
+                                radius: 24.0,
+                              ),
                             ),
-                            imageBuilder: (context, image) => CircleAvatar(
-                              backgroundImage: image,
-                              radius: 24.0,
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const CircleAvatar(
-                              backgroundColor: Colors.grey,
-                              radius: 24.0,
-                            ),
-                          ),
-                    title: Text(
-                      Publicaciones.getFormatoPrecio(
-                          monto:
-                              controller.getListPricesForProduct[index].price),
-                      style: TextStyle(
-                          color: colorText,
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    trailing: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Text(
-                          Publicaciones.getFechaPublicacion(
-                                  controller.getListPricesForProduct[index].time
-                                      .toDate(),
-                                  new DateTime.now())
-                              .toLowerCase(),
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                              fontStyle: FontStyle.normal, color: colorText),
-                        ),
-                        Text("En " + (controller.getListPricesForProduct[index].town.isEmpty
-                                ? controller .getListPricesForProduct[index].province.toString()
-                                : controller.getListPricesForProduct[index].town.toString()),
+                      title: Text(
+                        Publicaciones.getFormatoPrecio(
+                            monto: controller
+                                .getListPricesForProduct[index].price),
+                        style: TextStyle(
+                            color: colorText,
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Text(
+                            Publicaciones.getFechaPublicacion(
+                                    controller
+                                        .getListPricesForProduct[index].time
+                                        .toDate(),
+                                    new DateTime.now())
+                                .toLowerCase(),
+                            textAlign: TextAlign.end,
                             style: TextStyle(
-                                color: colorText, fontWeight: FontWeight.bold)),
-                      ],
+                                fontStyle: FontStyle.normal,
+                                fontSize: 12,
+                                color: colorText.withOpacity(0.4)),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                              "En " +
+                                  (controller.getListPricesForProduct[index]
+                                          .town.isEmpty
+                                      ? controller
+                                          .getListPricesForProduct[index]
+                                          .province
+                                          .toString()
+                                      : controller
+                                          .getListPricesForProduct[index].town
+                                          .toString()),
+                              style: TextStyle(
+                                  color: colorText,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      onTap: () {},
                     ),
-                    onTap: () {},
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  (index + 1) == 9 &&
-                          controller.getListPricesForProduct.length == 9
-                      ? TextButton(
-                          onPressed: () {
-                            controller.readListPricesForProduct(limit: false);
-                          },
-                          child: Text('Ver todos'))
-                      : Container(),
-                ],
-              );
-            },
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    (index + 1) == 9 &&
+                            controller.getListPricesForProduct.length == 9
+                        ? TextButton(
+                            onPressed: () {
+                              controller.readListPricesForProduct(limit: false);
+                            },
+                            child: Text('Ver todos'))
+                        : Container(),
+                  ],
+                );
+              },
+            ),
           ),
         ],
       );
@@ -698,48 +743,51 @@ class Product extends GetView<ProductController> {
             ))
           : controller.getListOthersProductsForMark.length == 0
               ? Container()
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      child: Text(
-                          controller.getMark.name == ''
-                              ? 'Otros'
-                              : controller.getMark.name,
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.normal)),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 12),
-                    ),
-                    Container(
-                      height: 220,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount:
-                            controller.getListOthersProductsForMark.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                                bottom: 8,
-                                top: 8,
-                                left: index == 0 ? 12 : 0,
-                                right: controller.getListOthersProductsForMark
-                                            .length ==
-                                        (index + 1)
-                                    ? 12
-                                    : 0),
-                            child: ProductoItem(
-                                producto: controller
-                                    .getListOthersProductsForMark[index]
-                                    .convertProductCatalogue()),
-                          );
-                        },
+              : FadeInRight(
+                duration: Duration(seconds: 1),
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        child: Text(
+                            controller.getMark.name == ''
+                                ? 'Otros'
+                                : controller.getMark.name,
+                            style: TextStyle(
+                                fontSize: 18.0, fontWeight: FontWeight.normal)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 12),
                       ),
-                    ),
-                  ],
-                )),
+                      Container(
+                        height: 220,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              controller.getListOthersProductsForMark.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: 8,
+                                  top: 8,
+                                  left: index == 0 ? 12 : 0,
+                                  right: controller.getListOthersProductsForMark
+                                              .length ==
+                                          (index + 1)
+                                      ? 12
+                                      : 0),
+                              child: ProductoItem(
+                                  producto: controller
+                                      .getListOthersProductsForMark[index]
+                                      .convertProductCatalogue()),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+              )),
     );
   }
 

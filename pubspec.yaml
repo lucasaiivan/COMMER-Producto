@@ -49,7 +49,6 @@ dependencies:
   animate_do: ^2.0.0 # Un paquete de animación inspirado en Animate.css , construido usando solo animaciones de Flutter, sin paquetes adicionales.
   url_launcher: ^6.0.12 # Un complemento de Flutter para lanzar una URL. Admite iOS, Android, web, Windows, macOS y Linux.
   shimmer: ^2.0.0 # Un paquete proporciona una manera fácil de agregar un efecto de brillo en el proyecto Flutter
-  expandable_bottom_sheet: ^1.1.1+1 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
   loadany: ^1.0.0 # Un nuevo Flutter carga más paquetes.
   image_picker: ^0.8.3+2 # Un complemento de Flutter para iOS y Android para seleccionar imágenes de la biblioteca de imágenes y tomar nuevas fotografías con la cámara.
   search_page: ^2.0.0+1 # Una forma rápida y sencilla de crear una experiencia de búsqueda personalizada en su aplicación.
@@ -65,6 +64,7 @@ dependencies:
   uuid: ^3.0.6
   file_picker: ^4.5.1
   excel: any
+  snapping_sheet: ^3.1.0 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
   
 flutter_icons:
   android: true

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -14,7 +15,10 @@ import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:search_page/search_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../utils/functions.dart';
 
 class ProductEdit extends StatelessWidget {
   ProductEdit({Key? key}) : super(key: key);
@@ -126,6 +130,18 @@ class ProductEdit extends StatelessWidget {
             textInputAction: TextInputAction.done,
             controller: controller.controllerTextEdit_descripcion,
           ),
+          space,
+          TextButton(
+              onPressed: () async {
+                String url = "https://www.google.com/search?q=" +
+                    controller.controllerTextEdit_descripcion.text;
+                if (await canLaunch(url)) {
+                  await launch(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+              child: Text('Buscar en Google')),
           space,
           SizedBox(
             width: double.infinity,
@@ -497,6 +513,7 @@ class _SelectCategoryState extends State<SelectCategory> {
         itemBuilder: (BuildContext context, int index) {
           Category categoria =
               welcomeController.getCatalogueCategoryList[index];
+          MaterialColor color = Utils.getRandomColor();
           return index == 0
               ? Column(
                   children: <Widget>[
@@ -515,17 +532,16 @@ class _SelectCategoryState extends State<SelectCategory> {
                                 showDialogSetCategoria(categoria: Category()))
                       ],
                     ),
-                    Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                     ListTile(
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                       leading: CircleAvatar(
-                        backgroundColor: Colors.black26,
+                        backgroundColor: color.withOpacity(0.1),
                         radius: 24.0,
                         child: Text(categoria.name.substring(0, 1),
                             style: TextStyle(
                                 fontSize: 18.0,
-                                color: Colors.white,
+                                color: color,
                                 fontWeight: FontWeight.bold)),
                       ),
                       dense: true,
@@ -543,17 +559,18 @@ class _SelectCategoryState extends State<SelectCategory> {
                 )
               : Column(
                   children: <Widget>[
+                    Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                     ListTile(
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                       leading: CircleAvatar(
-                        backgroundColor: Colors.black26,
+                        backgroundColor: color.withOpacity(0.1),
                         radius: 24.0,
                         child: categoria.name != ""
                             ? Text(categoria.name.substring(0, 1),
                                 style: TextStyle(
                                     fontSize: 18.0,
-                                    color: Colors.white,
+                                    color: color,
                                     fontWeight: FontWeight.bold))
                             : Text("C"),
                       ),
@@ -567,13 +584,13 @@ class _SelectCategoryState extends State<SelectCategory> {
                       },
                       trailing: popupMenuItemCategoria(categoria: categoria),
                     ),
-                    Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                   ],
                 );
         },
       ),
     );
   }
+
 
   Widget popupMenuItemCategoria({required Category categoria}) {
     final WelcomeController controller = Get.find();
@@ -757,6 +774,7 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
             name: categoriaSelected.subcategories.values
                 .elementAt(index)
                 .toString());
+        MaterialColor colorIcon = Utils.getRandomColor();
 
         return index == 0
             ? Column(
@@ -781,12 +799,12 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                     leading: CircleAvatar(
-                      backgroundColor: Colors.black26,
+                      backgroundColor: colorIcon.withOpacity(0.1),
                       radius: 24.0,
                       child: Text(subcategoria.name.substring(0, 1),
                           style: TextStyle(
                               fontSize: 18.0,
-                              color: Colors.white,
+                              color: colorIcon,
                               fontWeight: FontWeight.bold)),
                     ),
                     dense: true,
@@ -807,13 +825,13 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                     leading: CircleAvatar(
-                      backgroundColor: Colors.black26,
+                      backgroundColor: colorIcon.withOpacity(0.1),
                       radius: 24.0,
                       child: subcategoria.name != ""
                           ? Text(subcategoria.name.substring(0, 1),
                               style: TextStyle(
                                   fontSize: 18.0,
-                                  color: Colors.white,
+                                  color: colorIcon,
                                   fontWeight: FontWeight.bold))
                           : Text("C"),
                     ),
@@ -1165,6 +1183,7 @@ class _CreateMarkState extends State<CreateMark> {
                   .doc(widget.mark.id)
                   .set(widget.mark.toJson())
                   .whenComplete(() {
+                controllerProductsEdit.setUltimateSelectionMark = widget.mark;
                 controllerProductsEdit.setMarkSelected = widget.mark;
                 // agregar el obj manualmente para evitar consulta a la db  innecesaria
                 controllerProductsEdit.getMarks.add(widget.mark);
@@ -1179,6 +1198,7 @@ class _CreateMarkState extends State<CreateMark> {
             .doc(widget.mark.id)
             .set(widget.mark.toJson())
             .whenComplete(() {
+          controllerProductsEdit.setUltimateSelectionMark = widget.mark;
           controllerProductsEdit.setMarkSelected = widget.mark;
           // agregar el obj manualmente para evitar consulta a la db  innecesaria
           controllerProductsEdit.getMarks.add(widget.mark);
@@ -1235,6 +1255,11 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
           return Column(
             children: [
               widgetAdd(),
+              controllerProductsEdit.getUltimateSelectionMark.id == ''
+                  ? Container()
+                  : listTile(
+                      marcaSelect:
+                          controllerProductsEdit.getUltimateSelectionMark),
               listTile(marcaSelect: marcaSelect),
               Divider(endIndent: 12.0, indent: 12.0, height: 0),
             ],
@@ -1317,6 +1342,7 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
           style: TextStyle(
               fontSize: 16.0, color: Get.theme.textTheme.bodyText1!.color)),
       onTap: () {
+        controllerProductsEdit.setUltimateSelectionMark = marcaSelect;
         controllerProductsEdit.setMarkSelected = marcaSelect;
         Get.back();
       },

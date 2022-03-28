@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 
+import '../../../../utils/functions.dart';
+
 class ViewCategoria extends StatefulWidget {
   final BuildContext buildContext;
   ViewCategoria({required this.buildContext});
@@ -60,7 +62,11 @@ class _ViewCategoriaState extends State<ViewCategoria> {
         shrinkWrap: true,
         itemCount: controller.getCatalogueCategoryList.length,
         itemBuilder: (BuildContext context, int index) {
+
+          //get 
           Category categoria = controller.getCatalogueCategoryList[index];
+          MaterialColor color = Utils.getRandomColor();
+          
           return index == 0
               ? Column(
                   children: <Widget>[
@@ -81,11 +87,11 @@ class _ViewCategoriaState extends State<ViewCategoria> {
                     ),
                     controller.getCatalogueCategoryList.length != 0
                         ? ListTile(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 12.0),
+                            contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                             leading: CircleAvatar(
+                              backgroundColor: color.withOpacity(0.1),
                               radius: 24.0,
-                              child: Icon(Icons.all_inclusive),
+                              child: Icon(Icons.all_inclusive,color: color),
                             ),
                             dense: true,
                             title: Text("Mostrar todos",
@@ -115,16 +121,19 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   // listTile view
   Widget listTileItem({required Category categoria}) {
 
+    //  values 
+    MaterialColor color = Utils.getRandomColor();
+
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       leading: CircleAvatar(
-        backgroundColor: Colors.black26,
+        backgroundColor: color.withOpacity(0.1),
         radius: 24.0,
         child: categoria.name != ""
             ? Text(categoria.name.substring(0, 1),
                 style: TextStyle(
                     fontSize: 18.0,
-                    color: Colors.white,
+                    color: color,
                     fontWeight: FontWeight.bold))
             : Text("C"),
       ),
@@ -280,6 +289,7 @@ class ViewSubCategoria extends StatefulWidget {
       isDismissible: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
+    
   }
 }
 
@@ -327,6 +337,9 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
       shrinkWrap: true,
       itemCount: categoriaSelected.subcategories.length,
       itemBuilder: (BuildContext _, int index) {
+
+        //  values 
+        MaterialColor color = Utils.getRandomColor();
         Category subcategoria = new Category(
             id: categoriaSelected.subcategories.keys
                 .elementAt(index)
@@ -358,8 +371,9 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
                           contentPadding: EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 12.0),
                           leading: CircleAvatar(
+                            backgroundColor: color.withOpacity(0.1),
                             radius: 24.0,
-                            child: Icon(Icons.all_inclusive),
+                            child: Icon(Icons.all_inclusive,color: color,),
                           ),
                           dense: true,
                           title: Text("Mostrar todos",
@@ -387,18 +401,21 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
 
   // listTile view
   Widget listTileItem({required Category subcategoria}) {
+    
+    //  values 
+    MaterialColor color = Utils.getRandomColor();
 
     return ListTile(
       contentPadding:
           EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       leading: CircleAvatar(
-        backgroundColor: Colors.black26,
+        backgroundColor: color.withOpacity(0.1),
         radius: 24.0,
         child: subcategoria.name != ""
             ? Text(subcategoria.name.substring(0, 1),
                 style: TextStyle(
                     fontSize: 18.0,
-                    color: Colors.white,
+                    color: color,
                     fontWeight: FontWeight.bold))
             : Text("C"),
       ),

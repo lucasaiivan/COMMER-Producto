@@ -15,6 +15,11 @@ class ControllerProductsEdit extends GetxController {
   // others controllers
   final WelcomeController welcomeController = Get.find();
 
+  // ultimate selection mark
+  static Mark _ultimateSelectionMark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+  set setUltimateSelectionMark(Mark value) => _ultimateSelectionMark = value;
+  Mark get getUltimateSelectionMark => _ultimateSelectionMark;
+
   // state account auth
   bool _accountAuth = false;
   set setAccountAuth(value) {
@@ -62,16 +67,14 @@ class ControllerProductsEdit extends GetxController {
   MoneyMaskedTextController controllerTextEdit_precio_compra =
       MoneyMaskedTextController();
 
-  // marca
-  Mark _markSelected =
-      Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+  // mark
+  Mark _markSelected = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
   set setMarkSelected(Mark value) {
     _markSelected = value;
     getProduct.idMark = value.id;
     getProduct.nameMark = value.name;
     update(['updateAll']);
   }
-
   Mark get getMarkSelected => _markSelected;
 
   // marcas
@@ -120,8 +123,9 @@ class ControllerProductsEdit extends GetxController {
     setAccountAuth = welcomeController.getIdAccountSelecte != '';
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ?? ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
-    setNewProduct =  Get.arguments['new'] ?? false;
+    setProduct = Get.arguments['product'] ??
+        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setNewProduct = Get.arguments['new'] ?? false;
     // load data product
     loadDataProduct();
     if (getNewProduct == false) {
@@ -176,7 +180,8 @@ class ControllerProductsEdit extends GetxController {
               if (getXFileImage.path != '') {
                 // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
                 // si es asi procede a guardar la imagen en la base de la app
-                Reference ref = Database.referenceStorageProductPublic(id: getProduct.id);
+                Reference ref =
+                    Database.referenceStorageProductPublic(id: getProduct.id);
                 UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
                 await uploadTask;
                 // obtenemos la url de la imagen guardada
@@ -189,7 +194,8 @@ class ControllerProductsEdit extends GetxController {
 
                 // Mods - save data product global
                 if (getNewProduct || getEditModerator) {
-                  getProduct.verified =true; // TODO: Para desarrollo verificado es TRUE // Cambiar esto cuando se lanze a producción A FALSE
+                  getProduct.verified =
+                      true; // TODO: Para desarrollo verificado es TRUE // Cambiar esto cuando se lanze a producción A FALSE
                   saveProductPublic();
                 }
 

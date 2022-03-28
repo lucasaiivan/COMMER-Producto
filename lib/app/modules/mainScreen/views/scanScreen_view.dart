@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/utils/dynamicTheme_lb.dart';
+import 'package:producto/app/utils/functions.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -87,19 +88,21 @@ class ScanScreenView extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(30.0)),
               splashColor: Get.theme.primaryColor,
               onTap: scanBarcodeNormal,
-              child: Container(
-                width: size.width*0.5,
-                height: size.width*0.5,
-                margin: const EdgeInsets.all(0.0),
-                padding: const EdgeInsets.all(30.0),
-                decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(width: 3, color: color),
-                    borderRadius: BorderRadius.all(Radius.circular(30.0))),
-                child: Image(
-                    color: color,
-                    image: AssetImage('assets/barcode.png'),
-                    fit: BoxFit.contain),
+              child: ElasticIn(
+                child: Container(
+                  width: size.width*0.5,
+                  height: size.width*0.5,
+                  margin: const EdgeInsets.all(0.0),
+                  padding: const EdgeInsets.all(30.0),
+                  decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(width: 3, color: color),
+                      borderRadius: BorderRadius.all(Radius.circular(30.0))),
+                  child: Image(
+                      color: color,
+                      image: AssetImage('assets/barcode.png'),
+                      fit: BoxFit.contain),
+                ),
               ),
             ),
             Container(
@@ -164,7 +167,7 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Get.theme.brightness != Brightness.light
               ? Icons.brightness_high
-              : Icons.brightness_3),
+              : Icons.brightness_3,color: Utils.getRandomColor()[300]),
           title: Text(Get.theme.brightness == Brightness.light
               ? 'Aplicar de tema oscuro'
               : 'Aplicar de tema claro'),
@@ -176,7 +179,7 @@ class ScanScreenView extends StatelessWidget {
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
-          leading: Icon(Icons.logout),
+          leading: Icon(Icons.logout,color:  Utils.getRandomColor()[300],),
           title: Text('Cerrar sesión'),
           onTap: controller.showDialogCerrarSesion,
         ),
@@ -202,7 +205,7 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: FaIcon(FontAwesomeIcons.instagram)),
+              child: FaIcon(FontAwesomeIcons.instagram,color:  Utils.getRandomColor()[300],)),
           title: Text('Instagram'),
           subtitle: Text('Déjanos una sugerencia'),
           onTap: () async {
@@ -219,7 +222,7 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: FaIcon(FontAwesomeIcons.googlePlay)),
+              child: FaIcon(FontAwesomeIcons.googlePlay,color:  Utils.getRandomColor()[300],)),
           title: Text(
             'Califícanos ⭐',
           ),
@@ -238,7 +241,7 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: Icon(Icons.share_outlined)),
+              child: Icon(Icons.share_outlined,color:  Utils.getRandomColor()[300],)),
           title: Text(
             'Cuentale a un amigo',
           ),
@@ -271,7 +274,7 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: Icon(Icons.assignment_outlined)),
+              child: Icon(Icons.assignment_outlined,color:  Utils.getRandomColor()[300],)),
           title: Text('Términos y condiciones de uso'),
           onTap: () async {
             String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
@@ -286,7 +289,7 @@ class ScanScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: Icon(Icons.privacy_tip_outlined)),
+              child: Icon(Icons.privacy_tip_outlined,color:  Utils.getRandomColor()[300],)),
           title: Text('Política de privacidad'),
           onTap: () async {
             String url = "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";

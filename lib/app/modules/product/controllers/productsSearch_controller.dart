@@ -233,10 +233,9 @@ class ControllerProductsSearch extends GetxController {
     Widget widget = ListView.builder(
       itemCount: getListExcelToJson.length,
       itemBuilder: (context, index) {
-        return ListTile(
+        return welcomeController.isCatalogue(id: getListExcelToJson[index]['Código'])?Container():ListTile(
           trailing: Icon(Icons.check_circle,
-              color: welcomeController.isCatalogue(
-                      id: getListExcelToJson[index]['Código'])
+              color: welcomeController.isCatalogue(id: getListExcelToJson[index]['Código'])
                   ? Colors.green
                   : null),
           title: Text(
