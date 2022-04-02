@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -17,7 +16,6 @@ import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:search_page/search_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../../utils/functions.dart';
 
 class ProductEdit extends StatelessWidget {
@@ -131,18 +129,32 @@ class ProductEdit extends StatelessWidget {
             controller: controller.controllerTextEdit_descripcion,
           ),
           space,
+          //TODO: eliminar para desarrrollo
+          // widget debug
           TextButton(
               onPressed: () async {
-                String url = "https://www.google.com/search?q=" +
-                    controller.controllerTextEdit_descripcion.text;
+                String clave = controller.controllerTextEdit_descripcion.text;
+                String url ="https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
                 if (await canLaunch(url)) {
                   await launch(url);
                 } else {
                   throw 'Could not launch $url';
                 }
               },
-              child: Text('Buscar en Google')),
+              child: Text('Buscar descripción en Google')),
+          TextButton(
+              onPressed: () async {
+                String clave = controller.getProduct.code;
+                String url ="https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
+                if (await canLaunch(url)) {
+                  await launch(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+              child: Text('Buscar en código Google')),
           space,
+          // fin widget debug
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
@@ -156,11 +168,15 @@ class ProductEdit extends StatelessWidget {
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        utilsWidget.viewCircleImage(
-                            size: 25,
-                            url: controller.getMarkSelected.image,
-                            texto: controller.getMarkSelected.name),
-                        SizedBox(width: 8),
+                        controller.getMarkSelected.id == 'other'
+                            ? Container()
+                            : utilsWidget.viewCircleImage(
+                                size: 25,
+                                url: controller.getMarkSelected.image,
+                                texto: controller.getMarkSelected.name),
+                        controller.getMarkSelected.id == 'other'
+                            ? Container()
+                            : SizedBox(width: 8),
                         Text(controller.getMarkSelected.name,
                             style: TextStyle(
                                 color: controller.getNewProduct ||
@@ -259,7 +275,7 @@ class ProductEdit extends StatelessWidget {
                           onPressed: controller.showDialogDelete),
                     )
                   : Container(),
-
+          //TODO: eliminar para desarrrollo
           /* OPCIONES PARA DESARROLLADOR - ELIMINAR ESTE CÓDIGO PARA PRODUCCION */
           controller.getNewProduct
               ? Container()
@@ -362,6 +378,7 @@ class ProductEdit extends StatelessWidget {
                           ),
                     SizedBox(height: 50.0),
                   ],
+                  // fin widget debug
                 ),
         ],
       ),
@@ -590,7 +607,6 @@ class _SelectCategoryState extends State<SelectCategory> {
       ),
     );
   }
-
 
   Widget popupMenuItemCategoria({required Category categoria}) {
     final WelcomeController controller = Get.find();
@@ -1245,34 +1261,54 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
     if (list.length == 0) {
       return widgetAdd();
     }
-    return ListView.builder(
-      padding: EdgeInsets.only(bottom: 12),
-      shrinkWrap: true,
-      itemCount: list.length,
-      itemBuilder: (BuildContext context, int index) {
-        Mark marcaSelect = list[index];
-        if (index == 0) {
-          return Column(
-            children: [
-              widgetAdd(),
-              controllerProductsEdit.getUltimateSelectionMark.id == ''
-                  ? Container()
-                  : listTile(
-                      marcaSelect:
-                          controllerProductsEdit.getUltimateSelectionMark),
-              listTile(marcaSelect: marcaSelect),
-              Divider(endIndent: 12.0, indent: 12.0, height: 0),
-            ],
-          );
-        }
-        return Column(
-          children: <Widget>[
-            listTile(marcaSelect: marcaSelect),
-            Divider(endIndent: 12.0, indent: 12.0, height: 0),
-          ],
-        );
-      },
+    return Column(
+      children: [
+        widgetAdd(),
+        Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.only(bottom: 12),
+            shrinkWrap: true,
+            itemCount: list.length,
+            itemBuilder: (BuildContext context, int index) {
+              Mark marcaSelect = list[index];
+              if (index == 0) {
+                return Column(
+                  children: [
+                    getWidgetOptionOther(),
+                    controllerProductsEdit.getUltimateSelectionMark.id == '' ||controllerProductsEdit.getUltimateSelectionMark.id =='other'
+                      ? Container():listTile(marcaSelect:controllerProductsEdit.getUltimateSelectionMark),
+                    listTile(marcaSelect: marcaSelect),
+                    Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                  ],
+                );
+              }
+              return Column(
+                children: <Widget>[
+                  listTile(marcaSelect: marcaSelect),
+                  Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+  Widget getWidgetOptionOther() {
+    //values
+    late Widget widget;
+    // recorre la la de marcas para buscar la informaciób de opción 'other'
+    if (controllerProductsEdit.getMarks.isEmpty) {
+      widget = Container();
+    } else {
+      controllerProductsEdit.getMarks.forEach((element) {
+        if (element.id == 'other') {
+          widget = listTile(marcaSelect: element);
+        }
+      });
+    }
+    return widget;
   }
 
   // WIDGETS COMPONENT
@@ -1334,7 +1370,7 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
   Widget listTile({required Mark marcaSelect}) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      leading: viewCircleImage(
+      trailing: viewCircleImage(
           texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
       dense: true,
       title: Text(marcaSelect.name,

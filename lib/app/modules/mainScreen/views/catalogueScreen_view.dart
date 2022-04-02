@@ -90,7 +90,7 @@ class CatalogueScreenView extends StatelessWidget {
                   failure: Center(child: Text('No se encontro :(')),
                   filter: (product) => [product.description, product.nameMark],
                   builder: (product) => ListTile(
-                    leading: FadeInImage(
+                    trailing:  product.image==''?null:FadeInImage(
                       image: NetworkImage(product.image),
                       placeholder: AssetImage("assets/loading.gif"),
                       fadeInDuration: Duration(milliseconds: 200),

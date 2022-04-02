@@ -673,7 +673,7 @@ class Product extends GetView<ProductController> {
   }
 
   Widget imageViewCard({double borderRadius = 14}) {
-    return Card(
+    return controller.getProduct.image==''?Container():Card(
       margin: EdgeInsets.all(0.0),
       elevation: 0.0,
       clipBehavior: Clip.antiAlias,

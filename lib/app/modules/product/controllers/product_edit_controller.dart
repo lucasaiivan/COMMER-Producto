@@ -123,8 +123,7 @@ class ControllerProductsEdit extends GetxController {
     setAccountAuth = welcomeController.getIdAccountSelecte != '';
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ??
-        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setProduct = Get.arguments['product'] ??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     setNewProduct = Get.arguments['new'] ?? false;
     // load data product
     loadDataProduct();
@@ -163,8 +162,7 @@ class ControllerProductsEdit extends GetxController {
 
   Future<void> save() async {
     if (getProduct.id != '') {
-      if (getProduct.category != '' && getAccountAuth ||
-          getProduct.category == '' && getAccountAuth == false) {
+      
         if (getProduct.description != '') {
           if (getProduct.idMark != '' && getProduct.nameMark != '') {
             if (getProduct.salePrice != 0 && getAccountAuth ||
@@ -240,8 +238,7 @@ class ControllerProductsEdit extends GetxController {
                 saveProductPublic();
               }
             } else {
-              Get.snackbar(
-                  'Antes de continuar 😐', 'debe proporcionar un precio');
+              Get.snackbar('Antes de continuar 😐', 'debe proporcionar un precio');
             }
           } else {
             Get.snackbar(
@@ -251,10 +248,7 @@ class ControllerProductsEdit extends GetxController {
           Get.snackbar('No se puedo continuar 👎',
               'debes escribir una descripción del producto');
         }
-      } else {
-        Get.snackbar(
-            'No se puedo guardar los datos', 'debes seleccionar una categoría');
-      }
+      
     }
   }
 
@@ -491,12 +485,10 @@ class ControllerProductsEdit extends GetxController {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
-
+  //TODO: eliminar para release
   // DEVELOPER OPTIONS
   isFavorite() {
     getProduct.favorite = !getProduct.favorite;

@@ -20,8 +20,7 @@ class ProductController extends GetxController {
   bool get getstateAds => _stateAds;
 
   final Rx<BannerAd> bannerAd = BannerAd(
-    adUnitId:
-        'ca-app-pub-3940256099942544/6300978111', //TODO : release: 'ca-app-pub-8441738551183357/4747810514' , test: 'ca-app-pub-3940256099942544/6300978111',
+    adUnitId:'ca-app-pub-3940256099942544/6300978111', //TODO : release: 'ca-app-pub-8441738551183357/4747810514' , test: 'ca-app-pub-3940256099942544/6300978111',
     request: AdRequest(),
     size: AdSize.banner,
     listener: BannerAdListener(

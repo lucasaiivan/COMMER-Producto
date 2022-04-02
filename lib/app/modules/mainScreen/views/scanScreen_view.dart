@@ -120,8 +120,7 @@ class ScanScreenView extends StatelessWidget {
                 onPressed: scanBarcodeNormal,
               ),
             ),
-            WidgetSuggestionProduct(
-                list: controller.getListSuggestedProducts, searchButton: true),
+            WidgetSuggestionProduct( list: controller.getListSuggestedProducts, searchButton: true),
           ],
         );
       },

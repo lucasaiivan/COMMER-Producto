@@ -146,7 +146,14 @@ class Utils {
       Colors.indigo,
       Colors.red,
       Colors.lime,
+      Colors.lightBlue,
+      Colors.lightGreen,
+      Colors.orange,
       Colors.pink,
+      Colors.purple,
+      Colors.teal,
+      Colors.yellow,
+      Colors.deepPurple,
     ];
 
     return lista_color[Random().nextInt(lista_color.length)];

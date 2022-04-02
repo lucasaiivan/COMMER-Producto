@@ -109,7 +109,7 @@ class ControllerProductsSearch extends GetxController {
   }
 
   // list productos sujeridos
-  List<Product> _listProductsSuggestion = [];
+  static List<Product> _listProductsSuggestion = [];
   set setListProductsSuggestions(List<Product> list) =>
       _listProductsSuggestion = list;
   List<Product> get getListProductsSuggestions => _listProductsSuggestion;
@@ -163,13 +163,16 @@ class ControllerProductsSearch extends GetxController {
   }
 
   void queryProductSuggestion() {
-    Database.readProductsFuture(limit: 5).then((value) {
+
+    if(getListProductsSuggestions.length==0){
+      Database.readProductsFuture(limit: 5).then((value) {
       List<Product> newList = [];
       value.docs
           .forEach((element) => newList.add(Product.fromMap(element.data())));
       setListProductsSuggestions = newList;
       update(['updateAll']);
     });
+    }
   }
 
   void toProductView({required ProductCatalogue porduct}) {
@@ -178,7 +181,12 @@ class ControllerProductsSearch extends GetxController {
   }
 
   void toProductNew({required String id}) {
+    //values default
     clean();
+    //set
+    productSelect.id = id;
+    productSelect.code = id;
+    // navega hacia una nueva vista para crear un nuevo producto
     Get.toNamed(Routes.PRODUCTS_EDIT,
         arguments: {'new': true, 'product': productSelect});
   }

@@ -528,6 +528,8 @@ PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
 }
 
 class WidgetSuggestionProduct extends StatelessWidget {
+  //values
+  
   bool searchButton = false;
   List<Product> list = <Product>[];
   WidgetSuggestionProduct({required this.list, this.searchButton = false});
@@ -583,32 +585,38 @@ class WidgetSuggestionProduct extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       itemCount: list.length,
                       itemBuilder: (context, index) {
+
+                        Color color = Get.theme.primaryColor;
+
                         return Align(
                           widthFactor: 0.5,
                           child: InkWell(
-                            onTap: () => welcomeController.toProductView(
+                            onTap: () => 
+                            welcomeController.toProductView(
                                 porduct: list[index]),
                             borderRadius: BorderRadius.circular(50),
                             child: Padding(
                               padding: const EdgeInsets.all(5.0),
                               child: FadeInRight(
                                 child: CircleAvatar(
-                                    foregroundColor: Colors.grey,
+                                    backgroundColor: color,
+                                    foregroundColor: color,
                                     child: CircleAvatar(
-                                        foregroundColor: Colors.grey,
+                                      backgroundColor: Colors.grey[100],
+                                        foregroundColor: Colors.grey[100],
                                         child: ClipRRect(
                                           child: CachedNetworkImage(
-                                            imageUrl: list[index].image,
-                                            fadeInDuration:
-                                                Duration(milliseconds: 200),
+                                            fadeInDuration: Duration(milliseconds: 200),
                                             fit: BoxFit.cover,
+                                            imageUrl: list[index].image,
+                                            placeholder: (context, url) => CircleAvatar(backgroundColor: Colors.grey[100],foregroundColor: Colors.grey[100]),
+                                            errorWidget: (context, url, error) => CircleAvatar(backgroundColor: Colors.grey[100],foregroundColor: Colors.grey[100]),
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(50),
+                                          borderRadius:BorderRadius.circular(50),
                                         ),
                                         radius: 28),
-                                    radius: 30,
-                                    backgroundColor: Get.theme.primaryColor),
+                                    radius: 30
+                                ),
                               ),
                             ),
                           ),
