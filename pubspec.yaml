@@ -65,7 +65,8 @@ dependencies:
   file_picker: ^4.5.1
   excel: any
   snapping_sheet: ^3.1.0 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
-  
+  flutter_offline: ^2.0.0 # Una utilidad ordenada para manejar la conectividad fuera de línea/en línea como un jefe. Proporciona soporte para plataformas iOS y Android (por supuesto).
+
 flutter_icons:
   android: true
   ios: false

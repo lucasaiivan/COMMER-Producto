@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:producto/app/models/catalogo_model.dart';
@@ -14,6 +15,7 @@ import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:search_page/search_page.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import '../../../utils/functions.dart';
@@ -35,15 +37,42 @@ class ProductEdit extends StatelessWidget {
       init: ControllerProductsEdit(),
       initState: (_) {},
       builder: (_) {
-        return Scaffold(
-          appBar: appBar(contextPrincipal: context),
-          body: ListView(
-            children: [
-              widgetsImagen(),
-              widgetFormEditText(),
-            ],
-          ),
-        );
+        return OfflineBuilder(
+            child: Container(),
+            connectivityBuilder: (
+              BuildContext context,
+              ConnectivityResult connectivity,
+              Widget child,
+            ) {
+              final connected = connectivity != ConnectivityResult.none;
+
+              if (!connected) {
+                Color? colorAccent = Get.theme.textTheme.bodyText1!.color;
+                return Scaffold(
+                  appBar: AppBar(
+                    elevation: 0.0,
+                    backgroundColor: Get.theme.scaffoldBackgroundColor,
+                    iconTheme:Theme.of(context).iconTheme.copyWith(color: colorAccent),
+                    title: controller.getSaveIndicator
+                        ? Text(controller.getTextAppBar,style: TextStyle(fontSize: 18.0, color: colorAccent))
+                        : Text(controller.getIsCatalogue ? 'Editar' : 'Nuevo',style: TextStyle(fontSize: 18.0, color: colorAccent)),
+                  ),
+                  body: Center(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Icon(Icons.wifi_off_rounded),
+                    ),
+                    Text('No hay internet'),
+                  ],
+                )),
+                );
+              }
+              ;
+              return scaffold(context: context);
+            });
       },
     );
   }
@@ -55,20 +84,61 @@ class ProductEdit extends StatelessWidget {
     return AppBar(
       elevation: 0.0,
       backgroundColor: Get.theme.scaffoldBackgroundColor,
-      iconTheme:
-          Theme.of(contextPrincipal).iconTheme.copyWith(color: colorAccent),
+      iconTheme:Theme.of(contextPrincipal).iconTheme.copyWith(color: colorAccent),
       title: controller.getSaveIndicator
-          ? Text(controller.getTextAppBar,
-              style: TextStyle(fontSize: 18.0, color: colorAccent))
-          : Text(controller.getIsCatalogue ? 'Editar' : 'Nuevo',
-              style: TextStyle(fontSize: 18.0, color: colorAccent)),
+          ? Text(controller.getTextAppBar,style: TextStyle(fontSize: 18.0, color: colorAccent))
+          : Text(controller.getIsCatalogue ? 'Editar' : 'Nuevo',style: TextStyle(fontSize: 18.0, color: colorAccent)),
       actions: <Widget>[
         controller.getSaveIndicator
             ? Container()
-            : IconButton(icon: Icon(Icons.check), onPressed: controller.save),
+            : IconButton(
+                    icon: Icon(Icons.check), onPressed: controller.save),
       ],
       bottom: controller.getSaveIndicator ? linearProgressBarApp() : null,
     );
+  }
+
+  Widget scaffold({required BuildContext context}) {
+    return Scaffold(
+      appBar: appBar(contextPrincipal: context),
+      body: ListView(
+        children: [
+          widgetsImagen(),
+          widgetFormEditText(),
+        ],
+      ),
+    );
+    return OfflineBuilder(
+        child: Container(),
+        connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
+          final connected = connectivity != ConnectivityResult.none;
+          controller.setStateConnect = connected;
+
+          if (!connected) {
+            return Center(
+                child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Icon(Icons.wifi_off_rounded),
+                ),
+                Text('No hay internet'),
+              ],
+            ));
+          }
+          ;
+          return ListView(
+            children: [
+              widgetsImagen(),
+              widgetFormEditText(),
+            ],
+          );
+        });
   }
 
   Widget widgetsImagen() {
@@ -134,7 +204,8 @@ class ProductEdit extends StatelessWidget {
           TextButton(
               onPressed: () async {
                 String clave = controller.controllerTextEdit_descripcion.text;
-                String url ="https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
+                String url =
+                    "https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
                 if (await canLaunch(url)) {
                   await launch(url);
                 } else {
@@ -145,7 +216,8 @@ class ProductEdit extends StatelessWidget {
           TextButton(
               onPressed: () async {
                 String clave = controller.getProduct.code;
-                String url ="https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
+                String url =
+                    "https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
                 if (await canLaunch(url)) {
                   await launch(url);
                 } else {
@@ -992,7 +1064,242 @@ class _SelectSubCategoriaState extends State<SelectSubCategoria> {
   }
 }
 
-// create marks
+// select mark
+class WidgetSelectMark extends StatefulWidget {
+  WidgetSelectMark({Key? key}) : super(key: key);
+
+  @override
+  _WidgetSelectMarkState createState() => _WidgetSelectMarkState();
+}
+
+class _WidgetSelectMarkState extends State<WidgetSelectMark> {
+  //  controllers
+  ControllerProductsEdit controllerProductsEdit = Get.find();
+  //  var
+  List<Mark> list = [];
+
+  @override
+  void initState() {
+    loadMarks();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widgetView();
+  }
+
+  Widget widgetView() {
+    return Column(
+      children: [
+        widgetAdd(),
+        Expanded(
+          child: list.length == 0
+              ? widgetAnimLoad()
+              : ListView.builder(
+                  padding: EdgeInsets.only(bottom: 12),
+                  shrinkWrap: true,
+                  itemCount: list.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    Mark marcaSelect = list[index];
+                    if (index == 0) {
+                      return Column(
+                        children: [
+                          getWidgetOptionOther(),
+                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                          controllerProductsEdit.getUltimateSelectionMark.id =='' ||controllerProductsEdit.getUltimateSelectionMark.id =='other'
+                            ? Container(): listTile(marcaSelect: controllerProductsEdit.getUltimateSelectionMark),
+                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                          listTile(marcaSelect: marcaSelect),
+                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                        ],
+                      );
+                    }
+                    return Column(
+                      children: <Widget>[
+                        listTile(marcaSelect: marcaSelect),
+                        Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                      ],
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  // WIDGETS
+  Widget widgetAnimLoad() {
+    return Center(
+        child: ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              child: Card(child: Container(width: double.infinity, height: 50)),
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              child: Card(child: Container(width: double.infinity, height: 50)),
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              child: Card(child: Container(width: double.infinity, height: 50)),
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              child: Card(child: Container(width: double.infinity, height: 50)),
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              child: Card(child: Container(width: double.infinity, height: 50)),
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              child: Card(child: Container(width: double.infinity, height: 50)),
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor),
+        ),
+      ],
+    ));
+  }
+
+  Widget getWidgetOptionOther() {
+    //values
+    late Widget widget;
+    // recorre la la de marcas para buscar la informaciób de opción 'other'
+    if (controllerProductsEdit.getMarks.isEmpty) {
+      widget = Container();
+    } else {
+      controllerProductsEdit.getMarks.forEach((element) {
+        if (element.id == 'other') {
+          widget = listTile(marcaSelect: element,);
+        }
+      });
+    }
+    return widget;
+  }
+
+  // WIDGETS COMPONENT
+  Widget widgetAdd() {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding:
+              const EdgeInsets.only(bottom: 12, left: 12, right: 12, top: 12),
+          child: Row(
+            children: [
+              Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
+              // TODO : delete icon 'add new mark for release'
+              IconButton(
+                  onPressed: () {
+                    Get.back();
+                    Get.to(() => CreateMark(
+                        mark: Mark(
+                            upgrade: Timestamp.now(),
+                            creation: Timestamp.now())));
+                  },
+                  icon: Icon(Icons.add)),
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  Get.back();
+                  showSearch(
+                    context: context,
+                    delegate: SearchPage<Mark>(
+                      items: list,
+                      searchLabel: 'Buscar marca',
+                      suggestion: Center(
+                        child: Text('ej. Miller'),
+                      ),
+                      failure: Center(
+                        child: Text('No se encontro :('),
+                      ),
+                      filter: (product) => [
+                        product.name,
+                        product.description,
+                      ],
+                      builder: (mark) => Column(
+                        children: <Widget>[
+                          listTile(marcaSelect: mark),
+                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget listTile({required Mark marcaSelect,bool icon = true}) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      trailing: !icon?null:viewCircleImage(texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
+      dense: true,
+      title: Text(marcaSelect.name,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 18.0, color: Get.theme.textTheme.bodyText1!.color)),
+      subtitle: marcaSelect.description==''?null:Text(marcaSelect.description, overflow: TextOverflow.ellipsis),
+      onTap: () {
+        controllerProductsEdit.setUltimateSelectionMark = marcaSelect;
+        controllerProductsEdit.setMarkSelected = marcaSelect;
+        Get.back();
+      },
+      onLongPress: () {
+        // TODO : delete fuction
+        Get.to(() => CreateMark(mark: marcaSelect));
+      },
+    );
+  }
+
+  // functions
+  loadMarks() async {
+    if (controllerProductsEdit.getMarks.length == 0) {
+      await Database.readListMarksFuture().then((value) {
+        setState(() {
+          value.docs.forEach((element) {
+            Mark mark = Mark.fromMap(element.data());
+            mark.id = element.id;
+            list.add(mark);
+          });
+          controllerProductsEdit.setMarks = list;
+        });
+      });
+    } else {
+      // datos ya descargados
+      list = controllerProductsEdit.getMarks;
+      setState(() => list = controllerProductsEdit.getMarks);
+    }
+  }
+}
+
+
+// TODO : delete release
 class CreateMark extends StatefulWidget {
   late final Mark mark;
   CreateMark({required this.mark, Key? key}) : super(key: key);
@@ -1079,7 +1386,7 @@ class _CreateMarkState extends State<CreateMark> {
                       fit: BoxFit.cover,
                       imageUrl: widget.mark.image,
                       placeholder: (context, url) => CircleAvatar(
-                        backgroundColor: Colors.grey,
+                        backgroundColor: Colors.grey.shade100,
                         radius: 75.0,
                       ),
                       imageBuilder: (context, image) => CircleAvatar(
@@ -1087,7 +1394,7 @@ class _CreateMarkState extends State<CreateMark> {
                         radius: 75.0,
                       ),
                       errorWidget: (context, url, error) => CircleAvatar(
-                        backgroundColor: Colors.grey,
+                        backgroundColor: Colors.grey.shade100,
                         radius: 75.0,
                       ),
                     ),
@@ -1199,11 +1506,11 @@ class _CreateMarkState extends State<CreateMark> {
                   .doc(widget.mark.id)
                   .set(widget.mark.toJson())
                   .whenComplete(() {
-                controllerProductsEdit.setUltimateSelectionMark = widget.mark;
-                controllerProductsEdit.setMarkSelected = widget.mark;
-                // agregar el obj manualmente para evitar consulta a la db  innecesaria
-                controllerProductsEdit.getMarks.add(widget.mark);
-                Get.back();
+                    controllerProductsEdit.setUltimateSelectionMark = widget.mark;
+                    controllerProductsEdit.setMarkSelected = widget.mark;
+                    // agregar el obj manualmente para evitar consulta a la db  innecesaria
+                    controllerProductsEdit.getMarks.add(widget.mark);
+                    Get.back();
               });
             })
             .onError((error, stackTrace) {})
@@ -1223,189 +1530,6 @@ class _CreateMarkState extends State<CreateMark> {
       }
     } else {
       Get.snackbar('', 'Debes escribir un nombre de la marca');
-    }
-  }
-}
-
-// select mark
-class WidgetSelectMark extends StatefulWidget {
-  WidgetSelectMark({Key? key}) : super(key: key);
-
-  @override
-  _WidgetSelectMarkState createState() => _WidgetSelectMarkState();
-}
-
-class _WidgetSelectMarkState extends State<WidgetSelectMark> {
-  //  controllers
-  ControllerProductsEdit controllerProductsEdit = Get.find();
-  //  var
-  List<Mark> list = [];
-
-  @override
-  void initState() {
-    loadMarks();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widgetView();
-  }
-
-  Widget widgetView() {
-    if (list.length == 0) {
-      return widgetAdd();
-    }
-    return Column(
-      children: [
-        widgetAdd(),
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 12),
-            shrinkWrap: true,
-            itemCount: list.length,
-            itemBuilder: (BuildContext context, int index) {
-              Mark marcaSelect = list[index];
-              if (index == 0) {
-                return Column(
-                  children: [
-                    getWidgetOptionOther(),
-                    controllerProductsEdit.getUltimateSelectionMark.id == '' ||controllerProductsEdit.getUltimateSelectionMark.id =='other'
-                      ? Container():listTile(marcaSelect:controllerProductsEdit.getUltimateSelectionMark),
-                    listTile(marcaSelect: marcaSelect),
-                    Divider(endIndent: 12.0, indent: 12.0, height: 0),
-                  ],
-                );
-              }
-              return Column(
-                children: <Widget>[
-                  listTile(marcaSelect: marcaSelect),
-                  Divider(endIndent: 12.0, indent: 12.0, height: 0),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget getWidgetOptionOther() {
-    //values
-    late Widget widget;
-    // recorre la la de marcas para buscar la informaciób de opción 'other'
-    if (controllerProductsEdit.getMarks.isEmpty) {
-      widget = Container();
-    } else {
-      controllerProductsEdit.getMarks.forEach((element) {
-        if (element.id == 'other') {
-          widget = listTile(marcaSelect: element);
-        }
-      });
-    }
-    return widget;
-  }
-
-  // WIDGETS COMPONENT
-  Widget widgetAdd() {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding:
-              const EdgeInsets.only(bottom: 12, left: 12, right: 12, top: 12),
-          child: Row(
-            children: [
-              Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
-              // TODO : delete icon 'add new mark for release'
-              IconButton(
-                  onPressed: () {
-                    Get.back();
-                    Get.to(() => CreateMark(
-                        mark: Mark(
-                            upgrade: Timestamp.now(),
-                            creation: Timestamp.now())));
-                  },
-                  icon: Icon(Icons.add)),
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () {
-                  Get.back();
-                  showSearch(
-                    context: context,
-                    delegate: SearchPage<Mark>(
-                      items: list,
-                      searchLabel: 'Buscar marca',
-                      suggestion: Center(
-                        child: Text('ej. Miller'),
-                      ),
-                      failure: Center(
-                        child: Text('No se encontro :('),
-                      ),
-                      filter: (product) => [
-                        product.name,
-                        product.description,
-                      ],
-                      builder: (mark) => Column(
-                        children: <Widget>[
-                          listTile(marcaSelect: mark),
-                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              )
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget listTile({required Mark marcaSelect}) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      trailing: viewCircleImage(
-          texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
-      dense: true,
-      title: Text(marcaSelect.name,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-              fontSize: 16.0, color: Get.theme.textTheme.bodyText1!.color)),
-      onTap: () {
-        controllerProductsEdit.setUltimateSelectionMark = marcaSelect;
-        controllerProductsEdit.setMarkSelected = marcaSelect;
-        Get.back();
-      },
-      onLongPress: () {
-        // TODO : ver para antes de release
-        Get.to(() => CreateMark(mark: marcaSelect));
-      },
-    );
-  }
-
-  // functions
-  loadMarks() async {
-    if (controllerProductsEdit.getMarks.length == 0) {
-      await Database.readListMarksFuture().then((value) {
-        setState(() {
-          value.docs.forEach((element) {
-            Mark mark = Mark.fromMap(element.data());
-            mark.id = element.id;
-            list.add(mark);
-          });
-          controllerProductsEdit.setMarks = list;
-        });
-      });
-    } else {
-      // datos ya descargados
-      list = controllerProductsEdit.getMarks;
-      setState(() => list = controllerProductsEdit.getMarks);
     }
   }
 }

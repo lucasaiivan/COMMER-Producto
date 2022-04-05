@@ -12,13 +12,27 @@ import 'package:producto/app/services/database.dart';
 import '../views/product_edit_view.dart';
 
 class ControllerProductsEdit extends GetxController {
+
   // others controllers
   final WelcomeController welcomeController = Get.find();
+
+  // state internet
+  bool connected = false;
+  set setStateConnect(bool value) {
+    connected = value;
+    update(['updateAll']);
+  }
+  bool get getStateConnect => connected;
+
 
   // ultimate selection mark
   static Mark _ultimateSelectionMark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
   set setUltimateSelectionMark(Mark value) => _ultimateSelectionMark = value;
   Mark get getUltimateSelectionMark => _ultimateSelectionMark;
+
+  static Mark _ultimateSelectionMark2 = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+  set setUltimateSelectionMark2(Mark value) => _ultimateSelectionMark2 = value;
+  Mark get getUltimateSelectionMark2 => _ultimateSelectionMark2;
 
   // state account auth
   bool _accountAuth = false;

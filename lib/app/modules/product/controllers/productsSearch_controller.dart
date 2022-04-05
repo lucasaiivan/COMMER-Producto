@@ -163,15 +163,14 @@ class ControllerProductsSearch extends GetxController {
   }
 
   void queryProductSuggestion() {
-
-    if(getListProductsSuggestions.length==0){
+    if (getListProductsSuggestions.length == 0) {
       Database.readProductsFuture(limit: 5).then((value) {
-      List<Product> newList = [];
-      value.docs
-          .forEach((element) => newList.add(Product.fromMap(element.data())));
-      setListProductsSuggestions = newList;
-      update(['updateAll']);
-    });
+        List<Product> newList = [];
+        value.docs
+            .forEach((element) => newList.add(Product.fromMap(element.data())));
+        setListProductsSuggestions = newList;
+        update(['updateAll']);
+      });
     }
   }
 
@@ -241,33 +240,36 @@ class ControllerProductsSearch extends GetxController {
     Widget widget = ListView.builder(
       itemCount: getListExcelToJson.length,
       itemBuilder: (context, index) {
-        return welcomeController.isCatalogue(id: getListExcelToJson[index]['Código'])?Container():ListTile(
-          trailing: Icon(Icons.check_circle,
-              color: welcomeController.isCatalogue(id: getListExcelToJson[index]['Código'])
-                  ? Colors.green
-                  : null),
+
+        // values
+        final ProductCatalogue productValue = ProductCatalogue(
+            creation: Timestamp.now(), upgrade: Timestamp.now());
+        // set values
+        productValue.id = getListExcelToJson[index]['Código'];
+        productValue.code = getListExcelToJson[index]['Código'];
+        productValue.description = getListExcelToJson[index]['Producto'];
+        productValue.purchasePrice = double.tryParse(getListExcelToJson[index]
+                    ['P. Costo']
+                .toString()
+                .replaceAll('\$', '')
+                .replaceAll(',', '.')) ??
+            0.0;
+        productValue.salePrice = double.tryParse(getListExcelToJson[index]
+                    ['P. Venta']
+                .toString()
+                .replaceAll('\$', '')
+                .replaceAll(',', '.')) ??
+            0.0;
+            
+        return welcomeController.isCatalogue(id: productValue.code)?Container():ListTile(
           title: Text(
-            getListExcelToJson[index]['Producto'],
+            productValue.description,
             maxLines: 2,
           ),
-          subtitle: Text(getListExcelToJson[index]['Código']),
+          subtitle: Text(productValue.code+' \$${productValue.salePrice.toInt()}'),
           onTap: () {
             //  set
-            productSelect.id = getListExcelToJson[index]['Código'];
-            productSelect.code = getListExcelToJson[index]['Código'];
-            productSelect.description = getListExcelToJson[index]['Producto'];
-            productSelect.purchasePrice = double.tryParse(
-                    getListExcelToJson[index]['P. Costo']
-                        .toString()
-                        .replaceAll('\$', '')
-                        .replaceAll(',', '.')) ??
-                0.0;
-            productSelect.salePrice = double.tryParse(getListExcelToJson[index]
-                        ['P. Venta']
-                    .toString()
-                    .replaceAll('\$', '')
-                    .replaceAll(',', '.')) ??
-                0.0;
+            productSelect=productValue;
             Get.back();
             textEditingController.text = productSelect.id;
             queryProduct(id: productSelect.id);
