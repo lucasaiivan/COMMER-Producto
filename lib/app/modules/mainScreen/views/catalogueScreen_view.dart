@@ -174,13 +174,11 @@ class CatalogueScreenView extends StatelessWidget {
         },
         body: Column(
           children: <Widget>[
-            Divider(height: 0.0),
+            Divider(height: 0.0,color: Theme.of(buildContext).dividerColor),
             TabBar(
-              indicatorColor: Theme.of(buildContext).primaryColor,
-              indicatorWeight: 5.0,
-              labelColor: Get.theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
+              indicatorColor: Theme.of(buildContext).dividerColor,
+              indicatorWeight: 0.5,
+              labelColor: Get.theme.brightness == Brightness.dark? Colors.white : Colors.black,
               onTap: (_) {
                 if (!controller.getSelectItems) {
                   ViewCategoria.show(buildContext: buildContext);
