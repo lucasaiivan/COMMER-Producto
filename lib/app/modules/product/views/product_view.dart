@@ -181,22 +181,23 @@ class Product extends GetView<ProductController> {
                   children: <Widget>[
                     controller.getCategory.name != ""
                         ? ElasticIn(
-                          child: Chip(
+                            child: Chip(
                               materialTapTargetSize:
                                   MaterialTapTargetSize.shrinkWrap,
                               avatar: CircleAvatar(
-                                  backgroundColor:colorChip0.withOpacity(0.2),
+                                  backgroundColor: colorChip0.withOpacity(0.2),
                                   child: Text(
-                                      controller.getCategory.name.substring(0, 1),
+                                      controller.getCategory.name
+                                          .substring(0, 1),
                                       style: TextStyle(color: colorChip0))),
                               label: Text(controller.getCategory.name,
                                   overflow: TextOverflow.ellipsis),
                             ),
-                        )
+                          )
                         : Container(),
                     controller.getSubcategory.name != ""
                         ? ElasticIn(
-                          child: Chip(
+                            child: Chip(
                               materialTapTargetSize:
                                   MaterialTapTargetSize.shrinkWrap,
                               avatar: CircleAvatar(
@@ -211,7 +212,7 @@ class Product extends GetView<ProductController> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                        )
+                          )
                         : Container(),
                   ],
                 )
@@ -365,18 +366,8 @@ class Product extends GetView<ProductController> {
                     SizedBox(height: 12),
                     imageViewCard(),
                     widgetDescripcion(),
-                    controller.getstateAds
-                        ? Center(
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: AdWidget(ad: controller.bannerAd.value),
-                              width: controller.bannerAd.value.size.width
-                                  .toDouble(),
-                              height: controller.bannerAd.value.size.height
-                                  .toDouble(),
-                            ),
-                          )
-                        : Container(),
+                    controller.getstateAds?adsWidget(ad: controller.bannerAd.value):Container(),
+                    
                     otherProductsCatalogueListHorizontal(),
                     otherBrandProductsListHorizontal(),
                     const SizedBox(height: 150.0, width: 120.0),
@@ -386,6 +377,18 @@ class Product extends GetView<ProductController> {
             ),
           ],
         ));
+  }
+
+  Widget adsWidget({required BannerAd  ad}) {
+    return Center(
+            child: Container(
+              alignment: Alignment.center,
+              child: AdWidget(ad:ad),
+              width: ad.size.width.toDouble(),
+              height: ad.size.height.toDouble(),
+            ),
+          );
+
   }
 
   Widget persistentHeader(
@@ -673,61 +676,64 @@ class Product extends GetView<ProductController> {
   }
 
   Widget imageViewCard({double borderRadius = 14}) {
-    return controller.getProduct.image==''?Container():Card(
-      margin: EdgeInsets.all(0.0),
-      elevation: 0.0,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius)),
-      child: Hero(
-        tag: controller.getProduct.id,
-        child: Stack(
-          alignment: AlignmentDirectional.topEnd,
-          children: [
-            CachedNetworkImage(
-              width: Get.width,
-              height: Get.width,
-              fadeInDuration: Duration(milliseconds: 200),
-              fit: BoxFit.cover,
-              imageUrl: controller.getProduct.image == ''
-                  ? 'https://www.barcelonabeta.org/sites/default/files/2018-04/default-image_0.png'
-                  : controller.getProduct.image,
-              placeholder: (context, url) => FadeInImage(
-                image: AssetImage("assets/loading.gif"),
-                placeholder: AssetImage("assets/loading.gif"),
-                fit: BoxFit.cover,
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: Colors.grey,
-                width: Get.width,
-                height: Get.width,
-                child: Center(
-                  child: Text(
-                    controller.getProduct.description.substring(0, 1),
-                    style: TextStyle(
-                        fontSize: MediaQuery.of(context).size.width * 0.25),
+    return controller.getProduct.image == ''
+        ? Container()
+        : Card(
+            margin: EdgeInsets.all(0.0),
+            elevation: 0.0,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(borderRadius)),
+            child: Hero(
+              tag: controller.getProduct.id,
+              child: Stack(
+                alignment: AlignmentDirectional.topEnd,
+                children: [
+                  CachedNetworkImage(
+                    width: Get.width,
+                    height: Get.width,
+                    fadeInDuration: Duration(milliseconds: 200),
+                    fit: BoxFit.cover,
+                    imageUrl: controller.getProduct.image == ''
+                        ? 'https://www.barcelonabeta.org/sites/default/files/2018-04/default-image_0.png'
+                        : controller.getProduct.image,
+                    placeholder: (context, url) => FadeInImage(
+                      image: AssetImage("assets/loading.gif"),
+                      placeholder: AssetImage("assets/loading.gif"),
+                      fit: BoxFit.cover,
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: Colors.grey,
+                      width: Get.width,
+                      height: Get.width,
+                      child: Center(
+                        child: Text(
+                          controller.getProduct.description.substring(0, 1),
+                          style: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.25),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Get.theme.scaffoldBackgroundColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: utilsWidget.viewCircleImage(
+                            size: 60,
+                            url: controller.getMark.image,
+                            texto: controller.getMark.name),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: Get.theme.scaffoldBackgroundColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: utilsWidget.viewCircleImage(
-                      size: 60,
-                      url: controller.getMark.image,
-                      texto: controller.getMark.name),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget otherBrandProductsListHorizontal() {
@@ -744,8 +750,8 @@ class Product extends GetView<ProductController> {
           : controller.getListOthersProductsForMark.length == 0
               ? Container()
               : FadeInRight(
-                duration: Duration(seconds: 1),
-                child: Column(
+                  duration: Duration(seconds: 1),
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -787,7 +793,7 @@ class Product extends GetView<ProductController> {
                       ),
                     ],
                   ),
-              )),
+                )),
     );
   }
 

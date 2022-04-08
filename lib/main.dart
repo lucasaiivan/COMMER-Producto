@@ -17,7 +17,6 @@ void main() async {
   HomeBinding().dependencies();
   await GetStorage.init();
 
-  
   bool isDark = (GetStorage().read('isDarkMode') ?? false);
 
   if (Platform.isAndroid) {

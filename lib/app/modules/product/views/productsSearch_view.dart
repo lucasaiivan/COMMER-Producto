@@ -265,7 +265,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
           focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: controller.getColorTextField)),
           labelStyle: TextStyle(color: controller.getColorTextField),
-          labelText: "Escribe el código",
+          labelText: "Escribe el código de barra",
           suffixStyle: TextStyle(color: controller.getColorTextField)),
       style: TextStyle(fontSize: 18.0, color: controller.getColorTextField),
       textInputAction: TextInputAction.search,

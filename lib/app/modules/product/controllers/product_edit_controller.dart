@@ -22,15 +22,17 @@ class ControllerProductsEdit extends GetxController {
     connected = value;
     update(['updateAll']);
   }
+
   bool get getStateConnect => connected;
 
-
   // ultimate selection mark
-  static Mark _ultimateSelectionMark = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+  static Mark _ultimateSelectionMark =
+      Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
   set setUltimateSelectionMark(Mark value) => _ultimateSelectionMark = value;
   Mark get getUltimateSelectionMark => _ultimateSelectionMark;
 
-  static Mark _ultimateSelectionMark2 = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+  static Mark _ultimateSelectionMark2 =
+      Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
   set setUltimateSelectionMark2(Mark value) => _ultimateSelectionMark2 = value;
   Mark get getUltimateSelectionMark2 => _ultimateSelectionMark2;
 
@@ -82,13 +84,15 @@ class ControllerProductsEdit extends GetxController {
       MoneyMaskedTextController();
 
   // mark
-  Mark _markSelected = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+  Mark _markSelected =
+      Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
   set setMarkSelected(Mark value) {
     _markSelected = value;
     getProduct.idMark = value.id;
     getProduct.nameMark = value.name;
     update(['updateAll']);
   }
+
   Mark get getMarkSelected => _markSelected;
 
   // marcas
@@ -137,7 +141,8 @@ class ControllerProductsEdit extends GetxController {
     setAccountAuth = welcomeController.getIdAccountSelecte != '';
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ??ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setProduct = Get.arguments['product'] ??
+        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
     setNewProduct = Get.arguments['new'] ?? false;
     // load data product
     loadDataProduct();
@@ -176,93 +181,87 @@ class ControllerProductsEdit extends GetxController {
 
   Future<void> save() async {
     if (getProduct.id != '') {
-      
-        if (getProduct.description != '') {
-          if (getProduct.idMark != '' && getProduct.nameMark != '') {
-            if (getProduct.salePrice != 0 && getAccountAuth ||
-                getProduct.salePrice == 0 && getAccountAuth == false) {
-              // update view
-              setSaveIndicator = true;
-              setTextAppBar = 'Espere por favor...';
-              updateAll();
+      if (getProduct.description != '') {
+        if (getProduct.idMark != '' && getProduct.nameMark != '') {
+          if (getProduct.salePrice != 0 && getAccountAuth ||
+              getProduct.salePrice == 0 && getAccountAuth == false) {
+            // update view
+            setSaveIndicator = true;
+            setTextAppBar = 'Espere por favor...';
+            updateAll();
 
-              // set
-              getProduct.upgrade = Timestamp.now();
-              // iamge
-              if (getXFileImage.path != '') {
-                // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
-                // si es asi procede a guardar la imagen en la base de la app
-                Reference ref =
-                    Database.referenceStorageProductPublic(id: getProduct.id);
-                UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
-                await uploadTask;
-                // obtenemos la url de la imagen guardada
-                await ref
-                    .getDownloadURL()
-                    .then((value) => getProduct.image = value);
-              }
-              if (getAccountAuth) {
-                // procede agregrar el producto en el cátalogo
+            // set
+            getProduct.upgrade = Timestamp.now();
+            // iamge
+            if (getXFileImage.path != '') {
+              // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
+              // si es asi procede a guardar la imagen en la base de la app
+              Reference ref =
+                  Database.referenceStorageProductPublic(id: getProduct.id);
+              UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
+              await uploadTask;
+              // obtenemos la url de la imagen guardada
+              await ref
+                  .getDownloadURL()
+                  .then((value) => getProduct.image = value);
+            }
+            if (getAccountAuth) {
+              // procede agregrar el producto en el cátalogo
 
-                // Mods - save data product global
-                if (getNewProduct || getEditModerator) {
-                  getProduct.verified =
-                      true; // TODO: Para desarrollo verificado es TRUE // Cambiar esto cuando se lanze a producción A FALSE
-                  saveProductPublic();
-                }
-
-                // registra el precio en una colección publica para todos los usuarios
-                Price precio = new Price(
-                  id: welcomeController.getProfileAccountSelected.id,
-                  idAccount: welcomeController.getProfileAccountSelected.id,
-                  imageAccount:
-                      welcomeController.getProfileAccountSelected.image,
-                  nameAccount: welcomeController.getProfileAccountSelected.name,
-                  price: getProduct.salePrice,
-                  currencySign: getProduct.currencySign,
-                  province:
-                      welcomeController.getProfileAccountSelected.province,
-                  town: welcomeController.getProfileAccountSelected.town,
-                  time: Timestamp.fromDate(new DateTime.now()),
-                );
-                // Firebase set
-                await Database.refFirestoreRegisterPrice(
-                        idProducto: getProduct.id, isoPAis: 'ARG')
-                    .doc(precio.id)
-                    .set(precio.toJson());
-
-                // add/update data product in catalogue
-                Database.refFirestoreCatalogueProduct(
-                        idAccount:
-                            welcomeController.getProfileAccountSelected.id)
-                    .doc(getProduct.id)
-                    .set(getProduct.toJson())
-                    .whenComplete(() async {
-                      await Future.delayed(Duration(seconds: 3)).then((value) {
-                        setSaveIndicator = false;
-                        Get.back();
-                        Get.back();
-                      });
-                    })
-                    .onError((error, stackTrace) => setSaveIndicator = false)
-                    .catchError((_) => setSaveIndicator = false);
-              } else {
-                getProduct.verified =
-                    true; // TODO: Para desarrollo verificado es TRUE // Cambiar esto cuando se lanze a producción a FALSE
+              // Mods - save data product global
+              if (getNewProduct || getEditModerator) {
+                getProduct.verified = false;
                 saveProductPublic();
               }
+
+              // registra el precio en una colección publica para todos los usuarios
+              Price precio = new Price(
+                id: welcomeController.getProfileAccountSelected.id,
+                idAccount: welcomeController.getProfileAccountSelected.id,
+                imageAccount: welcomeController.getProfileAccountSelected.image,
+                nameAccount: welcomeController.getProfileAccountSelected.name,
+                price: getProduct.salePrice,
+                currencySign: getProduct.currencySign,
+                province: welcomeController.getProfileAccountSelected.province,
+                town: welcomeController.getProfileAccountSelected.town,
+                time: Timestamp.fromDate(new DateTime.now()),
+              );
+              // Firebase set
+              await Database.refFirestoreRegisterPrice(
+                      idProducto: getProduct.id, isoPAis: 'ARG')
+                  .doc(precio.id)
+                  .set(precio.toJson());
+
+              // add/update data product in catalogue
+              Database.refFirestoreCatalogueProduct(
+                      idAccount: welcomeController.getProfileAccountSelected.id)
+                  .doc(getProduct.id)
+                  .set(getProduct.toJson())
+                  .whenComplete(() async {
+                    await Future.delayed(Duration(seconds: 3)).then((value) {
+                      setSaveIndicator = false;
+                      Get.back();
+                      Get.back();
+                    });
+                  })
+                  .onError((error, stackTrace) => setSaveIndicator = false)
+                  .catchError((_) => setSaveIndicator = false);
             } else {
-              Get.snackbar('Antes de continuar 😐', 'debe proporcionar un precio');
+              getProduct.verified = false;
+              saveProductPublic();
             }
           } else {
             Get.snackbar(
-                'No se puedo continuar 😐', 'debes seleccionar una marca');
+                'Antes de continuar 😐', 'debe proporcionar un precio');
           }
         } else {
-          Get.snackbar('No se puedo continuar 👎',
-              'debes escribir una descripción del producto');
+          Get.snackbar(
+              'No se puedo continuar 😐', 'debes seleccionar una marca');
         }
-      
+      } else {
+        Get.snackbar('No se puedo continuar 👎',
+            'debes escribir una descripción del producto');
+      }
     }
   }
 
@@ -499,7 +498,9 @@ class ControllerProductsEdit extends GetxController {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
   //TODO: eliminar para release

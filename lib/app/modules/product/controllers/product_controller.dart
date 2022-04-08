@@ -71,7 +71,6 @@ class ProductController extends GetxController {
   bool get getInCatalogue => _inCatalogue;
   set setInCatalogue(bool value) => _inCatalogue = value;
 
-
   Rx<ProductCatalogue> _product =
       ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
   ProductCatalogue get getProduct => _product.value;
@@ -185,20 +184,25 @@ class ProductController extends GetxController {
     }
     // set - verificamos si se encuentra en el cátalogo de la cuenta
     setInCatalogue = welcomeController.isCatalogue(id: productCatalogue.id);
-    setProduct = getInCatalogue?welcomeController.getProductCatalogue(id: productCatalogue.id): productCatalogue;
-    if(!getProduct.id.isEmpty){
+    setProduct = getInCatalogue
+        ? welcomeController.getProductCatalogue(id: productCatalogue.id)
+        : productCatalogue;
+    if (!getProduct.id.isEmpty) {
       readCategory();
       readMark();
       readListPricesForProduct();
       readOthersProductsCategoryCatalogue();
     }
-    
+
     if (scrollController.hasClients)
       scrollController.animateTo(0,
           duration: const Duration(milliseconds: 500), curve: Curves.linear);
   }
 
-  void initAds() => bannerAd.value.load();
+  void initAds() {
+    bannerAd.value.load();
+  }
+
   void setTheme() {
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -229,7 +233,7 @@ class ProductController extends GetxController {
   }
 
   void readMark() {
-    if(!getProduct.idMark.isEmpty){
+    if (!getProduct.idMark.isEmpty) {
       Database.readMarkFuture(id: getProduct.idMark).then((value) {
         if (value.exists) {
           setMark = Mark.fromMap(value.data() as Map);

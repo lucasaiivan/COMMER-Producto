@@ -199,33 +199,6 @@ class ProductEdit extends StatelessWidget {
             controller: controller.controllerTextEdit_descripcion,
           ),
           space,
-          //TODO: eliminar para desarrrollo
-          // widget debug
-          TextButton(
-              onPressed: () async {
-                String clave = controller.controllerTextEdit_descripcion.text;
-                String url =
-                    "https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
-                if (await canLaunch(url)) {
-                  await launch(url);
-                } else {
-                  throw 'Could not launch $url';
-                }
-              },
-              child: Text('Buscar descripción en Google')),
-          TextButton(
-              onPressed: () async {
-                String clave = controller.getProduct.code;
-                String url =
-                    "https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
-                if (await canLaunch(url)) {
-                  await launch(url);
-                } else {
-                  throw 'Could not launch $url';
-                }
-              },
-              child: Text('Buscar en código Google')),
-          space,
           // fin widget debug
           SizedBox(
             width: double.infinity,
