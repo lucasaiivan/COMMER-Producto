@@ -47,10 +47,10 @@ class ScanScreenView extends StatelessWidget {
             children: <Widget>[
               Text(
                 controller.getProfileAccountSelected.id == ''
-                    ? "Seleccionar cuenta"
+                    ? "Seleccionar catálogo"
                     : controller.getProfileAccountSelected.name != ""
                         ? controller.getProfileAccountSelected.name
-                        : "Mi catalogo",
+                        : "Mi catálogo",
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 style: TextStyle(color: Get.theme.textTheme.bodyText1!.color),
@@ -207,7 +207,7 @@ class ScanScreenView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6.0),
               child: FaIcon(FontAwesomeIcons.instagram,color:  Utils.getRandomColor()[300],)),
           title: Text('Instagram'),
-          subtitle: Text('Déjanos una sugerencia'),
+          subtitle: Text('Déjanos un mensaje'),
           onTap: () async {
             String url = "https://www.instagram.com/logica.booleana.producto/";
             if (await canLaunch(url)) {
@@ -226,6 +226,7 @@ class ScanScreenView extends StatelessWidget {
           title: Text(
             'Califícanos ⭐',
           ),
+          subtitle: Text('ayuda a mejorar esta app ❤️'),
           onTap: () async {
             String url =
                 "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";

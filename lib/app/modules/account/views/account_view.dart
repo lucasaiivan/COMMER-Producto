@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:animate_do/animate_do.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,8 +9,6 @@ import 'package:producto/app/modules/account/controller/account_controller.dart'
 import 'package:producto/app/utils/widgets_utils_app.dart';
 
 class AccountView extends GetView<AccountController> {
-
-
   // VAriables
 
   final FocusNode focusTextEdiNombre = FocusNode();
@@ -22,7 +21,6 @@ class AccountView extends GetView<AccountController> {
 
   @override
   Widget build(BuildContext buildContext) {
-
     return scaffold(buildContext: buildContext);
   }
 
@@ -32,33 +30,35 @@ class AccountView extends GetView<AccountController> {
         builder: (_) {
           return Scaffold(
             appBar: appBar(context: buildContext),
-            body: controller.stateLoding?Center(child: Text('cargando...'),):ListView(
-              padding: EdgeInsets.all(12.0),
-              children: [
-                Column(
-                  children: <Widget>[
-                    SizedBox(
-                      height: 12.0,
-                    ),
-                    widgetsImagen(),
-                    controller.getSavingIndicator
-                        ? Container()
-                        : TextButton(
-                            onPressed: () {
-                              if (controller.getSavingIndicator == false) {
-                                _showModalBottomSheetCambiarImagen(
-                                    context: buildContext);
-                              }
-                            },
-                            child: Text("Cambiar imagen")),
-                    SizedBox(
-                      height: 24.0,
-                    ),
-                    widgetFormEditText(context: buildContext),
-                  ],
-                ),
-              ],
-            ),
+            body: controller.stateLoding
+                ? Center(
+                    child: Text('cargando...'),
+                  )
+                : ListView(
+                    padding: EdgeInsets.all(12.0),
+                    children: [
+                      Column(
+                        children: <Widget>[
+                          controller.newAccount?widgetNewAccount():Container(),
+                          SizedBox(
+                            height: 12.0,
+                          ),
+                          widgetsImagen(),
+                          controller.getSavingIndicator
+                              ? Container()
+                              : TextButton(
+                                  onPressed: () {
+                                    if (controller.getSavingIndicator==false) {_showModalBottomSheetCambiarImagen(context: buildContext);}
+                                  },
+                                  child: Text("Cambiar imagen")),
+                          SizedBox(
+                            height: 24.0,
+                          ),
+                          widgetFormEditText(context: buildContext),
+                        ],
+                      ),
+                    ],
+                  ),
           );
         });
   }
@@ -68,17 +68,20 @@ class AccountView extends GetView<AccountController> {
     return AppBar(
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       elevation: 0,
-      iconTheme: Theme.of(context).iconTheme.copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
-      title: Text(controller.newAccount?'Crear perfil':'Perfil',style: TextStyle(
+      iconTheme: Theme.of(context)
+          .iconTheme
+          .copyWith(color: Theme.of(context).textTheme.bodyText1!.color),
+      title: Text(controller.newAccount ? 'Perfil de mi negocio' : 'Perfil',
+          style: TextStyle(
               fontSize: 18.0,
               color: Theme.of(context).textTheme.bodyText1!.color)),
       actions: <Widget>[
         IconButton(
-              icon: controller.getSavingIndicator
-                  ? Container()
-                  : Icon(Icons.check),
-              onPressed: controller.saveAccount,
-            )
+          icon: controller.getSavingIndicator
+              ? Container()
+              : Icon(Icons.check_sharp),
+          onPressed: controller.saveAccount,
+        )
       ],
       bottom: controller.getSavingIndicator ? linearProgressBarApp() : null,
     );
@@ -113,7 +116,23 @@ class AccountView extends GetView<AccountController> {
         });
   }
 
+  Widget widgetNewAccount() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Center(
+          child: ElasticIn(
+            child: Text(
+                'Hola 😃, primero dinos el nombre de tu negocio para poder crear tu catálogo \n\n 👇',
+                style: TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+            ),
+          )),
+    );
+  }
+
   Widget widgetsImagen() {
+    // values
+    Color colorDefault = Colors.grey.withOpacity(0.2);
     return GetBuilder<AccountController>(
       id: 'image',
       builder: (_) {
@@ -122,25 +141,29 @@ class AccountView extends GetView<AccountController> {
           child: Column(
             children: [
               controller.getImageUpdate == false
-                  ? controller.profileAccount.image==''?CircleAvatar(
-                        backgroundColor: Colors.grey,
-                        radius: 75.0,
-                      ):CachedNetworkImage(
-                      fit: BoxFit.cover,
-                      imageUrl: controller.profileAccount.image==''?'default':controller.profileAccount.image,
-                      placeholder: (context, url) => CircleAvatar(
-                        backgroundColor: Colors.grey,
-                        radius: 75.0,
-                      ),
-                      imageBuilder: (context, image) => CircleAvatar(
-                        backgroundImage: image,
-                        radius: 75.0,
-                      ),
-                      errorWidget: (context, url, error) => CircleAvatar(
-                        backgroundColor: Colors.grey,
-                        radius: 75.0,
-                      ),
-                    )
+                  ? controller.profileAccount.image == ''
+                      ? CircleAvatar(
+                          backgroundColor: colorDefault,
+                          radius: 75.0,
+                        )
+                      : CachedNetworkImage(
+                          fit: BoxFit.cover,
+                          imageUrl: controller.profileAccount.image == ''
+                              ? 'default'
+                              : controller.profileAccount.image,
+                          placeholder: (context, url) => CircleAvatar(
+                            backgroundColor: colorDefault,
+                            radius: 75.0,
+                          ),
+                          imageBuilder: (context, image) => CircleAvatar(
+                            backgroundImage: image,
+                            radius: 75.0,
+                          ),
+                          errorWidget: (context, url, error) => CircleAvatar(
+                            backgroundColor: colorDefault,
+                            radius: 75.0,
+                          ),
+                        )
                   : CircleAvatar(
                       radius: 75.0,
                       backgroundColor: Colors.transparent,
@@ -170,14 +193,14 @@ class AccountView extends GetView<AccountController> {
                 minLines: 1,
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
-                onChanged: (value) =>
-                    controller.profileAccount.name = value,
+                onChanged: (value) => controller.profileAccount.name = value,
                 decoration: InputDecoration(
                   filled: true,
                   labelText: "Nombre del Negocio",
+                  prefixIcon: Icon(Icons.other_houses_outlined),
                 ),
-                controller: TextEditingController(
-                    text: controller.profileAccount.name),
+                controller:
+                    TextEditingController(text: controller.profileAccount.name),
                 textInputAction: TextInputAction.next,
                 focusNode: focusTextEdiNombre,
                 onSubmitted: (term) {
@@ -208,7 +231,8 @@ class AccountView extends GetView<AccountController> {
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
-                onTap: () => _bottomPickerSelectCurreny(list: ["\$"],context: context),
+                onTap: () =>
+                    _bottomPickerSelectCurreny(list: ["\$"], context: context),
                 child: TextField(
                   minLines: 1,
                   maxLines: 5,
@@ -217,6 +241,7 @@ class AccountView extends GetView<AccountController> {
                   decoration: InputDecoration(
                     labelText: "Signo de moneda",
                     filled: true,
+                    prefixIcon: Icon(Icons.monetization_on_outlined),
                   ),
                   controller: controller.getControllerTextEditSignoMoneda,
                   onChanged: (value) =>
@@ -232,8 +257,7 @@ class AccountView extends GetView<AccountController> {
               ),
               TextField(
                 enabled: !controller.getSavingIndicator,
-                onChanged: (value) =>
-                    controller.profileAccount.address = value,
+                onChanged: (value) => controller.profileAccount.address = value,
                 decoration: InputDecoration(
                   labelText: "Dirección (ocional)",
                   filled: true,
@@ -250,20 +274,21 @@ class AccountView extends GetView<AccountController> {
               Divider(color: Colors.transparent, thickness: 1),
               TextField(
                 enabled: !controller.getSavingIndicator,
-                onChanged: (value) =>
-                    controller.profileAccount.town = value,
+                onChanged: (value) => controller.profileAccount.town = value,
                 decoration: InputDecoration(
                   labelText: "Ciudad (ocional)",
                   filled: true,
                 ),
-                controller: TextEditingController(text: controller.profileAccount.town),
+                controller:
+                    TextEditingController(text: controller.profileAccount.town),
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
                 onTap: () => controller.profileAccount.country == ''
                     ? _bottomPickerSelectCountries(
-                        list: controller.getCountries,context: context)
-                    : _bottomPickerSelectCities(list: controller.getCities,context: context),
+                        list: controller.getCountries, context: context)
+                    : _bottomPickerSelectCities(
+                        list: controller.getCities, context: context),
                 child: TextField(
                     minLines: 1,
                     maxLines: 5,
@@ -272,6 +297,7 @@ class AccountView extends GetView<AccountController> {
                     decoration: InputDecoration(
                       labelText: "Provincia",
                       filled: true,
+                      prefixIcon: Icon(Icons.business),
                     ),
                     controller: controller.getControllerTextEditProvincia,
                     onChanged: (value) {
@@ -280,8 +306,8 @@ class AccountView extends GetView<AccountController> {
               ),
               Divider(color: Colors.transparent, thickness: 1),
               InkWell(
-                onTap: () =>
-                    _bottomPickerSelectCountries(list: controller.getCountries,context:context ),
+                onTap: () => _bottomPickerSelectCountries(
+                    list: controller.getCountries, context: context),
                 child: TextField(
                   minLines: 1,
                   maxLines: 5,
@@ -290,6 +316,7 @@ class AccountView extends GetView<AccountController> {
                   decoration: InputDecoration(
                     labelText: "Pais",
                     filled: true,
+                    prefixIcon: Icon(Icons.location_on_outlined),
                   ),
                   controller: controller.getControllerTextEditPais,
                   onChanged: (value) =>
@@ -302,7 +329,8 @@ class AccountView extends GetView<AccountController> {
         ));
   }
 
-  void _bottomPickerSelectCities({required List list,required BuildContext context}) async {
+  void _bottomPickerSelectCities(
+      {required List list, required BuildContext context}) async {
     //  el usuario va a seleccionar una opción
     int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal
@@ -345,7 +373,8 @@ class AccountView extends GetView<AccountController> {
     );
   }
 
-  void _bottomPickerSelectCountries({required List list,required BuildContext context}) async {
+  void _bottomPickerSelectCountries(
+      {required List list, required BuildContext context}) async {
     //  el usuario va a seleccionar una opción
     int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal
@@ -388,7 +417,8 @@ class AccountView extends GetView<AccountController> {
     );
   }
 
-  void _bottomPickerSelectCurreny({required List list,required BuildContext context}) async {
+  void _bottomPickerSelectCurreny(
+      {required List list, required BuildContext context}) async {
     //  el usuario va a seleccionar una opción
     int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal
@@ -419,8 +449,9 @@ class AccountView extends GetView<AccountController> {
               CupertinoButton(
                 child: Text("Ok"),
                 onPressed: () {
-                  controller.profileAccount.currencySign =list[_index];
-                  controller.getControllerTextEditSignoMoneda.text = list[_index];
+                  controller.profileAccount.currencySign = list[_index];
+                  controller.getControllerTextEditSignoMoneda.text =
+                      list[_index];
                   Navigator.pop(context);
                 },
               ),

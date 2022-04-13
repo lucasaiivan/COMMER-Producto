@@ -121,7 +121,7 @@ class CatalogueScreenView extends StatelessWidget {
                   child: Hero(
                     tag: "fotoperfiltoolbar",
                     child: controller.getProfileAccountSelected.image == ''
-                        ? Icon(Icons.account_circle_rounded)
+                        ? Icon(Icons.view_headline)
                         : CachedNetworkImage(
                             imageUrl:
                                 controller.getProfileAccountSelected.image,

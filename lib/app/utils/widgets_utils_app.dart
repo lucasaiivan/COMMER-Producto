@@ -312,99 +312,15 @@ class WidgetButtonListTile extends StatelessWidget {
   Widget buttonListTileCrearCuenta() {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-      leading: CircleAvatar(
-        backgroundColor: Colors.black45,
-        radius: 24.0,
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
+      leading: Icon(Icons.add),
       dense: true,
-      title: Text("Crear cuenta", style: TextStyle(fontSize: 16.0)),
+      title: Text("Crear catálogo", style: TextStyle(fontSize: 16.0)),
       onTap: () {
         Get.back();
         Get.toNamed(Routes.ACCOUNT);
       },
     );
   }
-
-  Widget buttonListTileCerrarSesion({required BuildContext buildContext}) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-      leading: controller.getProfileAccountSelected.image == ""
-          ? CircleAvatar(
-              backgroundColor: Colors.black26,
-              radius: 24.0,
-              child: Text(
-                  controller.getProfileAccountSelected.name.substring(0, 1),
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
-            )
-          : CachedNetworkImage(
-              imageUrl: controller.getProfileAccountSelected.image,
-              placeholder: (context, url) => CircleAvatar(
-                backgroundColor: Colors.black26,
-                radius: 24.0,
-                child: Text(
-                    controller.getProfileAccountSelected.name.substring(0, 1),
-                    style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold)),
-              ),
-              imageBuilder: (context, image) => CircleAvatar(
-                backgroundImage: image,
-                radius: 24.0,
-              ),
-            ),
-      dense: true,
-      title: Text("Cerrar sesión", style: TextStyle(fontSize: 16.0)),
-      subtitle: null,
-      trailing: Icon(Icons.close),
-      onTap: () {
-        showDialogCerrarSesion(buildContext: buildContext);
-      },
-    );
-  }
-
-  void showDialogCerrarSesion({required BuildContext buildContext}) {
-    showDialog(
-      context: buildContext,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("Cerrar sesión"),
-          content: new Text("¿Estás seguro de que quieres cerrar la sesión?"),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Cancelar"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            new FlatButton(
-              child: new Text("si"),
-              onPressed: () async {
-                /* // Default values
-                Global.actualizarPerfilNegocio(perfilNegocio: null);
-                AuthService auth = AuthService();
-                await auth.signOut();
-                Future.delayed(const Duration(milliseconds: 800), () {
-                  Navigator.of(buildContext).pushNamedAndRemoveUntil(
-                      '/', (Route<dynamic> route) => false);
-                }); */
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget buttonListTileItemCuenta(
       {required ProfileAccountModel perfilNegocio,
       bool adminPropietario = false}) {
