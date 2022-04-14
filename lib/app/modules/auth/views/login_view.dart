@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:producto/app/modules/auth/controller/login_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,12 +38,13 @@ class AuthView extends GetView<LoginController> {
   /// WIDGETS VIEWS
   Widget body({required BuildContext context}) {
     // Definimos los estilos de colores de los botones
-    Color colorText = Theme.of(context).brightness == Brightness.dark
+    Color colorAccent = Theme.of(context).brightness == Brightness.dark
         ? Colors.deepPurple
         : Colors.white;
     Color colorButton = Theme.of(context).brightness == Brightness.dark
         ? Colors.white
         : Colors.deepPurple;
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,21 +57,23 @@ class AuthView extends GetView<LoginController> {
                 height: double.infinity,
                 width: double.infinity)),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 50),
-          child: ElevatedButton(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+          child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.all(20.0),
+              elevation: 0,
+              padding: EdgeInsets.all(14.0),
               onPrimary: Colors.white,
               primary: colorButton,
               shadowColor: colorButton,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(24.0),
                   side: BorderSide(color: colorButton)),
               side: BorderSide(color: colorButton),
             ),
-            child: Text('iniciar sesión con google',
+            icon: FaIcon(FontAwesomeIcons.google, color: colorAccent),
+            label: Text('iniciar sesión con google',
                 style: TextStyle(
-                    color: colorText,
+                    color: colorAccent,
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold)),
             onPressed: controller.login,
@@ -82,7 +86,8 @@ class AuthView extends GetView<LoginController> {
 
   /// WIDGETS COMPONENT
   Widget widgetCheckAcceptPrivacyAndUsePolicy() {
-    TextStyle defaultStyle = TextStyle(color: Get.theme.textTheme.bodyText1!.color);
+    TextStyle defaultStyle =
+        TextStyle(color: Get.theme.textTheme.bodyText1!.color);
     TextStyle linkStyle = TextStyle(color: Colors.blue);
     RichText text = RichText(
       textAlign: TextAlign.center,
@@ -90,40 +95,50 @@ class AuthView extends GetView<LoginController> {
         style: defaultStyle,
         children: <TextSpan>[
           TextSpan(
-              text: 'Al hacer clic en INICIAR SESIÓN, usted ah leído y acepta nuestros '),
+              text:
+                  'Al hacer clic en INICIAR SESIÓN, usted ah leído y acepta nuestros '),
           TextSpan(
               text: 'Términos y condiciones de uso',
               style: linkStyle,
               recognizer: TapGestureRecognizer()
-                ..onTap = () async{
-                  String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
-                  if (await canLaunch(url)) {await launch(url);} else {throw 'Could not launch $url';
-            }
+                ..onTap = () async {
+                  String url =
+                      "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
                 }),
           TextSpan(text: ' así también como la '),
           TextSpan(
               text: 'Política de privacidad',
               style: linkStyle,
               recognizer: TapGestureRecognizer()
-                ..onTap = () async{
-                  String url = "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";
-                  if (await canLaunch(url)) {await launch(url);} else {throw 'Could not launch $url';}
+                ..onTap = () async {
+                  String url =
+                      "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
                 }),
         ],
       ),
     );
 
     return Obx(() => Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: CheckboxListTile(
-        checkColor: Colors.white,
-        activeColor: Colors.blue,
+          padding: const EdgeInsets.all(8.0),
+          child: CheckboxListTile(
+            checkColor: Colors.white,
+            activeColor: Colors.blue,
             title: text,
             value: controller.getStateCheckAcceptPrivacyAndUsePolicy,
             onChanged: (value) =>
                 controller.setStateCheckAcceptPrivacyAndUsePolicy = value!,
           ),
-    ));
+        ));
   }
 
   Widget dotsIndicator(
@@ -152,18 +167,21 @@ class AuthView extends GetView<LoginController> {
     List<Widget> _pages = [
       componente(
           iconData: Icons.qr_code_scanner_rounded,
+          assetName: 'assets/scan_img.png',
           texto: "ESCANEA CON TU CÁMARA",
           descripcion:
               "Solo tienes que enfocar tu cámara \nal código de barra de tu producto \npara obtener la información en el acto 👌",
           brightness: Get.theme.brightness),
       componente(
           iconData: Icons.monetization_on,
+          assetName: 'assets/compare_img.png',
           texto: "¿QUERES SABER EL PRECIO?",
           descripcion:
               "Compara precios de diferentes comerciantes o puedes compartir los tuyos",
           brightness: Get.theme.brightness),
       componente(
           iconData: Icons.category,
+          assetName: 'assets/catalogue_img.png',
           texto: "CREA TU CATÁLOGO",
           descripcion: "Arma tu catálogo con tus productos \n 🍫🍬🥫🍾",
           brightness: Get.theme.brightness),
@@ -193,8 +211,10 @@ class AuthView extends GetView<LoginController> {
       {required IconData iconData,
       required String texto,
       required String descripcion,
+      String assetName = '',
       Brightness brightness = Brightness.light}) {
     // var
+    AssetImage assetImage = AssetImage(assetName);
     Color colorPrimary = Get.theme.brightness == Brightness.dark
         ? Colors.white
         : Colors.deepPurple;
@@ -206,10 +226,16 @@ class AuthView extends GetView<LoginController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(iconData, size: 100.0, color: colorPrimary.withOpacity(0.5)),
+            assetName != ''
+                ? CircleAvatar(
+                    backgroundImage: assetImage,
+                    radius: 80,
+                  )
+                : Icon(iconData,
+                    size: 100.0, color: colorPrimary.withOpacity(0.5)),
             SizedBox(height: 20.0),
             Text(texto,
-                style: TextStyle(fontSize: 24.0, color: colorPrimary),
+                style: TextStyle(fontSize: 20.0, color: colorPrimary),
                 textAlign: TextAlign.center),
             SizedBox(height: 12.0),
             descripcion != ""

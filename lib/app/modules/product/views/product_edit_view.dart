@@ -108,37 +108,6 @@ class ProductEdit extends StatelessWidget {
         ],
       ),
     );
-    return OfflineBuilder(
-        child: Container(),
-        connectivityBuilder: (
-          BuildContext context,
-          ConnectivityResult connectivity,
-          Widget child,
-        ) {
-          final connected = connectivity != ConnectivityResult.none;
-          controller.setStateConnect = connected;
-
-          if (!connected) {
-            return Center(
-                child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Icon(Icons.wifi_off_rounded),
-                ),
-                Text('No hay internet'),
-              ],
-            ));
-          }
-          ;
-          return ListView(
-            children: [
-              widgetsImagen(),
-              widgetFormEditText(),
-            ],
-          );
-        });
   }
 
   Widget widgetsImagen() {
@@ -198,6 +167,30 @@ class ProductEdit extends StatelessWidget {
             textInputAction: TextInputAction.done,
             controller: controller.controllerTextEdit_descripcion,
           ),
+          //TODO: eliminar para desarrrollo
+          // widget debug
+          TextButton(
+              onPressed: () async {
+                String clave = controller.controllerTextEdit_descripcion.text;
+                String url ="https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
+                if (await canLaunch(url)) {
+                  await launch(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+              child: Text('Buscar descripción en Google')),
+          TextButton(
+              onPressed: () async {
+                String clave = controller.getProduct.code;
+                String url ="https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
+                if (await canLaunch(url)) {
+                  await launch(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+              child: Text('Buscar en código Google')),
           space,
           // fin widget debug
           SizedBox(

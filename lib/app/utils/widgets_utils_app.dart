@@ -455,6 +455,9 @@ class WidgetSuggestionProduct extends StatelessWidget {
     // controllers
     WelcomeController welcomeController = Get.find<WelcomeController>();
     if (list.length == 0) return Container();
+    // values 
+    Color? colorAccent =  Get.theme.textTheme.subtitle1?.color;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -484,11 +487,11 @@ class WidgetSuggestionProduct extends StatelessWidget {
                         child: CircleAvatar(
                             child: CircleAvatar(
                                 child: Icon(Icons.search,
-                                    color: Get.theme.primaryColor),
+                                    color: colorAccent),
                                 radius: 28,
-                                backgroundColor: Colors.white),
+                                backgroundColor:Get.theme.scaffoldBackgroundColor),
                             radius: 30,
-                            backgroundColor: Get.theme.primaryColor),
+                            backgroundColor: colorAccent),
                       ),
                     ),
                   ),
@@ -502,8 +505,6 @@ class WidgetSuggestionProduct extends StatelessWidget {
                       itemCount: list.length,
                       itemBuilder: (context, index) {
 
-                        Color color = Get.theme.primaryColor;
-
                         return Align(
                           widthFactor: 0.5,
                           child: InkWell(
@@ -515,8 +516,8 @@ class WidgetSuggestionProduct extends StatelessWidget {
                               padding: const EdgeInsets.all(5.0),
                               child: FadeInRight(
                                 child: CircleAvatar(
-                                    backgroundColor: color,
-                                    foregroundColor: color,
+                                    backgroundColor: colorAccent,
+                                    foregroundColor: colorAccent,
                                     child: CircleAvatar(
                                       backgroundColor: Colors.grey[100],
                                         foregroundColor: Colors.grey[100],

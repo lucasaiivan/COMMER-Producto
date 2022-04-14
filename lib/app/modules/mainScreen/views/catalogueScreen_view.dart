@@ -426,8 +426,7 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Get.theme.brightness != Brightness.light
               ? Icons.brightness_high
-              : Icons.brightness_3,
-              color: Utils.getRandomColor()[300],),
+              : Icons.brightness_3,),
           title: Text(Get.theme.brightness == Brightness.light
               ? 'Aplicar de tema oscuro'
               : 'Aplicar de tema claro'),
@@ -443,7 +442,7 @@ class CatalogueScreenView extends StatelessWidget {
               ? Icon(Icons.account_circle,color: Utils.getRandomColor()[300],)
               : CachedNetworkImage(
                   imageUrl: controller.getProfileAccountSelected.image,
-                  placeholder: (context, url) => Icon(Icons.account_circle,color: Utils.getRandomColor()[300],),
+                  placeholder: (context, url) => Icon(Icons.account_circle),
                   imageBuilder: (context, image) =>
                       CircleAvatar(backgroundImage: image, radius: 18.0),
                   errorWidget: (context, url, error) =>
@@ -458,7 +457,7 @@ class CatalogueScreenView extends StatelessWidget {
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
-          leading: Icon(Icons.logout,color: Utils.getRandomColor()[300],),
+          leading: Icon(Icons.logout),
           title: Text('Cerrar sesión'),
           subtitle: Text(controller.getUserAccountAuth.email??controller.getUserAccountAuth.displayName??''),
           onTap: controller.showDialogCerrarSesion,
@@ -552,7 +551,7 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: Icon(Icons.assignment_outlined,color: Utils.getRandomColor()[400],)),
+              child: Icon(Icons.assignment_outlined)),
           title: Text('Términos y condiciones de uso'),
           onTap: () async {
             String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
@@ -567,7 +566,7 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: Icon(Icons.privacy_tip_outlined,color: Utils.getRandomColor()[400],)),
+              child: Icon(Icons.privacy_tip_outlined)),
           title: Text('Política de privacidad'),
           onTap: () async {
             String url = "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";

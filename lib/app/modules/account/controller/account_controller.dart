@@ -184,13 +184,13 @@ class AccountController extends GetxController {
               ? createAccount(data: profileAccount.toJson())
               : updateAccount(data: profileAccount.toJson());
         } else {
-          Get.snackbar('', 'Debe proporcionar un pais de origen');
+          Get.snackbar('😮', 'Debe proporcionar un pais de origen');
         }
       } else {
-        Get.snackbar('', 'Debe proporcionar una provincia');
+        Get.snackbar('😔', 'Debe proporcionar una provincia');
       }
     } else {
-      Get.snackbar('', 'Debe proporcionar un nombre');
+      Get.snackbar('Lo siento 😔', 'Debe proporcionar un nombre');
     }
   }
 

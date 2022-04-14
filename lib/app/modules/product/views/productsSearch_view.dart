@@ -85,7 +85,6 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
                       children: [
-                        SizedBox(height: 50.0),
                         textField(),
                         SizedBox(height: 50.0),
                         !controller.getStateSearch
@@ -152,16 +151,13 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                             : Container(),
                         SizedBox(height: 12.0),
                         controller.getproductDoesNotExist
-                            ? Container()
-                            : SizedBox(width: 12.0, height: 12.0),
-                        controller.getproductDoesNotExist
                             ? Padding(
-                                padding: const EdgeInsets.all(20.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 0,vertical: 30),
                                 child: Text(
-                                  "El producto aún no existe, ayúdenos a registrar nuevos productos para que esta aplicación sea aún más útil para la comunidad 💪",
+                                  "El producto aún no existe 🙁, ayúdenos a registrar nuevos productos para que esta aplicación sea aún más útil para la comunidad 💪",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: 14.0,
+                                      fontSize: 20.0,
                                       color: controller.getColorTextField),
                                 ),
                               )
@@ -227,7 +223,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             padding: EdgeInsets.all(12.0),
             primary: colorButton,
             textStyle: TextStyle(color: colorAccent)),
@@ -258,16 +254,22 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                 : Container(),
           ),
           hintText: 'ej. 77565440001743',
+          hintStyle: TextStyle(color: Get.theme.hintColor.withOpacity(0.3)),
           enabledBorder: OutlineInputBorder(
+            borderRadius:  const BorderRadius.all(Radius.circular(16.0)),
               borderSide: BorderSide(color: controller.getColorTextField)),
           border: OutlineInputBorder(
+            borderRadius:  const BorderRadius.all(Radius.circular(16.0)),
               borderSide: BorderSide(color: controller.getColorTextField)),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: controller.getColorTextField)),
+            
+            borderRadius:  const BorderRadius.all(Radius.circular(16.0)),
+            borderSide: BorderSide(color: controller.getColorTextField)),
           labelStyle: TextStyle(color: controller.getColorTextField),
           labelText: "Escribe el código de barra",
-          suffixStyle: TextStyle(color: controller.getColorTextField)),
-      style: TextStyle(fontSize: 18.0, color: controller.getColorTextField),
+          suffixStyle: TextStyle(color: controller.getColorTextField),
+          ),
+      style: TextStyle(fontSize: 20.0, color: controller.getColorTextField),
       textInputAction: TextInputAction.search,
       onSubmitted: (value) {
         //  Se llama cuando el usuario indica que ha terminado de editar el texto en el campo
