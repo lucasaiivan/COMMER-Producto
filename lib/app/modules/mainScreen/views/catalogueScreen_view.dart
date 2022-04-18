@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -79,6 +78,9 @@ class CatalogueScreenView extends StatelessWidget {
             ))),
       ),
       actions: <Widget>[
+        controller.getStateUpdate?Chip(
+            label: Text('Actualizar', style: TextStyle(color: Colors.white)),
+            backgroundColor: Colors.green.shade400):Container(),
         IconButton(
             onPressed: () {
               showSearch(
@@ -90,13 +92,15 @@ class CatalogueScreenView extends StatelessWidget {
                   failure: Center(child: Text('No se encontro :(')),
                   filter: (product) => [product.description, product.nameMark],
                   builder: (product) => ListTile(
-                    trailing:  product.image==''?null:FadeInImage(
-                      image: NetworkImage(product.image),
-                      placeholder: AssetImage("assets/loading.gif"),
-                      fadeInDuration: Duration(milliseconds: 200),
-                      fit: BoxFit.cover,
-                      width: 50.0,
-                    ),
+                    trailing: product.image == ''
+                        ? null
+                        : FadeInImage(
+                            image: NetworkImage(product.image),
+                            placeholder: AssetImage("assets/loading.gif"),
+                            fadeInDuration: Duration(milliseconds: 200),
+                            fit: BoxFit.cover,
+                            width: 50.0,
+                          ),
                     title: Text(product.nameMark),
                     subtitle: Text(product.description),
                     onTap: () {
@@ -174,11 +178,13 @@ class CatalogueScreenView extends StatelessWidget {
         },
         body: Column(
           children: <Widget>[
-            Divider(height: 0.0,color: Theme.of(buildContext).dividerColor),
+            Divider(height: 0.0, color: Theme.of(buildContext).dividerColor),
             TabBar(
               indicatorColor: Theme.of(buildContext).dividerColor,
               indicatorWeight: 0.5,
-              labelColor: Get.theme.brightness == Brightness.dark? Colors.white : Colors.black,
+              labelColor: Get.theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
               onTap: (_) {
                 if (!controller.getSelectItems) {
                   ViewCategoria.show(buildContext: buildContext);
@@ -364,7 +370,8 @@ class CatalogueScreenView extends StatelessWidget {
                   return ProductoItem(
                       producto: controller.getCatalogueLoad[index - 1]);
                 } else {
-                  return Card(elevation: 0, color: Colors.grey.withOpacity(0.1));
+                  return Card(
+                      elevation: 0, color: Colors.grey.withOpacity(0.1));
                 }
               },
               childCount: controller.getCatalogueLoad.length + itemsDefault,
@@ -424,9 +431,11 @@ class CatalogueScreenView extends StatelessWidget {
       children: <Widget>[
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
-          leading: Icon(Get.theme.brightness != Brightness.light
-              ? Icons.brightness_high
-              : Icons.brightness_3,),
+          leading: Icon(
+            Get.theme.brightness != Brightness.light
+                ? Icons.brightness_high
+                : Icons.brightness_3,
+          ),
           title: Text(Get.theme.brightness == Brightness.light
               ? 'Aplicar de tema oscuro'
               : 'Aplicar de tema claro'),
@@ -439,14 +448,19 @@ class CatalogueScreenView extends StatelessWidget {
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: controller.getProfileAccountSelected.image == ""
-              ? Icon(Icons.account_circle,color: Utils.getRandomColor()[300],)
+              ? Icon(
+                  Icons.account_circle,
+                  color: Utils.getRandomColor()[300],
+                )
               : CachedNetworkImage(
                   imageUrl: controller.getProfileAccountSelected.image,
                   placeholder: (context, url) => Icon(Icons.account_circle),
                   imageBuilder: (context, image) =>
                       CircleAvatar(backgroundImage: image, radius: 18.0),
-                  errorWidget: (context, url, error) =>
-                      Icon(Icons.account_circle,color: Utils.getRandomColor()[300],),
+                  errorWidget: (context, url, error) => Icon(
+                    Icons.account_circle,
+                    color: Utils.getRandomColor()[300],
+                  ),
                 ),
           title: Text('Editar perfil'),
           onTap: () {
@@ -459,7 +473,9 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Icons.logout),
           title: Text('Cerrar sesión'),
-          subtitle: Text(controller.getUserAccountAuth.email??controller.getUserAccountAuth.displayName??''),
+          subtitle: Text(controller.getUserAccountAuth.email ??
+              controller.getUserAccountAuth.displayName ??
+              ''),
           onTap: controller.showDialogCerrarSesion,
         ),
         Row(
@@ -484,7 +500,10 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: FaIcon(FontAwesomeIcons.instagram,color: Utils.getRandomColor()[300],)),
+              child: FaIcon(
+                FontAwesomeIcons.instagram,
+                color: Utils.getRandomColor()[300],
+              )),
           title: Text('Instagram'),
           subtitle: Text('Déjanos una sugerencia'),
           onTap: () async {
@@ -501,7 +520,10 @@ class CatalogueScreenView extends StatelessWidget {
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.0),
-              child: FaIcon(FontAwesomeIcons.googlePlay,color: Utils.getRandomColor()[300],)),
+              child: FaIcon(
+                FontAwesomeIcons.googlePlay,
+                color: Utils.getRandomColor()[300],
+              )),
           title: Text(
             'Califícanos ⭐',
           ),
@@ -518,7 +540,12 @@ class CatalogueScreenView extends StatelessWidget {
         Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
-          leading: Padding(padding: EdgeInsets.symmetric(horizontal: 6.0),child: Icon(Icons.share_outlined,color: Utils.getRandomColor()[400],)),
+          leading: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              child: Icon(
+                Icons.share_outlined,
+                color: Utils.getRandomColor()[400],
+              )),
           title: Text(
             'Cuentale a un amigo',
           ),
@@ -554,7 +581,8 @@ class CatalogueScreenView extends StatelessWidget {
               child: Icon(Icons.assignment_outlined)),
           title: Text('Términos y condiciones de uso'),
           onTap: () async {
-            String url = "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
+            String url =
+                "https://sites.google.com/view/producto-app/t%C3%A9rminos-y-condiciones-de-uso/";
             if (await canLaunch(url)) {
               await launch(url);
             } else {
@@ -569,7 +597,8 @@ class CatalogueScreenView extends StatelessWidget {
               child: Icon(Icons.privacy_tip_outlined)),
           title: Text('Política de privacidad'),
           onTap: () async {
-            String url = "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";
+            String url =
+                "https://sites.google.com/view/producto-app/pol%C3%ADticas-de-privacidad";
             if (await canLaunch(url)) {
               await launch(url);
             } else {

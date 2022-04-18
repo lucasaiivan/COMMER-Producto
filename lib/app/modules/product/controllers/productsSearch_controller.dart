@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:excel/excel.dart';
@@ -41,6 +40,7 @@ class ControllerProductsSearch extends GetxController {
 
   @override
   void onReady() {
+
     // llamado después de que el widget se representa en la pantalla - ej. showIntroDialog();
     super.onReady();
   }
@@ -67,7 +67,7 @@ class ControllerProductsSearch extends GetxController {
   // Color de fondo
   Color _colorFondo = Get.theme.scaffoldBackgroundColor;
   set setColorFondo(Color color) => _colorFondo = color;
-  get getColorFondo => _colorFondo;
+  Color get getColorFondo => _colorFondo;
 
   // Color de icono y texto de appbar y textfield
   Color? _colorTextField = Get.theme.textTheme.bodyText1!.color;
@@ -239,7 +239,6 @@ class ControllerProductsSearch extends GetxController {
     Widget widget = ListView.builder(
       itemCount: getListExcelToJson.length,
       itemBuilder: (context, index) {
-
         // values
         final ProductCatalogue productValue = ProductCatalogue(
             creation: Timestamp.now(), upgrade: Timestamp.now());
@@ -259,21 +258,24 @@ class ControllerProductsSearch extends GetxController {
                 .replaceAll('\$', '')
                 .replaceAll(',', '.')) ??
             0.0;
-            
-        return welcomeController.isCatalogue(id: productValue.code)?Container():ListTile(
-          title: Text(
-            productValue.description,
-            maxLines: 2,
-          ),
-          subtitle: Text(productValue.code+' \$${productValue.salePrice.toInt()}'),
-          onTap: () {
-            //  set
-            productSelect=productValue;
-            Get.back();
-            textEditingController.text = productSelect.id;
-            queryProduct(id: productSelect.id);
-          },
-        );
+
+        return welcomeController.isCatalogue(id: productValue.code)
+            ? Container()
+            : ListTile(
+                title: Text(
+                  productValue.description,
+                  maxLines: 2,
+                ),
+                subtitle: Text(
+                    productValue.code + ' \$${productValue.salePrice.toInt()}'),
+                onTap: () {
+                  //  set
+                  productSelect = productValue;
+                  Get.back();
+                  textEditingController.text = productSelect.id;
+                  queryProduct(id: productSelect.id);
+                },
+              );
       },
     );
     Get.dialog(

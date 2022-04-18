@@ -25,6 +25,7 @@ class Database {
   static Future<DocumentSnapshot<Map<String, dynamic>>>readProductCatalogueFuture({required String idAccount, required String idProduct}) =>FirebaseFirestore.instance.collection('ACCOUNTS/$idAccount/CATALOGUE/').doc(idProduct).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>>readCategotyCatalogueFuture({required String idAccount, required String idCategory}) =>FirebaseFirestore.instance.collection('/ACCOUNTS/$idAccount/CATEGORY/').doc(idCategory).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>> readMarkFuture({required String id}) =>FirebaseFirestore.instance.collection('/APP/ARG/MARCAS/').doc(id).get();
+  static Future<DocumentSnapshot<Map<String, dynamic>>> readVersionApp() =>FirebaseFirestore.instance.collection('/APP/').doc('INFO').get();
 
   // stream - DocumentSnapshot
   static Stream<DocumentSnapshot<Map<String, dynamic>>> readAccountModelStream(String id) =>FirebaseFirestore.instance.collection('ACCOUNTS').doc(id).snapshots();
@@ -34,7 +35,7 @@ class Database {
   // STORAGE reference
   static Reference referenceStorageAccountImageProfile({required String id}) => FirebaseStorage.instance.ref().child("ACCOUNTS").child(id).child("PROFILE").child("imageProfile");
   static Reference referenceStorageProductPublic({required String id}) => FirebaseStorage.instance.ref().child("APP").child("ARG").child("PRODUCTOS").child(id);
-
+  
   // Firestore - CollectionReference
   static CollectionReference refFirestoreAccount() => FirebaseFirestore.instance.collection('/ACCOUNTS/');
   static CollectionReference refFirestoreCategory({required String idAccount}) =>FirebaseFirestore.instance.collection('/ACCOUNTS/$idAccount/CATEGORY/');

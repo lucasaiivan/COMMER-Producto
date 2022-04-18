@@ -11,10 +11,21 @@ import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:intl/intl.dart';
 
 class WelcomeController extends GetxController {
   // controllers
   SplashController homeController = Get.find<SplashController>();
+
+  // state update
+  bool _stateUpdate = false;
+  set setStateUpdate(bool value) {
+    _stateUpdate = value;
+    homeController.update(['AllView']);
+  }
+
+  bool get getStateUpdate => _stateUpdate;
 
   // app options : select items of catalogue
   bool selectItems = false;
@@ -700,7 +711,8 @@ class WelcomeController extends GetxController {
   }
 
   ProductCatalogue getProductCatalogue({required String id}) {
-    ProductCatalogue product = ProductCatalogue(creation: Timestamp.now(), upgrade: Timestamp.now());
+    ProductCatalogue product =
+        ProductCatalogue(creation: Timestamp.now(), upgrade: Timestamp.now());
     getCataloProducts.forEach((element) {
       if (element.id == id) {
         product = element;

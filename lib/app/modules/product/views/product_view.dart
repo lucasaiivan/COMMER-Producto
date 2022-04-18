@@ -83,75 +83,73 @@ class Product extends GetView<ProductController> {
       child: Scaffold(
           body: Container(
         color: Get.theme.scaffoldBackgroundColor,
-        child: Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                  height: width * 0.60,
-                  width: width * 0.60,
-                  child: WidgetImagen(
-                      producto: controller.getProduct,
-                      marca: controller.getMark,
-                      borderRadius: 30.0)),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.20,vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    controller.getProduct.description != ""
-                        ? Text(
-                            controller.getProduct.description,
-                            style: TextStyle(
-                              fontFamily: "Poppins",
-                              fontWeight: FontWeight.bold,
-                              color: colorText,
-                              height: 1,
-                              fontSize: 20,
-                            ),
-                            textAlign: TextAlign.center,
-                          )
-                        : Container(),
-                    Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          controller.getProduct.salePrice != 0.0
-                              ? Text(
-                                  Publicaciones.getFormatoPrecio(
-                                      monto:
-                                          controller.getProduct.salePrice),
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 40,
-                                      fontWeight: FontWeight.w900),
-                                  textAlign: TextAlign.end)
-                              : Container(),
-                        ],
-                      ),
-                    ),
-                    // nombre del negocio
-                    Center(
-                        child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Text(welcomeController.getProfileAccountSelected.name,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+                height: width * 0.60,
+                width: width * 0.60,
+                child: WidgetImagen(
+                    producto: controller.getProduct,
+                    marca: controller.getMark,
+                    borderRadius: 30.0)),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.20,vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  controller.getProduct.description != ""
+                      ? Text(
+                          controller.getProduct.description,
                           style: TextStyle(
-                              fontFamily: "Poppins",
-                              fontSize: 24,
-                              fontWeight: FontWeight.w900,
-                              color: Get.theme.brightness == Brightness.dark
-                                  ? Colors.white.withOpacity(0.90)
-                                  : Colors.black.withOpacity(0.90))),
-                    )),
-                  ],
-                ),
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.bold,
+                            color: colorText,
+                            height: 1,
+                            fontSize: 20,
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                      : Container(),
+                  Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        controller.getProduct.salePrice != 0.0
+                            ? Text(
+                                Publicaciones.getFormatoPrecio(
+                                    monto:
+                                        controller.getProduct.salePrice),
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.w900),
+                                textAlign: TextAlign.end)
+                            : Container(),
+                      ],
+                    ),
+                  ),
+                  // nombre del negocio
+                  Center(
+                      child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Text(welcomeController.getProfileAccountSelected.name,
+                        style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: Get.theme.brightness == Brightness.dark
+                                ? Colors.white.withOpacity(0.90)
+                                : Colors.black.withOpacity(0.90))),
+                  )),
+                ],
               ),
-              Image.asset('assets/playstore_app_img.png',height: 100,width: 200,),
-            ],
-          ),
+            ),
+            Image.asset('assets/playstore_app_img.png',height: 100,width: 200,),
+          ],
         ),
       )),
     );

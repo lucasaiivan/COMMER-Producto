@@ -59,7 +59,8 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
           final connected = connectivity != ConnectivityResult.none;
 
           if (!connected) {
-            return Center(child: Column(
+            return Center(
+                child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
@@ -75,12 +76,10 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                 padding: EdgeInsets.all(0.0),
                 shrinkWrap: true,
                 children: [
-                  FadeInRight(
-                    child: controller.getproductDoesNotExist
-                        ? Container()
-                        : WidgetSuggestionProduct(
-                            list: controller.getListProductsSuggestions),
-                  ),
+                  controller.getproductDoesNotExist
+                      ? Container()
+                      : WidgetSuggestionProduct(
+                          list: controller.getListProductsSuggestions),
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
@@ -88,73 +87,80 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         textField(),
                         SizedBox(height: 50.0),
                         !controller.getStateSearch
-                            ? button(
-                                icon: Icon(Icons.copy,
-                                    color: controller.getButtonData.colorText),
-                                onPressed: () {
-                                  // obtenemos los datos de porta papeles del dispositivo
-                                  FlutterClipboard.paste().then((value) {
-                                    // verificamos que sea numero valido
-                                    if (controller.verifyIsNumber(
-                                        value: value)) {
-                                      controller.textEditingController.text =
-                                          value;
-                                      controller.queryProduct(id: value);
-                                    } else {
-                                      Get.snackbar('no se pudo copiar 👎',
-                                          'solo puedes ingresar un código valido que contengan números',
-                                          margin: EdgeInsets.all(12));
-                                    }
-                                  });
-                                },
-                                text: "Pegar",
-                                colorAccent: controller.getButtonData.colorText,
-                                colorButton:
-                                    controller.getButtonData.colorButton,
-                              )
+                            ? FadeInRight(
+                              child: button(
+                                  icon: Icon(Icons.copy,
+                                      color: controller.getButtonData.colorText),
+                                  onPressed: () {
+                                    // obtenemos los datos de porta papeles del dispositivo
+                                    FlutterClipboard.paste().then((value) {
+                                      // verificamos que sea numero valido
+                                      if (controller.verifyIsNumber(
+                                          value: value)) {
+                                        controller.textEditingController.text =
+                                            value;
+                                        controller.queryProduct(id: value);
+                                      } else {
+                                        Get.snackbar('no se pudo copiar 👎',
+                                            'solo puedes ingresar un código valido que contengan números',
+                                            margin: EdgeInsets.all(12));
+                                      }
+                                    });
+                                  },
+                                  text: "Pegar",
+                                  colorAccent: controller.getButtonData.colorText,
+                                  colorButton:
+                                      controller.getButtonData.colorButton,
+                                ),
+                            )
                             : Container(),
                         SizedBox(height: 12.0),
                         !controller.getStateSearch
-                            ? button(
-                                icon: Icon(Icons.search,
-                                    color: controller.getButtonData.colorText),
-                                onPressed: () =>
-                                    controller.textEditingController.text == ''
-                                        ? null
-                                        : controller.queryProduct(
-                                            id: controller.textEditingController
-                                                .value.text),
-                                text: "Buscar",
-                                colorAccent: controller.getButtonData.colorText,
-                                colorButton: controller
-                                            .textEditingController.value.text ==
-                                        ''
-                                    ? Colors.grey
-                                    : controller.getButtonData.colorButton,
-                              )
+                            ? FadeInRight(
+                              child: button(
+                                  icon: Icon(Icons.search,
+                                      color: controller.getButtonData.colorText),
+                                  onPressed: () =>
+                                      controller.textEditingController.text == ''
+                                          ? null
+                                          : controller.queryProduct(
+                                              id: controller.textEditingController
+                                                  .value.text),
+                                  text: "Buscar",
+                                  colorAccent: controller.getButtonData.colorText,
+                                  colorButton: controller
+                                              .textEditingController.value.text ==
+                                          ''
+                                      ? Colors.grey
+                                      : controller.getButtonData.colorButton,
+                                ),
+                            )
                             : Container(),
                         SizedBox(height: 12.0),
                         !controller.getStateSearch
-                            ? button(
-                                icon: Image(
-                                    color: controller.getButtonData.colorText,
-                                    height: 20.0,
-                                    width: 20.0,
-                                    image: AssetImage('assets/barcode.png'),
-                                    fit: BoxFit.contain),
-                                onPressed: scanBarcodeNormal,
-                                text: "Escanear código",
-                                colorAccent: controller.getButtonData.colorText,
-                                colorButton:
-                                    controller.getButtonData.colorButton,
-                              )
+                            ? FadeInRight(
+                              child: button(
+                                  icon: Image(
+                                      color: controller.getButtonData.colorText,
+                                      height: 20.0,
+                                      width: 20.0,
+                                      image: AssetImage('assets/barcode.png'),
+                                      fit: BoxFit.contain),
+                                  onPressed: scanBarcodeNormal,
+                                  text: "Escanear código",
+                                  colorAccent: controller.getButtonData.colorText,
+                                  colorButton:
+                                      controller.getButtonData.colorButton,
+                                ),
+                            )
                             : Container(),
                         SizedBox(height: 12.0),
                         controller.getproductDoesNotExist
                             ? Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 0,vertical: 30),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 30),
                                 child: Text(
-                                  "El producto aún no existe 🙁, ayúdenos a registrar nuevos productos para que esta aplicación sea aún más útil para la comunidad 💪",
+                                  "El producto aún no existe 🙁, ayúdenos a registrar nuevos productos para que esta aplicación sea aún más útil para la comunidad",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontSize: 20.0,
@@ -163,40 +169,45 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                               )
                             : Container(),
                         controller.getproductDoesNotExist
-                            ? button(
-                                icon: Icon(Icons.add,
-                                    color: controller.getButtonData.colorText),
-                                onPressed: () {
-                                  controller.toProductNew(
-                                      id: controller
-                                          .textEditingController.text);
-                                },
-                                text: "Agregar nuevo producto",
-                                colorAccent: controller.getButtonData.colorText,
-                                colorButton:
-                                    controller.getButtonData.colorButton,
-                              )
+                            ? FadeInRight(
+                              child: button(
+                                  fontSize: 16,
+                                  padding: 16,
+                                  icon: Text('💪'),
+                                  onPressed: () {
+                                    controller.toProductNew(
+                                        id: controller
+                                            .textEditingController.text);
+                                  },
+                                  text: "Agregar nuevo producto",
+                                  colorAccent: controller.getButtonData.colorText,
+                                  colorButton:
+                                      controller.getButtonData.colorButton,
+                                ),
+                            )
                             : Container(),
                         // TODO: delete release
                         SizedBox(height: 12.0),
-                        button(
-                          icon: Icon(
-                              controller.getListExcelToJson.length == 0
-                                  ? Icons.file_present_sharp
-                                  : Icons.view_list_sharp,
-                              color: controller.getButtonData.colorText),
-                          onPressed: () {
-                            if (controller.getListExcelToJson.length == 0) {
-                              controller.convert();
-                            } else {
-                              controller.openDialogListExcel();
-                            }
-                          },
-                          text: controller.getListExcelToJson.length == 0
-                              ? "Cargar Archivo Excel de productos"
-                              : 'ver lista de excel',
-                          colorAccent: controller.getButtonData.colorText,
-                          colorButton: controller.getButtonData.colorButton,
+                        FadeInRight(
+                          child: button(
+                            icon: Icon(
+                                controller.getListExcelToJson.length == 0
+                                    ? Icons.file_present_sharp
+                                    : Icons.view_list_sharp,
+                                color: controller.getButtonData.colorText),
+                            onPressed: () {
+                              if (controller.getListExcelToJson.length == 0) {
+                                controller.convert();
+                              } else {
+                                controller.openDialogListExcel();
+                              }
+                            },
+                            text: controller.getListExcelToJson.length == 0
+                                ? "Cargar Archivo Excel de productos"
+                                : 'ver lista de excel',
+                            colorAccent: controller.getButtonData.colorText,
+                            colorButton: controller.getButtonData.colorButton,
+                          ),
                         ),
                         SizedBox(width: 50.0, height: 50.0),
                       ],
@@ -214,23 +225,28 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
       {required Widget icon,
       required String text,
       required dynamic onPressed,
+      double fontSize = 0.0,
+      double padding = 12,
       Color colorButton = Colors.purple,
       Color colorAccent = Colors.white}) {
-    return FadeInRight(
-        child: SizedBox(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            padding: EdgeInsets.all(12.0),
-            primary: colorButton,
-            textStyle: TextStyle(color: colorAccent)),
-        icon: icon,
-        label: Text(text, style: TextStyle(color: colorAccent)),
+    onPressed: onPressed,
+    style: ElevatedButton.styleFrom(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        padding: EdgeInsets.all(padding),
+        primary: colorButton,
+        textStyle: TextStyle(
+            color: colorAccent,
+            fontSize: fontSize == 0.0 ? null : fontSize)),
+    icon: icon,
+    label: Text(text,
+        style: TextStyle(
+            color: colorAccent, fontSize: fontSize == 0 ? null : fontSize)),
       ),
-    ));
+    );
   }
 
   Widget textField() {
@@ -245,30 +261,29 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
         controller.updateAll();
       },
       decoration: InputDecoration(
-          suffixIcon: IconButton(
-            onPressed: () {
-              controller.clean();
-            },
-            icon: controller.textEditingController.value.text != ""
-                ? Icon(Icons.clear, color: controller.getColorTextField)
-                : Container(),
-          ),
-          hintText: 'ej. 77565440001743',
-          hintStyle: TextStyle(color: Get.theme.hintColor.withOpacity(0.3)),
-          enabledBorder: OutlineInputBorder(
-            borderRadius:  const BorderRadius.all(Radius.circular(16.0)),
-              borderSide: BorderSide(color: controller.getColorTextField)),
-          border: OutlineInputBorder(
-            borderRadius:  const BorderRadius.all(Radius.circular(16.0)),
-              borderSide: BorderSide(color: controller.getColorTextField)),
-          focusedBorder: OutlineInputBorder(
-            
-            borderRadius:  const BorderRadius.all(Radius.circular(16.0)),
+        suffixIcon: IconButton(
+          onPressed: () {
+            controller.clean();
+          },
+          icon: controller.textEditingController.value.text != ""
+              ? Icon(Icons.clear, color: controller.getColorTextField)
+              : Container(),
+        ),
+        hintText: 'ej. 77565440001743',
+        hintStyle: TextStyle(color: Get.theme.hintColor.withOpacity(0.3)),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
             borderSide: BorderSide(color: controller.getColorTextField)),
-          labelStyle: TextStyle(color: controller.getColorTextField),
-          labelText: "Escribe el código de barra",
-          suffixStyle: TextStyle(color: controller.getColorTextField),
-          ),
+        border: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+            borderSide: BorderSide(color: controller.getColorTextField)),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+            borderSide: BorderSide(color: controller.getColorTextField)),
+        labelStyle: TextStyle(color: controller.getColorTextField),
+        labelText: "Escribe el código de barra",
+        suffixStyle: TextStyle(color: controller.getColorTextField),
+      ),
       style: TextStyle(fontSize: 20.0, color: controller.getColorTextField),
       textInputAction: TextInputAction.search,
       onSubmitted: (value) {
