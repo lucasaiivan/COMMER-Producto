@@ -230,10 +230,7 @@ class Product extends GetView<ProductController> {
                       controller.getProduct.verified == true
                           ? Padding(
                               padding: const EdgeInsets.only(right: 1.0),
-                              child: new Image.asset(
-                                  'assets/icon_verificado.png',
-                                  width: 15.0,
-                                  height: 15.0))
+                              child: Icon(Icons.verified,color:Colors.blue))
                           : new Icon(Icons.qr_code_2_rounded, size: 14),
                       SizedBox(width: 5),
                       Text(controller.getProduct.code,

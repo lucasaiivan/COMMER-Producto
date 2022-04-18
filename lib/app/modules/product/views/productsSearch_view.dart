@@ -88,9 +88,10 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                         SizedBox(height: 50.0),
                         !controller.getStateSearch
                             ? FadeInRight(
-                              child: button(
+                                child: button(
                                   icon: Icon(Icons.copy,
-                                      color: controller.getButtonData.colorText),
+                                      color:
+                                          controller.getButtonData.colorText),
                                   onPressed: () {
                                     // obtenemos los datos de porta papeles del dispositivo
                                     FlutterClipboard.paste().then((value) {
@@ -108,38 +109,44 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                                     });
                                   },
                                   text: "Pegar",
-                                  colorAccent: controller.getButtonData.colorText,
+                                  colorAccent:
+                                      controller.getButtonData.colorText,
                                   colorButton:
                                       controller.getButtonData.colorButton,
                                 ),
-                            )
+                              )
                             : Container(),
                         SizedBox(height: 12.0),
                         !controller.getStateSearch
                             ? FadeInRight(
-                              child: button(
+                                child: button(
                                   icon: Icon(Icons.search,
-                                      color: controller.getButtonData.colorText),
+                                      color:
+                                          controller.getButtonData.colorText),
                                   onPressed: () =>
-                                      controller.textEditingController.text == ''
+                                      controller.textEditingController.text ==
+                                              ''
                                           ? null
                                           : controller.queryProduct(
-                                              id: controller.textEditingController
-                                                  .value.text),
+                                              id: controller
+                                                  .textEditingController
+                                                  .value
+                                                  .text),
                                   text: "Buscar",
-                                  colorAccent: controller.getButtonData.colorText,
-                                  colorButton: controller
-                                              .textEditingController.value.text ==
+                                  colorAccent:
+                                      controller.getButtonData.colorText,
+                                  colorButton: controller.textEditingController
+                                              .value.text ==
                                           ''
                                       ? Colors.grey
                                       : controller.getButtonData.colorButton,
                                 ),
-                            )
+                              )
                             : Container(),
                         SizedBox(height: 12.0),
                         !controller.getStateSearch
                             ? FadeInRight(
-                              child: button(
+                                child: button(
                                   icon: Image(
                                       color: controller.getButtonData.colorText,
                                       height: 20.0,
@@ -148,11 +155,12 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                                       fit: BoxFit.contain),
                                   onPressed: scanBarcodeNormal,
                                   text: "Escanear código",
-                                  colorAccent: controller.getButtonData.colorText,
+                                  colorAccent:
+                                      controller.getButtonData.colorText,
                                   colorButton:
                                       controller.getButtonData.colorButton,
                                 ),
-                            )
+                              )
                             : Container(),
                         SizedBox(height: 12.0),
                         controller.getproductDoesNotExist
@@ -170,7 +178,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                             : Container(),
                         controller.getproductDoesNotExist
                             ? FadeInRight(
-                              child: button(
+                                child: button(
                                   fontSize: 16,
                                   padding: 16,
                                   icon: Text('💪'),
@@ -180,11 +188,12 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                                             .textEditingController.text);
                                   },
                                   text: "Agregar nuevo producto",
-                                  colorAccent: controller.getButtonData.colorText,
+                                  colorAccent:
+                                      controller.getButtonData.colorText,
                                   colorButton:
                                       controller.getButtonData.colorButton,
                                 ),
-                            )
+                              )
                             : Container(),
                         // TODO: delete release
                         SizedBox(height: 12.0),
@@ -205,6 +214,29 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                             text: controller.getListExcelToJson.length == 0
                                 ? "Cargar Archivo Excel de productos"
                                 : 'ver lista de excel',
+                            colorAccent: controller.getButtonData.colorText,
+                            colorButton: controller.getButtonData.colorButton,
+                          ),
+                        ),
+                        SizedBox(height: 12.0),
+                        FadeInRight(
+                          child: button(
+                            icon: Icon(
+                                controller.getListProductsVerified.length == 0
+                                    ? Icons.change_circle_outlined
+                                    : Icons.verified,
+                                color: controller.getButtonData.colorText),
+                            onPressed: () {
+                              if (controller.getListProductsVerified.length ==
+                                  0) {
+                                controller.readProduct();
+                              } else {
+                                controller.openDialogListProductVerified(list: controller.getListProductsVerified);
+                              }
+                            },
+                            text: controller.getListProductsVerified.length == 0
+                                ? "Cargar productos para verificar"
+                                : '${controller.getListProductsVerified.length} productos para verificar',
                             colorAccent: controller.getButtonData.colorText,
                             colorButton: controller.getButtonData.colorButton,
                           ),
@@ -232,19 +264,19 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-    onPressed: onPressed,
-    style: ElevatedButton.styleFrom(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        padding: EdgeInsets.all(padding),
-        primary: colorButton,
-        textStyle: TextStyle(
-            color: colorAccent,
-            fontSize: fontSize == 0.0 ? null : fontSize)),
-    icon: icon,
-    label: Text(text,
-        style: TextStyle(
-            color: colorAccent, fontSize: fontSize == 0 ? null : fontSize)),
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            padding: EdgeInsets.all(padding),
+            primary: colorButton,
+            textStyle: TextStyle(
+                color: colorAccent,
+                fontSize: fontSize == 0.0 ? null : fontSize)),
+        icon: icon,
+        label: Text(text,
+            style: TextStyle(
+                color: colorAccent, fontSize: fontSize == 0 ? null : fontSize)),
       ),
     );
   }

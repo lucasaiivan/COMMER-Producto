@@ -40,7 +40,6 @@ class ControllerProductsSearch extends GetxController {
 
   @override
   void onReady() {
-
     // llamado después de que el widget se representa en la pantalla - ej. showIntroDialog();
     super.onReady();
   }
@@ -123,10 +122,9 @@ class ControllerProductsSearch extends GetxController {
       update(['updateAll']);
       // query
       Database.readProductGlobalFuture(id: id).then((value) {
-        Product productoNegocio = Product.fromMap(value.data() as Map);
+        Product product = Product.fromMap(value.data() as Map);
         Get.back();
-        Get.toNamed(Routes.PRODUCT,
-            arguments: {'product': productoNegocio.convertProductCatalogue()});
+        Get.toNamed(Routes.PRODUCT,arguments: {'product': product.convertProductCatalogue()});
       }).onError((error, stackTrace) {
         setproductDoesNotExist = true;
         setStateSearch = false;
@@ -290,4 +288,56 @@ class ControllerProductsSearch extends GetxController {
       ),
     );
   }
+  // var
+  final RxList<Product> _lisProductsVerified = <Product>[].obs;
+  List<Product> get getListProductsVerified => _lisProductsVerified;
+  set setListProductsVerified(List<Product> value) =>
+      _lisProductsVerified.value = value;
+
+  void readProduct() {
+    Database.readProductsVerifiedFuture().then((value) {
+        List<Product> list = [];
+        value.docs.forEach((element) {
+          list.add(Product.fromMap(element.data()));
+        });
+        setListProductsVerified = list.cast<Product>();
+        update(['updateAll']);
+      });
+  }
+  void openDialogListProductVerified({required List<Product> list}) {
+    Widget widget = ListView.builder(
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        // values
+        final Product productValue = list[index];
+
+        return ListTile(
+                title: Text(
+                  productValue.description,
+                  maxLines: 2,
+                ),
+                subtitle: Text('code: ${productValue.code} \naccount: ${productValue.idAccount}'),
+                onTap: () {
+                  Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {'product': productValue.convertProductCatalogue()});
+                },
+              );
+      },
+    );
+    Get.dialog(
+      AlertDialog(
+        content: Container(width: 500, height: double.infinity, child: widget),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Get.back(),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+
+
 }

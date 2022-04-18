@@ -210,7 +210,7 @@ class ControllerProductsEdit extends GetxController {
 
               // Mods - save data product global
               if (getNewProduct || getEditModerator) {
-                getProduct.verified = false;
+                getProduct.verified = true; // TODO : release to false
                 saveProductPublic();
               }
 
@@ -247,7 +247,7 @@ class ControllerProductsEdit extends GetxController {
                   .onError((error, stackTrace) => setSaveIndicator = false)
                   .catchError((_) => setSaveIndicator = false);
             } else {
-              getProduct.verified = false;
+              getProduct.verified = true; // TODO : release to false
               saveProductPublic();
             }
           } else {

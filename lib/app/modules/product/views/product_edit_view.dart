@@ -349,7 +349,7 @@ class ProductEdit extends StatelessWidget {
                               : Colors.grey,
                       selected: controller.getProduct.favorite,
                       label: Text(controller.getProduct.favorite
-                          ? 'Destacado'
+                          ? 'Quitar de destacado'
                           : 'Agregar a destacado'),
                       onSelected: (bool value) {
                         if (controller.getEditModerator) {
@@ -370,8 +370,8 @@ class ProductEdit extends StatelessWidget {
                               : Colors.grey,
                       selected: controller.getProduct.verified,
                       label: Text(controller.getProduct.verified
-                          ? 'Verificado'
-                          : 'Quitar de verificados'),
+                          ? 'Quitar de Verificado'
+                          : 'Verificar'),
                       onSelected: (bool value) {
                         if (controller.getEditModerator) {
                           if (!controller.getSaveIndicator) {

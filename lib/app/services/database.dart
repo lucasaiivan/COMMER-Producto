@@ -19,6 +19,7 @@ class Database {
   static Future<QuerySnapshot<Map<String, dynamic>>>readListPricesProductFuture({required String id, String isoPAis = 'ARG', int limit = 50}) =>FirebaseFirestore.instance.collection('APP/$isoPAis/PRODUCTOS/$id/PRICES').limit(limit).orderBy("time", descending: true).get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readCategoryListFuture({required String idAccount}) =>FirebaseFirestore.instance.collection('/ACCOUNTS/$idAccount/CATEGORY').get();
   static Future<QuerySnapshot<Map<String, dynamic>>> readListMarksFuture() =>FirebaseFirestore.instance.collection('/APP/ARG/MARCAS').get();
+  static Future<QuerySnapshot<Map<String, dynamic>>> readProductsVerifiedFuture() => FirebaseFirestore.instance.collection('APP/ARG/PRODUCTOS').where("verified", isEqualTo: false).get();
   // future - DocumentSnapshot
   static Future<DocumentSnapshot<Map<String, dynamic>>> readProductGlobalFuture({required String id}) =>FirebaseFirestore.instance.collection('/APP/ARG/PRODUCTOS/').doc(id).get();
   static Future<DocumentSnapshot<Map<String, dynamic>>>readProfileAccountModelFuture(String id) =>FirebaseFirestore.instance.collection('ACCOUNTS').doc(id).get();
