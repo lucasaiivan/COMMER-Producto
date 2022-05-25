@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,8 @@ import 'app/routes/app_pages.dart';
 import 'app/utils/dynamicTheme_lb.dart';
 
 void main() async {
+
+  // init
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
   await Firebase.initializeApp();
@@ -38,16 +39,9 @@ void main() async {
           : ThemesDataApp.colorLight,
     ));
   }
-
-  runApp(
-    
-    GetMaterialApp(
-      title: "Producto",
-      initialRoute: AppPages.INITIAL,
-      getPages: AppPages.routes,
-      debugShowCheckedModeBanner: false,
-      themeMode: isDark? ThemeMode.dark:ThemeMode.light,
-      theme: ThemeData(
+  // theme data
+  ThemeData themeDataLight = ThemeData(
+        useMaterial3: true,
         primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor: ThemesDataApp.colorLight,
         backgroundColor: Colors.grey[200],
@@ -65,8 +59,9 @@ void main() async {
               ),
               padding: MaterialStateProperty.all(EdgeInsets.all(14))),
         ),
-      ),
-      darkTheme: ThemeData.dark().copyWith(
+      );
+      ThemeData themeDataDark = ThemeData.dark().copyWith(
+        useMaterial3: true,
         primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor: ThemesDataApp.colorBlack,
         backgroundColor: Color.fromRGBO(59, 24, 95, 1.0),
@@ -84,7 +79,19 @@ void main() async {
               ),
               padding: MaterialStateProperty.all(EdgeInsets.all(14))),
         ),
-      ),
+      );
+
+  runApp(
+    
+    // GetMaterialApp no ​​es un MaterialApp modificado, es solo un Widget preconfigurado, que tiene el MaterialApp predeterminado como elemento secundario.
+    GetMaterialApp(
+      title: "Producto",
+      initialRoute: AppPages.INITIAL,
+      getPages: AppPages.routes,
+      debugShowCheckedModeBanner: false,
+      themeMode: isDark? ThemeMode.dark:ThemeMode.light,
+      theme: themeDataLight,
+      darkTheme:themeDataDark,
     ),
   );
 }

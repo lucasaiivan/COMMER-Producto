@@ -367,11 +367,9 @@ class CatalogueScreenView extends StatelessWidget {
 
                 // mostramos 15 elementos vacíos de los cuales el primero tendrá un icono 'add'
                 if ((index) <= controller.getCatalogueLoad.length) {
-                  return ProductoItem(
-                      producto: controller.getCatalogueLoad[index - 1]);
+                  return ProductoItem(producto: controller.getCatalogueLoad[index - 1]);
                 } else {
-                  return Card(
-                      elevation: 0, color: Colors.grey.withOpacity(0.1));
+                  return Card(elevation: 0, color: Colors.grey.withOpacity(0.1));
                 }
               },
               childCount: controller.getCatalogueLoad.length + itemsDefault,

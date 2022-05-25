@@ -29,8 +29,11 @@ class LoginController extends GetxController {
   void onClose() {}
 
   void login() async {
-    // comprobamos que el usuario acepto los términos de uso de servicios y que a leído las politicas de privacidad
+    // LOGIN
+    // Inicio de sesión con Google
+    // Primero comprobamos que el usuario acepto los términos de uso de servicios y que a leído las politicas de privacidad
     if (getStateCheckAcceptPrivacyAndUsePolicy) {
+
       // set state load
       CustomFullScreenDialog.showDialog();
 
@@ -41,22 +44,19 @@ class LoginController extends GetxController {
         CustomFullScreenDialog.cancelDialog();
       } else {
         // Obtenga los detalles de autenticación de la solicitud
-        GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-        // Crea una nueva credencial
-        OAuthCredential oAuthCredential = GoogleAuthProvider.credential(
-            accessToken: googleSignInAuthentication.accessToken,
-            idToken: googleSignInAuthentication.idToken);
+        GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+        // Crea una nueva credencial de OAuth genérica.
+        OAuthCredential oAuthCredential = GoogleAuthProvider.credential(accessToken: googleSignInAuthentication.accessToken,idToken: googleSignInAuthentication.idToken);
         // Una vez que haya iniciado sesión, devuelva el UserCredential
         await homeController.firebaseAuth.signInWithCredential(oAuthCredential);
-
         // finalizamos el diálogo alerta
         CustomFullScreenDialog.cancelDialog();
       }
     } else {
+      // message for user
       Get.snackbar(
-        'Primero tienes que leer nuestras políticas y términos de uso 🙂',
-        'Tienes que aceptar nuestros términos de uso y política de privacidad para usar esta aplicación');
+          'Primero tienes que leer nuestras políticas y términos de uso 🙂',
+          'Tienes que aceptar nuestros términos de uso y política de privacidad para usar esta aplicación');
     }
   }
 }
