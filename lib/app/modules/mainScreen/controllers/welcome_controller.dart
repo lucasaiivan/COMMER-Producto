@@ -11,8 +11,6 @@ import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:intl/intl.dart';
 
 class WelcomeController extends GetxController {
   // controllers
