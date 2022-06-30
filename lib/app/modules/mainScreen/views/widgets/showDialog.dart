@@ -209,8 +209,6 @@ class _ViewCategoriaState extends State<ViewCategoria> {
       },
     );
   }
-  
-
   showDialogSetCategoria({required Category categoria}) async {
     final WelcomeController controller = Get.find();
     bool loadSave = false;
@@ -269,6 +267,8 @@ class _ViewCategoriaState extends State<ViewCategoria> {
       },
     );
   }
+  
+  
 }
 
 class ViewSubCategoria extends StatefulWidget {
@@ -291,6 +291,9 @@ class ViewSubCategoria extends StatefulWidget {
     );
     
   }
+
+
+  
 }
 
 class _ViewSubCategoriaState extends State<ViewSubCategoria> {

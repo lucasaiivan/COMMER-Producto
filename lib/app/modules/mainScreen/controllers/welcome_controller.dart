@@ -477,8 +477,7 @@ class WelcomeController extends GetxController {
       Database.readProfileAccountModelFuture(idAccount).then((value) {
         //get
         if (value.exists) {
-          ProfileAccountModel profileAccount =
-              ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
+          ProfileAccountModel profileAccount =ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: value);
           //  agregamos los datos del perfil de la cuenta en la lista para mostrar al usuario
           if (profileAccount.id != '') {
             addManagedAccount(profileData: profileAccount);
@@ -678,7 +677,6 @@ class WelcomeController extends GetxController {
               CustomFullScreenDialog.showDialog();
 
               // set default
-              GetStorage().write('idAccount', '');
               setIdAccountSelected = '';
               // instancias de FirebaseAuth para proceder a cerrar sesión
               final FirebaseAuth firebaseAuth = FirebaseAuth.instance;

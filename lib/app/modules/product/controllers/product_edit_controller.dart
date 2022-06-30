@@ -233,9 +233,7 @@ class ControllerProductsEdit extends GetxController {
                   .set(precio.toJson());
 
               // add/update data product in catalogue
-              Database.refFirestoreCatalogueProduct(
-                      idAccount: welcomeController.getProfileAccountSelected.id)
-                  .doc(getProduct.id)
+              Database.refFirestoreCatalogueProduct(idAccount: welcomeController.getProfileAccountSelected.id).doc(getProduct.id)
                   .set(getProduct.toJson())
                   .whenComplete(() async {
                     await Future.delayed(Duration(seconds: 3)).then((value) {
