@@ -22,7 +22,7 @@ class CatalogueScreenView extends StatelessWidget {
   CatalogueScreenView({Key? key}) : super(key: key);
 
   // controllers
-  final WelcomeController controller = Get.find();
+  final HomeController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class CatalogueScreenView extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: controller.getIdAccountSelecte == ''
+                  text: controller.getIdAccountSelected == ''
                       ? "Seleccionar cuenta"
                       : controller.getProfileAccountSelected.name != ""
                           ? controller.getProfileAccountSelected.name
@@ -153,9 +153,9 @@ class CatalogueScreenView extends StatelessWidget {
         headerSliverBuilder: (context, _) {
           return [
             // atentos a cualquier cambio que surja en los datos de la lista de marcas
-            GetBuilder<WelcomeController>(
+            GetBuilder<HomeController>(
               id: 'marks',
-              init: WelcomeController(),
+              init: HomeController(),
               initState: (_) {},
               builder: (_) {
                 return SliverList(
@@ -190,8 +190,8 @@ class CatalogueScreenView extends StatelessWidget {
                 }
               },
               tabs: [
-                GetBuilder<WelcomeController>(
-                  init: WelcomeController(),
+                GetBuilder<HomeController>(
+                  init: HomeController(),
                   id: 'tab',
                   builder: (_) => Stack(
                     children: [
@@ -262,7 +262,7 @@ class CatalogueScreenView extends StatelessWidget {
             ),
             Divider(height: 0.0),
             Expanded(
-              child: GetBuilder<WelcomeController>(
+              child: GetBuilder<HomeController>(
                 id: 'catalogue',
                 initState: (_) {},
                 builder: (_) {
@@ -686,7 +686,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
   WidgetsListaHorizontalMarks({Key? key}) : super(key: key);
 
   // var
-  final WelcomeController controller = Get.find();
+  final HomeController controller = Get.find();
   final List<Color> colorGradientInstagram = [
     Get.theme.primaryColor,
     Get.theme.primaryColor,
@@ -723,7 +723,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
                       gradientColor: colorGradientInstagram,
                       child: Padding(
                         padding: EdgeInsets.all(5.0),
-                        child: viewCircleImage(
+                        child:ComponentApp.viewCircleImage(
                             url: marca.image, texto: marca.name, size: 50),
                       ),
                     ),

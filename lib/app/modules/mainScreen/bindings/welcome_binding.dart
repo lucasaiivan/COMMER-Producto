@@ -4,6 +4,6 @@ import 'package:get/get.dart';
 class WelcomeBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put<WelcomeController>(WelcomeController());
+    Get.put<HomeController>(HomeController());
   }
 }

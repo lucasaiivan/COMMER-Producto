@@ -83,7 +83,7 @@ class AccountView extends GetView<AccountController> {
           onPressed: controller.saveAccount,
         )
       ],
-      bottom: controller.getSavingIndicator ? linearProgressBarApp() : null,
+      bottom: controller.getSavingIndicator ? ComponentApp.linearProgressBarApp() : null,
     );
   }
 

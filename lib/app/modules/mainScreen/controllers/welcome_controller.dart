@@ -12,9 +12,23 @@ import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
 
-class WelcomeController extends GetxController {
+class HomeController extends GetxController {
   // controllers
   SplashController homeController = Get.find<SplashController>();
+
+
+  // Guide user : Catalogue
+  bool catalogUserHuideVisibility=false;
+  void getTheVisibilityOfTheCatalogueUserGuide(){
+    // obtenemos la visibilidad de la guía del usuario del catálogo
+    catalogUserHuideVisibility=GetStorage().read('catalogUserHuideVisibility') ?? true;
+    update();
+  }
+  void disableCatalogUserGuide()async{
+    // Deshabilitar la guía del usuario del catálogo
+    catalogUserHuideVisibility=false;
+    await GetStorage().write('catalogUserHuideVisibility', catalogUserHuideVisibility);
+  }
 
   // state update
   bool _stateUpdate = false;
@@ -109,15 +123,15 @@ class WelcomeController extends GetxController {
     update(['accountUpdate']);
   }
 
-  String get getIdAccountSelecte => idAccountSelected.value;
+  String get getIdAccountSelected => idAccountSelected.value;
   Rx<ProfileAccountModel> _profileAccount =ProfileAccountModel(creation: Timestamp.now()).obs;
   ProfileAccountModel get getProfileAccountSelected => _profileAccount.value;
   set setProfileAccountSelected(ProfileAccountModel user) =>_profileAccount.value = user;
   bool getSelected({required String id}) {
     bool isSelected = false;
     for (ProfileAccountModel obj in getManagedAccountData) {
-      if (obj.id == getIdAccountSelecte) {
-        if (id == getIdAccountSelecte) {
+      if (obj.id == getIdAccountSelected) {
+        if (id == getIdAccountSelected) {
           isSelected = true;
         }
       }
@@ -404,8 +418,8 @@ class WelcomeController extends GetxController {
     setIdAccountSelected = id;
 
     // verificamos si el usuario ha seleccionado una cuenta
-    if (getIdAccountSelecte != '') {
-      readProfileAccountStream(id: getIdAccountSelecte);
+    if (getIdAccountSelected != '') {
+      readProfileAccountStream(id: getIdAccountSelected);
     }
     // read accounts managers
     readAccountsData(idAccount: _userAccountAuth.uid);
@@ -446,7 +460,7 @@ class WelcomeController extends GetxController {
           ProfileAccountModel.fromDocumentSnapshot(documentSnapshot: event);
       setLoadProfileBusiness = true;
       // read catalogue product
-      readCatalogueListProductsStream(id: getIdAccountSelecte);
+      readCatalogueListProductsStream(id: getIdAccountSelected);
       // read catalogue categories
       readListCategoryListFuture();
     }).onError((error) {
@@ -702,7 +716,7 @@ class WelcomeController extends GetxController {
 
   ProductCatalogue getProductCatalogue({required String id}) {
     ProductCatalogue product =
-        ProductCatalogue(creation: Timestamp.now(), upgrade: Timestamp.now());
+        ProductCatalogue(creation: Timestamp.now(), upgrade: Timestamp.now(), documentCreation:  Timestamp.now(),documentUpgrade:  Timestamp.now());
     getCataloProducts.forEach((element) {
       if (element.id == id) {
         product = element;

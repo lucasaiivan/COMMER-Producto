@@ -48,7 +48,6 @@ dependencies:
   cached_network_image: ^3.1.0 # Una biblioteca de aleteo para mostrar imágenes de Internet y mantenerlas en el directorio de caché.
   animated_floating_buttons: ^0.0.2 # Este paquete se basa en el tutorial de Agung Surya.
   animate_do: ^2.0.0 # Un paquete de animación inspirado en Animate.css , construido usando solo animaciones de Flutter, sin paquetes adicionales.
-  url_launcher: ^6.0.12 # Un complemento de Flutter para lanzar una URL. Admite iOS, Android, web, Windows, macOS y Linux.
   shimmer: ^2.0.0 # Un paquete proporciona una manera fácil de agregar un efecto de brillo en el proyecto Flutter
   loadany: ^1.0.0 # Un nuevo Flutter carga más paquetes.
   image_picker: ^0.8.3+2 # Un complemento de Flutter para iOS y Android para seleccionar imágenes de la biblioteca de imágenes y tomar nuevas fotografías con la cámara.
@@ -67,7 +66,8 @@ dependencies:
   excel: any
   snapping_sheet: ^3.1.0 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
   flutter_offline: ^2.0.0 # Una utilidad ordenada para manejar la conectividad fuera de línea/en línea como un jefe. Proporciona soporte para plataformas iOS y Android (por supuesto).
-  
+  url_launcher: ^6.1.5 # Un complemento de Flutter para lanzar una URL. Admite iOS, Android, web, Windows, macOS y Linux.
+
 flutter_icons:
   android: true
   ios: false

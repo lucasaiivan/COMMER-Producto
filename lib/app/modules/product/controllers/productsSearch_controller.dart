@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,6 +10,7 @@ import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.d
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/services/database.dart';
 import 'package:producto/app/utils/dynamicTheme_lb.dart';
+import 'package:producto/app/utils/functions.dart';
 
 class ButtonData {
   Color colorButton = Colors.purple;
@@ -21,12 +23,13 @@ class ButtonData {
 
 class ControllerProductsSearch extends GetxController {
   // controllers
-  late final WelcomeController welcomeController;
+  late HomeController homeController;
 
   @override
   void onInit() {
+
     // obtenemos los datos del controlador principal
-    welcomeController = Get.find();
+    homeController = Get.find();
     // llamado inmediatamente después de que se asigna memoria al widget - ej. fetchApi();
     _codeBarParameter = Get.arguments['id'] ?? '';
     if (_codeBarParameter != '') {
@@ -51,13 +54,33 @@ class ControllerProductsSearch extends GetxController {
   }
 
   // product
-  ProductCatalogue productSelect =
-      ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+  ProductCatalogue productSelect = ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now(),documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now());
 
   // list excel to json
+   List<ProductCatalogue> productsToExelList = [];
   static List<Map<String, dynamic>> listExcelToJson = [];
-  set setListExcelToJson(List<Map<String, dynamic>> value) =>
-      listExcelToJson = value;
+  void filterListExcelToJson({required List<Map<String, dynamic>> value}) async{
+
+    for (var element in value) {
+      // set values
+      ProductCatalogue productCatalogue = ProductCatalogue(creation: Timestamp.now(),upgrade: Timestamp.now(),documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now());
+        productCatalogue.id = element['Código'];
+        productCatalogue.code = element['Código'];
+        productCatalogue.description = element['Producto'];
+        productCatalogue.purchasePrice = double.tryParse(element['P. Costo'].toString().replaceAll('\$', '').replaceAll(',', '.')) ??0.0;
+        productCatalogue.salePrice = double.tryParse(element['P. Venta'].toString().replaceAll('\$', '').replaceAll(',', '.')) ??0.0;
+      if(productCatalogue.id==''){break;}
+      Database.readProductPublicFuture(id: productCatalogue.id).then((value) {
+        if(value.exists){
+          // no se hace nada
+        }else{
+          productsToExelList.add(productCatalogue);
+          update(['updateAll']);
+        }
+      });
+    }
+    //listExcelToJson = value;
+  }
   List<Map<String, dynamic>> get getListExcelToJson => listExcelToJson;
 
   // result text
@@ -74,14 +97,12 @@ class ControllerProductsSearch extends GetxController {
   get getColorTextField => _colorTextField;
 
   // TextEditingController
-  TextEditingController textEditingController = new TextEditingController();
-  set setTextEditingController(TextEditingController editingController) =>
-      textEditingController = editingController;
+  TextEditingController textEditingController =  TextEditingController(text: '');
+  set setTextEditingController(TextEditingController editingController) => textEditingController = editingController;
   TextEditingController get getTextEditingController => textEditingController;
 
   // color component textfield
-  ButtonData _buttonData =
-      ButtonData(colorButton: Get.theme.primaryColor, colorText: Colors.white);
+  ButtonData _buttonData = ButtonData(colorButton: Get.theme.primaryColor, colorText: Colors.white);
   setButtonData({required Color colorButton, required Color colorText}) =>
       _buttonData = ButtonData(colorButton: colorButton, colorText: colorText);
   ButtonData get getButtonData => _buttonData;
@@ -108,8 +129,7 @@ class ControllerProductsSearch extends GetxController {
 
   // list productos sujeridos
   static List<Product> _listProductsSuggestion = [];
-  set setListProductsSuggestions(List<Product> list) =>
-      _listProductsSuggestion = list;
+  set setListProductsSuggestions(List<Product> list) => _listProductsSuggestion = list;
   List<Product> get getListProductsSuggestions => _listProductsSuggestion;
 
   get getproductDoesNotExist => _productDoesNotExist;
@@ -121,10 +141,9 @@ class ControllerProductsSearch extends GetxController {
       setStateSearch = true;
       update(['updateAll']);
       // query
-      Database.readProductGlobalFuture(id: id).then((value) {
+      Database.readProductPublicFuture(id: id).then((value) {
         Product product = Product.fromMap(value.data() as Map);
-        Get.back();
-        Get.toNamed(Routes.PRODUCT,arguments: {'product': product.convertProductCatalogue()});
+        toProductView(porduct: product.convertProductCatalogue());
       }).onError((error, stackTrace) {
         setproductDoesNotExist = true;
         setStateSearch = false;
@@ -160,12 +179,15 @@ class ControllerProductsSearch extends GetxController {
   }
 
   void queryProductSuggestion() {
-    if (getListProductsSuggestions.length == 0) {
-      Database.readProductsFuture(limit: 5).then((value) {
+    if (getListProductsSuggestions.isEmpty) {
+      Database.readProductsFuture(limit: 6).then((value) {
+
+        // values 
         List<Product> newList = [];
-        value.docs
-            .forEach((element) => newList.add(Product.fromMap(element.data())));
+        for (var element in value.docs) {newList.add(Product.fromMap(element.data()));}
+        // set
         setListProductsSuggestions = newList;
+        // actualizamos la vista
         update(['updateAll']);
       });
     }
@@ -173,7 +195,9 @@ class ControllerProductsSearch extends GetxController {
 
   void toProductView({required ProductCatalogue porduct}) {
     Get.back();
-    Get.toNamed(Routes.PRODUCT, arguments: {'product': porduct});
+     // TODO :  comrpobar si el producto esta en el cátalogo
+     // ...
+    Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {'product': porduct});
   }
 
   void toProductNew({required String id}) {
@@ -187,9 +211,10 @@ class ControllerProductsSearch extends GetxController {
   }
 
   // TODO : eliminar para release
-  convert() async {
-    FilePickerResult? file = await FilePicker.platform.pickFiles(
-        type: FileType.custom, allowedExtensions: ['xlsx', 'csv', 'xls']);
+  selectedExcel() async {
+    
+    FilePickerResult? file = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx', 'csv', 'xls']);
+    
     if (file != null && file.files.isNotEmpty) {
       var bytes = File(file.files.first.path!).readAsBytesSync();
       var excel = Excel.decodeBytes(bytes);
@@ -204,15 +229,17 @@ class ControllerProductsSearch extends GetxController {
               keys = row; // columnas
               i++;
             } else {
-              Map<String, dynamic> temp = Map<String, dynamic>();
+              Map<String, dynamic> temp = <String, dynamic>{};
               int j = 0;
               String tk = '';
               // definimos cuantas columnas queremos recorrer
               for (var key in keys) {
                 tk = key.value;
-                temp[tk] = (row[j].runtimeType == String)
-                    ? "\u201C" + row[j].value + "\u201D"
-                    : row[j].value;
+                if ((row[j].runtimeType == String)) {
+                  temp[tk] = "\u201C${row[j].value}\u201D";
+                } else {
+                  temp[tk] = row[j].value;
+                }
                 // las columnas que quiero obtener
                 if (j == 3) break;
                 j++;
@@ -225,118 +252,152 @@ class ControllerProductsSearch extends GetxController {
         }
       }
 
-      setListExcelToJson = json;
+      filterListExcelToJson(value: json);
     } else {
-      setListExcelToJson = [];
+      productsToExelList = [];
+      update();
     }
-    update(['updateAll']);
   }
 
-  void openDialogListExcel() {
-    Widget widget = ListView.builder(
-      itemCount: getListExcelToJson.length,
+  openDialogListExcel() {
+    // muestra una ventana emergente con la lista de productos para verificar
+    Widget widget = Scaffold(
+      appBar: AppBar(title: Text('Productos de excel (${productsToExelList.length})')),
+      body: ListView.builder(
+      itemCount: productsToExelList.length,
       itemBuilder: (context, index) {
+        
         // values
-        final ProductCatalogue productValue = ProductCatalogue(
-            creation: Timestamp.now(), upgrade: Timestamp.now());
+        ProductCatalogue productValue = ProductCatalogue(documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now(),creation: Timestamp.now(), upgrade: Timestamp.now());
         // set values
-        productValue.id = getListExcelToJson[index]['Código'];
-        productValue.code = getListExcelToJson[index]['Código'];
-        productValue.description = getListExcelToJson[index]['Producto'];
-        productValue.purchasePrice = double.tryParse(getListExcelToJson[index]
-                    ['P. Costo']
-                .toString()
-                .replaceAll('\$', '')
-                .replaceAll(',', '.')) ??
-            0.0;
-        productValue.salePrice = double.tryParse(getListExcelToJson[index]
-                    ['P. Venta']
-                .toString()
-                .replaceAll('\$', '')
-                .replaceAll(',', '.')) ??
-            0.0;
+        productValue = productsToExelList[index];
 
-        return welcomeController.isCatalogue(id: productValue.code)
+        return homeController.isCatalogue(id: productValue.code)
             ? Container()
-            : ListTile(
-                title: Text(
-                  productValue.description,
-                  maxLines: 2,
-                ),
-                subtitle: Text(
-                    productValue.code + ' \$${productValue.salePrice.toInt()}'),
-                onTap: () {
-                  //  set
-                  productSelect = productValue;
-                  Get.back();
-                  textEditingController.text = productSelect.id;
-                  queryProduct(id: productSelect.id);
-                },
-              );
-      },
-    );
-    Get.dialog(
-      AlertDialog(
-        content: Container(width: 500, height: double.infinity, child: widget),
-        actions: [
-          TextButton(
-            child: const Text("Close"),
-            onPressed: () => Get.back(),
+            :  Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+          contentPadding: const EdgeInsets.all(12),
+          title: Text(productValue.description,maxLines: 1,overflow:TextOverflow.clip),
+          subtitle: Row(
+                children: [
+                  // text : code
+                  productValue.code!=''?Padding(padding: const EdgeInsets.symmetric(horizontal: 5),child: Icon(Icons.circle,size: 8, color: Get.theme.dividerColor)):Container(),
+                  productValue.code!=''? Text(productValue.code):Container(),
+                  // text : precio
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 5),child: Icon(Icons.circle,size: 8, color: Get.theme.dividerColor)),
+                  Text(Publications.getFormatoPrecio(monto: productValue.salePrice)),
+                ],
           ),
-        ],
-      ),
+          onTap: () {
+                //  set
+                productSelect = productValue;
+                Get.back();
+                textEditingController.text = productSelect.id;
+                queryProduct(id: productSelect.id);
+          },
+        ),
+        const Divider(height: 0),
+              ],
+            );
+      },
+    ),
+    );
+    // muestre la hoja inferior modal de getx
+    Get.bottomSheet(
+      widget,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      enableDrag: true,
+      isDismissible: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
+
+
   // var
   final RxList<Product> _lisProductsVerified = <Product>[].obs;
-  List<Product> get getListProductsVerified => _lisProductsVerified;
-  set setListProductsVerified(List<Product> value) =>
-      _lisProductsVerified.value = value;
+  List<Product> get getListProductsVerified {
+
+    for (var i = 0; i < _lisProductsVerified.length; i++) {
+
+      for (var j = 0; j < homeController.getCataloProducts.length; j++) {
+        if( _lisProductsVerified[i].id == homeController.getCataloProducts[j].id ){
+          if(homeController.getCataloProducts[j].verified){
+            _lisProductsVerified.removeAt(i);
+          }
+        }
+      }
+    }
+    return _lisProductsVerified;
+  }
+  set setListProductsVerified(List<Product> value) => _lisProductsVerified.value = value;
 
   void readProduct() {
     Database.readProductsVerifiedFuture().then((value) {
-        List<Product> list = [];
-        value.docs.forEach((element) {
-          list.add(Product.fromMap(element.data()));
-        });
-        setListProductsVerified = list.cast<Product>();
-        update(['updateAll']);
-      });
+      List<Product> list = [];
+      for (var element in value.docs) {
+        list.add(Product.fromMap(element.data()));
+      }
+      setListProductsVerified = list.cast<Product>();
+      update(['updateAll']);
+    });
   }
-  void openDialogListProductVerified({required List<Product> list}) {
-    Widget widget = ListView.builder(
+  openDialogListProductVerified({required List<Product> list}) {
+    // muestra una ventana emergente con la lista de productos para verificar
+    Widget widget = Scaffold(
+      appBar: AppBar(title: const Text('Productos sin verificar')),
+      body: ListView.builder(
       itemCount: list.length,
       itemBuilder: (context, index) {
         // values
         final Product productValue = list[index];
 
-        return ListTile(
-                title: Text(
-                  productValue.description,
-                  maxLines: 2,
-                ),
-                subtitle: Text('code: ${productValue.code} \naccount: ${productValue.idAccount}'),
-                onTap: () {
-                  Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {'product': productValue.convertProductCatalogue()});
-                },
-              );
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              contentPadding: const EdgeInsets.all(12),
+              title: Text(productValue.nameMark,maxLines: 1,overflow:TextOverflow.clip),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(productValue.description,maxLines:1,overflow:TextOverflow.clip,textAlign: TextAlign.start,),
+                  Row(
+                    children: [
+                      // text : code
+                      productValue.code!=''?Padding(padding: const EdgeInsets.symmetric(horizontal: 5),child: Icon(Icons.circle,size: 8, color: Get.theme.dividerColor)):Container(),
+                      productValue.code!=''? Text(productValue.code):Container(),
+                      // text : marca de tiempo
+                      Padding(padding: const EdgeInsets.symmetric(horizontal: 5),child: Icon(Icons.circle,size: 8, color: Get.theme.dividerColor)),
+                      Text(Publications.getFechaPublicacion(productValue.creation.toDate(), Timestamp.now().toDate())),
+                    ],
+                  ),
+                ],
+              ),
+              onTap: () {
+                Get.back();
+                Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'product': productValue.convertProductCatalogue()});
+              },
+            ),
+            const Divider(height: 0),
+          ],
+        );
       },
+    ),
     );
-    Get.dialog(
-      AlertDialog(
-        content: Container(width: 500, height: double.infinity, child: widget),
-        actions: [
-          TextButton(
-            child: const Text("Close"),
-            onPressed: () => Get.back(),
-          ),
-        ],
-      ),
+    // muestre la hoja inferior modal de getx
+    Get.bottomSheet(
+      widget,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      enableDrag: true,
+      isDismissible: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
-
-
-
-
-
 }

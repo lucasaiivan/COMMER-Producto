@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:producto/app/models/catalogo_model.dart';
+import 'package:producto/app/routes/app_pages.dart';
 
 
-class Publicaciones {
+class Publications {
   // obtiene un double y devuelve un monto formateado
   static String getFormatoPrecio(
       {String moneda = "\$", required double monto}) {
@@ -89,7 +92,7 @@ class Publicaciones {
     if (precioCompra != 0.0) {
       ganancia = precioVenta - precioCompra;
     }
-    return Publicaciones.getFormatoPrecio(monto: ganancia);
+    return Publications.getFormatoPrecio(monto: ganancia);
   }
 }
 class Utils {
@@ -119,5 +122,10 @@ class Utils {
     ];
 
     return lista_color[Random().nextInt(lista_color.length)];
+  }
+
+  // navigator
+  void toProductEdit({required ProductCatalogue productCatalogue}) {
+    Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {'product': productCatalogue});
   }
 }

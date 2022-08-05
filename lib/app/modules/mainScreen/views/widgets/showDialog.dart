@@ -33,7 +33,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
   final Category categoriaSelected = Category();
   bool crearCategoria = false, loadSave = false;
   final BuildContext buildContextPrincipal;
-  final WelcomeController controller = Get.find();
+  final HomeController controller = Get.find();
 
   @override
   void initState() {
@@ -150,7 +150,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
 
   // menu options
   Widget dropdownButtonCategory({required Category categoria}) {
-    final WelcomeController controller = Get.find();
+    final HomeController controller = Get.find();
 
     return DropdownButton<String>(
       icon: Icon(Icons.more_vert),
@@ -210,7 +210,7 @@ class _ViewCategoriaState extends State<ViewCategoria> {
     );
   }
   showDialogSetCategoria({required Category categoria}) async {
-    final WelcomeController controller = Get.find();
+    final HomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
     TextEditingController textEditingController =
@@ -302,7 +302,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
   // Variables
   late Category categoriaSelected;
   bool crearSubCategoria = false, loadSave = false;
-  final WelcomeController controller = Get.find();
+  final HomeController controller = Get.find();
 
   @override
   void initState() {
@@ -435,7 +435,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
 
   // menu options
   Widget dropdownButtonSubcategory({required Category subcategoria}) {
-    final WelcomeController controller = Get.find();
+    final HomeController controller = Get.find();
 
     return DropdownButton<String>(
       icon: Icon(Icons.more_vert),
@@ -501,7 +501,7 @@ class _ViewSubCategoriaState extends State<ViewSubCategoria> {
   }
 
   showDialogSetSubcategoria({required Category subcategoria}) async {
-    final WelcomeController controller = Get.find();
+    final HomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
     TextEditingController textEditingController =

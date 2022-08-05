@@ -42,7 +42,6 @@ void main() async {
   // theme data
   ThemeData themeDataLight = ThemeData(
         useMaterial3: true,
-        primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor: ThemesDataApp.colorLight,
         backgroundColor: Colors.grey[200],
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
@@ -62,7 +61,6 @@ void main() async {
       );
       ThemeData themeDataDark = ThemeData.dark().copyWith(
         useMaterial3: true,
-        primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor: ThemesDataApp.colorBlack,
         backgroundColor: Color.fromRGBO(59, 24, 95, 1.0),
         textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),

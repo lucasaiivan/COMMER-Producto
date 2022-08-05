@@ -6,15 +6,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
-import 'package:producto/app/services/database.dart';
-import '../views/product_edit_view.dart';
+import 'package:producto/app/utils/widgets_utils_app.dart';
+import 'package:search_page/search_page.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:uuid/uuid.dart';
+import '../../../models/catalogo_model.dart';
+import '../../../services/database.dart';
 
 class ControllerProductsEdit extends GetxController {
-
   // others controllers
-  final WelcomeController welcomeController = Get.find();
+  final HomeController homeController = Get.find();
+
+  //  category selected
+  Rx<Category> _categorySelect = Category().obs;
+  Category get getCategorySelect => _categorySelect.value;
+  set setCategorySelect(Category value) {
+    // set
+    _categorySelect.value = value;
+    update();
+  }
+
+  Future<void> categoryDelete({required String idCategory}) async =>
+      await Database.refFirestoreCategory(
+              idAccount: homeController.getProfileAccountSelected.id)
+          .doc(idCategory)
+          .delete();
+  Future<void> categoryUpdate({required Category categoria}) async {
+    // ref
+    var documentReferencer = Database.refFirestoreCategory(
+            idAccount: homeController.getProfileAccountSelected.id)
+        .doc(categoria.id);
+    // Actualizamos los datos
+    documentReferencer
+        .set(Map<String, dynamic>.from(categoria.toJson()),
+            SetOptions(merge: true))
+        .whenComplete(() {
+      print("######################## FIREBASE updateAccount whenComplete");
+    }).catchError((e) => print(
+            "######################## FIREBASE updateAccount catchError: $e"));
+  }
+
+  // category list
+  final RxList<Category> _categoryList = <Category>[].obs;
+  List<Category> get getCatalogueCategoryList => _categoryList;
+  set setCatalogueCategoryList(List<Category> value) {
+    _categoryList.value = value;
+    update(['tab']);
+  }
 
   // state internet
   bool connected = false;
@@ -51,9 +90,9 @@ class ControllerProductsEdit extends GetxController {
   String get getTextAppBar => _textAppbar;
 
   // variable para saber si el producto ya esta o no en el cátalogo
-  bool _inCatalogue = false;
-  set setIsCatalogue(bool value) => _inCatalogue = value;
-  bool get getIsCatalogue => _inCatalogue;
+  bool _itsInTheCatalogue = false;
+  set setItsInTheCatalogue(bool value) => _itsInTheCatalogue = value;
+  bool get itsInTheCatalogue => _itsInTheCatalogue;
 
   // variable para mostrar al usuario una viste para editar o crear un nuevo producto
   bool _newProduct = true;
@@ -70,22 +109,19 @@ class ControllerProductsEdit extends GetxController {
   bool get getEditModerator => _editModerator;
 
   // parameter
-  ProductCatalogue _product =
-      ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+  ProductCatalogue _product = ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now(),documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now());
   set setProduct(ProductCatalogue product) => _product = product;
   ProductCatalogue get getProduct => _product;
 
   // TextEditingController
-  TextEditingController controllerTextEdit_descripcion =
-      TextEditingController();
-  MoneyMaskedTextController controllerTextEdit_precio_venta =
-      MoneyMaskedTextController();
-  MoneyMaskedTextController controllerTextEdit_precio_compra =
-      MoneyMaskedTextController();
+  TextEditingController controllerTextEditDescripcion = TextEditingController();
+  TextEditingController controllerTextEditQuantityStock = TextEditingController();
+  TextEditingController controllerTextEditAlertStock = TextEditingController();
+  MoneyMaskedTextController controllerTextEditPrecioVenta = MoneyMaskedTextController();
+  MoneyMaskedTextController controllerTextEditPrecioCompra = MoneyMaskedTextController();
 
   // mark
-  Mark _markSelected =
-      Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
+  Mark _markSelected = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
   set setMarkSelected(Mark value) {
     _markSelected = value;
     getProduct.idMark = value.id;
@@ -123,7 +159,7 @@ class ControllerProductsEdit extends GetxController {
   Category get getSubcategory => _subcategory;
 
   // imagen
-  ImagePicker _picker = ImagePicker();
+  final ImagePicker _picker = ImagePicker();
   XFile _xFileImage = XFile('');
   set setXFileImage(XFile value) => _xFileImage = value;
   XFile get getXFileImage => _xFileImage;
@@ -138,18 +174,20 @@ class ControllerProductsEdit extends GetxController {
     // llamado inmediatamente después de que se asigna memoria al widget
 
     // state account auth
-    setAccountAuth = welcomeController.getIdAccountSelecte != '';
+    setAccountAuth = homeController.getIdAccountSelected != '';
 
     // se obtiene el parametro y decidimos si es una vista para editrar o un producto nuevo
-    setProduct = Get.arguments['product'] ??
-        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+    setProduct = Get.arguments['product'] ?? ProductCatalogue(documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now(),upgrade: Timestamp.now(), creation: Timestamp.now());
     setNewProduct = Get.arguments['new'] ?? false;
     // load data product
-    loadDataProduct();
+    
     if (getNewProduct == false) {
       // el documento existe
-      getDataProduct(id: getProduct.id);
       isCatalogue();
+      getDataProduct(id: getProduct.id);
+      
+    }else{
+      loadDataFormProduct();
     }
 
     super.onInit();
@@ -167,86 +205,103 @@ class ControllerProductsEdit extends GetxController {
     super.onClose();
   }
 
+  // FUNCTIONES
+  set setStock(bool value) {
+    getProduct.stock = value;
+    update(['updateAll']);
+  }
+  set setFavorite(bool value) {
+    getProduct.favorite = value;
+    update(['updateAll']);
+  }
+
   updateAll() => update(['updateAll']);
   back() => Get.back();
 
   isCatalogue() {
-    welcomeController.getCataloProducts.forEach((element) {
+    for (var element in homeController.getCataloProducts) {
       if (element.id == getProduct.id) {
-        setIsCatalogue = true;
+        // get values
+        setItsInTheCatalogue = true;
+        setProduct = element;
         update(['updateAll']);
       }
-    });
+    }
   }
 
   Future<void> save() async {
     if (getProduct.id != '') {
       if (getProduct.description != '') {
         if (getProduct.idMark != '' && getProduct.nameMark != '') {
-          if (getProduct.salePrice != 0 && getAccountAuth ||
-              getProduct.salePrice == 0 && getAccountAuth == false) {
-            // update view
-            setSaveIndicator = true;
-            setTextAppBar = 'Espere por favor...';
-            updateAll();
 
-            // set
-            getProduct.upgrade = Timestamp.now();
-            // iamge
-            if (getXFileImage.path != '') {
-              // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
-              // si es asi procede a guardar la imagen en la base de la app
-              Reference ref =
-                  Database.referenceStorageProductPublic(id: getProduct.id);
-              UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
-              await uploadTask;
-              // obtenemos la url de la imagen guardada
-              await ref
-                  .getDownloadURL()
-                  .then((value) => getProduct.image = value);
-            }
-            if (getAccountAuth) {
+
+          if (getProduct.salePrice != 0 && getAccountAuth ||getProduct.salePrice == 0 && getAccountAuth == false) {
+            if ((getProduct.stock) ? (getProduct.quantityStock >= 1) : true) {
+
+              
+              // update view
+              setSaveIndicator = true;
+              setTextAppBar = 'Espere por favor...';
+              updateAll();
+
+              // set : marca de tiempo
+              getProduct.upgrade = Timestamp.now();
+              // actualización de la imagen de perfil de la cuetna
+              if (getXFileImage.path != '') {
+                // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
+                // si es asi procede a guardar la imagen en la base de la app
+                Reference ref = Database.referenceStorageProductPublic(id: getProduct.id);
+                UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
+                await uploadTask;
+                // obtenemos la url de la imagen guardada
+                await ref.getDownloadURL().then((value) => getProduct.image = value);
+              }
               // procede agregrar el producto en el cátalogo
-
               // Mods - save data product global
               if (getNewProduct || getEditModerator) {
-                getProduct.verified = true; // TODO : release to false
-                saveProductPublic();
+                  setProductPublicFirestore(product: getProduct.convertProductoDefault());
               }
+              
+              // Registra el precio en una colección publica
+                Price precio = Price(
+                  id: homeController.getProfileAccountSelected.id,
+                  idAccount: homeController.getProfileAccountSelected.id,
+                  imageAccount: homeController.getProfileAccountSelected.image,
+                  nameAccount: homeController.getProfileAccountSelected.name,
+                  price: getProduct.salePrice,
+                  currencySign: getProduct.currencySign,
+                  province: homeController.getProfileAccountSelected.province,
+                  town: homeController.getProfileAccountSelected.town,
+                  time: Timestamp.fromDate(DateTime.now()),
+                );
+                // Firebase set : se guarda un documento con la referencia del precio del producto
+                Database.refFirestoreRegisterPrice(idProducto: getProduct.id, isoPAis: 'ARG').doc(precio.id).set(precio.toJson());
 
-              // registra el precio en una colección publica para todos los usuarios
-              Price precio = new Price(
-                id: welcomeController.getProfileAccountSelected.id,
-                idAccount: welcomeController.getProfileAccountSelected.id,
-                imageAccount: welcomeController.getProfileAccountSelected.image,
-                nameAccount: welcomeController.getProfileAccountSelected.name,
-                price: getProduct.salePrice,
-                currencySign: getProduct.currencySign,
-                province: welcomeController.getProfileAccountSelected.province,
-                town: welcomeController.getProfileAccountSelected.town,
-                time: Timestamp.fromDate(new DateTime.now()),
-              );
-              // Firebase set
-              await Database.refFirestoreRegisterPrice(
-                      idProducto: getProduct.id, isoPAis: 'ARG')
-                  .doc(precio.id)
-                  .set(precio.toJson());
-
-              // add/update data product in catalogue
-              Database.refFirestoreCatalogueProduct(idAccount: welcomeController.getProfileAccountSelected.id).doc(getProduct.id)
-                  .set(getProduct.toJson())
-                  .whenComplete(() async {
-                    await Future.delayed(Duration(seconds: 3)).then((value) {
-                      setSaveIndicator = false;
-                      Get.back();
-                      Get.back();
-                    });
-                  })
-                  .onError((error, stackTrace) => setSaveIndicator = false)
-                  .catchError((_) => setSaveIndicator = false);
+                // Firebase set : se actualiza los datos del producto del cátalogo de la cuenta
+                if(getNewProduct){
+                  Database.refFirestoreCatalogueProduct(idAccount: homeController.getProfileAccountSelected.id).doc(getProduct.id)
+                    .set(getProduct.toJson())
+                    .whenComplete(() async {
+                      await Future.delayed(const Duration(seconds: 3)).then((value) {setSaveIndicator = false; Get.back();});
+                    }).onError((error, stackTrace) => setSaveIndicator = false).catchError((_) => setSaveIndicator = false);
+                }else{
+                  if(itsInTheCatalogue){
+                    Database.refFirestoreCatalogueProduct(idAccount: homeController.getProfileAccountSelected.id).doc(getProduct.id)
+                      .update(getProduct.toJson())
+                      .whenComplete(() async {
+                        await Future.delayed(const Duration(seconds: 3)).then((value) {setSaveIndicator = false; Get.back(); });
+                    }).onError((error, stackTrace) => setSaveIndicator = false).catchError((_) => setSaveIndicator = false);
+                  }else{
+                    Database.refFirestoreCatalogueProduct(idAccount: homeController.getProfileAccountSelected.id).doc(getProduct.id)
+                      .set(getProduct.toJson())
+                      .whenComplete(() async {
+                        await Future.delayed(const Duration(seconds: 3)).then((value) {setSaveIndicator = false; Get.back(); });
+                    }).onError((error, stackTrace) => setSaveIndicator = false).catchError((_) => setSaveIndicator = false);
+                  }
+                }
             } else {
-              getProduct.verified = true; // TODO : release to false
-              saveProductPublic();
+              Get.snackbar(
+                  'Stock no valido 😐', 'debe proporcionar un cantidad');
             }
           } else {
             Get.snackbar(
@@ -263,40 +318,63 @@ class ControllerProductsEdit extends GetxController {
     }
   }
 
-  Future<void> saveProductPublic() async {
+  void saveProductPublic() async {
     // esta función procede a guardar el documento de una colleción publica
 
     if (getProduct.id != '') {
       if (getProduct.description != '') {
         if (getProduct.idMark != '') {
-          // activate indicator load
-          setSaveIndicator = true;
-          setTextAppBar = 'Espere por favor...';
-          updateAll();
 
-          // set
-          Product newProduct = getProduct.convertProductoDefault();
-          newProduct.idAccount = welcomeController.getProfileAccountSelected.id;
-          newProduct.upgrade = Timestamp.fromDate(new DateTime.now());
+            // activate - indicator load
+            setSaveIndicator = true;
+            setTextAppBar = 'Espere por favor...';
+            updateAll();
+            
+            // values 
+            Product product = getProduct.convertProductoDefault();
+            // actualización de la imagen de perfil de la cuetna
+            if (getXFileImage.path != '') {
+              // image - Si el "path" es distinto '' quiere decir que ahi una nueva imagen para actualizar
+              // si es asi procede a guardar la imagen en la base de la app
+              Reference ref = Database.referenceStorageProductPublic(id: product.id);
+              UploadTask uploadTask = ref.putFile(File(getXFileImage.path));
+              await uploadTask;
+              // obtenemos la url de la imagen guardada
+              await ref.getDownloadURL().then((value) => product.image = value);
+            }
 
-          // firestore - save product public
-          await Database.refFirestoreProductPublic()
-              .doc(newProduct.id)
-              .set(newProduct.toJson())
-              .whenComplete(() {
-            Get.back();
-            Get.back();
-            Get.snackbar(
-                'Estupendo 😃', 'Gracias por contribuir a la comunidad');
-          });
+            // set firestore
+            if(getNewProduct){
+              Database.refFirestoreProductPublic().doc(product.id).set(product.toJson()).whenComplete(() {
+                Get.back();
+                Get.snackbar('Estupendo 😃', 'Gracias por contribuir a la comunidad');
+              });
+            }else{
+              Database.refFirestoreProductPublic().doc(product.id).update(product.toJson()).whenComplete(() {
+                Get.back();
+                Get.snackbar('Estupendo 😃', 'Gracias por contribuir a la comunidad');
+              });
+            }
+            
         } else {
-          Get.snackbar(
-              'No se puedo continuar 😐', 'debes seleccionar una marca');
+          Get.snackbar('No se puedo continuar 😐', 'debes seleccionar una marca');
         }
       } else {
-        Get.snackbar('No se puedo continuar 👎',
-            'debes escribir una descripción del producto');
+        Get.snackbar('No se puedo continuar 👎','debes escribir una descripción del producto');
       }
+    }
+  }
+  void setProductPublicFirestore({required Product product})  {
+    // esta función procede a guardar el documento de una colleción publica
+    //  get
+    product.idAccount = homeController.getProfileAccountSelected.id;
+    product.upgrade = Timestamp.fromDate(DateTime.now());
+
+    // set firestore - save product public
+    if(getNewProduct){
+      Database.refFirestoreProductPublic().doc(product.id).set(product.toJson());
+    }else{
+      Database.refFirestoreProductPublic().doc(product.id).update(product.toJson());
     }
   }
 
@@ -308,7 +386,7 @@ class ControllerProductsEdit extends GetxController {
 
     // delete doc product in catalogue account
     await Database.refFirestoreCatalogueProduct(
-            idAccount: welcomeController.getProfileAccountSelected.id)
+            idAccount: homeController.getProfileAccountSelected.id)
         .doc(getProduct.id)
         .delete();
     // delete doc product
@@ -322,36 +400,38 @@ class ControllerProductsEdit extends GetxController {
   }
 
   void getDataProduct({required String id}) {
-    Database.readProductGlobalFuture(id: id).then((value) {
-      //  get
-      Product product = Product.fromMap(value.data() as Map);
-      //  set
-      setProduct = getProduct.updateData(Product: product);
-      loadDataProduct();
-    }).catchError((error) {
-      printError(info: error.toString());
-    }).onError((error, stackTrace) {
-      loadDataProduct();
-      printError(info: error.toString());
-    });
+    // lee el documento del producto
+    if (id != '') {
+      Database.readProductPublicFuture(id: id).then((value) {
+        //  get
+        Product product = Product.fromMap(value.data() as Map);
+        //  set
+        setProduct = getProduct.updateData(product: product);
+        loadDataFormProduct();
+        
+      }).catchError((error) {
+        printError(info: error.toString());
+      }).onError((error, stackTrace) {
+        loadDataFormProduct();
+        printError(info: error.toString());
+      });
+    }
   }
 
-  void loadDataProduct() {
+  void loadDataFormProduct() {
     // set
-    controllerTextEdit_descripcion =
-        TextEditingController(text: getProduct.description);
-    controllerTextEdit_precio_venta =
-        MoneyMaskedTextController(initialValue: getProduct.salePrice);
-    controllerTextEdit_precio_compra =
-        MoneyMaskedTextController(initialValue: getProduct.purchasePrice);
-
+    controllerTextEditDescripcion =TextEditingController(text: getProduct.description);
+    controllerTextEditPrecioVenta =MoneyMaskedTextController(initialValue: getProduct.salePrice);
+    controllerTextEditPrecioCompra =MoneyMaskedTextController(initialValue: getProduct.purchasePrice);
+    controllerTextEditQuantityStock =TextEditingController(text: getProduct.quantityStock.toString());
+    controllerTextEditAlertStock = TextEditingController(text: getProduct.alertStock.toString());
     // primero verificamos que no tenga el metadato del dato de la marca para hacer un consulta inecesaria
     if (getProduct.idMark != '') readMarkProducts();
     if (getProduct.category != '') readCategory();
   }
 
   void readMarkProducts() {
-    if (!getProduct.idMark.isEmpty) {
+    if (getProduct.idMark.isNotEmpty) {
       Database.readMarkFuture(id: getProduct.idMark).then((value) {
         setMarkSelected = Mark.fromMap(value.data() as Map);
         getProduct.nameMark = getMarkSelected.name; // guardamos un metadato
@@ -368,7 +448,7 @@ class ControllerProductsEdit extends GetxController {
 
   void readCategory() {
     Database.readCategotyCatalogueFuture(
-            idAccount: welcomeController.getProfileAccountSelected.id,
+            idAccount: homeController.getProfileAccountSelected.id,
             idCategory: getProduct.category)
         .then((value) {
       setCategory = Category.fromDocumentSnapshot(documentSnapshot: value);
@@ -424,8 +504,8 @@ class ControllerProductsEdit extends GetxController {
     if (getXFileImage.path != '') {
       // el usuario cargo un nueva imagen externa
       return AspectRatio(
-        child: Image.file(File(getXFileImage.path), fit: BoxFit.cover),
         aspectRatio: 1 / 1,
+        child: Image.file(File(getXFileImage.path), fit: BoxFit.cover),
       );
     } else {
       // se visualiza la imagen del producto
@@ -438,14 +518,14 @@ class ControllerProductsEdit extends GetxController {
                 imageUrl: getProduct.image,
                 placeholder: (context, url) => Container(
                   color: Colors.grey.withOpacity(0.3),
-                  child: Center(child: Icon(Icons.cloud, color: Colors.white)),
+                  child: const Center(
+                      child: Icon(Icons.cloud, color: Colors.white)),
                 ),
-                imageBuilder: (context, image) => Container(
-                  child: Image(image: image),
-                ),
+                imageBuilder: (context, image) => Image(image: image),
                 errorWidget: (context, url, error) => Container(
                   color: Colors.grey.withOpacity(0.3),
-                  child: Center(child: Icon(Icons.error, color: Colors.white)),
+                  child: const Center(
+                      child: Icon(Icons.error, color: Colors.white)),
                 ),
               ),
       );
@@ -454,9 +534,9 @@ class ControllerProductsEdit extends GetxController {
 
   void showDialogDelete() {
     Widget widget = AlertDialog(
-      title: new Text(
+      title: const Text(
           "¿Seguro que quieres eliminar este producto de tu catálogo?"),
-      content: new Text(
+      content: const Text(
           "El producto será eliminado de tu catálogo y toda la información acumulada"),
       actions: <Widget>[
         // usually buttons at the bottom of the dialog
@@ -470,7 +550,7 @@ class ControllerProductsEdit extends GetxController {
           child: const Text('Si, eliminar'),
           onPressed: () {
             Database.refFirestoreCatalogueProduct(
-                    idAccount: welcomeController.getProfileAccountSelected.id)
+                    idAccount: homeController.getProfileAccountSelected.id)
                 .doc(getProduct.id)
                 .delete()
                 .whenComplete(() {
@@ -489,44 +569,45 @@ class ControllerProductsEdit extends GetxController {
   }
 
   showModalSelectMarca() {
-    Widget widget = WidgetSelectMark();
+    Widget widget = const WidgetSelectMark();
     // muestre la hoja inferior modal de getx
     Get.bottomSheet(
       widget,
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
+
   //TODO: eliminar para release
   // DEVELOPER OPTIONS
-  isFavorite() {
-    getProduct.favorite = !getProduct.favorite;
+  setOutstanding({required bool value}) {
+    getProduct.outstanding = value;
     update(['updateAll']);
   }
 
-  checkProduct() {
-    getProduct.verified = !getProduct.verified;
+  setCheckVerified({required bool value}) {
+    getProduct.verified = value;
     update(['updateAll']);
   }
 
   void showDialogDeleteOPTDeveloper() {
     Get.dialog(AlertDialog(
-      title: new Text(
+      title: const Text(
           "¿Seguro que quieres eliminar este documento definitivamente? (Mods)"),
-      content: new Text(
+      content: const Text(
           "El producto será eliminado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
       actions: <Widget>[
         // usually buttons at the bottom of the dialog
-        new TextButton(
-          child: new Text("Cancelar"),
+        TextButton(
+          child: const Text("Cancelar"),
           onPressed: () => Get.back(),
         ),
-        new TextButton(
-          child: new Text("Borrar"),
+        TextButton(
+          child: const Text("Borrar"),
           onPressed: () {
             Get.back();
             deleteProducPublic();
@@ -538,17 +619,18 @@ class ControllerProductsEdit extends GetxController {
 
   void showDialogSaveOPTDeveloper() {
     Get.dialog(AlertDialog(
-      title: new Text("¿Seguro que quieres actualizar este docuemnto? (Mods)"),
-      content: new Text(
+      title:
+          const Text("¿Seguro que quieres actualizar este docuemnto? (Mods)"),
+      content: const Text(
           "El producto será actualizado de tu catálogo ,de la base de dato global y toda la información acumulada menos el historial de precios registrado"),
       actions: <Widget>[
         // usually buttons at the bottom of the dialog
-        new TextButton(
-          child: new Text("Cancelar"),
+        TextButton(
+          child: const Text("Cancelar"),
           onPressed: () => Get.back(),
         ),
-        new TextButton(
-          child: new Text("Actualizar"),
+        TextButton(
+          child: const Text("Si, actualizar"),
           onPressed: () {
             Get.back();
             save();
@@ -557,4 +639,456 @@ class ControllerProductsEdit extends GetxController {
       ],
     ));
   }
+
+  Widget get widgetTextButtonAddProduct{
+    // widget : este texto button se va a mostrar por unica ves 
+
+    // comprobamos si es la primera ves que se agrega algun producto y que el producto no este en el catálogo
+    if(homeController.catalogUserHuideVisibility && !homeController.isCatalogue(id: getProduct.id)){
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 50,left: 12,right: 12,bottom: 20),
+            child: Opacity(opacity: 0.8,child: Text('¡Eso es todo 😃!',textAlign: TextAlign.center,style: TextStyle(fontSize: 20))),
+          ),
+          TextButton(onPressed: save,child: const Text('Agregar a mi cátalogo')),
+        ],
+      );
+      }
+    // si no es la primera ves que se inicica la aplicación devuelve una vistra vacia
+    return Container();
+  }
+}
+
+// select mark
+class WidgetSelectMark extends StatefulWidget {
+  const WidgetSelectMark({Key? key}) : super(key: key);
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _WidgetSelectMarkState createState() => _WidgetSelectMarkState();
+}
+
+class _WidgetSelectMarkState extends State<WidgetSelectMark> {
+  //  controllers
+  ControllerProductsEdit controllerProductsEdit = Get.find();
+  //  var
+  List<Mark> list = [];
+
+  @override
+  void initState() {
+    loadMarks();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widgetView();
+  }
+
+  Widget widgetView() {
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Marcas'),
+        actions: [
+          // TODO : delete icon 'add new mark for release'
+          //IconButton(onPressed: () {Get.back(); Get.to(() => CreateMark(mark: Mark(upgrade: Timestamp.now(),creation: Timestamp.now())));},icon: const Icon(Icons.add)),
+          IconButton(icon: const Icon(Icons.search),onPressed: () {Get.back();showSeachMarks();})
+        ],
+      ),
+      body: list.isEmpty
+          ? widgetAnimLoad()
+          : ListView.builder(
+              padding: const EdgeInsets.only(bottom: 12),
+              shrinkWrap: true,
+              itemCount: list.length,
+              itemBuilder: (BuildContext context, int index) {
+
+                //  values
+                Mark marcaSelect = list[index];
+
+                if (index == 0) {
+                  return Column(
+                    children: [
+                      getWidgetOptionOther(),
+                      const Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                      controllerProductsEdit.getUltimateSelectionMark.id ==
+                                  '' ||
+                              controllerProductsEdit
+                                      .getUltimateSelectionMark.id ==
+                                  'other'
+                          ? Container()
+                          : listTile(
+                              marcaSelect: controllerProductsEdit
+                                  .getUltimateSelectionMark),
+                      const Divider(
+                          endIndent: 12.0, indent: 12.0, height: 0),
+                      listTile(marcaSelect: marcaSelect),
+                      const Divider(
+                          endIndent: 12.0, indent: 12.0, height: 0),
+                    ],
+                  );
+                }
+                return Column(
+                  children: <Widget>[
+                    listTile(marcaSelect: marcaSelect),
+                    const Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                  ],
+                );
+              },
+            ),
+    );
+  }
+
+  // WIDGETS
+  Widget widgetAnimLoad() {
+    return Center(
+        child: ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(
+                  child: SizedBox(width: double.infinity, height: 50))),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(
+                  child: SizedBox(width: double.infinity, height: 50))),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(
+                  child: SizedBox(width: double.infinity, height: 50))),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(
+                  child: SizedBox(width: double.infinity, height: 50))),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(
+                  child: SizedBox(width: double.infinity, height: 50))),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Shimmer.fromColors(
+              highlightColor: Colors.grey.withOpacity(0.01),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(
+                  child: SizedBox(width: double.infinity, height: 50))),
+        ),
+      ],
+    ));
+  }
+
+  Widget getWidgetOptionOther() {
+    //values
+    late Widget widget;
+    // recorre la la de marcas para buscar la informaciób de opción 'other'
+    if (controllerProductsEdit.getMarks.isEmpty) {
+      widget = Container();
+    } else {
+      for (var element in controllerProductsEdit.getMarks) {
+        if (element.id == 'other') {
+          widget = listTile(
+            marcaSelect: element,
+          );
+        }
+      }
+    }
+    return widget;
+  }
+
+  // WIDGETS COMPONENT
+  showSeachMarks(){
+
+    // buscar cátegoria
+
+    // var
+    Color colorAccent = Get.theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+
+    showSearch(
+      context: context,
+      delegate: SearchPage<Mark>(
+        searchStyle: TextStyle(color: colorAccent),
+        barTheme: Get.theme.copyWith(hintColor: colorAccent, highlightColor: colorAccent),
+        items: list,
+        searchLabel: 'Buscar marca',
+        suggestion: const Center(child: Text('ej. Miller')),
+        failure: const Center(child: Text('No se encontro :(')),
+        filter: (product) => [product.name,product.description],
+        builder: (mark) => Column(mainAxisSize: MainAxisSize.min,children: <Widget>[listTile(marcaSelect: mark),const Divider(height: 0)]),
+      ),
+    );
+  }
+
+  Widget listTile({required Mark marcaSelect, bool icon = true}) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      trailing: !icon? null: ComponentApp.viewCircleImage(texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
+      dense: true,
+      title: Text(marcaSelect.name,overflow: TextOverflow.ellipsis),
+      subtitle: marcaSelect.description == ''
+          ? null
+          : Text(marcaSelect.description, overflow: TextOverflow.ellipsis),
+      onTap: () {
+        controllerProductsEdit.setUltimateSelectionMark = marcaSelect;
+        controllerProductsEdit.setMarkSelected = marcaSelect;
+        Get.back();
+      },
+      onLongPress: () {
+        // TODO : delete fuction
+        Get.to(() => CreateMark(mark: marcaSelect));
+      },
+    );
+  }
+
+  // functions
+  loadMarks() async {
+    if (controllerProductsEdit.getMarks.isEmpty) {
+      await Database.readListMarksFuture().then((value) {
+        setState(() {
+          for (var element in value.docs) {
+            Mark mark = Mark.fromMap(element.data());
+            mark.id = element.id;
+            list.add(mark);
+          }
+          controllerProductsEdit.setMarks = list;
+        });
+      });
+    } else {
+      // datos ya descargados
+      list = controllerProductsEdit.getMarks;
+      setState(() => list = controllerProductsEdit.getMarks);
+    }
+  }
+  
+}
+
+// TODO : delete release
+class CreateMark extends StatefulWidget {
+  final Mark mark;
+  const CreateMark({required this.mark, Key? key}) : super(key: key);
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _CreateMarkState createState() => _CreateMarkState();
+}
+
+class _CreateMarkState extends State<CreateMark> {
+  // others controllers
+  final ControllerProductsEdit controllerProductsEdit = Get.find();
+
+  //var
+  var uuid = const Uuid();
+  bool newMark = false;
+  String title = 'Nueva marca';
+  bool load = false;
+  TextStyle textStyle = const TextStyle(fontSize: 24.0);
+  final ImagePicker _picker = ImagePicker();
+  XFile xFile = XFile('');
+
+  @override
+  void initState() {
+    newMark = widget.mark.id == '';
+    title = newMark ? 'Nueva marca' : 'Editar';
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: appbar(),
+      body: body(),
+    );
+  }
+
+  PreferredSizeWidget appbar() {
+    Color? colorAccent = Get.theme.textTheme.bodyText1!.color;
+
+    return AppBar(
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      elevation: 0,
+      title: Text(title, style: TextStyle(color: colorAccent)),
+      centerTitle: true,
+      iconTheme: Get.theme.iconTheme.copyWith(color: colorAccent),
+      actions: [
+        newMark || load ? Container(): IconButton(onPressed: delete, icon: const Icon(Icons.delete)),
+        load? Container() : IconButton(icon: const Icon(Icons.check),onPressed: save),
+      ],
+      bottom: load ? ComponentApp.linearProgressBarApp() : null,
+    );
+  }
+
+  Widget body() {
+
+    // widgets
+    Widget circleAvatarDefault = CircleAvatar(backgroundColor: Colors.grey.shade300,radius: 75.0);
+    
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              xFile.path != ''
+                  ? CircleAvatar(backgroundImage: FileImage(File(xFile.path)),radius: 76,)
+                  : CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      imageUrl: widget.mark.image,
+                      placeholder: (context, url) => circleAvatarDefault,
+                      imageBuilder: (context, image) => CircleAvatar(backgroundImage: image,radius: 75.0),
+                      errorWidget: (context, url, error) => circleAvatarDefault,
+                    ),
+              load ? Container(): TextButton(onPressed: getLoadImageMark,child: const Text("Cambiar imagen")),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: TextField(
+            enabled: !load,
+            controller: TextEditingController(text: widget.mark.name),
+            onChanged: (value) => widget.mark.name = value,
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(), labelText: "Nombre de la marca"),
+            style: textStyle,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: TextField(
+            enabled: !load,
+            controller: TextEditingController(text: widget.mark.description),
+            onChanged: (value) => widget.mark.description = value,
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Descripción (opcional)"),
+            style: textStyle,
+          ),
+        ),
+      ],
+    );
+  }
+
+  //  MARK CREATE
+  void getLoadImageMark() {
+    _picker
+        .pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 720.0,
+      maxHeight: 720.0,
+      imageQuality: 55,
+    )
+        .then((value) {
+      setState(() => xFile = value!);
+    });
+  }
+
+  void delete() async {
+    setState(() {
+      load = true;
+      title = 'Eliminando...';
+    });
+
+    if (widget.mark.id != '') {
+      // delele archive storage
+      await Database.referenceStorageProductPublic(id: widget.mark.id).delete().catchError((_) => null);
+      // delete document firestore
+      await Database.refFirestoreMark().doc(widget.mark.id).delete()
+          .then((value) {
+        // eliminar el objeto de la lista manualmente para evitar hacer una consulta innecesaria
+        controllerProductsEdit.getMarks.remove(widget.mark);
+        Get.back();
+      });
+    }
+  }
+
+  void save() async {
+    setState(() {
+      load = true;
+      title = newMark ? 'Guardando...' : 'Actualizando...';
+    });
+
+    // set values
+    widget.mark.verified = true;
+    if (newMark) {
+      // generate Id
+      widget.mark.id = uuid.v1();
+      // en el caso que la ID siga siendo '' generar un ID con la marca del tiempo
+      if (widget.mark.id == '') {widget.mark.id = DateTime.now().millisecondsSinceEpoch.toString();}
+    }
+    if (widget.mark.name != '') {
+      // image save
+      // Si el "path" es distinto '' procede a guardar la imagen en la base de dato de almacenamiento
+      if (xFile.path != '') {
+        Reference ref = Database.referenceStorageProductPublic(id: widget.mark.id);
+        // referencia de la imagen
+        UploadTask uploadTask = ref.putFile(File(xFile.path));
+        // cargamos la imagen a storage
+        await uploadTask;
+        // obtenemos la url de la imagen guardada
+        await ref.getDownloadURL().then((value) => widget.mark.image = value);
+      } 
+      
+      // mark save
+      if( newMark ){
+        // creamos un docuemnto nuevo
+        await Database.refFirestoreMark().doc(widget.mark.id).set(widget.mark.toJson()).whenComplete(() {
+
+          // set values 
+          controllerProductsEdit.setUltimateSelectionMark = widget.mark;
+          controllerProductsEdit.setMarkSelected = widget.mark;
+          // agregar el obj manualmente para evitar consulta a la db  innecesaria
+          controllerProductsEdit.getMarks.add(widget.mark);
+          Get.back();
+        });
+      }else{
+        // actualizamos un documento existente
+        await Database.refFirestoreMark().doc(widget.mark.id).update(widget.mark.toJson()).whenComplete(() {
+
+          // set values
+          controllerProductsEdit.setUltimateSelectionMark = widget.mark;
+          controllerProductsEdit.setMarkSelected = widget.mark;
+          // eliminamos la marca de la lista
+          controllerProductsEdit.getMarks.removeWhere((element) => (element.id == widget.mark.id));
+          // agregamos la nueva marca actualizada a la lista
+          controllerProductsEdit.getMarks.add(widget.mark);
+          Get.back();
+        });
+      }
+
+    } else {
+      Get.snackbar('', 'Debes escribir un nombre de la marca');
+    }
+  }
+
 }

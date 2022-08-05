@@ -12,10 +12,10 @@ class PagePrincipal extends StatelessWidget {
 
   @override
   Widget build(BuildContext buildContext) {
-    return GetBuilder<WelcomeController>(
+    return GetBuilder<HomeController>(
       id: 'accountUpdate',
       builder: (controller) {
-        return controller.getIdAccountSelecte==""?ScanScreenView():CatalogueScreenView();
+        return controller.getIdAccountSelected==""?ScanScreenView():CatalogueScreenView();
       },
     );
   }

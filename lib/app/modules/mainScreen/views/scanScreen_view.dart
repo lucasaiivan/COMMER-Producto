@@ -18,7 +18,7 @@ import '../../../routes/app_pages.dart';
 class ScanScreenView extends StatelessWidget {
   ScanScreenView({Key? key});
 
-  final WelcomeController controller = Get.find();
+  final HomeController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class ScanScreenView extends StatelessWidget {
     Color color = Theme.of(context).textTheme.bodyText1!.color ?? Colors.purple;
     Size size = Get.size;
 
-    return GetBuilder<WelcomeController>(
+    return GetBuilder<HomeController>(
       id: 'scanScreen',
       builder: (_) {
         return Column(

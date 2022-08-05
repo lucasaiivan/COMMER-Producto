@@ -13,7 +13,7 @@ import '../../mainScreen/controllers/welcome_controller.dart';
 class ProductController extends GetxController {
   //  controller
   ScrollController scrollController = ScrollController();
-  WelcomeController welcomeController = Get.find<WelcomeController>();
+  HomeController welcomeController = Get.find<HomeController>();
 
   // admob
   static bool _stateAds = false;
@@ -72,7 +72,7 @@ class ProductController extends GetxController {
   set setInCatalogue(bool value) => _inCatalogue = value;
 
   Rx<ProductCatalogue> _product =
-      ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now()).obs;
+      ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now(),documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now()).obs;
   ProductCatalogue get getProduct => _product.value;
   set setProduct(ProductCatalogue product) => _product.value = product;
 
@@ -123,7 +123,7 @@ class ProductController extends GetxController {
   void onInit() async {
     // get
     ProductCatalogue product = Get.arguments['product'] ??
-        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now());
+        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now(),documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now());
 
     // init
     initAds();

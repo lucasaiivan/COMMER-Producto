@@ -9,22 +9,54 @@ import 'package:producto/app/utils/functions.dart';
 import 'dart:math';
 import 'dynamicTheme_lb.dart';
 
-class WidgetsUtilsApp extends StatelessWidget {
-  WidgetsUtilsApp({Key? key}) : super(key: key);
+class ComponentApp extends StatelessWidget {
+  ComponentApp({Key? key}) : super(key: key);
 
+  // animations 
+  static PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
+    // animación para la carga de información
+  return PreferredSize(preferredSize: Size.fromHeight(0.0),child: LinearProgressIndicator(minHeight: 6.0,backgroundColor: Colors.white.withOpacity(0.3),valueColor: new AlwaysStoppedAnimation<Color>(color)));
+}
+
+  // buttons
   Widget buttonThemeBrightness({required BuildContext context, Color? color}) {
-    if (color == null)
-      color = Theme.of(context).brightness == Brightness.dark
-          ? Colors.white
-          : Colors.black;
-    return IconButton(
-        icon: Icon(
-            Theme.of(context).brightness == Brightness.light
-                ? Icons.brightness_high
-                : Icons.brightness_3,
-            color: color),
-        onPressed: ThemeService.switchTheme);
+    if (color == null) color = Theme.of(context).brightness == Brightness.dark? Colors.white: Colors.black;
+    return IconButton(icon: Icon(Theme.of(context).brightness == Brightness.light? Icons.brightness_high: Icons.brightness_3,color: color),onPressed: ThemeService.switchTheme);
   }
+
+  // image
+  static Widget viewCircleImage({required String url, required String texto, double size = 85.0}) {
+  //values
+  MaterialColor color = Utils.getRandomColor();
+  if (texto == '') texto = 'Image';
+
+  Widget imageDefault = CircleAvatar(
+    backgroundColor: color.withOpacity(0.1),
+    radius: size,
+    child: Text(texto.substring(0, 1),
+        style: TextStyle(
+          fontSize: size / 2,
+          color: color,
+          fontWeight: FontWeight.bold,
+        )),
+  );
+
+  return Container(
+    width: size,
+    height: size,
+    child: url == "" || url == "default"
+        ? imageDefault
+        : CachedNetworkImage(
+            imageUrl: url,
+            placeholder: (context, url) => imageDefault,
+            imageBuilder: (context, image) => CircleAvatar(
+              backgroundImage: image,
+              radius: size,
+            ),
+            errorWidget: (context, url, error) => imageDefault,
+          ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -104,39 +136,6 @@ class DashedCirclePainter extends CustomPainter {
   }
 }
 
-Widget viewCircleImage(
-    {required String url, required String texto, double size = 85.0}) {
-  //values
-  MaterialColor color = Utils.getRandomColor();
-  if (texto == '') texto = 'Image';
-
-  Widget imageDefault = CircleAvatar(
-    backgroundColor: color.withOpacity(0.1),
-    radius: size,
-    child: Text(texto.substring(0, 1),
-        style: TextStyle(
-          fontSize: size / 2,
-          color: color,
-          fontWeight: FontWeight.bold,
-        )),
-  );
-
-  return Container(
-    width: size,
-    height: size,
-    child: url == "" || url == "default"
-        ? imageDefault
-        : CachedNetworkImage(
-            imageUrl: url,
-            placeholder: (context, url) => imageDefault,
-            imageBuilder: (context, image) => CircleAvatar(
-              backgroundImage: image,
-              radius: size,
-            ),
-            errorWidget: (context, url, error) => imageDefault,
-          ),
-  );
-}
 
 class ProductoItem extends StatefulWidget {
   final ProductCatalogue producto;
@@ -149,7 +148,7 @@ class ProductoItem extends StatefulWidget {
 
 class _ProductoItemState extends State<ProductoItem> {
   // controllers
-  final WelcomeController welcomeController = Get.find<WelcomeController>();
+  final HomeController welcomeController = Get.find<HomeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -161,32 +160,40 @@ class _ProductoItemState extends State<ProductoItem> {
         // widget
         child: Card(
           color: Colors.white,
-          elevation: welcomeController.getSelectItems
-              ? widget.producto.select
-                  ? 4
-                  : 0
-              : 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+          elevation: welcomeController.getSelectItems? widget.producto.select? 4: 0: 3,
+          shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
           clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // imagen y información del producto
+              Stack(
                 children: [
-                  Expanded(child: contentImage()),
-                  contentInfo(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: contentImage()),
+                      contentInfo(),
+                    ],
+                  ),
+                  // más información del producto
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      widget.producto.favorite?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,)):Container(),
+                      widget.producto.quantityStock<=widget.producto.alertStock == widget.producto.stock?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text(widget.producto.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,)):Container(),
+                    ],
+                  ),
                 ],
               ),
+              // zona Cliqueable
               Positioned.fill(
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () => Get.toNamed(Routes.PRODUCT,
-                        arguments: {'product': widget.producto}),
+                    onTap: () => Get.toNamed(Routes.PRODUCT, arguments: {'product': widget.producto}),
                     onLongPress: () {
-                      welcomeController.setSelectItems =
-                          !welcomeController.getSelectItems;
+                      welcomeController.setSelectItems = !welcomeController.getSelectItems;
                       widget.producto.select = true;
                       welcomeController.updateSelectItemsLength();
                     },
@@ -199,10 +206,7 @@ class _ProductoItemState extends State<ProductoItem> {
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          child: Container(
-                              color: widget.producto.select
-                                  ? Colors.grey.withOpacity(0.0)
-                                  : Colors.grey.withOpacity(0.4)),
+                          child: Container(color: widget.producto.select? Colors.grey.withOpacity(0.0): Colors.grey.withOpacity(0.4)),
                           onTap: () {
                             setState(() {
                               widget.producto.select = !widget.producto.select;
@@ -222,8 +226,7 @@ class _ProductoItemState extends State<ProductoItem> {
                         child: Icon(
                           Icons.circle,
                           color: Colors.green,
-                          size: 14,
-                        ),
+                          size: 14),
                       ),
                     )
                   : Container(),
@@ -274,33 +277,42 @@ class _ProductoItemState extends State<ProductoItem> {
   }
 
   Widget contentInfo() {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(widget.producto.description,
-              style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                  color: Colors.grey),
-              overflow: TextOverflow.fade,
-              softWrap: false),
-          Text(Publicaciones.getFormatoPrecio(monto: widget.producto.salePrice),
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
-                  color: Colors.black),
-              overflow: TextOverflow.fade,
-              softWrap: false),
-        ],
+
+    // values 
+    late Color? colorContent=null;
+    if(widget.producto.favorite){colorContent =Colors.amber.withOpacity(0.2);}
+    if(widget.producto.quantityStock<=widget.producto.alertStock && widget.producto.stock){colorContent =Colors.red.withOpacity(0.2);}
+
+    return Container(
+      color: colorContent,
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(widget.producto.description,
+                style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14.0,
+                    color: Colors.grey),
+                overflow: TextOverflow.fade,
+                softWrap: false),
+            Text(Publications.getFormatoPrecio(monto: widget.producto.salePrice),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    color: Colors.black),
+                overflow: TextOverflow.fade,
+                softWrap: false),
+          ],
+        ),
       ),
     );
   }
 }
 
 class WidgetButtonListTile extends StatelessWidget {
-  final WelcomeController controller = Get.find<WelcomeController>();
+  final HomeController controller = Get.find<HomeController>();
 
   WidgetButtonListTile();
 
@@ -435,29 +447,26 @@ class CustomFullScreenDialog {
   }
 }
 
-PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
-  return PreferredSize(
-      preferredSize: Size.fromHeight(0.0),
-      child: LinearProgressIndicator(
-          minHeight: 6.0,
-          backgroundColor: Colors.white.withOpacity(0.3),
-          valueColor: new AlwaysStoppedAnimation<Color>(color)));
-}
 
+// ignore: must_be_immutable
 class WidgetSuggestionProduct extends StatelessWidget {
   //values
 
   bool searchButton = false;
   List<Product> list = <Product>[];
-  WidgetSuggestionProduct({required this.list, this.searchButton = false});
+  WidgetSuggestionProduct({ required this.list, this.searchButton = false});
 
   @override
   Widget build(BuildContext context) {
+
     // controllers
-    WelcomeController welcomeController = Get.find<WelcomeController>();
-    if (list.length == 0) return Container();
+    HomeController homeController = Get.find<HomeController>();
+
+    if (list.isEmpty) return Container();
+
     // values
     Color? colorAccent = Get.theme.textTheme.subtitle1?.color;
+    double radius = 32.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -466,10 +475,7 @@ class WidgetSuggestionProduct extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Text(
-            "sugerencias para ti",
-            style: Get.theme.textTheme.subtitle1,
-          ),
+          child: Text("sugerencias para vos",style: Get.theme.textTheme.subtitle1),
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -479,25 +485,20 @@ class WidgetSuggestionProduct extends StatelessWidget {
             !searchButton
                 ? Container()
                 : InkWell(
-                    onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
-                        arguments: {'id': ''}),
+                    onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id': ''}),
                     borderRadius: BorderRadius.circular(50),
                     child: Padding(
                       padding: const EdgeInsets.all(5.0),
                       child: FadeInLeft(
                         child: CircleAvatar(
-                            child: CircleAvatar(
-                                child: Icon(Icons.search, color: colorAccent),
-                                radius: 28,
-                                backgroundColor:
-                                    Get.theme.scaffoldBackgroundColor),
-                            radius: 30,
-                            backgroundColor: colorAccent),
+                            radius: radius,
+                            backgroundColor: colorAccent,
+                            child: CircleAvatar(radius: radius-2,backgroundColor:Get.theme.scaffoldBackgroundColor,child: Icon(Icons.search, color: colorAccent))),
                       ),
                     ),
                   ),
-            Container(
-                width: 200,
+            SizedBox(
+                width: Get.size.width,
                 height: 100,
                 child: Center(
                   child: ListView.builder(
@@ -508,8 +509,7 @@ class WidgetSuggestionProduct extends StatelessWidget {
                         return Align(
                           widthFactor: 0.5,
                           child: InkWell(
-                            onTap: () => welcomeController.toProductView(
-                                porduct: list[index]),
+                            onTap: () => Utils().toProductEdit(productCatalogue: list[index].convertProductCatalogue()),
                             borderRadius: BorderRadius.circular(50),
                             child: Padding(
                               padding: const EdgeInsets.all(5.0),
@@ -517,34 +517,21 @@ class WidgetSuggestionProduct extends StatelessWidget {
                                 child: CircleAvatar(
                                     backgroundColor: colorAccent,
                                     foregroundColor: colorAccent,
+                                    radius: radius,
                                     child: CircleAvatar(
                                         backgroundColor: Colors.grey[100],
                                         foregroundColor: Colors.grey[100],
+                                        radius: radius-2,
                                         child: ClipRRect(
+                                          borderRadius:BorderRadius.circular(50),
                                           child: CachedNetworkImage(
-                                            fadeInDuration:
-                                                Duration(milliseconds: 200),
+                                            fadeInDuration: const Duration( milliseconds: 200),
                                             fit: BoxFit.cover,
                                             imageUrl: list[index].image,
-                                            placeholder: (context, url) =>
-                                                CircleAvatar(
-                                                    backgroundColor:
-                                                        Colors.grey[100],
-                                                    foregroundColor:
-                                                        Colors.grey[100]),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    CircleAvatar(
-                                                        backgroundColor:
-                                                            Colors.grey[100],
-                                                        foregroundColor:
-                                                            Colors.grey[100]),
+                                            placeholder: (context, url) =>CircleAvatar(backgroundColor:Colors.grey[100],foregroundColor:Colors.grey[100]),
+                                            errorWidget:(context, url, error) =>CircleAvatar(backgroundColor:Colors.grey[100],foregroundColor:Colors.grey[100]),
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                        ),
-                                        radius: 28),
-                                    radius: 30),
+                                        ))),
                               ),
                             ),
                           ),
@@ -557,3 +544,4 @@ class WidgetSuggestionProduct extends StatelessWidget {
     );
   }
 }
+

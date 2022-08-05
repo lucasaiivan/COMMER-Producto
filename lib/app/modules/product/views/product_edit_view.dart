@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,23 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/modules/product/controllers/product_edit_controller.dart';
-import 'package:producto/app/services/database.dart';
+import 'package:producto/app/utils/functions.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
-import 'package:producto/app/utils/widgets_utils_app.dart' as utilsWidget;
 import 'package:search_page/search_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
-import '../../../utils/functions.dart';
+import '../../../models/catalogo_model.dart';
+import '../../../services/database.dart';
 
 class ProductEdit extends StatelessWidget {
   ProductEdit({Key? key}) : super(key: key);
 
   final ControllerProductsEdit controller = Get.find();
-  final Widget space = SizedBox(
+  final Widget space = const SizedBox(
     height: 16.0,
     width: 16.0,
   );
@@ -52,25 +50,27 @@ class ProductEdit extends StatelessWidget {
                   appBar: AppBar(
                     elevation: 0.0,
                     backgroundColor: Get.theme.scaffoldBackgroundColor,
-                    iconTheme:Theme.of(context).iconTheme.copyWith(color: colorAccent),
+                    iconTheme: Theme.of(context)
+                        .iconTheme
+                        .copyWith(color: colorAccent),
                     title: controller.getSaveIndicator
                         ? Text(controller.getTextAppBar,style: TextStyle(fontSize: 18.0, color: colorAccent))
-                        : Text(controller.getIsCatalogue ? 'Editar' : 'Nuevo',style: TextStyle(fontSize: 18.0, color: colorAccent)),
+                        : Text('Espere por favor...',style: TextStyle(fontSize: 18.0, color: colorAccent)),
                   ),
                   body: Center(
-                    child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Icon(Icons.wifi_off_rounded),
-                    ),
-                    Text('No hay internet'),
-                  ],
-                )),
+                      child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Icon(Icons.wifi_off_rounded),
+                      ),
+                      Text('No hay internet'),
+                    ],
+                  )),
                 );
               }
-              ;
+
               return scaffold(context: context);
             });
       },
@@ -84,17 +84,19 @@ class ProductEdit extends StatelessWidget {
     return AppBar(
       elevation: 0.0,
       backgroundColor: Get.theme.scaffoldBackgroundColor,
-      iconTheme:Theme.of(contextPrincipal).iconTheme.copyWith(color: colorAccent),
+      iconTheme:
+          Theme.of(contextPrincipal).iconTheme.copyWith(color: colorAccent),
       title: controller.getSaveIndicator
           ? Text(controller.getTextAppBar,style: TextStyle(fontSize: 18.0, color: colorAccent))
-          : Text(controller.getIsCatalogue ? 'Editar' : 'Nuevo',style: TextStyle(fontSize: 18.0, color: colorAccent)),
+          : Text(controller.itsInTheCatalogue ? 'Editar' : 'Nuevo',style: TextStyle(fontSize: 18.0, color: colorAccent)),
       actions: <Widget>[
         controller.getSaveIndicator
             ? Container()
-            : IconButton(
-                    icon: Icon(Icons.check), onPressed: controller.save),
+            : IconButton(icon: Icon(controller.itsInTheCatalogue ? Icons.check : Icons.add),onPressed: controller.save),
       ],
-      bottom: controller.getSaveIndicator ? linearProgressBarApp() : null,
+      bottom: controller.getSaveIndicator
+          ? ComponentApp.linearProgressBarApp()
+          : null,
     );
   }
 
@@ -102,6 +104,7 @@ class ProductEdit extends StatelessWidget {
     return Scaffold(
       appBar: appBar(contextPrincipal: context),
       body: ListView(
+        scrollDirection: Axis.vertical,
         children: [
           widgetsImagen(),
           widgetFormEditText(),
@@ -126,7 +129,7 @@ class ProductEdit extends StatelessWidget {
               : controller.getNewProduct || controller.getEditModerator
                   ? IconButton(
                       onPressed: controller.getLoadImageCamera,
-                      icon: Icon(Icons.camera_alt, color: Colors.grey))
+                      icon: const Icon(Icons.camera_alt, color: Colors.grey))
                   : Container(),
           //  image
           controller.loadImage(),
@@ -136,7 +139,7 @@ class ProductEdit extends StatelessWidget {
               : controller.getNewProduct || controller.getEditModerator
                   ? IconButton(
                       onPressed: controller.getLoadImageGalery,
-                      icon: Icon(Icons.image, color: Colors.grey))
+                      icon: const Icon(Icons.image, color: Colors.grey))
                   : Container(),
         ],
       ),
@@ -145,96 +148,72 @@ class ProductEdit extends StatelessWidget {
 
   Widget widgetFormEditText() {
     return Container(
-      padding: EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+
+          // text : código del producto
+          controller.getProduct.code != ""
+              ? Opacity(
+                  opacity: 0.8,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        controller.getProduct.verified?const Icon(Icons.verified_rounded,color: Colors.blue, size: 20):const Icon(Icons.qr_code_2_rounded, size: 20),
+                        const SizedBox(width: 5),
+                        Text(controller.getProduct.code,style: const TextStyle(height: 1,fontSize: 14,fontWeight: FontWeight.normal)),
+                      ],
+                    ),
+                  ),
+                )
+              : Container(),
+
           space,
           TextField(
-            enabled: controller.getSaveIndicator
-                ? false
-                : controller.getEditModerator || controller.getNewProduct,
+            enabled: controller.getSaveIndicator? false: controller.getEditModerator || controller.getNewProduct,
             minLines: 1,
             maxLines: 5,
             keyboardType: TextInputType.multiline,
             onChanged: (value) => controller.getProduct.description = value,
             decoration: InputDecoration(
                 disabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                  borderSide: BorderSide(color: controller.getProduct.description == ''?Colors.grey:Get.theme.scaffoldBackgroundColor),
                 ),
-                border: OutlineInputBorder(),
-                labelText: "Descripción"),
+                border: const OutlineInputBorder(),
+                labelText: "Descripción del producto"),
             textInputAction: TextInputAction.done,
-            controller: controller.controllerTextEdit_descripcion,
+            controller: controller.controllerTextEditDescripcion,
           ),
           //TODO: eliminar para desarrrollo
-          // widget debug
           TextButton(
               onPressed: () async {
-                String clave = controller.controllerTextEdit_descripcion.text;
-                String url ="https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
-                if (await canLaunch(url)) {
-                  await launch(url);
-                } else {
-                  throw 'Could not launch $url';
-                }
+                String clave = controller.controllerTextEditDescripcion.text;
+                Uri uri = Uri.parse("https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa");
+                if (await canLaunchUrl(uri)) { await launchUrl(uri,mode: LaunchMode.externalApplication);} else {throw 'Could not launch $uri';}
               },
-              child: Text('Buscar descripción en Google')),
+              child: const Text('Buscar descripción en Google')),
           TextButton(
               onPressed: () async {
                 String clave = controller.getProduct.code;
-                String url ="https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa";
-                if (await canLaunch(url)) {
-                  await launch(url);
-                } else {
-                  throw 'Could not launch $url';
-                }
+                Uri uri = Uri.parse("https://www.google.com/search?q=$clave&source=lnms&tbm=isch&sa");
+                if (await canLaunchUrl(uri)) { await launchUrl(uri,mode: LaunchMode.externalApplication);} else {throw 'Could not launch $uri';}
               },
-              child: Text('Buscar en código Google')),
+              child: const Text('Buscar en código Google')),
           space,
-          // fin widget debug
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () {
-                if (controller.getNewProduct || controller.getEditModerator) {
-                  controller.showModalSelectMarca();
-                }
-              },
-              child: controller.getMarkSelected.id == ''
-                  ? Text("Seleccionar marca")
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        controller.getMarkSelected.id == 'other'
-                            ? Container()
-                            : utilsWidget.viewCircleImage(
-                                size: 25,
-                                url: controller.getMarkSelected.image,
-                                texto: controller.getMarkSelected.name),
-                        controller.getMarkSelected.id == 'other'
-                            ? Container()
-                            : SizedBox(width: 8),
-                        Text(controller.getMarkSelected.name,
-                            style: TextStyle(
-                                color: controller.getNewProduct ||
-                                        controller.getEditModerator
-                                    ? null
-                                    : Colors.grey))
-                      ],
-                    ),
-              style: ButtonStyle(
-                  side: controller.getEditModerator || controller.getNewProduct
-                      ? null
-                      : MaterialStateProperty.all(
-                          BorderSide(color: Get.theme.scaffoldBackgroundColor)),
-                  padding: MaterialStateProperty.all<EdgeInsets>(
-                      EdgeInsets.all(16))),
-            ),
+          // textfield 'seleccionar marca'
+          textfielButton(
+            borderSideColor: controller.getMarkSelected.id == ''?Colors.grey:controller.getNewProduct?Colors.grey:Get.theme.scaffoldBackgroundColor,
+            textValue: controller.getMarkSelected.name,
+            labelText: controller.getMarkSelected.id == ''? 'seleccionar una marca': 'Marca',
+            onTap: controller.getNewProduct || controller.getEditModerator? controller.showModalSelectMarca : () {}
           ),
-          // buttons categoty
           !controller.getAccountAuth ? Container() : space,
-          !controller.getAccountAuth ? Container() : buttonsCategory(),
+          // textfield : seleccionar cátegoria
+          !controller.getAccountAuth? Container(): textfielButton(textValue: controller.getCategory.id == ''? '': controller.getCategory.name,labelText: controller.getCategory.id == ''? 'Seleccionar categoría': 'Categoría',onTap: controller.getSaveIndicator? () {}: SelectCategory.show,),
           space,
           // textfield prices
           !controller.getAccountAuth
@@ -245,235 +224,228 @@ class ProductEdit extends StatelessWidget {
                     TextField(
                       enabled: !controller.getSaveIndicator,
                       keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      onChanged: (value) =>
-                          controller.getProduct.purchasePrice = controller
-                              .controllerTextEdit_precio_compra.numberValue,
-                      decoration: InputDecoration(
+                          const TextInputType.numberWithOptions(decimal: true),
+                      onChanged: (value) => controller
+                              .getProduct.purchasePrice =
+                          controller.controllerTextEditPrecioCompra.numberValue,
+                      decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "Precio de compra"),
                       textInputAction: TextInputAction.next,
                       //style: textStyle,
-                      controller: controller.controllerTextEdit_precio_compra,
+                      controller: controller.controllerTextEditPrecioCompra,
                     ),
                     space,
                     TextField(
                       enabled: !controller.getSaveIndicator,
                       keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
+                          const TextInputType.numberWithOptions(decimal: true),
                       onChanged: (value) => controller.getProduct.salePrice =
-                          controller
-                              .controllerTextEdit_precio_venta.numberValue,
-                      decoration: InputDecoration(
+                          controller.controllerTextEditPrecioVenta.numberValue,
+                      decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "Precio de venta"),
                       textInputAction: TextInputAction.done,
                       //style: textStyle,
-                      controller: controller.controllerTextEdit_precio_venta,
+                      controller: controller.controllerTextEditPrecioVenta,
+                    ),
+                    space,
+                    CheckboxListTile(
+                      enabled: controller.getSaveIndicator ? false : true,
+                      checkColor: Colors.white,
+                      activeColor: Colors.amber,
+                      value: controller.getProduct.favorite,
+                      title: const Text('Favorito'),
+                      onChanged: (value) {
+                        if (!controller.getSaveIndicator) {
+                          controller.setFavorite = value ?? false;
+                        }
+                      },
+                    ),
+                    space,
+                    // control stock
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      color: controller.getProduct.stock?Colors.blue.withOpacity(0.07):Colors.transparent,
+                      child: Column(
+                        children: [
+                          CheckboxListTile(
+                            enabled: controller.getSaveIndicator ? false : true,
+                            checkColor: Colors.white,
+                            activeColor: Colors.blue,
+                            value: controller.getProduct.stock,
+                            title: const Text('Control de stock'),
+                            onChanged: (value) {
+                              if (!controller.getSaveIndicator) {
+                                controller.setStock = value ?? false;
+                              }
+                            },
+                          ),
+                          controller.getProduct.stock ? space : Container(),
+                          controller.getProduct.stock
+                              ? Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                child: TextField(
+                                  enabled: !controller.getSaveIndicator,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) =>
+                                      controller.getProduct.quantityStock =
+                                          int.parse(controller
+                                              .controllerTextEditQuantityStock
+                                              .text),
+                                  decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: "Stock"),
+                                  textInputAction: TextInputAction.done,
+                                  //style: textStyle,
+                                  controller:
+                                      controller.controllerTextEditQuantityStock,
+                                ),
+                              )
+                              : Container(),
+                          controller.getProduct.stock ? space : Container(),
+                          controller.getProduct.stock
+                              ? Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+                                child: TextField(
+                                  enabled: !controller.getSaveIndicator,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) =>controller.getProduct.alertStock = int.parse(controller.controllerTextEditAlertStock.text),
+                                  decoration: const InputDecoration(border: OutlineInputBorder(),labelText: "Alerta de stock"),
+                                  textInputAction: TextInputAction.done,
+                                  //style: textStyle,
+                                  controller: controller.controllerTextEditAlertStock,
+                                ),
+                              )
+                              : Container(),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-          !controller.getNewProduct ? Container() : space,
-          controller.getProduct.code != ""
-              ? Opacity(
-                  opacity: 0.8,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(Icons.qr_code_2_rounded, size: 14),
-                        SizedBox(width: 5),
-                        Text(controller.getProduct.code,
-                            style: TextStyle(
-                                height: 1,
-                                fontSize: 12,
-                                fontWeight: FontWeight.normal)),
-                      ],
-                    ),
-                  ),
-                )
-              : Container(),
-          space,
-          controller.getSaveIndicator
-              ? Container()
-              : controller.getIsCatalogue
-                  ? Container(
+          // text : marca de tiempo de la ultima actualización del documento
+          controller.getNewProduct || !controller.itsInTheCatalogue ? Container() :  Padding(
+            padding: const EdgeInsets.only(top: 30),
+            //child: Text('Actualizado ${}'),
+            child: Opacity(opacity: 0.5,child: Center(child: Text('Actualizado ${Publications.getFechaPublicacion(controller.getProduct.upgrade.toDate(), Timestamp.now().toDate()).toLowerCase()}'))),
+          ),
+          // button : elminar el documento
+          controller.getSaveIndicator? Container(): 
+            controller.itsInTheCatalogue? Container(
                       width: double.infinity,
-                      padding: EdgeInsets.only(
-                          bottom: 12, top: 40, left: 0, right: 0),
-                      child: button(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 5),
-                          colorAccent: Colors.white,
-                          colorButton: Colors.red,
-                          icon: Icon(Icons.delete),
-                          text: 'Eliminar de mi catálogo',
-                          onPressed: controller.showDialogDelete),
+                      padding: const EdgeInsets.only(bottom: 12, top: 40, left: 0, right: 0),
+                      child: button(padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),colorAccent: Colors.white,colorButton: Colors.red.shade400,icon: const Icon(Icons.delete,color: Colors.white),text: 'Eliminar de mi catálogo', onPressed: controller.showDialogDelete),
                     )
                   : Container(),
+            controller.widgetTextButtonAddProduct,
+            const SizedBox(height: 20.0),
+          
           //TODO: eliminar para desarrrollo
           /* OPCIONES PARA DESARROLLADOR - ELIMINAR ESTE CÓDIGO PARA PRODUCCION */
-          controller.getNewProduct
-              ? Container()
-              : Column(
-                  children: [
-                    SizedBox(height: 20.0),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: Divider(
-                          height: 3.0,
-                          endIndent: 12.0,
-                          indent: 12.0,
-                          thickness: 2,
-                        )),
-                        Text("OPCIONES PARA MODERADOR"),
-                        Expanded(
-                            child: Divider(
-                                thickness: 2,
-                                height: 3.0,
-                                endIndent: 12.0,
-                                indent: 12.0))
-                      ],
-                    ),
-                    SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
-                    FilterChip(
-                      labelStyle: TextStyle(color: Colors.white),
-                      checkmarkColor: Colors.white,
-                      selectedColor: controller.getSaveIndicator
-                          ? null
-                          : controller.getEditModerator
-                              ? Colors.amber
-                              : Colors.grey,
-                      selected: controller.getProduct.favorite,
-                      label: Text(controller.getProduct.favorite
-                          ? 'Quitar de destacado'
-                          : 'Agregar a destacado'),
-                      onSelected: (bool value) {
-                        if (controller.getEditModerator) {
-                          if (!controller.getSaveIndicator) {
-                            controller.isFavorite();
-                          }
-                        }
-                      },
-                    ),
-                    SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
-                    FilterChip(
-                      labelStyle: TextStyle(color: Colors.white),
-                      checkmarkColor: Colors.white,
-                      selectedColor: controller.getSaveIndicator
-                          ? null
-                          : controller.getEditModerator
-                              ? Colors.blue
-                              : Colors.grey,
-                      selected: controller.getProduct.verified,
-                      label: Text(controller.getProduct.verified
-                          ? 'Quitar de Verificado'
-                          : 'Verificar'),
-                      onSelected: (bool value) {
-                        if (controller.getEditModerator) {
-                          if (!controller.getSaveIndicator) {
-                            controller.checkProduct();
-                          }
-                        }
-                      },
-                    ),
-                    SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
-                    controller.getSaveIndicator
-                        ? Container()
-                        : button(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 5),
-                            icon: Icon(Icons.security, color: Colors.white),
-                            onPressed: () {
-                              if (controller.getEditModerator) {
-                                controller.showDialogSaveOPTDeveloper();
-                              }
-                              controller.setEditModerator =
-                                  !controller.getEditModerator;
-                            },
-                            colorAccent: Colors.white,
-                            colorButton: controller.getEditModerator
-                                ? Colors.green
-                                : Colors.orange,
-                            text: controller.getEditModerator
-                                ? 'Actualizar documento'
-                                : "Editar documento",
-                          ),
-                    SizedBox(height: 20.0),
-                    controller.getSaveIndicator
-                        ? Container()
-                        : button(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 5),
-                            icon: Icon(Icons.security, color: Colors.white),
-                            onPressed: controller.showDialogDeleteOPTDeveloper,
-                            colorAccent: Colors.white,
-                            colorButton: Colors.red,
-                            text: "Eliminar documento",
-                          ),
-                    SizedBox(height: 50.0),
-                  ],
-                  // fin widget debug
-                ),
-        ],
+          widgetForModerator,
+          ]             ,
       ),
     );
   }
 
   /* WIDGETS COMPONENT */
-  Widget buttonsCategory() {
-    // Text of Button
-    Text textCategory = Text(
-        controller.getCategory.id == ''
-            ? 'Categoría'
-            : controller.getCategory.name,
-        maxLines: 1,
-        style: TextStyle(
-            color: controller.getCategory.id == '' ? null : Colors.grey,
-            overflow: TextOverflow.ellipsis));
-    Text textSubcategory = Text(
-        controller.getSubcategory.id == ''
-            ? 'Subcategoría'
-            : controller.getSubcategory.name,
-        maxLines: 1,
-        style: TextStyle(
-            color: controller.getSubcategory.id == '' ? null : Colors.grey,
-            overflow: TextOverflow.ellipsis));
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          flex: 1,
-          child: OutlinedButton(
-            onPressed: controller.getSaveIndicator ? null : SelectCategory.show,
-            child: textCategory,
-            style: ButtonStyle(
-                padding:
-                    MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(16))),
-          ),
-        ),
-        SizedBox(width: 5),
-        Expanded(
-          flex: 1,
-          child: OutlinedButton(
-            onPressed: controller.getSaveIndicator
-                ? null
-                : controller.getCategory.id == ''
-                    ? null
-                    : SelectSubCategoria.show,
-            child: textSubcategory,
-            style: ButtonStyle(
-                padding:
-                    MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(16))),
-          ),
-        )
-      ],
+Widget get widgetForModerator{
+  // TODO : delete release
+  return Column(
+                  children: [
+                    const SizedBox(height: 20.0),
+                    Row(
+                      children: const [
+                        Expanded(child: Divider(height: 3.0,endIndent: 12.0,indent: 12.0,thickness: 2)),
+                        Text("OPCIONES PARA MODERADOR"),
+                        Expanded(child: Divider(thickness: 2,height: 3.0, endIndent: 12.0,indent: 12.0))
+                      ],
+                    ),
+                    SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
+                    CheckboxListTile(
+                      enabled: controller.getEditModerator ? controller.getSaveIndicator? false: true: false,
+                      checkColor: Colors.white,
+                      activeColor: Colors.blue,
+                      value: controller.getProduct.outstanding,
+                      title: const Text('Detacado'),
+                      onChanged: (value) {
+                        if (!controller.getSaveIndicator) {
+                          controller.setOutstanding(value: value ?? false);
+                        }
+                      },
+                    ),
+                    SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
+                    CheckboxListTile(
+                      enabled: controller.getEditModerator
+                          ? controller.getSaveIndicator
+                              ? false
+                              : true
+                          : false,
+                      checkColor: Colors.white,
+                      activeColor: Colors.blue,
+                      value: controller.getProduct.verified,
+                      title: const Text('Verificado'),
+                      onChanged: (value) {
+                        if (controller.getEditModerator) {
+                          if (!controller.getSaveIndicator) {
+                            controller.setCheckVerified(value: value ?? false);
+                          }
+                        }
+                      },
+                    ),
+                    SizedBox(height: !controller.getSaveIndicator ? 20.0 : 0.0),
+                    controller.getSaveIndicator
+                        ? Container()
+                        : button(
+                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                            icon:const Icon(Icons.security, color: Colors.white),
+                            onPressed: () {
+                              if (controller.getEditModerator) {controller.saveProductPublic();}
+                              controller.setEditModerator = !controller.getEditModerator;
+                            },
+                            colorAccent: Colors.white,
+                            colorButton: controller.getEditModerator? Colors.green: Colors.orange,
+                            text: controller.getEditModerator? controller.getNewProduct?'Crear documento':'Actualizar documento': "Editar documento",
+                          ),
+                    const SizedBox(height: 20.0),
+                    controller.getSaveIndicator || controller.getNewProduct || !controller.getEditModerator
+                        ? Container()
+                        : button(
+                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                            icon:const Icon(Icons.security, color: Colors.white),
+                            onPressed: controller.showDialogDeleteOPTDeveloper,
+                            colorAccent: Colors.white,
+                            colorButton: Colors.red,
+                            text: "Eliminar documento",
+                          ),
+                    // text : marca de tiempo de la ultima actualización del documento
+                    controller.getNewProduct?Container():Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Opacity(opacity: 0.5,child: Center(child: Text('Creación ${Publications.getFechaPublicacion(controller.getProduct.documentCreation.toDate(), Timestamp.now().toDate()).toLowerCase()}'))),
+                    ),
+                    const SizedBox(height: 50.0),
+                  ],
+                  // fin widget debug
+                );
+}
+  Widget textfielButton(
+      {required String labelText,
+      String textValue = '',
+      Color borderSideColor=Colors.grey,
+      required Function() onTap}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(5),
+      onTap: onTap,
+      child: TextField(
+        enabled: false,
+        controller: TextEditingController(text: textValue),
+        decoration: InputDecoration(
+            disabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: borderSideColor.withOpacity(0.3)),
+            ),
+            border: const OutlineInputBorder(),
+            labelText: labelText),
+      ),
     );
   }
 
@@ -489,14 +461,14 @@ class ProductEdit extends StatelessWidget {
     return FadeInRight(
         child: Padding(
       padding: padding,
-      child: Container(
+      child: SizedBox(
         width: width,
         child: ElevatedButton.icon(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5)),
-              padding: EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(12.0),
               primary: colorButton,
               textStyle: TextStyle(color: colorAccent)),
           icon: icon,
@@ -509,9 +481,11 @@ class ProductEdit extends StatelessWidget {
 
 // category
 class SelectCategory extends StatefulWidget {
+  // ignore: prefer_const_constructors_in_immutables
   SelectCategory();
 
   @override
+  // ignore: library_private_types_in_public_api
   _SelectCategoryState createState() => _SelectCategoryState();
 
   static void show() {
@@ -522,9 +496,7 @@ class SelectCategory extends StatefulWidget {
       backgroundColor: Get.theme.scaffoldBackgroundColor,
       enableDrag: true,
       isDismissible: true,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
     );
   }
 }
@@ -535,7 +507,7 @@ class _SelectCategoryState extends State<SelectCategory> {
   // Variables
   final Category categoriaSelected = Category();
   bool crearCategoria = false, loadSave = false;
-  final WelcomeController welcomeController = Get.find();
+  final HomeController welcomeController = Get.find();
   final ControllerProductsEdit controllerProductsEdit = Get.find();
 
   @override
@@ -552,109 +524,52 @@ class _SelectCategoryState extends State<SelectCategory> {
 
   @override
   Widget build(BuildContext buildContext) {
-    if (welcomeController.getCatalogueCategoryList.length == 0) {
-      return ListTile(
-        onTap: () => showDialogSetCategoria(categoria: Category()),
-        title: Text('Crear categoría', style: TextStyle(fontSize: 18)),
-        trailing: Icon(Icons.add),
-      );
-    }
 
-    return Obx(
-      () => ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 15.0),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Categoría'),
+        actions: [
+          IconButton(icon: const Icon(Icons.add),onPressed: () => showDialogSetCategoria(categoria: Category())),
+        ],
+      ),
+      body:welcomeController.getCatalogueCategoryList.isEmpty?const Center(child: Text('Sin cátegorias'),): ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 15.0),
         shrinkWrap: true,
         itemCount: welcomeController.getCatalogueCategoryList.length,
         itemBuilder: (BuildContext context, int index) {
-          Category categoria =
-              welcomeController.getCatalogueCategoryList[index];
-          MaterialColor color = Utils.getRandomColor();
-          return index == 0
-              ? Column(
+          //  values
+          Category categoria =welcomeController.getCatalogueCategoryList[index];
+          
+          return Column(
                   children: <Widget>[
-                    Row(
-                      children: [
-                        Expanded(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child:
-                              Text('Categoría', style: TextStyle(fontSize: 18)),
-                        )),
-                        IconButton(
-                            icon: Icon(Icons.add),
-                            padding: const EdgeInsets.all(20.0),
-                            onPressed: () =>
-                                showDialogSetCategoria(categoria: Category()))
-                      ],
-                    ),
                     ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                      leading: CircleAvatar(
-                        backgroundColor: color.withOpacity(0.1),
-                        radius: 24.0,
-                        child: Text(categoria.name.substring(0, 1),
-                            style: TextStyle(
-                                fontSize: 18.0,
-                                color: color,
-                                fontWeight: FontWeight.bold)),
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                       dense: true,
-                      title: Text(categoria.name),
-                      onTap: () {
-                        controllerProductsEdit.setCategory = categoria;
-                        controllerProductsEdit.updateAll();
-                        Get.back();
-                        SelectSubCategoria.show();
-                      },
-                      trailing: popupMenuItemCategoria(categoria: categoria),
-                    ),
-                    Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                  ],
-                )
-              : Column(
-                  children: <Widget>[
-                    Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                    ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                      leading: CircleAvatar(
-                        backgroundColor: color.withOpacity(0.1),
-                        radius: 24.0,
-                        child: categoria.name != ""
-                            ? Text(categoria.name.substring(0, 1),
-                                style: TextStyle(
-                                    fontSize: 18.0,
-                                    color: color,
-                                    fontWeight: FontWeight.bold))
-                            : Text("C"),
-                      ),
-                      dense: true,
-                      title: Text(categoria.name),
+                      title: Text(categoria.name.substring(0, 1).toUpperCase() + categoria.name.substring(1)),
                       onTap: () {
                         controllerProductsEdit.setCategory = categoria;
                         controllerProductsEdit.setSubcategory = Category();
                         Get.back();
-                        SelectSubCategoria.show();
                       },
                       trailing: popupMenuItemCategoria(categoria: categoria),
                     ),
+                    const Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
                   ],
                 );
         },
       ),
     );
+
   }
 
   Widget popupMenuItemCategoria({required Category categoria}) {
-    final WelcomeController controller = Get.find();
+    final HomeController controller = Get.find();
 
-    return new PopupMenuButton(
-      icon: Icon(Icons.more_vert),
+    return PopupMenuButton(
+      icon: const Icon(Icons.more_vert),
       itemBuilder: (_) => <PopupMenuItem<String>>[
-        new PopupMenuItem<String>(child: const Text('Editar'), value: 'editar'),
-        new PopupMenuItem<String>(
-            child: const Text('Eliminar'), value: 'eliminar'),
+        const PopupMenuItem<String>(value: 'editar', child: Text('Editar')),
+        const PopupMenuItem<String>(value: 'eliminar', child: Text('Eliminar')),
       ],
       onSelected: (value) async {
         switch (value) {
@@ -665,29 +580,27 @@ class _SelectCategoryState extends State<SelectCategory> {
             await showDialog<String>(
               context: context,
               builder: (context) {
-                return new AlertDialog(
+                return AlertDialog(
                   contentPadding: const EdgeInsets.all(16.0),
-                  content: new Row(
-                    children: <Widget>[
-                      new Expanded(
-                        child: new Text(
-                            "¿Desea continuar eliminando esta categoría?"),
-                      )
+                  content: Row(
+                    children: const <Widget>[
+                      Expanded(child:Text("¿Desea continuar eliminando esta categoría?"))
                     ],
                   ),
                   actions: <Widget>[
-                    new TextButton(
+                    TextButton(
                         child: const Text('CANCEL'),
                         onPressed: () {
                           Navigator.pop(context);
                         }),
-                    new TextButton(
-                        child: loadSave == false
-                            ? Text("ELIMINAR")
-                            : CircularProgressIndicator(),
+                    TextButton(
+                        child: loadSave == false? const Text("ELIMINAR"): const CircularProgressIndicator(),
                         onPressed: () async {
-                          controller.categoryDelete(idCategory: categoria.id);
-                          Navigator.pop(context);
+                          controller.categoryDelete(idCategory: categoria.id).then((value) {
+                              setState(() {
+                                Get.back();
+                              });
+                            });
                         })
                   ],
                 );
@@ -700,7 +613,7 @@ class _SelectCategoryState extends State<SelectCategory> {
   }
 
   showDialogSetCategoria({required Category categoria}) async {
-    final WelcomeController controller = Get.find();
+    final HomeController controller = Get.find();
     bool loadSave = false;
     bool newProduct = false;
     TextEditingController textEditingController =
@@ -708,319 +621,43 @@ class _SelectCategoryState extends State<SelectCategory> {
 
     if (categoria.id == '') {
       newProduct = true;
-      categoria = new Category();
-      categoria.id = new DateTime.now().millisecondsSinceEpoch.toString();
+      categoria =  Category();
+      categoria.id =  DateTime.now().millisecondsSinceEpoch.toString();
     }
 
     await showDialog<String>(
       context: context,
       builder: (context) {
-        return new AlertDialog(
+        return  AlertDialog(
           contentPadding: const EdgeInsets.all(16.0),
-          content: new Row(
+          content:  Row(
             children: <Widget>[
-              new Expanded(
-                child: new TextField(
+              Expanded(
+                child:  TextField(
                   controller: textEditingController,
                   autofocus: true,
-                  decoration: new InputDecoration(
-                      labelText: 'Categoria', hintText: 'Ej. golosinas'),
+                  decoration: const InputDecoration( labelText: 'Categoria', hintText: 'Ej. golosinas'),
                 ),
               )
             ],
           ),
           actions: <Widget>[
-            new TextButton(
+            TextButton(
                 child: const Text('CANCEL'),
                 onPressed: () {
                   Get.back();
                 }),
-            new TextButton(
-                child: loadSave == false
-                    ? Text(newProduct ? 'GUARDAR' : "ACTUALIZAR")
-                    : CircularProgressIndicator(),
+            TextButton( child: loadSave == false? Text(newProduct ? 'GUARDAR' : "ACTUALIZAR"): const CircularProgressIndicator(),
                 onPressed: () async {
                   if (textEditingController.text != '') {
                     // set
                     categoria.name = textEditingController.text;
                     setState(() => loadSave = true);
                     // save
-                    await controller
-                        .categoryUpdate(categoria: categoria)
-                        .whenComplete(() {
+                    await controller.categoryUpdate(categoria: categoria).whenComplete(() {
                       welcomeController.getCatalogueCategoryList.add(categoria);
-                      setState(() {
-                        Get.back();
-                      });
-                    }).catchError((error, stackTrace) =>
-                            setState(() => loadSave = false));
-                  }
-                })
-          ],
-        );
-      },
-    );
-  }
-}
-
-// subcategory
-class SelectSubCategoria extends StatefulWidget {
-  SelectSubCategoria();
-
-  @override
-  _SelectSubCategoriaState createState() => _SelectSubCategoriaState();
-
-  static void show() {
-    Widget widget = SelectSubCategoria();
-    // muestre la hoja inferior modal de getx
-    Get.bottomSheet(
-      widget,
-      backgroundColor: Get.theme.scaffoldBackgroundColor,
-      enableDrag: true,
-      isDismissible: true,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-    );
-  }
-}
-
-class _SelectSubCategoriaState extends State<SelectSubCategoria> {
-  _SelectSubCategoriaState();
-
-  // Variables
-  late Category categoriaSelected;
-  bool crearSubCategoria = false, loadSave = false;
-  final ControllerProductsEdit controllerProductsEdit = Get.find();
-
-  @override
-  void initState() {
-    categoriaSelected = controllerProductsEdit.getCategory;
-    crearSubCategoria = false;
-    loadSave = false;
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext buildContext) {
-    if (categoriaSelected.subcategories.length == 0) {
-      return ListTile(
-        title: Text('Crear subategoría', style: TextStyle(fontSize: 18)),
-        trailing: Icon(Icons.add),
-        onTap: () => showDialogSetSubcategoria(subcategoria: Category()),
-      );
-    }
-
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 15.0),
-      shrinkWrap: true,
-      itemCount: categoriaSelected.subcategories.length,
-      itemBuilder: (BuildContext _, int index) {
-        Category subcategoria = new Category(
-            id: categoriaSelected.subcategories.keys
-                .elementAt(index)
-                .toString(),
-            name: categoriaSelected.subcategories.values
-                .elementAt(index)
-                .toString());
-        MaterialColor colorIcon = Utils.getRandomColor();
-
-        return index == 0
-            ? Column(
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child:
-                            Text('Subategoría', style: TextStyle(fontSize: 18)),
-                      )),
-                      IconButton(
-                          icon: Icon(Icons.add),
-                          padding: const EdgeInsets.all(20.0),
-                          onPressed: () => showDialogSetSubcategoria(
-                              subcategoria: Category()))
-                    ],
-                  ),
-                  Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                  ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                    leading: CircleAvatar(
-                      backgroundColor: colorIcon.withOpacity(0.1),
-                      radius: 24.0,
-                      child: Text(subcategoria.name.substring(0, 1),
-                          style: TextStyle(
-                              fontSize: 18.0,
-                              color: colorIcon,
-                              fontWeight: FontWeight.bold)),
-                    ),
-                    dense: true,
-                    title: Text(subcategoria.name),
-                    onTap: () {
-                      controllerProductsEdit.setSubcategory = subcategoria;
-                      Get.back();
-                    },
-                    trailing:
-                        popupMenuItemSubcategoria(subcategoria: subcategoria),
-                  ),
-                  Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                ],
-              )
-            : Column(
-                children: <Widget>[
-                  ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                    leading: CircleAvatar(
-                      backgroundColor: colorIcon.withOpacity(0.1),
-                      radius: 24.0,
-                      child: subcategoria.name != ""
-                          ? Text(subcategoria.name.substring(0, 1),
-                              style: TextStyle(
-                                  fontSize: 18.0,
-                                  color: colorIcon,
-                                  fontWeight: FontWeight.bold))
-                          : Text("C"),
-                    ),
-                    dense: true,
-                    title: Text(subcategoria.name),
-                    onTap: () {
-                      controllerProductsEdit.setSubcategory = subcategoria;
-                      controllerProductsEdit.updateAll();
-                      Get.back();
-                    },
-                    trailing:
-                        popupMenuItemSubcategoria(subcategoria: subcategoria),
-                  ),
-                  Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
-                ],
-              );
-      },
-    );
-  }
-
-  Widget popupMenuItemSubcategoria({required Category subcategoria}) {
-    final WelcomeController controller = Get.find();
-
-    return new PopupMenuButton(
-      icon: Icon(Icons.more_vert),
-      itemBuilder: (_) => <PopupMenuItem<String>>[
-        new PopupMenuItem<String>(child: const Text('Editar'), value: 'editar'),
-        new PopupMenuItem<String>(
-            child: const Text('Eliminar'), value: 'eliminar'),
-      ],
-      onSelected: (value) async {
-        switch (value) {
-          case "editar":
-            showDialogSetSubcategoria(subcategoria: subcategoria);
-            break;
-          case "eliminar":
-            await showDialog<String>(
-              context: context,
-              builder: (context) {
-                return new AlertDialog(
-                  contentPadding: const EdgeInsets.all(16.0),
-                  content: new Row(
-                    children: <Widget>[
-                      new Expanded(
-                        child: new Text(
-                            "¿Desea continuar eliminando esta subategoría?"),
-                      )
-                    ],
-                  ),
-                  actions: <Widget>[
-                    new TextButton(
-                        child: const Text('CANCEL'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
-                    new TextButton(
-                        child: loadSave == false
-                            ? Text("ELIMINAR")
-                            : CircularProgressIndicator(),
-                        onPressed: () async {
-                          controller.getCategorySelect.subcategories
-                              .remove(subcategoria.id);
-                          // save
-                          await controller
-                              .categoryUpdate(
-                                  categoria: controller.getCategorySelect)
-                              .whenComplete(() => Navigator.pop(context))
-                              .catchError((error, stackTrace) => setState(() {
-                                    loadSave = false;
-                                  }));
-                        })
-                  ],
-                );
-              },
-            );
-            break;
-        }
-      },
-    );
-  }
-
-  showDialogSetSubcategoria({required Category subcategoria}) async {
-    final WelcomeController controller = Get.find();
-    bool loadSave = false;
-    bool newProduct = false;
-    TextEditingController textEditingController =
-        TextEditingController(text: subcategoria.name);
-
-    if (subcategoria.id == '') {
-      newProduct = true;
-      subcategoria = new Category();
-      subcategoria.id = new DateTime.now().millisecondsSinceEpoch.toString();
-    }
-
-    await showDialog<String>(
-      context: context,
-      builder: (context) {
-        return new AlertDialog(
-          contentPadding: const EdgeInsets.all(16.0),
-          content: new Row(
-            children: <Widget>[
-              new Expanded(
-                child: new TextField(
-                  controller: textEditingController,
-                  autofocus: true,
-                  decoration: new InputDecoration(
-                      labelText: 'Subcategoría', hintText: 'Ej. golosinas'),
-                ),
-              )
-            ],
-          ),
-          actions: <Widget>[
-            new TextButton(
-                child: const Text('CANCEL'),
-                onPressed: () {
-                  Get.back();
-                }),
-            new TextButton(
-                child: loadSave == false
-                    ? Text(newProduct ? 'GUARDAR' : "ACTUALIZAR")
-                    : CircularProgressIndicator(),
-                onPressed: () async {
-                  if (textEditingController.text != '') {
-                    // set
-                    subcategoria.name = textEditingController.text;
-                    controllerProductsEdit.getCategory
-                        .subcategories[subcategoria.id] = subcategoria.name;
-                    setState(() => loadSave = true);
-                    // save
-                    await controller
-                        .categoryUpdate(
-                            categoria: controllerProductsEdit.getCategory)
-                        .whenComplete(() => Get.back())
-                        .catchError((error, stackTrace) =>
-                            setState(() => loadSave = false));
+                      setState(() {Get.back();});
+                    }).catchError((error, stackTrace) =>setState(() => loadSave = false));
                   }
                 })
           ],
@@ -1065,10 +702,10 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
       children: [
         widgetAdd(),
         Expanded(
-          child: list.length == 0
+          child: list.isEmpty
               ? widgetAnimLoad()
               : ListView.builder(
-                  padding: EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(bottom: 12),
                   shrinkWrap: true,
                   itemCount: list.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -1077,19 +714,18 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
                       return Column(
                         children: [
                           getWidgetOptionOther(),
-                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
-                          controllerProductsEdit.getUltimateSelectionMark.id =='' ||controllerProductsEdit.getUltimateSelectionMark.id =='other'
-                            ? Container(): listTile(marcaSelect: controllerProductsEdit.getUltimateSelectionMark),
-                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                          const Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                          controllerProductsEdit.getUltimateSelectionMark.id =='' ||controllerProductsEdit.getUltimateSelectionMark.id =='other'? Container(): listTile(marcaSelect: controllerProductsEdit.getUltimateSelectionMark),
+                          const Divider(endIndent: 12.0, indent: 12.0, height: 0),
                           listTile(marcaSelect: marcaSelect),
-                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                          const Divider(endIndent: 12.0, indent: 12.0, height: 0),
                         ],
                       );
                     }
                     return Column(
                       children: <Widget>[
                         listTile(marcaSelect: marcaSelect),
-                        Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                        const Divider(endIndent: 12.0, indent: 12.0, height: 0),
                       ],
                     );
                   },
@@ -1107,44 +743,44 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Shimmer.fromColors(
-              child: Card(child: Container(width: double.infinity, height: 50)),
               highlightColor: Colors.grey.withOpacity(0.01),
-              baseColor: Get.theme.scaffoldBackgroundColor),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(child: SizedBox(width: double.infinity, height: 50))),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Shimmer.fromColors(
-              child: Card(child: Container(width: double.infinity, height: 50)),
               highlightColor: Colors.grey.withOpacity(0.01),
-              baseColor: Get.theme.scaffoldBackgroundColor),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(child: SizedBox(width: double.infinity, height: 50))),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Shimmer.fromColors(
-              child: Card(child: Container(width: double.infinity, height: 50)),
               highlightColor: Colors.grey.withOpacity(0.01),
-              baseColor: Get.theme.scaffoldBackgroundColor),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(child: SizedBox(width: double.infinity, height: 50))),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Shimmer.fromColors(
-              child: Card(child: Container(width: double.infinity, height: 50)),
               highlightColor: Colors.grey.withOpacity(0.01),
-              baseColor: Get.theme.scaffoldBackgroundColor),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(child: SizedBox(width: double.infinity, height: 50))),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Shimmer.fromColors(
-              child: Card(child: Container(width: double.infinity, height: 50)),
               highlightColor: Colors.grey.withOpacity(0.01),
-              baseColor: Get.theme.scaffoldBackgroundColor),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(child: SizedBox(width: double.infinity, height: 50))),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Shimmer.fromColors(
-              child: Card(child: Container(width: double.infinity, height: 50)),
               highlightColor: Colors.grey.withOpacity(0.01),
-              baseColor: Get.theme.scaffoldBackgroundColor),
+              baseColor: Get.theme.scaffoldBackgroundColor,
+              child: const Card(child: SizedBox(width: double.infinity, height: 50))),
         ),
       ],
     ));
@@ -1157,11 +793,13 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
     if (controllerProductsEdit.getMarks.isEmpty) {
       widget = Container();
     } else {
-      controllerProductsEdit.getMarks.forEach((element) {
+      for (var element in controllerProductsEdit.getMarks) {
         if (element.id == 'other') {
-          widget = listTile(marcaSelect: element,);
+          widget = listTile(
+            marcaSelect: element,
+          );
         }
-      });
+      }
     }
     return widget;
   }
@@ -1171,23 +809,19 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
     return Column(
       children: <Widget>[
         Padding(
-          padding:
-              const EdgeInsets.only(bottom: 12, left: 12, right: 12, top: 12),
+          padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12, top: 12),
           child: Row(
             children: [
-              Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
+              const Expanded(child: Text('Marcas', style: TextStyle(fontSize: 18))),
               // TODO : delete icon 'add new mark for release'
               IconButton(
                   onPressed: () {
                     Get.back();
-                    Get.to(() => CreateMark(
-                        mark: Mark(
-                            upgrade: Timestamp.now(),
-                            creation: Timestamp.now())));
+                    Get.to(() => CreateMark(mark: Mark(upgrade: Timestamp.now(),creation: Timestamp.now())));
                   },
-                  icon: Icon(Icons.add)),
+                  icon: const Icon(Icons.add)),
               IconButton(
-                icon: Icon(Icons.search),
+                icon: const Icon(Icons.search),
                 onPressed: () {
                   Get.back();
                   showSearch(
@@ -1195,10 +829,10 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
                     delegate: SearchPage<Mark>(
                       items: list,
                       searchLabel: 'Buscar marca',
-                      suggestion: Center(
+                      suggestion: const Center(
                         child: Text('ej. Miller'),
                       ),
-                      failure: Center(
+                      failure: const Center(
                         child: Text('No se encontro :('),
                       ),
                       filter: (product) => [
@@ -1208,7 +842,7 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
                       builder: (mark) => Column(
                         children: <Widget>[
                           listTile(marcaSelect: mark),
-                          Divider(endIndent: 12.0, indent: 12.0, height: 0),
+                          const Divider(endIndent: 12.0, indent: 12.0, height: 0),
                         ],
                       ),
                     ),
@@ -1222,15 +856,13 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
     );
   }
 
-  Widget listTile({required Mark marcaSelect,bool icon = true}) {
+  Widget listTile({required Mark marcaSelect, bool icon = true}) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      trailing: !icon?null:viewCircleImage(texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      trailing: !icon? null: ComponentApp.viewCircleImage(texto: marcaSelect.name, url: marcaSelect.image, size: 50.0),
       dense: true,
-      title: Text(marcaSelect.name,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 18.0, color: Get.theme.textTheme.bodyText1!.color)),
-      subtitle: marcaSelect.description==''?null:Text(marcaSelect.description, overflow: TextOverflow.ellipsis),
+      title: Text(marcaSelect.name,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 18.0, color: Get.theme.textTheme.bodyText1!.color)),
+      subtitle: marcaSelect.description == ''? null: Text(marcaSelect.description, overflow: TextOverflow.ellipsis),
       onTap: () {
         controllerProductsEdit.setUltimateSelectionMark = marcaSelect;
         controllerProductsEdit.setMarkSelected = marcaSelect;
@@ -1245,14 +877,14 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
 
   // functions
   loadMarks() async {
-    if (controllerProductsEdit.getMarks.length == 0) {
+    if (controllerProductsEdit.getMarks.isEmpty) {
       await Database.readListMarksFuture().then((value) {
         setState(() {
-          value.docs.forEach((element) {
+          for (var element in value.docs) {
             Mark mark = Mark.fromMap(element.data());
             mark.id = element.id;
             list.add(mark);
-          });
+          }
           controllerProductsEdit.setMarks = list;
         });
       });
@@ -1264,8 +896,8 @@ class _WidgetSelectMarkState extends State<WidgetSelectMark> {
   }
 }
 
-
 // TODO : delete release
+
 class CreateMark extends StatefulWidget {
   late final Mark mark;
   CreateMark({required this.mark, Key? key}) : super(key: key);
@@ -1279,12 +911,12 @@ class _CreateMarkState extends State<CreateMark> {
   final ControllerProductsEdit controllerProductsEdit = Get.find();
 
   //var
-  var uuid = Uuid();
+  var uuid = const Uuid();
   bool newMark = false;
   String title = 'Crear nueva marca';
   bool load = false;
-  TextStyle textStyle = new TextStyle(fontSize: 24.0);
-  ImagePicker _picker = ImagePicker();
+  TextStyle textStyle = const TextStyle(fontSize: 24.0);
+  final ImagePicker _picker = ImagePicker();
   XFile xFile = XFile('');
 
   @override
@@ -1322,15 +954,15 @@ class _CreateMarkState extends State<CreateMark> {
       actions: [
         newMark
             ? Container()
-            : IconButton(onPressed: delete, icon: Icon(Icons.delete)),
+            : IconButton(onPressed: delete, icon: const Icon(Icons.delete)),
         load
             ? Container()
             : IconButton(
-                icon: Icon(Icons.check),
+                icon: const Icon(Icons.check),
                 onPressed: save,
               ),
       ],
-      bottom: load ? linearProgressBarApp() : null,
+      bottom: load ? ComponentApp.linearProgressBarApp() : null,
     );
   }
 
@@ -1368,7 +1000,7 @@ class _CreateMarkState extends State<CreateMark> {
                   ? Container()
                   : TextButton(
                       onPressed: getLoadImageMark,
-                      child: Text("Cambiar imagen")),
+                      child: const Text("Cambiar imagen")),
             ],
           ),
         ),
@@ -1376,9 +1008,9 @@ class _CreateMarkState extends State<CreateMark> {
           padding: const EdgeInsets.all(12.0),
           child: TextField(
             enabled: !load,
-            controller: new TextEditingController(text: widget.mark.name),
+            controller: TextEditingController(text: widget.mark.name),
             onChanged: (value) => widget.mark.name = value,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
                 border: OutlineInputBorder(), labelText: "Nombre de la marca"),
             style: textStyle,
           ),
@@ -1387,10 +1019,9 @@ class _CreateMarkState extends State<CreateMark> {
           padding: const EdgeInsets.all(12.0),
           child: TextField(
             enabled: !load,
-            controller:
-                new TextEditingController(text: widget.mark.description),
+            controller: TextEditingController(text: widget.mark.description),
             onChanged: (value) => widget.mark.description = value,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Descripción (opcional)"),
             style: textStyle,
@@ -1448,7 +1079,7 @@ class _CreateMarkState extends State<CreateMark> {
     if (widget.mark.id == '') {
       widget.mark.id = uuid.v1();
       if (widget.mark.id == '') {
-        widget.mark.id = new DateTime.now().millisecondsSinceEpoch.toString();
+        widget.mark.id = DateTime.now().millisecondsSinceEpoch.toString();
       }
     }
     if (widget.mark.name != '') {
@@ -1472,11 +1103,11 @@ class _CreateMarkState extends State<CreateMark> {
                   .doc(widget.mark.id)
                   .set(widget.mark.toJson())
                   .whenComplete(() {
-                    controllerProductsEdit.setUltimateSelectionMark = widget.mark;
-                    controllerProductsEdit.setMarkSelected = widget.mark;
-                    // agregar el obj manualmente para evitar consulta a la db  innecesaria
-                    controllerProductsEdit.getMarks.add(widget.mark);
-                    Get.back();
+                controllerProductsEdit.setUltimateSelectionMark = widget.mark;
+                controllerProductsEdit.setMarkSelected = widget.mark;
+                // agregar el obj manualmente para evitar consulta a la db  innecesaria
+                controllerProductsEdit.getMarks.add(widget.mark);
+                Get.back();
               });
             })
             .onError((error, stackTrace) {})

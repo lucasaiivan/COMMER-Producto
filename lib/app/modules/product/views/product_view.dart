@@ -22,7 +22,7 @@ class Product extends GetView<ProductController> {
   Product({Key? key}) : super(key: key);
 
   // controllers
-  final WelcomeController welcomeController = Get.find<WelcomeController>();
+  final HomeController welcomeController = Get.find<HomeController>();
   final ScreenshotController screenshotController = ScreenshotController();
 
   @override
@@ -120,7 +120,7 @@ class Product extends GetView<ProductController> {
                       children: [
                         controller.getProduct.salePrice != 0.0
                             ? Text(
-                                Publicaciones.getFormatoPrecio(
+                                Publications.getFormatoPrecio(
                                     monto:
                                         controller.getProduct.salePrice),
                                 style: TextStyle(
@@ -329,7 +329,7 @@ class Product extends GetView<ProductController> {
                                 });
                           },
                         ),
-                        welcomeController.getIdAccountSelecte == ''
+                        welcomeController.getIdAccountSelected == ''
                             ? Container()
                             : IconButton(
                                 padding: EdgeInsets.all(12.0),
@@ -352,7 +352,21 @@ class Product extends GetView<ProductController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 12),
-                    imageViewCard(),
+                    Stack(
+                      children: [
+                        imageViewCard(),
+                        // más información del producto
+                  controller.getStateCheckProductInCatalogue?Container():
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      controller.getProduct.favorite?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,)):Container(),
+                      controller.getProduct.quantityStock<=controller.getProduct.alertStock == controller.getProduct.stock?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text(controller.getProduct.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,)):Container(),
+                    ],
+                  ),
+                      ],
+                    ),
                     widgetDescripcion(),
                     controller.getstateAds?adsWidget(ad: controller.bannerAd.value):Container(),
                     
@@ -395,7 +409,7 @@ class Product extends GetView<ProductController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  welcomeController.getIdAccountSelecte != ''
+                  welcomeController.getIdAccountSelected != ''
                       ? welcomeController.isCatalogue(
                               id: controller.getProduct.id)
                           ? controller.getProduct.salePrice != 0.0
@@ -408,7 +422,7 @@ class Product extends GetView<ProductController> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                          Publicaciones.getFormatoPrecio(
+                                          Publications.getFormatoPrecio(
                                               monto: controller
                                                   .getProduct.salePrice),
                                           style: TextStyle(
@@ -419,7 +433,7 @@ class Product extends GetView<ProductController> {
                                           Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
                                             child: Text(
-                                              Publicaciones.getFechaPublicacion(
+                                              Publications.getFechaPublicacion(
                                                       controller.getProduct.upgrade
                                                           .toDate(),
                                                       Timestamp.now().toDate())
@@ -466,7 +480,7 @@ class Product extends GetView<ProductController> {
                                                   .purchasePrice !=
                                               0.0
                                           ? Text(
-                                              Publicaciones.sGanancia(
+                                              Publications.sGanancia(
                                                   precioCompra: controller
                                                       .getProduct
                                                       .purchasePrice,
@@ -565,12 +579,7 @@ class Product extends GetView<ProductController> {
                   children: <Widget>[
                     ListTile(
                       contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
-                      leading: controller.getListPricesForProduct[index]
-                                      .idAccount ==
-                                  "" ||
-                              controller.getListPricesForProduct[index]
-                                      .imageAccount ==
-                                  ""
+                      leading: controller.getListPricesForProduct[index] .idAccount == "" || controller.getListPricesForProduct[index] .imageAccount == ""
                           ? CircleAvatar(
                               backgroundColor: Colors.grey,
                               radius: 24.0,
@@ -591,14 +600,14 @@ class Product extends GetView<ProductController> {
                                 radius: 24.0,
                               ),
                             ),
-                      title: Text(Publicaciones.getFormatoPrecio(monto: controller.getListPricesForProduct[index].price),style: TextStyle(color: colorText,fontSize: 24.0,fontWeight: FontWeight.bold)),
+                      title: Text(Publications.getFormatoPrecio(monto: controller.getListPricesForProduct[index].price),style: TextStyle(color: colorText,fontSize: 24.0,fontWeight: FontWeight.bold)),
                       subtitle: Text(controller.getListPricesForProduct[index].nameAccount,style: TextStyle(color: colorText.withOpacity(0.7))),
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                           Text(
-                            Publicaciones.getFechaPublicacion(
+                            Publications.getFechaPublicacion(
                                     controller
                                         .getListPricesForProduct[index].time
                                         .toDate(),
@@ -707,7 +716,7 @@ class Product extends GetView<ProductController> {
                       backgroundColor: Get.theme.scaffoldBackgroundColor,
                       child: Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: utilsWidget.viewCircleImage(
+                        child: utilsWidget.ComponentApp.viewCircleImage(
                             size: 60,
                             url: controller.getMark.image,
                             texto: controller.getMark.name),
@@ -950,7 +959,7 @@ class ProductoCatalogueItem extends StatelessWidget {
                   color: Colors.grey),
               overflow: TextOverflow.fade,
               softWrap: false),
-          Text(Publicaciones.getFormatoPrecio(monto: producto.salePrice),
+          Text(Publications.getFormatoPrecio(monto: producto.salePrice),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14.0,
@@ -968,7 +977,7 @@ class ProductoItem extends StatelessWidget {
   ProductoItem({required this.producto});
 
   // controllers
-  final WelcomeController welcomeController = Get.find<WelcomeController>();
+  final HomeController welcomeController = Get.find<HomeController>();
   final ProductController productController = Get.find<ProductController>();
 
   @override

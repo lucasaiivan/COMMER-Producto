@@ -10,7 +10,7 @@ import 'package:producto/app/services/database.dart';
 
 class AccountController extends GetxController {
   // controllers
-  late final WelcomeController welcomeController;
+  late final HomeController welcomeController;
 
   // state validation accoun
   bool newAccount = false;
