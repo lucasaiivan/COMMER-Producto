@@ -104,8 +104,7 @@ class CatalogueScreenView extends StatelessWidget {
                     title: Text(product.nameMark),
                     subtitle: Text(product.description),
                     onTap: () {
-                      Get.toNamed(Routes.PRODUCT,
-                          arguments: {'product': product});
+                      Get.toNamed(Routes.PRODUCT,arguments: {'product': product});
                     },
                   ),
                 ),
@@ -526,8 +525,7 @@ class CatalogueScreenView extends StatelessWidget {
             'Califícanos ⭐',
           ),
           onTap: () async {
-            String url =
-                "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
+            String url = "https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto";
             if (await canLaunch(url)) {
               await launch(url);
             } else {

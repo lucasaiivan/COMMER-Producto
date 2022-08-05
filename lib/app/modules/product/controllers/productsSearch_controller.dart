@@ -183,8 +183,7 @@ class ControllerProductsSearch extends GetxController {
     productSelect.id = id;
     productSelect.code = id;
     // navega hacia una nueva vista para crear un nuevo producto
-    Get.toNamed(Routes.PRODUCTS_EDIT,
-        arguments: {'new': true, 'product': productSelect});
+    Get.toNamed(Routes.PRODUCTS_EDIT,arguments: {'new': true, 'product': productSelect});
   }
 
   // TODO : eliminar para release

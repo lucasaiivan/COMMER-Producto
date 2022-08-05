@@ -321,6 +321,7 @@ class WidgetButtonListTile extends StatelessWidget {
       },
     );
   }
+
   Widget buttonListTileItemCuenta(
       {required ProfileAccountModel perfilNegocio,
       bool adminPropietario = false}) {
@@ -445,7 +446,7 @@ PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
 
 class WidgetSuggestionProduct extends StatelessWidget {
   //values
-  
+
   bool searchButton = false;
   List<Product> list = <Product>[];
   WidgetSuggestionProduct({required this.list, this.searchButton = false});
@@ -455,8 +456,8 @@ class WidgetSuggestionProduct extends StatelessWidget {
     // controllers
     WelcomeController welcomeController = Get.find<WelcomeController>();
     if (list.length == 0) return Container();
-    // values 
-    Color? colorAccent =  Get.theme.textTheme.subtitle1?.color;
+    // values
+    Color? colorAccent = Get.theme.textTheme.subtitle1?.color;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -486,10 +487,10 @@ class WidgetSuggestionProduct extends StatelessWidget {
                       child: FadeInLeft(
                         child: CircleAvatar(
                             child: CircleAvatar(
-                                child: Icon(Icons.search,
-                                    color: colorAccent),
+                                child: Icon(Icons.search, color: colorAccent),
                                 radius: 28,
-                                backgroundColor:Get.theme.scaffoldBackgroundColor),
+                                backgroundColor:
+                                    Get.theme.scaffoldBackgroundColor),
                             radius: 30,
                             backgroundColor: colorAccent),
                       ),
@@ -504,12 +505,10 @@ class WidgetSuggestionProduct extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       itemCount: list.length,
                       itemBuilder: (context, index) {
-
                         return Align(
                           widthFactor: 0.5,
                           child: InkWell(
-                            onTap: () => 
-                            welcomeController.toProductView(
+                            onTap: () => welcomeController.toProductView(
                                 porduct: list[index]),
                             borderRadius: BorderRadius.circular(50),
                             child: Padding(
@@ -519,21 +518,33 @@ class WidgetSuggestionProduct extends StatelessWidget {
                                     backgroundColor: colorAccent,
                                     foregroundColor: colorAccent,
                                     child: CircleAvatar(
-                                      backgroundColor: Colors.grey[100],
+                                        backgroundColor: Colors.grey[100],
                                         foregroundColor: Colors.grey[100],
                                         child: ClipRRect(
                                           child: CachedNetworkImage(
-                                            fadeInDuration: Duration(milliseconds: 200),
+                                            fadeInDuration:
+                                                Duration(milliseconds: 200),
                                             fit: BoxFit.cover,
                                             imageUrl: list[index].image,
-                                            placeholder: (context, url) => CircleAvatar(backgroundColor: Colors.grey[100],foregroundColor: Colors.grey[100]),
-                                            errorWidget: (context, url, error) => CircleAvatar(backgroundColor: Colors.grey[100],foregroundColor: Colors.grey[100]),
+                                            placeholder: (context, url) =>
+                                                CircleAvatar(
+                                                    backgroundColor:
+                                                        Colors.grey[100],
+                                                    foregroundColor:
+                                                        Colors.grey[100]),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    CircleAvatar(
+                                                        backgroundColor:
+                                                            Colors.grey[100],
+                                                        foregroundColor:
+                                                            Colors.grey[100]),
                                           ),
-                                          borderRadius:BorderRadius.circular(50),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
                                         ),
                                         radius: 28),
-                                    radius: 30
-                                ),
+                                    radius: 30),
                               ),
                             ),
                           ),

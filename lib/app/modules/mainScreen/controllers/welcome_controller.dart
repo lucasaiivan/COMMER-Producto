@@ -99,8 +99,7 @@ class WelcomeController extends GetxController {
       readProfileAccountStream(id: value);
     } else {
       // default
-      setProfileAccountSelected =
-          ProfileAccountModel(creation: Timestamp.now());
+      setProfileAccountSelected =ProfileAccountModel(creation: Timestamp.now());
       setMarkSelect = Mark(upgrade: Timestamp.now(), creation: Timestamp.now());
       setCategorySelect = Category();
       setsubCategorySelect = Category();
@@ -111,11 +110,9 @@ class WelcomeController extends GetxController {
   }
 
   String get getIdAccountSelecte => idAccountSelected.value;
-  Rx<ProfileAccountModel> _profileAccount =
-      ProfileAccountModel(creation: Timestamp.now()).obs;
+  Rx<ProfileAccountModel> _profileAccount =ProfileAccountModel(creation: Timestamp.now()).obs;
   ProfileAccountModel get getProfileAccountSelected => _profileAccount.value;
-  set setProfileAccountSelected(ProfileAccountModel user) =>
-      _profileAccount.value = user;
+  set setProfileAccountSelected(ProfileAccountModel user) =>_profileAccount.value = user;
   bool getSelected({required String id}) {
     bool isSelected = false;
     for (ProfileAccountModel obj in getManagedAccountData) {
@@ -357,13 +354,10 @@ class WelcomeController extends GetxController {
   set setAccountsReferenceIdentifiers(List<String> value) =>
       _accountsReferenceIdentifiers.value = value;
 
-  // managed accounts data
-  RxList<ProfileAccountModel> _managedAccountDataList =
-      <ProfileAccountModel>[].obs;
-  List<ProfileAccountModel> get getManagedAccountData =>
-      _managedAccountDataList;
-  set setManagedAccountData(List<ProfileAccountModel> value) =>
-      _managedAccountDataList.value = value;
+  // administrator account list
+  RxList<ProfileAccountModel> _managedAccountDataList = <ProfileAccountModel>[].obs;
+  List<ProfileAccountModel> get getManagedAccountData => _managedAccountDataList;
+  set setManagedAccountData(List<ProfileAccountModel> value) =>_managedAccountDataList.value = value;
   void addManagedAccount({required ProfileAccountModel profileData}) {
     // default values
     _managedAccountDataList = <ProfileAccountModel>[].obs;
@@ -429,8 +423,7 @@ class WelcomeController extends GetxController {
   // FUNCTIONS
 
   void toProductView({required Product porduct}) {
-    Get.toNamed(Routes.PRODUCT,
-        arguments: {'product': porduct.convertProductCatalogue()});
+    Get.toNamed(Routes.PRODUCT,arguments: {'product': porduct.convertProductCatalogue()});
   }
 
   int getNumeroDeProductosDeMarca({required String id}) {
@@ -641,7 +634,8 @@ class WelcomeController extends GetxController {
       }
     }
 
-    // cuando termina actualiza los datos
+
+    // cuando termina actualiza los dato
     setCatalogueLoad = listLoad;
 
     // tambien actualizamos el estado de nuestro widget 'LoadAny' para mostrar más elementos
