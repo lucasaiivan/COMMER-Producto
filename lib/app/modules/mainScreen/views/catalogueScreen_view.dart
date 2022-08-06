@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -32,12 +33,7 @@ class CatalogueScreenView extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
           backgroundColor: Get.theme.primaryColor,
           heroTag: "Escanear codigo",
-          child: Image(
-              color: Colors.white,
-              height: 30.0,
-              width: 30.0,
-              image: AssetImage('assets/barcode.png'),
-              fit: BoxFit.contain),
+          child: Image(color: Colors.white,height: 30.0,width: 30.0,image: AssetImage('assets/barcode.png'), fit: BoxFit.contain),
           tooltip: 'Escanea el codigo del producto',
           onPressed: () {
             scanBarcodeNormal(context: context);
@@ -52,8 +48,7 @@ class CatalogueScreenView extends StatelessWidget {
     return AppBar(
       elevation: 0.0,
       backgroundColor: Get.theme.scaffoldBackgroundColor,
-      iconTheme: Get.theme.iconTheme
-          .copyWith(color: Get.theme.textTheme.bodyText1!.color),
+      iconTheme: Get.theme.iconTheme.copyWith(color: Get.theme.textTheme.bodyText1!.color),
       title: InkWell(
         onTap: () => showModalBottomSheetSelectAccount(),
         child: Obx(() => RichText(
@@ -61,55 +56,17 @@ class CatalogueScreenView extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             softWrap: true,
             text: TextSpan(
-              style: TextStyle(
-                color: Get.theme.textTheme.bodyText1!.color,
-                fontSize: 18,
-              ),
+              style: TextStyle(color: Get.theme.textTheme.bodyText1!.color,fontSize: 18),
               children: [
-                TextSpan(
-                  text: controller.getIdAccountSelected == ''
-                      ? "Seleccionar cuenta"
-                      : controller.getProfileAccountSelected.name != ""
-                          ? controller.getProfileAccountSelected.name
-                          : "Mi catalogo",
-                ),
+                TextSpan(text: controller.getIdAccountSelected == ''? "Seleccionar cuenta": controller.getProfileAccountSelected.name != ""? controller.getProfileAccountSelected.name: "Mi catalogo",),
                 WidgetSpan(child: Icon(Icons.keyboard_arrow_down, size: 24)),
               ],
             ))),
       ),
       actions: <Widget>[
-        controller.getStateUpdate?Chip(
-            label: Text('Actualizar', style: TextStyle(color: Colors.white)),
-            backgroundColor: Colors.green.shade400):Container(),
+        controller.getStateUpdate?Chip(label: Text('Actualizar', style: TextStyle(color: Colors.white)),backgroundColor: Colors.green.shade400):Container(),
         IconButton(
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: SearchPage<ProductCatalogue>(
-                  items: controller.getCataloProducts,
-                  searchLabel: 'Buscar producto',
-                  suggestion: Center(child: Text('ej. alfajor')),
-                  failure: Center(child: Text('No se encontro :(')),
-                  filter: (product) => [product.description, product.nameMark],
-                  builder: (product) => ListTile(
-                    trailing: product.image == ''
-                        ? null
-                        : FadeInImage(
-                            image: NetworkImage(product.image),
-                            placeholder: AssetImage("assets/loading.gif"),
-                            fadeInDuration: Duration(milliseconds: 200),
-                            fit: BoxFit.cover,
-                            width: 50.0,
-                          ),
-                    title: Text(product.nameMark),
-                    subtitle: Text(product.description),
-                    onTap: () {
-                      Get.toNamed(Routes.PRODUCT,arguments: {'product': product});
-                    },
-                  ),
-                ),
-              );
-            },
+            onPressed: ()=> showSeach(context: context),
             icon: Icon(Icons.search)),
         Obx(() => controller.getProfileAccountSelected.id == ''
             ? Container()
@@ -307,10 +264,7 @@ class CatalogueScreenView extends StatelessWidget {
       baseColor: color1,
       highlightColor: color2,
       child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 150,
-            childAspectRatio: 1 / 1.4,
-          ),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 150,childAspectRatio: 1 / 1.4),
           itemCount: 12,
           itemBuilder: (BuildContext ctx, index) {
             return Card(elevation: 0, color: Colors.grey.withOpacity(0.1));
@@ -379,7 +333,104 @@ class CatalogueScreenView extends StatelessWidget {
     );
   }
 
-  // BottomSheet - Getx
+  //  show Dialog
+  void showSeach({required BuildContext context}) {
+    // Busca entre los productos de mi catálogo
+
+    // var
+    Color colorAccent = Get.theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+
+    showSearch(
+      context: context,
+      delegate: SearchPage<ProductCatalogue>(
+        items: controller.getCataloProducts,
+        searchLabel: 'Buscar',
+        searchStyle: TextStyle(color: colorAccent),
+        barTheme: Get.theme.copyWith(hintColor: colorAccent, highlightColor: colorAccent),
+        suggestion: const Center(child: Text('ej. alfajor')),
+        failure: const Center(child: Text('No se encontro en tu cátalogo:(')),
+        filter: (product) => [product.description, product.nameMark,product.code],
+        builder: (product) {
+
+          // values
+          Color tileColor = product.stock? (product.quantityStock <= product.alertStock? Colors.red.withOpacity(0.3): product.favorite?Colors.amber.withOpacity(0.1):Colors.transparent): product.favorite?Colors.amber.withOpacity(0.1):Colors.transparent;
+          String alertStockText =product.stock ? (product.quantityStock == 0 ? 'Sin stock' : '${product.quantityStock} en stock') : '';
+          
+          return Column(
+          children: [
+            ListTile(
+              contentPadding:const EdgeInsets.symmetric(horizontal: 20,vertical: 12),
+              tileColor: tileColor,
+              title: Text(product.nameMark),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    product.description,
+                    maxLines: 1,
+                    overflow: TextOverflow.clip,
+                  ),
+                  
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      // text : code
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(padding: const EdgeInsets.symmetric(horizontal: 5),child: Icon(Icons.circle,size: 8, color: Get.theme.dividerColor)),
+                            Text(product.code),
+                          ],
+                        ),
+                        // favorite
+                        product.favorite?Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(padding: const EdgeInsets.symmetric(horizontal: 5),child: Icon(Icons.circle,size: 8, color: Get.theme.dividerColor)),
+                            const Text('Favorito'),
+                          ],
+                        ):Container(),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                        //  text : alert stock
+                        alertStockText != ''?Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(padding: const EdgeInsets.symmetric(horizontal: 5),child: Icon(Icons.circle,size: 8, color: Get.theme.dividerColor)),
+                            Text(alertStockText),
+                          ],
+                        ):Container(),
+                        // text : cantidad de ventas
+                        product.sales == 0? Container():Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(padding: const EdgeInsets.symmetric(horizontal: 5),child: Icon(Icons.circle,size: 8, color: Get.theme.dividerColor)),
+                            Text('${product.sales} ${product.sales == 1 ? 'venta' : 'ventas'}'),
+                          ],
+                        ),
+                    ],
+                  ),
+
+                ],
+              ),
+              trailing: Text(Publications.getFormatoPrecio(monto: product.salePrice)),
+              onTap: () {
+                Get.back();
+                Get.toNamed(Routes.PRODUCT,arguments: {'product': product});
+                
+              },
+            ),
+            const Divider(height: 0),
+          ],
+        );
+        },
+      ),
+    );
+  }
   void showModalBottomSheetSelectAccount() {
     // muestra las cuentas en el que este usuario tiene acceso
     Widget widget = controller.getManagedAccountData.length == 0
@@ -420,7 +471,6 @@ class CatalogueScreenView extends StatelessWidget {
     );
   }
 
-  // BottomSheet
   void showMSetting() {
     Widget widget = ListView(
       shrinkWrap: true,
@@ -477,22 +527,28 @@ class CatalogueScreenView extends StatelessWidget {
         ),
         Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text("Contacto",
-                  style:
-                      TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-            ),
-            Expanded(
-              child: Divider(
-                endIndent: 12.0,
-                indent: 12.0,
-                height: 2.0,
-                thickness: 2.0,
-              ),
-            ),
+            // text
+            Padding(padding: const EdgeInsets.all(12.0),child: Text("Más",  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))),
+            // divider
+            Expanded(child: Divider(endIndent: 12.0,indent: 12.0,height: 2.0,thickness: 2.0,)),
           ],
         ),
+        ListTile(
+              leading: const Icon(Icons.launch_rounded),
+              title: const Text('Registra tus ventas'),
+              subtitle: const Text('Sell App'),
+              onTap: () async {
+                
+                // values
+                Uri uri = Uri.parse('https://play.google.com/store/apps/details?id=com.logicabooleana.commer.producto');
+                // primero probamos si podemos abrir la app de lo contrario redireccionara para la tienda de aplicaciones
+                try{
+                  await LaunchApp.openApp(androidPackageName: 'com.logicabooleana.sell');
+                }catch(_){
+                  if (await canLaunchUrl(uri)) { await launchUrl(uri,mode: LaunchMode.externalApplication);} else {throw 'Could not launch $uri';}
+                }
+              },
+            ),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
@@ -718,8 +774,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
                 child: Column(
                   children: <Widget>[
                     DashedCircle(
-                      dashes:
-                          controller.getNumeroDeProductosDeMarca(id: marca.id),
+                      dashes:controller.getNumeroDeProductosDeMarca(id: marca.id),
                       gradientColor: colorGradientInstagram,
                       child: Padding(
                         padding: EdgeInsets.all(5.0),

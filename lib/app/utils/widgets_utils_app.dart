@@ -180,8 +180,8 @@ class _ProductoItemState extends State<ProductoItem> {
                     mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      widget.producto.favorite?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,)):Container(),
-                      widget.producto.quantityStock<=widget.producto.alertStock == widget.producto.stock?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text(widget.producto.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,)):Container(),
+                      widget.producto.favorite?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text('Favorito',style: TextStyle(fontSize:10,color: Colors.white,fontWeight: FontWeight.bold)),backgroundColor: Colors.amber,)):Container(),
+                      widget.producto.quantityStock<=widget.producto.alertStock == widget.producto.stock?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip( label: Text(widget.producto.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(fontSize:10,color: Colors.white,fontWeight: FontWeight.bold)),backgroundColor: Colors.grey,)):Container(),
                     ],
                   ),
                 ],
@@ -388,7 +388,7 @@ class WidgetButtonListTile extends StatelessWidget {
           dense: true,
           title: Text(perfilNegocio.name),
           subtitle: !adminPropietario
-              ? Text(perfilNegocio.idAuthUserCreation)
+              ? Text(perfilNegocio.id)
               : Row(
                   children: [
                     Icon(
@@ -459,9 +459,6 @@ class WidgetSuggestionProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // controllers
-    HomeController homeController = Get.find<HomeController>();
-
     if (list.isEmpty) return Container();
 
     // values
@@ -509,7 +506,7 @@ class WidgetSuggestionProduct extends StatelessWidget {
                         return Align(
                           widthFactor: 0.5,
                           child: InkWell(
-                            onTap: () => Utils().toProductEdit(productCatalogue: list[index].convertProductCatalogue()),
+                            onTap: () => Utils().toProductView(productCatalogue: list[index].convertProductCatalogue()),
                             borderRadius: BorderRadius.circular(50),
                             child: Padding(
                               padding: const EdgeInsets.all(5.0),

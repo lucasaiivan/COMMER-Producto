@@ -1,23 +1,21 @@
 import 'dart:io';
 import 'package:animate_do/animate_do.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:producto/app/modules/account/controller/account_controller.dart';
-import 'package:producto/app/utils/widgets_utils_app.dart';
+
+import '../../../utils/functions.dart';
+import '../../../utils/widgets_utils_app.dart';
+import '../controller/account_controller.dart'; 
 
 class AccountView extends GetView<AccountController> {
   // VAriables
 
   final FocusNode focusTextEdiNombre = FocusNode();
-  final FocusNode focusTextEditDescripcion = FocusNode();
-  final FocusNode focusTextEditCategoriaNombre = FocusNode();
-  final FocusNode focusTextEditDireccion = FocusNode();
-  final FocusNode focusTextEditCiudad = FocusNode();
-  final FocusNode focusTextEditProvincia = FocusNode();
-  final FocusNode focusTextEditPais = FocusNode();
+
+  AccountView( );
 
   @override
   Widget build(BuildContext buildContext) {
@@ -31,29 +29,32 @@ class AccountView extends GetView<AccountController> {
           return Scaffold(
             appBar: appBar(context: buildContext),
             body: controller.stateLoding
-                ? Center(
+                ? const Center(
                     child: Text('cargando...'),
                   )
                 : ListView(
-                    padding: EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(12.0),
                     children: [
                       Column(
                         children: <Widget>[
-                          controller.newAccount?widgetNewAccount():Container(),
-                          SizedBox(
-                            height: 12.0,
-                          ),
+                          // text : informativo
+                          controller.newAccount?widgetText(text: 'Dinos un poco de tu negocio\n\n 👇'): Container(),
+                          const SizedBox(height: 12.0),
+                          // imagen : avatar del negocio
                           widgetsImagen(),
+                          // button  : actualizart imagen
                           controller.getSavingIndicator
                               ? Container()
-                              : TextButton(
-                                  onPressed: () {
-                                    if (controller.getSavingIndicator==false) {_showModalBottomSheetCambiarImagen(context: buildContext);}
-                                  },
-                                  child: Text("Cambiar imagen")),
-                          SizedBox(
-                            height: 24.0,
-                          ),
+                              : Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: TextButton(
+                                    onPressed: () {
+                                      if (controller.getSavingIndicator == false) {_showModalBottomSheetCambiarImagen(context: buildContext);}
+                                    },
+                                    child: const Text("actualizar imagen")
+                                  ),
+                              ),
+                          // TextFuield views
                           widgetFormEditText(context: buildContext),
                         ],
                       ),
@@ -79,7 +80,7 @@ class AccountView extends GetView<AccountController> {
         IconButton(
           icon: controller.getSavingIndicator
               ? Container()
-              : Icon(Icons.check_sharp),
+              : const Icon(Icons.check_sharp),
           onPressed: controller.saveAccount,
         )
       ],
@@ -91,42 +92,38 @@ class AccountView extends GetView<AccountController> {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
-          return Container(
-            child: new Wrap(
-              children: <Widget>[
-                new ListTile(
-                    leading: new Icon(Icons.camera),
-                    title: new Text('Capturar una imagen'),
-                    onTap: () {
-                      Navigator.pop(bc);
-                      controller.setImageSource(
-                          imageSource: ImageSource.camera);
-                    }),
-                new ListTile(
-                  leading: new Icon(Icons.image),
-                  title: new Text('Seleccionar desde la galería de fotos'),
+          return Wrap(
+            children: <Widget>[
+              ListTile(
+                  leading: const Icon(Icons.camera),
+                  title: const Text('Capturar una imagen'),
                   onTap: () {
                     Navigator.pop(bc);
-                    controller.setImageSource(imageSource: ImageSource.gallery);
-                  },
-                ),
-              ],
-            ),
+                    controller.setImageSource(imageSource: ImageSource.camera);
+                  }),
+              ListTile(
+                leading: const Icon(Icons.image),
+                title: const Text('Seleccionar desde la galería de fotos'),
+                onTap: () {
+                  Navigator.pop(bc);
+                  controller.setImageSource(imageSource: ImageSource.gallery);
+                },
+              ),
+            ],
           );
         });
   }
 
-  Widget widgetNewAccount() {
+  Widget widgetText({required String text}) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Center(
           child: ElasticIn(
-            child: Text(
-                'Hola 😃, primero dinos el nombre de tu negocio para poder crear tu catálogo \n\n 👇',
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-            ),
-          )),
+        child: Text(text,
+          style: const TextStyle(fontSize: 18),
+          textAlign: TextAlign.center,
+        ),
+      )),
     );
   }
 
@@ -137,7 +134,7 @@ class AccountView extends GetView<AccountController> {
       id: 'image',
       builder: (_) {
         return Container(
-          padding: EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             children: [
               controller.getImageUpdate == false
@@ -177,288 +174,215 @@ class AccountView extends GetView<AccountController> {
     );
   }
 
-  _fieldFocusChange(
-      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
-    currentFocus.unfocus();
-    FocusScope.of(context).requestFocus(nextFocus);
-  }
 
   Widget widgetFormEditText({required BuildContext context}) {
-    return Obx(() => Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextField(
-                enabled: !controller.getSavingIndicator,
+
+    // creamos la vista del formulario 
+    return Obx(() => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+
+            // textfiel: nombre del negocio
+            TextField(
+              enabled: !controller.getSavingIndicator,
+              minLines: 1,
+              maxLines: 5,
+              keyboardType: TextInputType.multiline,
+              onChanged: (value) => controller.profileAccount.name = value,
+              decoration: const InputDecoration(filled: true,labelText: "Nombre del Negocio",prefixIcon: Icon(Icons.other_houses_outlined)),
+              controller:TextEditingController(text: controller.profileAccount.name),
+              textInputAction: TextInputAction.next,
+              focusNode: focusTextEdiNombre,
+            ),
+            const Divider(color: Colors.transparent, thickness: 1),
+            // textfiel: descripción
+            TextField(
+              enabled: !controller.getSavingIndicator,
+              minLines: 1,
+              maxLines: 5,
+              keyboardType: TextInputType.multiline,
+              onChanged: (value) => controller.profileAccount.description = value,
+              decoration: const InputDecoration(filled: true,labelText: "Descripción (opcional)"),
+              controller: TextEditingController(text: controller.profileAccount.description),
+              textInputAction: TextInputAction.next,
+            ),
+            const Divider(color: Colors.transparent, thickness: 1),
+            // textfiel: signo de moneda
+            InkWell(
+              onTap: () => _bottomPickerSelectCurrency(list: controller.coinsList, context: context),
+              child: TextField(
                 minLines: 1,
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
-                onChanged: (value) => controller.profileAccount.name = value,
-                decoration: InputDecoration(
+                enabled: false,
+                decoration: const InputDecoration(
+                  labelText: "Signo de moneda",
                   filled: true,
-                  labelText: "Nombre del Negocio",
-                  prefixIcon: Icon(Icons.other_houses_outlined),
+                  prefixIcon: Icon(Icons.monetization_on_outlined),
                 ),
-                controller:
-                    TextEditingController(text: controller.profileAccount.name),
-                textInputAction: TextInputAction.next,
-                focusNode: focusTextEdiNombre,
-                onSubmitted: (term) {
-                  _fieldFocusChange(
-                      context, focusTextEdiNombre, focusTextEditDescripcion);
-                },
+                controller: controller.getControllerTextEditSignoMoneda,
+                onChanged: (value) => controller.profileAccount.currencySign = value,
               ),
-              Divider(color: Colors.transparent, thickness: 1),
-              TextField(
-                enabled: !controller.getSavingIndicator,
+            ),
+            const SizedBox(height: 24.0),
+            // text : texto informativo
+            controller.newAccount?widgetText(text: '¿Donde se encuentra?\n\n 🌍'): const Text("Ubicación", style: TextStyle(fontSize: 24.0)),
+            const SizedBox(height: 24.0),
+            // textfiel: seleccionar un pais
+            InkWell(
+              onTap: () => bottomPickerSelectCountries(list: controller.getCountries, context: context),
+              child: TextField(
                 minLines: 1,
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
-                onChanged: (value) =>
-                    controller.profileAccount.description = value,
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: "Descripción (opcional)",
-                ),
-                controller: TextEditingController(
-                    text: controller.profileAccount.description),
-                textInputAction: TextInputAction.next,
-                focusNode: focusTextEditDescripcion,
-                onSubmitted: (term) {
-                  _fieldFocusChange(context, focusTextEditDescripcion,
-                      focusTextEditDescripcion);
-                },
+                enabled: false,
+                decoration: const InputDecoration(labelText: "Pais",filled: true,prefixIcon: Icon(Icons.location_on_outlined)),
+                controller: controller.getControllerTextEditPais,
+                onChanged: (value) => controller.profileAccount.country = value,
               ),
-              Divider(color: Colors.transparent, thickness: 1),
-              InkWell(
-                onTap: () =>
-                    _bottomPickerSelectCurreny(list: ["\$"], context: context),
-                child: TextField(
+            ),
+            const SizedBox(width: 12.0, height: 12.0),
+            // textfiel: seleccionar una provincia
+            InkWell(
+              onTap: () => controller.profileAccount.country == ''
+                  ? bottomPickerSelectCountries(list: controller.getCountries, context: context)
+                  : bottomPickerSelectCities(list: controller.getCities, context: context),
+              child: TextField(
                   minLines: 1,
                   maxLines: 5,
                   keyboardType: TextInputType.multiline,
                   enabled: false,
-                  decoration: InputDecoration(
-                    labelText: "Signo de moneda",
+                  decoration: const InputDecoration(
+                    labelText: "Provincia",
                     filled: true,
-                    prefixIcon: Icon(Icons.monetization_on_outlined),
+                    prefixIcon: Icon(Icons.business),
                   ),
-                  controller: controller.getControllerTextEditSignoMoneda,
-                  onChanged: (value) =>
-                      controller.profileAccount.currencySign = value,
-                ),
+                  controller: controller.getControllerTextEditProvincia,
+                  onChanged: (value) {
+                    controller.profileAccount.province = value;
+                  }),
+            ),
+            const Divider(color: Colors.transparent, thickness: 1),
+            // textfiel: ciudad
+            TextField(
+              enabled: !controller.getSavingIndicator,
+              onChanged: (value) => controller.profileAccount.town = value,
+              decoration: const InputDecoration(
+                labelText: "Ciudad (ocional)",
+                filled: true,
               ),
-              SizedBox(
-                height: 24.0,
+              controller:
+                  TextEditingController(text: controller.profileAccount.town),
+            ),
+            const Divider(color: Colors.transparent, thickness: 1),
+            // textfiel: dirección/calle
+            TextField(
+              enabled: !controller.getSavingIndicator,
+              onChanged: (value) => controller.profileAccount.address = value,
+              decoration: const InputDecoration(
+                labelText: "Dirección (ocional)",
+                filled: true,
               ),
-              Text("Ubicación", style: TextStyle(fontSize: 24.0)),
-              SizedBox(
-                height: 24.0,
-              ),
-              TextField(
-                enabled: !controller.getSavingIndicator,
-                onChanged: (value) => controller.profileAccount.address = value,
-                decoration: InputDecoration(
-                  labelText: "Dirección (ocional)",
-                  filled: true,
-                ),
-                controller: TextEditingController(
-                    text: controller.profileAccount.address),
-                textInputAction: TextInputAction.next,
-                focusNode: focusTextEditDireccion,
-                onSubmitted: (term) {
-                  _fieldFocusChange(
-                      context, focusTextEditDireccion, focusTextEditCiudad);
-                },
-              ),
-              Divider(color: Colors.transparent, thickness: 1),
-              TextField(
-                enabled: !controller.getSavingIndicator,
-                onChanged: (value) => controller.profileAccount.town = value,
-                decoration: InputDecoration(
-                  labelText: "Ciudad (ocional)",
-                  filled: true,
-                ),
-                controller:
-                    TextEditingController(text: controller.profileAccount.town),
-              ),
-              Divider(color: Colors.transparent, thickness: 1),
-              InkWell(
-                onTap: () => controller.profileAccount.country == ''
-                    ? _bottomPickerSelectCountries(
-                        list: controller.getCountries, context: context)
-                    : _bottomPickerSelectCities(
-                        list: controller.getCities, context: context),
-                child: TextField(
-                    minLines: 1,
-                    maxLines: 5,
-                    keyboardType: TextInputType.multiline,
-                    enabled: false,
-                    decoration: InputDecoration(
-                      labelText: "Provincia",
-                      filled: true,
-                      prefixIcon: Icon(Icons.business),
-                    ),
-                    controller: controller.getControllerTextEditProvincia,
-                    onChanged: (value) {
-                      controller.profileAccount.province = value;
-                    }),
-              ),
-              Divider(color: Colors.transparent, thickness: 1),
-              InkWell(
-                onTap: () => _bottomPickerSelectCountries(
-                    list: controller.getCountries, context: context),
-                child: TextField(
-                  minLines: 1,
-                  maxLines: 5,
-                  keyboardType: TextInputType.multiline,
-                  enabled: false,
-                  decoration: InputDecoration(
-                    labelText: "Pais",
-                    filled: true,
-                    prefixIcon: Icon(Icons.location_on_outlined),
-                  ),
-                  controller: controller.getControllerTextEditPais,
-                  onChanged: (value) =>
-                      controller.profileAccount.country = value,
-                ),
-              ),
-              SizedBox(width: 50.0, height: 50.0),
-            ],
-          ),
+              controller: TextEditingController(
+                  text: controller.profileAccount.address),
+              textInputAction: TextInputAction.next,
+            ),
+            // text : marca de tiempo de la ultima actualización del documento
+            controller.newAccount?Container():Padding(
+              padding: const EdgeInsets.only(top: 50),
+              child: Opacity(opacity: 0.5,child: Center(child: Text('Te uniste ${Publications.getFechaPublicacion(controller.profileAccount.creation.toDate(), Timestamp.now().toDate()).toLowerCase()}'))),
+            ),
+            const SizedBox(height: 50),
+            // text : informativo 
+            controller.newAccount?controller.getSavingIndicator?Container():Column(
+              children: [
+                widgetText(text: 'listo! eso es todo! 💪'),
+                TextButton(onPressed:controller.saveAccount, child: const Text('Guardar')),
+                const SizedBox(height: 50),
+              ],
+            ): Container(),
+            
+            
+          ],
         ));
   }
 
-  void _bottomPickerSelectCities(
+  void bottomPickerSelectCities(
       {required List list, required BuildContext context}) async {
-    //  el usuario va a seleccionar una opción
-    int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 200.0,
-          color: Colors.white,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              CupertinoButton(
-                  child: Text("Cancel"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              Expanded(
-                child: CupertinoPicker(
-                    scrollController:
-                        new FixedExtentScrollController(initialItem: 0),
-                    itemExtent: 32.0,
-                    backgroundColor: Colors.white,
-                    onSelectedItemChanged: (int index) => _index = index,
-                    children: List<Widget>.generate(list.length,
-                        (int index) => Center(child: Text(list[index])))),
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Seleccione una provincia')),
+            body: ListView(
+                shrinkWrap: true,
+                children: List<Widget>.generate(
+                    list.length,
+                    (int index) => ListTile(
+                          minVerticalPadding: 12,
+                          title: Text(list[index]),
+                          onTap: () {
+                            controller.getControllerTextEditProvincia.text = list[index];
+                            controller.profileAccount.province = list[index];
+                            Get.back();
+                          },
+                        )),
               ),
-              CupertinoButton(
-                child: Text("Ok"),
-                onPressed: () {
-                  controller.getControllerTextEditProvincia.text = list[_index];
-                  controller.profileAccount.province = list[_index];
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 
-  void _bottomPickerSelectCountries(
+  void bottomPickerSelectCountries(
       {required List list, required BuildContext context}) async {
-    //  el usuario va a seleccionar una opción
-    int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 200.0,
-          color: Colors.white,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              CupertinoButton(
-                  child: Text("Cancel"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              Expanded(
-                child: CupertinoPicker(
-                    scrollController:
-                        new FixedExtentScrollController(initialItem: 0),
-                    itemExtent: 32.0,
-                    backgroundColor: Colors.white,
-                    onSelectedItemChanged: (int index) => _index = index,
-                    children: List<Widget>.generate(list.length,
-                        (int index) => Center(child: Text(list[index])))),
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Seleccione un pais')),
+            body: ListView(
+                shrinkWrap: true,
+                children: List<Widget>.generate(
+                    list.length,
+                    (int index) => ListTile(
+                          minVerticalPadding: 12,
+                          title: Text(list[index]),
+                          onTap: () {
+                            controller.profileAccount.country = list[index];
+                            controller.getControllerTextEditPais.text =list[index];
+                            Get.back();
+                            bottomPickerSelectCities(list: controller.getCities, context: context);
+                          },
+                        )),
               ),
-              CupertinoButton(
-                child: Text("Ok"),
-                onPressed: () {
-                  controller.profileAccount.country = list[_index];
-                  controller.getControllerTextEditPais.text = list[_index];
-                  Get.back();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 
-  void _bottomPickerSelectCurreny(
+  void _bottomPickerSelectCurrency(
       {required List list, required BuildContext context}) async {
-    //  el usuario va a seleccionar una opción
-    int _index = 0;
     //  Muestra una hoja inferior de diseño de material modal
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 200.0,
-          color: Colors.white,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              CupertinoButton(
-                  child: Text("Cancel"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              Expanded(
-                child: CupertinoPicker(
-                    scrollController:
-                        new FixedExtentScrollController(initialItem: 0),
-                    itemExtent: 32.0,
-                    backgroundColor: Colors.white,
-                    onSelectedItemChanged: (int index) => _index = index,
-                    children: List<Widget>.generate(list.length,
-                        (int index) => Center(child: Text(list[index])))),
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Seleccione el signo de la moneda')),
+            body: ListView(
+                shrinkWrap: true,
+                children: List<Widget>.generate(
+                    list.length,
+                    (int index) => ListTile(
+                          minVerticalPadding: 12,
+                          title: Text(list[index]),
+                          onTap: () {
+                            controller.profileAccount.currencySign = list[index];
+                            controller.getControllerTextEditSignoMoneda.text =list[index];
+                            Get.back();
+                          },
+                        )),
               ),
-              CupertinoButton(
-                child: Text("Ok"),
-                onPressed: () {
-                  controller.profileAccount.currencySign = list[_index];
-                  controller.getControllerTextEditSignoMoneda.text =
-                      list[_index];
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 }

@@ -122,8 +122,7 @@ class ProductController extends GetxController {
   @override
   void onInit() async {
     // get
-    ProductCatalogue product = Get.arguments['product'] ??
-        ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now(),documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now());
+    ProductCatalogue product = Get.arguments['product'] ?? ProductCatalogue(upgrade: Timestamp.now(), creation: Timestamp.now(),documentCreation: Timestamp.now(),documentUpgrade: Timestamp.now());
 
     // init
     initAds();
@@ -209,7 +208,7 @@ class ProductController extends GetxController {
         systemNavigationBarColor: Get.theme.cardColor,
         statusBarColor: Get.theme.scaffoldBackgroundColor,
         statusBarBrightness: Get.theme.brightness,
-        statusBarIconBrightness: Get.theme.brightness,
+        //statusBarIconBrightness: Get.theme.brightness,
         systemNavigationBarIconBrightness: Brightness.light,
         systemNavigationBarDividerColor: Get.theme.cardColor,
       ));

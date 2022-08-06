@@ -1,31 +1,50 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UsersModel {
-  UsersModel({
-    this.id = '',
+class UserModel {
+  UserModel({
+    this.superAdmin = false,
     this.email = '',
   });
 
-  late String id;
-  late String email;
+  bool superAdmin = false;
+  String email = '';
 
-  factory UsersModel.fromDocument(DocumentSnapshot doc) {
+  factory UserModel.fromDocument(DocumentSnapshot doc) {
     Map data = doc.data() as Map;
-    return UsersModel(
-      id: data.containsKey("id") ? doc["id"] : '',
+    return UserModel(
+      superAdmin: doc["superAdmin"] ?? false,
       email: data.containsKey("email") ? doc["email"] : '',
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "superAdmin": superAdmin,
         "email": email,
       };
+
+  factory UserModel.fromMap(Map data) {
+    return UserModel(
+      // Valores del producto
+      superAdmin: data['isuperAdmind'] ?? false,
+      email: data['email'] ?? '',
+    );
+  }
+
+  UserModel.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+    // get
+    Map data = documentSnapshot.data() as Map;
+
+    //  set
+    superAdmin = data['superAdmin'] ?? false;
+    email = data["email"] ?? '';
+  }
 }
 
 class ProfileAccountModel {
-  // Informacion del negocios
-  String id = "";
+  // Informacion de la cuenta
+  Timestamp creation = Timestamp.now(); // Fecha en la que se creo la cuenta
+  String id =
+      ""; // el ID de la cuenta por defecto es el ID del usuario quien lo creo
   String username = "";
   String image = "";
   String name = "";
@@ -44,17 +63,13 @@ class ProfileAccountModel {
   String town = ""; // ciudad o pueblo
   String address = ""; // dirección
 
-  // data user creation
-  Timestamp creation = Timestamp.now(); // Fecha en la que se creo la cuenta
-  String idAuthUserCreation = ''; // id del usuario que creo la cuenta
-
   ProfileAccountModel({
     // account info
     // informacion de cuenta
     // location
     // data user creation
     this.id = "",
-    this.username='',
+    this.username = '',
     this.image = "",
     this.name = "",
     this.description = "",
@@ -68,9 +83,7 @@ class ProfileAccountModel {
     this.town = "",
     this.address = "",
     required this.creation,
-    this.idAuthUserCreation = '',
   });
-
 
   ProfileAccountModel.fromMap(Map data) {
     id = data['id'];
@@ -125,42 +138,43 @@ class ProfileAccountModel {
 
   ProfileAccountModel.fromDocumentSnapshot(
       {required DocumentSnapshot documentSnapshot}) {
+    // get
     Map data = documentSnapshot.data() as Map;
 
     //  set
-    this.id = data.containsKey('id') ? data['id'] : documentSnapshot.id;
-    this.username = data["username"] ?? '';
-    this.image =
+    creation = data["creation"];
+    id = data.containsKey('id') ? data['id'] : documentSnapshot.id;
+    username = data["username"] ?? '';
+    image =
         data.containsKey('image') ? data['image'] : data["imagen_perfil"] ?? '';
-    this.name = data.containsKey('name')
+    name = data.containsKey('name')
         ? data['name']
         : data["nombre_negocio"] ?? 'null';
-    this.description = data.containsKey('description')
+    description = data.containsKey('description')
         ? data['description']
         : data["descripcion"] ?? '';
-    this.currencySign = data.containsKey('currencySign')
+    currencySign = data.containsKey('currencySign')
         ? data['currencySign']
         : data["signo_moneda"] ?? '';
-    this.blockingAccount = data.containsKey('blockingAccount')
+    blockingAccount = data.containsKey('blockingAccount')
         ? data['blockingAccount']
         : data["bloqueo"] ?? '';
-    this.blockingMessage = data.containsKey('blockingMessage')
+    blockingMessage = data.containsKey('blockingMessage')
         ? data['blockingMessage']
         : data["mensaje_bloqueo"] ?? '';
-    this.verifiedAccount = data.containsKey('verifiedAccount')
+    verifiedAccount = data.containsKey('verifiedAccount')
         ? data['verifiedAccount']
         : data["cuenta_verificada"] ?? false;
-    this.countrycode = data.containsKey('countrycode')
+    countrycode = data.containsKey('countrycode')
         ? data['countrycode']
         : data["codigo_pais"] ?? '';
-    this.country =
+    country =
         data.containsKey('country') ? data['country'] : data["pais"] ?? '';
-    this.province = data.containsKey('province')
+    province = data.containsKey('province')
         ? data['province']
         : data["provincia"] ?? '';
-    this.town = data.containsKey('town') ? data['town'] : data["ciudad"] ?? '';
-    this.address =
+    town = data.containsKey('town') ? data['town'] : data["ciudad"] ?? '';
+    address =
         data.containsKey('address') ? data['address'] : data["direccion"] ?? '';
   }
 }
-

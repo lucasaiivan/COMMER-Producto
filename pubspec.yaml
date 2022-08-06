@@ -67,6 +67,7 @@ dependencies:
   snapping_sheet: ^3.1.0 # Esta es una hoja inferior con una altura que se puede arrastrar como la aplicación Google Maps en Android.
   flutter_offline: ^2.0.0 # Una utilidad ordenada para manejar la conectividad fuera de línea/en línea como un jefe. Proporciona soporte para plataformas iOS y Android (por supuesto).
   url_launcher: ^6.1.5 # Un complemento de Flutter para lanzar una URL. Admite iOS, Android, web, Windows, macOS y Linux.
+  external_app_launcher: ^3.1.0 # Un complemento de Flutter que te ayuda a abrir otra aplicación desde tu aplicación. El paquete le solicita cuatro parámetros, de los cuales dos son obligatorios.
 
 flutter_icons:
   android: true

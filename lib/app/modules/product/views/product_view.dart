@@ -352,24 +352,12 @@ class Product extends GetView<ProductController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 12),
-                    Stack(
-                      children: [
-                        imageViewCard(),
-                        // más información del producto
-                  controller.getStateCheckProductInCatalogue?Container():
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      controller.getProduct.favorite?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,)):Container(),
-                      controller.getProduct.quantityStock<=controller.getProduct.alertStock == controller.getProduct.stock?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text(controller.getProduct.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,)):Container(),
-                    ],
-                  ),
-                      ],
-                    ),
+                    imageViewCard(),
                     widgetDescripcion(),
+                    // publicidad
+                    controller.getstateAds?SizedBox(height: 20,):Container(),
                     controller.getstateAds?adsWidget(ad: controller.bannerAd.value):Container(),
-                    
+                    controller.getstateAds?SizedBox(height: 20,):Container(),
                     otherProductsCatalogueListHorizontal(),
                     otherBrandProductsListHorizontal(),
                     const SizedBox(height: 150.0, width: 120.0),
@@ -675,8 +663,7 @@ class Product extends GetView<ProductController> {
             margin: EdgeInsets.all(0.0),
             elevation: 0.0,
             clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(borderRadius)),
+            shape: RoundedRectangleBorder( borderRadius: BorderRadius.only(topLeft: Radius.circular(borderRadius),topRight: Radius.circular(borderRadius),)),
             child: Hero(
               tag: controller.getProduct.id,
               child: Stack(
@@ -709,20 +696,22 @@ class Product extends GetView<ProductController> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Get.theme.scaffoldBackgroundColor,
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: utilsWidget.ComponentApp.viewCircleImage(
-                            size: 60,
-                            url: controller.getMark.image,
-                            texto: controller.getMark.name),
-                      ),
+                  
+                  //información de favorito y control de stock
+                  controller.getStateCheckProductInCatalogue?Container()
+                    :Row(
+                      mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                          children: [
+                            controller.getProduct.favorite?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,)):Container(),
+                            controller.getProduct.quantityStock<=controller.getProduct.alertStock == controller.getProduct.stock?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text(controller.getProduct.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,)):Container(),
+                            Expanded(child: Container()),
+                            // marca
+                            Padding(padding: const EdgeInsets.all(8.0),child: CircleAvatar(radius: 30, backgroundColor: Get.theme.scaffoldBackgroundColor,child: Padding(padding: const EdgeInsets.all(2.0),child: utilsWidget.ComponentApp.viewCircleImage(size: 60,url: controller.getMark.image,texto: controller.getMark.name)),),
+                            ),
+                          ]  ,
                     ),
-                  ),
+                  
                 ],
               ),
             ),
@@ -802,40 +791,18 @@ class Product extends GetView<ProductController> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(12),
-                    child: Divider(
-                        height: 6,
-                        thickness: 1,
-                        color: Colors.grey.withOpacity(0.1)),
-                  ),
-                  Padding(
-                    child: Text(controller.getCategory.name,
-                        style: TextStyle(fontSize: 16.0)),
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  ),
+                    child: Divider(height: 6,thickness: 1,color: Colors.grey.withOpacity(0.1))),
+                  Padding(child: Text(controller.getCategory.name,style: TextStyle(fontSize: 16.0)),padding:const EdgeInsets.symmetric(vertical: 8, horizontal: 12)),
                   Container(
                     height: 250,
                     child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
-                      itemCount: controller
-                          .getListOthersProductsForCategoryCatalogue.length,
+                      itemCount: controller.getListOthersProductsForCategoryCatalogue.length,
                       itemBuilder: (context, index) {
                         return Padding(
-                          padding: EdgeInsets.only(
-                              bottom: 8,
-                              top: 8,
-                              left: index == 0 ? 12 : 0,
-                              right: controller
-                                          .getListOthersProductsForCategoryCatalogue
-                                          .length ==
-                                      (index + 1)
-                                  ? 12
-                                  : 0),
-                          child: ProductoCatalogueItem(
-                              producto: controller
-                                      .getListOthersProductsForCategoryCatalogue[
-                                  index]),
+                          padding: EdgeInsets.only(bottom: 8,top: 8,left: index == 0 ? 12 : 0,right: controller.getListOthersProductsForCategoryCatalogue .length ==(index + 1)? 12: 0),
+                          child: ProductoCatalogueItem(producto: controller.getListOthersProductsForCategoryCatalogue[index]),
                         );
                       },
                     ),
@@ -947,26 +914,36 @@ class ProductoCatalogueItem extends StatelessWidget {
   }
 
   Widget contentInfo() {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(producto.description,
-              style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                  color: Colors.grey),
-              overflow: TextOverflow.fade,
-              softWrap: false),
-          Text(Publications.getFormatoPrecio(monto: producto.salePrice),
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14.0,
-                  color: Colors.black),
-              overflow: TextOverflow.fade,
-              softWrap: false),
-        ],
+
+    // values 
+    late Color? colorContent=null;
+    if( producto.favorite){colorContent =Colors.amber.withOpacity(0.2);}
+    if( producto.quantityStock <= producto.alertStock && producto.stock){colorContent =Colors.red.withOpacity(0.2);}
+
+
+    return Container(
+      color: colorContent,
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(producto.description,
+                style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14.0,
+                    color: Colors.grey),
+                overflow: TextOverflow.fade,
+                softWrap: false),
+            Text(Publications.getFormatoPrecio(monto: producto.salePrice),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.0,
+                    color: Colors.black),
+                overflow: TextOverflow.fade,
+                softWrap: false),
+          ],
+        ),
       ),
     );
   }

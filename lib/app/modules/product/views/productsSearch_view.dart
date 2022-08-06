@@ -37,41 +37,28 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
     return AppBar(
       elevation: 0.0,
       backgroundColor: controller.getColorFondo,
-      title: Text(
-        controller.getproductDoesNotExist ? "Sin resultados" : "Buscar",
-        style: TextStyle(color: controller.getColorTextField),
-      ),
-      leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: controller.getColorTextField),
-          onPressed: () => Get.back()),
-      bottom: controller.getStateSearch
-          ?ComponentApp.linearProgressBarApp(color: Get.theme.primaryColor)
-          : null,
+      title: Text(controller.getproductDoesNotExist ? "Sin resultados" : "Buscar",style: TextStyle(color: controller.getColorTextField),),
+      leading: IconButton(icon: Icon(Icons.arrow_back, color: controller.getColorTextField),onPressed: () => Get.back()),
+      bottom: controller.getStateSearch?ComponentApp.linearProgressBarApp(color: Get.theme.primaryColor): null,
     );
   }
 
   Widget _body() {
     return OfflineBuilder(
         child: Container(),
-        connectivityBuilder: (
-          BuildContext context,
-          ConnectivityResult connectivity,
-          Widget child,
-        ) {
+        connectivityBuilder: (BuildContext context,ConnectivityResult connectivity,Widget child,) {
           final connected = connectivity != ConnectivityResult.none;
 
           if (!connected) {
+            // sin conexion a internet
             return Center(
                 child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Icon(Icons.wifi_off_rounded),
-                ),
-                Text('No hay internet'),
-              ],
-            ));
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Padding(padding: EdgeInsets.all(12.0),child: Icon(Icons.wifi_off_rounded)),
+                    Text('No hay internet'),
+                  ],
+              ));
           }
           return Center(
             child: ListView(
@@ -93,15 +80,11 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
                                     // obtenemos los datos de porta papeles del dispositivo
                                     FlutterClipboard.paste().then((value) {
                                       // verificamos que sea numero valido
-                                      if (controller.verifyIsNumber(
-                                          value: value)) {
-                                        controller.textEditingController.text =
-                                            value;
+                                      if (controller.verifyIsNumber(value: value)) {
+                                        controller.textEditingController.text = value;
                                         controller.queryProduct(id: value);
                                       } else {
-                                        Get.snackbar('no se pudo copiar 👎',
-                                            'solo puedes ingresar un código valido que contengan números',
-                                            margin: const EdgeInsets.all(12));
+                                        Get.snackbar('no se pudo copiar 👎','solo puedes ingresar un código valido que contengan números',margin: const EdgeInsets.all(12));
                                       }
                                     });
                                   },

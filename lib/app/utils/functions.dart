@@ -128,4 +128,7 @@ class Utils {
   void toProductEdit({required ProductCatalogue productCatalogue}) {
     Get.toNamed(Routes.PRODUCTS_EDIT, arguments: {'product': productCatalogue});
   }
+  void toProductView({required ProductCatalogue productCatalogue}) {
+    Get.toNamed(Routes.PRODUCT, arguments: {'product': productCatalogue});
+  }
 }
