@@ -450,10 +450,11 @@ class CustomFullScreenDialog {
 
 // ignore: must_be_immutable
 class WidgetSuggestionProduct extends StatelessWidget {
+  
   //values
-
-  bool searchButton = false;
-  List<Product> list = <Product>[];
+  late bool searchButton;
+  late List<Product> list;
+  
   WidgetSuggestionProduct({ required this.list, this.searchButton = false});
 
   @override
@@ -462,7 +463,7 @@ class WidgetSuggestionProduct extends StatelessWidget {
     if (list.isEmpty) return Container();
 
     // values
-    Color? colorAccent = Get.theme.textTheme.subtitle1?.color;
+    Color? colorAccent = Get.theme.textTheme.bodyMedium?.color;
     double radius = 32.0;
 
     return Column(
@@ -470,71 +471,73 @@ class WidgetSuggestionProduct extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Text("sugerencias para vos",style: Get.theme.textTheme.subtitle1),
-        ),
+        // text
+        Padding(padding: const EdgeInsets.all(12.0),child: Text("sugerencias para vos",style: Get.theme.textTheme.bodyMedium)),
+        // circle images
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
+            // button : seach
             !searchButton
                 ? Container()
-                : InkWell(
-                    onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id': ''}),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FadeInLeft(
-                        child: CircleAvatar(
-                            radius: radius,
-                            backgroundColor: colorAccent,
-                            child: CircleAvatar(radius: radius-2,backgroundColor:Get.theme.scaffoldBackgroundColor,child: Icon(Icons.search, color: colorAccent))),
+                : Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: InkWell(
+                      onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,arguments: {'id': ''}),
+                      borderRadius: BorderRadius.circular(50),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: FadeInLeft(
+                          child: CircleAvatar(
+                              radius: radius,
+                              backgroundColor: colorAccent,
+                              child: CircleAvatar(radius: radius-2,backgroundColor:Get.theme.scaffoldBackgroundColor,child: Icon(Icons.search, color: colorAccent))),
+                        ),
                       ),
                     ),
-                  ),
+                ),
+            // CirlceAvartar : imagenes de productos
             SizedBox(
-                width: Get.size.width,
-                height: 100,
-                child: Center(
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: list.length,
-                      itemBuilder: (context, index) {
-                        return Align(
-                          widthFactor: 0.5,
-                          child: InkWell(
-                            onTap: () => Utils().toProductView(productCatalogue: list[index].convertProductCatalogue()),
-                            borderRadius: BorderRadius.circular(50),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: FadeInRight(
+              height: 75,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: list.length,
+                  itemBuilder: (context, index) {
+                    return Align(
+                      widthFactor: 0.5,
+                      child: InkWell(
+                        onTap: () => Utils().toProductView(productCatalogue: list[index].convertProductCatalogue()),
+                        borderRadius: BorderRadius.circular(50),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: FadeInRight(
+                            child: CircleAvatar(
+                                backgroundColor: colorAccent,
+                                foregroundColor: colorAccent,
+                                radius: radius,
                                 child: CircleAvatar(
-                                    backgroundColor: colorAccent,
-                                    foregroundColor: colorAccent,
-                                    radius: radius,
-                                    child: CircleAvatar(
-                                        backgroundColor: Colors.grey[100],
-                                        foregroundColor: Colors.grey[100],
-                                        radius: radius-2,
-                                        child: ClipRRect(
-                                          borderRadius:BorderRadius.circular(50),
-                                          child: CachedNetworkImage(
-                                            fadeInDuration: const Duration( milliseconds: 200),
-                                            fit: BoxFit.cover,
-                                            imageUrl: list[index].image,
-                                            placeholder: (context, url) =>CircleAvatar(backgroundColor:Colors.grey[100],foregroundColor:Colors.grey[100]),
-                                            errorWidget:(context, url, error) =>CircleAvatar(backgroundColor:Colors.grey[100],foregroundColor:Colors.grey[100]),
-                                          ),
-                                        ))),
-                              ),
-                            ),
+                                    backgroundColor: Colors.grey[100],
+                                    foregroundColor: Colors.grey[100],
+                                    radius: radius-2,
+                                    child: ClipRRect(
+                                      borderRadius:BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        fadeInDuration: const Duration( milliseconds: 200),
+                                        fit: BoxFit.cover,
+                                        imageUrl: list[index].image,
+                                        placeholder: (context, url) =>CircleAvatar(backgroundColor:Colors.grey[100],foregroundColor:Colors.grey[100]),
+                                        errorWidget:(context, url, error) =>CircleAvatar(backgroundColor:Colors.grey[100],foregroundColor:Colors.grey[100]),
+                                      ),
+                                    ))),
                           ),
-                        );
-                      }),
-                )),
+                        ),
+                      ),
+                    );
+                  }),
+            ),
           ],
         ),
       ],

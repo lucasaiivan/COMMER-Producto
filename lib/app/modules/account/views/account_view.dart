@@ -177,6 +177,10 @@ class AccountView extends GetView<AccountController> {
 
   Widget widgetFormEditText({required BuildContext context}) {
 
+
+    // values 
+    final Color fillColor = Theme.of(context).brightness==Brightness.dark?Colors.white10:Colors.grey.shade100;
+
     // creamos la vista del formulario 
     return Obx(() => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,7 +193,7 @@ class AccountView extends GetView<AccountController> {
               maxLines: 5,
               keyboardType: TextInputType.multiline,
               onChanged: (value) => controller.profileAccount.name = value,
-              decoration: const InputDecoration(filled: true,labelText: "Nombre del Negocio",prefixIcon: Icon(Icons.other_houses_outlined)),
+              decoration: InputDecoration(fillColor:fillColor,filled: true,labelText: "Nombre del Negocio",prefixIcon: Icon(Icons.other_houses_outlined)),
               controller:TextEditingController(text: controller.profileAccount.name),
               textInputAction: TextInputAction.next,
               focusNode: focusTextEdiNombre,
@@ -202,7 +206,7 @@ class AccountView extends GetView<AccountController> {
               maxLines: 5,
               keyboardType: TextInputType.multiline,
               onChanged: (value) => controller.profileAccount.description = value,
-              decoration: const InputDecoration(filled: true,labelText: "Descripción (opcional)"),
+              decoration: InputDecoration(fillColor: fillColor,filled: true,labelText: "Descripción (opcional)"),
               controller: TextEditingController(text: controller.profileAccount.description),
               textInputAction: TextInputAction.next,
             ),
@@ -215,7 +219,8 @@ class AccountView extends GetView<AccountController> {
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
                 enabled: false,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
+                  fillColor: fillColor,
                   labelText: "Signo de moneda",
                   filled: true,
                   prefixIcon: Icon(Icons.monetization_on_outlined),
@@ -236,7 +241,7 @@ class AccountView extends GetView<AccountController> {
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
                 enabled: false,
-                decoration: const InputDecoration(labelText: "Pais",filled: true,prefixIcon: Icon(Icons.location_on_outlined)),
+                decoration: InputDecoration(fillColor:fillColor,labelText: "Pais",filled: true,prefixIcon: Icon(Icons.location_on_outlined)),
                 controller: controller.getControllerTextEditPais,
                 onChanged: (value) => controller.profileAccount.country = value,
               ),
@@ -252,7 +257,8 @@ class AccountView extends GetView<AccountController> {
                   maxLines: 5,
                   keyboardType: TextInputType.multiline,
                   enabled: false,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    fillColor: fillColor,
                     labelText: "Provincia",
                     filled: true,
                     prefixIcon: Icon(Icons.business),
@@ -267,7 +273,8 @@ class AccountView extends GetView<AccountController> {
             TextField(
               enabled: !controller.getSavingIndicator,
               onChanged: (value) => controller.profileAccount.town = value,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
+                fillColor: fillColor,
                 labelText: "Ciudad (ocional)",
                 filled: true,
               ),
@@ -279,7 +286,8 @@ class AccountView extends GetView<AccountController> {
             TextField(
               enabled: !controller.getSavingIndicator,
               onChanged: (value) => controller.profileAccount.address = value,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
+                fillColor: fillColor,
                 labelText: "Dirección (ocional)",
                 filled: true,
               ),

@@ -1,12 +1,9 @@
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:get/get.dart';
 import 'package:flutter_offline/flutter_offline.dart';
-import 'package:producto/app/models/catalogo_model.dart';
 import 'package:producto/app/modules/product/controllers/productsSearch_controller.dart';
 import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../../utils/dynamicTheme_lb.dart';
@@ -244,6 +241,7 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
               keyboardType: const TextInputType.numberWithOptions(decimal: false),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[1234567890]'))],
               decoration: InputDecoration(
+                fillColor: Colors.transparent,
                   suffixIcon: controller.textEditingController.value.text == ""?null:IconButton(onPressed: ()=>controller.clean(),icon: Icon(Icons.clear, color: controller.getColorTextField)),
                   filled: true,
                   hintText: 'ej. 77565440001743',
@@ -265,115 +263,6 @@ class ProductsSearch extends GetView<ControllerProductsSearch> {
   }
   
 
-  Widget widgetSuggestions({required List<Product> list}) {
-    if (list.isEmpty) return Container();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Text("sugerencias para ti"),
-        ),
-        Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 0),
-              child: InkWell(
-                onTap: () => controller.toProductView(
-                    porduct: list[0].convertProductCatalogue()),
-                borderRadius: BorderRadius.circular(50),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: FadeInRight(
-                    child: CircleAvatar(
-                        radius: 26,
-                        backgroundColor: Get.theme.primaryColor,
-                        child: CircleAvatar(
-                            radius: 24,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
-                              child: CachedNetworkImage(
-                                  imageUrl: list[0].image, fit: BoxFit.cover),
-                            ))),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 40),
-              child: InkWell(
-                onTap: () => controller.toProductView(
-                    porduct: list[1].convertProductCatalogue()),
-                borderRadius: BorderRadius.circular(50),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: FadeInRight(
-                    child: CircleAvatar(
-                        radius: 26,
-                        backgroundColor: Get.theme.primaryColor,
-                        child: CircleAvatar(
-                            radius: 24,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
-                              child: CachedNetworkImage(
-                                  imageUrl: list[1].image, fit: BoxFit.cover),
-                            ))),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 80),
-              child: InkWell(
-                onTap: () => controller.toProductView(
-                    porduct: list[2].convertProductCatalogue()),
-                borderRadius: BorderRadius.circular(50),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: FadeInRight(
-                    child: CircleAvatar(
-                        radius: 26,
-                        backgroundColor: Get.theme.primaryColor,
-                        child: CircleAvatar(
-                            radius: 24,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
-                              child: CachedNetworkImage(
-                                  imageUrl: list[2].image, fit: BoxFit.cover),
-                            ))),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 120),
-              child: InkWell(
-                onTap: () => controller.toProductView(
-                    porduct: list[3].convertProductCatalogue()),
-                borderRadius: BorderRadius.circular(50),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: FadeInRight(
-                    child: CircleAvatar(
-                        radius: 26,
-                        backgroundColor: Get.theme.primaryColor,
-                        child: CircleAvatar(
-                            radius: 24,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
-                              child: CachedNetworkImage(
-                                  imageUrl: list[3].image, fit: BoxFit.cover),
-                            ))),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
 
   /* FUNCTIONS */
   Future<void> scanBarcodeNormal() async {

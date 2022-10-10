@@ -738,7 +738,9 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
   WidgetsListaHorizontalMarks({Key? key}) : super(key: key);
 
   // var
-  bool isDark = false;
+  late Color background;
+  late bool isDark;
+  late Color lineColor;
   final HomeController controller = Get.find();
   final List<Color> colorGradientInstagram = [
     Get.theme.primaryColor,
@@ -752,11 +754,13 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
 
     // get values
     isDark = Theme.of(context).brightness==Brightness.dark;
+    lineColor = isDark?Colors.white70:Colors.grey.shade900;
+    background = isDark?Colors.grey.shade900:Colors.grey.shade300;
     if (controller.getCatalogueMarksFilter.length == 0) return Container();
     return Stack(
       children: [
         SizedBox(
-          height: 110.0,
+          height: 100.0,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: controller.getCatalogueMarksFilter.length,
@@ -767,8 +771,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
 
                 // widget 
                 Widget widget = Container(
-                  width: 81.0,
-                  height: 100.0,
+                  width: 81.0,height: 100.0,
                   padding: EdgeInsets.all(5.0),
                   child: GestureDetector(
                     onTap: () {controller.setMarkSelect = marca;},
@@ -794,7 +797,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
               }),
         ),
         SizedBox(
-          height: 100.0,width: 75,
+          width: 85.0,height: 100.0,
           child: Container(
             decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -802,6 +805,8 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
             end: Alignment.centerLeft,
             colors: <Color>[
               Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).scaffoldBackgroundColor,
               Theme.of(context).scaffoldBackgroundColor,
               Theme.of(context).scaffoldBackgroundColor,
             ], 
@@ -818,14 +823,14 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
                     customBorder: const CircleBorder(),
                     onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH, arguments: {'idProduct': ''}),
                     child: CircleAvatar(
-                      backgroundColor: isDark?Colors.grey.shade900:Colors.grey.shade300,
+                      backgroundColor: background,
                       radius: 30,
-                      child: Icon(Icons.add,color: isDark?Colors.white:Colors.grey.shade800,),
+                      child: Icon(Icons.add,color:lineColor),
                     ),
                   ),
                 ),
-                SizedBox(height: 8.0),
-                Text(''),
+                SizedBox(height: 5.0),
+                Text('Agregar',style: TextStyle(color: lineColor)),
               ],
             ),
           ),
