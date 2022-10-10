@@ -174,31 +174,21 @@ class Product extends GetView<ProductController> {
                     controller.getCategory.name != ""
                         ? ElasticIn(
                             child: Chip(
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                              avatar: CircleAvatar(
-                                  backgroundColor: colorChip0.withOpacity(0.2),
-                                  child: Text(
-                                      controller.getCategory.name
-                                          .substring(0, 1),
-                                      style: TextStyle(color: colorChip0))),
-                              label: Text(controller.getCategory.name,
-                                  overflow: TextOverflow.ellipsis),
+                              side: BorderSide(color: colorChip0.withOpacity(0.1)),
+                              backgroundColor: colorChip0.withOpacity(0.1),
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              avatar: CircleAvatar(backgroundColor: colorChip0.withOpacity(0.2)),
+                              label: Text(controller.getCategory.name,overflow: TextOverflow.ellipsis),
                             ),
                           )
                         : Container(),
                     controller.getSubcategory.name != ""
                         ? ElasticIn(
                             child: Chip(
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                              avatar: CircleAvatar(
-                                backgroundColor: colorChip1.withOpacity(0.2),
-                                child: Text(
-                                    controller.getSubcategory.name
-                                        .substring(0, 1),
-                                    style: TextStyle(color: colorChip1)),
-                              ),
+                              side: BorderSide(color: colorChip1.withOpacity(0.1)),
+                              backgroundColor: colorChip1.withOpacity(0.1),
+                              materialTapTargetSize:MaterialTapTargetSize.shrinkWrap,
+                              avatar: CircleAvatar(backgroundColor: colorChip1.withOpacity(0.2)),
                               label: Text(
                                 controller.getSubcategory.name,
                                 overflow: TextOverflow.ellipsis,
@@ -699,17 +689,19 @@ class Product extends GetView<ProductController> {
                   
                   //información de favorito y control de stock
                   controller.getStateCheckProductInCatalogue?Container()
-                    :Row(
-                      mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                          children: [
-                            controller.getProduct.favorite?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,)):Container(),
-                            controller.getProduct.quantityStock<=controller.getProduct.alertStock == controller.getProduct.stock?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text(controller.getProduct.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,)):Container(),
-                            Expanded(child: Container()),
-                            // marca
-                            Padding(padding: const EdgeInsets.all(8.0),child: CircleAvatar(radius: 30, backgroundColor: Get.theme.scaffoldBackgroundColor,child: Padding(padding: const EdgeInsets.all(2.0),child: utilsWidget.ComponentApp.viewCircleImage(size: 60,url: controller.getMark.image,texto: controller.getMark.name)),),
-                            ),
-                          ]  ,
+                    :Flexible(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                            children: [
+                              controller.getProduct.favorite?Padding(padding: const EdgeInsets.only(left: 12,top:12),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,)):Container(),
+                              controller.getProduct.quantityStock<=controller.getProduct.alertStock == controller.getProduct.stock?Padding(padding: const EdgeInsets.only(left: 12,top:12),child: Chip(label: Text(controller.getProduct.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,)):Container(),
+                              Spacer(),
+                              // marca
+                              Padding(padding: const EdgeInsets.all(8.0),child: CircleAvatar(radius: 30, backgroundColor: Get.theme.scaffoldBackgroundColor,child: Padding(padding: const EdgeInsets.all(2.0),child: utilsWidget.ComponentApp.viewCircleImage(size: 60,url: controller.getMark.image,texto: controller.getMark.name)),),
+                              ),
+                            ]  ,
+                      ),
                     ),
                   
                 ],

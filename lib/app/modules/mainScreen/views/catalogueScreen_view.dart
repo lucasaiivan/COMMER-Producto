@@ -25,6 +25,7 @@ class CatalogueScreenView extends StatelessWidget {
   // controllers
   final HomeController controller = Get.find();
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,12 +120,8 @@ class CatalogueScreenView extends StatelessWidget {
                   delegate: SliverChildListDelegate([
                     controller.getLoadDataCatalogueMarks
                         ? Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 0),
-                            child:
-                                controller.getCatalogueMarksFilter.length == 0
-                                    ? Container()
-                                    : WidgetsListaHorizontalMarks())
+                            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+                            child:controller.getCatalogueMarksFilter.length == 0? Container(): WidgetsListaHorizontalMarks())
                         : WidgetsListaHorizontalMarksLoadAnim(),
                   ]),
                 );
@@ -293,7 +290,7 @@ class CatalogueScreenView extends StatelessWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                // en la primera posición muestra el botón para agregar un nuevo objeto
+                /* // en la primera posición muestra el botón para agregar un nuevo objeto
                 if (index == 0) {
                   // item defaul add
                   return Card(
@@ -308,19 +305,18 @@ class CatalogueScreenView extends StatelessWidget {
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH,
-                                  arguments: {'idProduct': ''}),
+                              onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH, arguments: {'idProduct': ''}),
                             ),
                           ),
                         ),
                       ],
                     ),
                   );
-                }
+                } */
 
                 // mostramos 15 elementos vacíos de los cuales el primero tendrá un icono 'add'
-                if ((index) <= controller.getCatalogueLoad.length) {
-                  return ProductoItem(producto: controller.getCatalogueLoad[index - 1]);
+                if ((index) <= controller.getCatalogueLoad.length-1) {
+                  return ProductoItem(producto: controller.getCatalogueLoad[index]);
                 } else {
                   return Card(elevation: 0, color: Colors.grey.withOpacity(0.1));
                 }
@@ -742,6 +738,7 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
   WidgetsListaHorizontalMarks({Key? key}) : super(key: key);
 
   // var
+  bool isDark = false;
   final HomeController controller = Get.find();
   final List<Color> colorGradientInstagram = [
     Get.theme.primaryColor,
@@ -752,54 +749,90 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.getCatalogueMarksFilter.length == 0) return Container();
-    return SizedBox(
-      height: 110.0,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: controller.getCatalogueMarksFilter.length,
-          itemBuilder: (BuildContext c, int index) {
-            // get
-            Mark marca = controller.getCatalogueMarksFilter[index];
-            if (marca.name == '') return Container();
 
-            return Container(
-              width: 81.0,
-              height: 100.0,
-              padding: EdgeInsets.all(5.0),
-              child: GestureDetector(
-                onTap: () {
-                  controller.setMarkSelect = marca;
-                },
-                child: Column(
-                  children: <Widget>[
-                    DashedCircle(
-                      dashes:controller.getNumeroDeProductosDeMarca(id: marca.id),
-                      gradientColor: colorGradientInstagram,
-                      child: Padding(
-                        padding: EdgeInsets.all(5.0),
-                        child:ComponentApp.viewCircleImage(
-                            url: marca.image, texto: marca.name, size: 50),
-                      ),
+    // get values
+    isDark = Theme.of(context).brightness==Brightness.dark;
+    if (controller.getCatalogueMarksFilter.length == 0) return Container();
+    return Stack(
+      children: [
+        SizedBox(
+          height: 110.0,
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: controller.getCatalogueMarksFilter.length,
+              itemBuilder: (BuildContext c, int index) {
+                // get values
+                Mark marca = controller.getCatalogueMarksFilter[index];
+                if (marca.name == '') return Container();
+
+                // widget 
+                Widget widget = Container(
+                  width: 81.0,
+                  height: 100.0,
+                  padding: EdgeInsets.all(5.0),
+                  child: GestureDetector(
+                    onTap: () {controller.setMarkSelect = marca;},
+                    child: Column(
+                      children: <Widget>[
+                        DashedCircle(
+                          dashes:controller.getNumeroDeProductosDeMarca(id: marca.id),
+                          gradientColor: colorGradientInstagram,
+                          child: Padding(padding: EdgeInsets.all(5.0),child:ComponentApp.viewCircleImage(url: marca.image, texto: marca.name, size: 50)),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text(marca.name,
+                            style: TextStyle(fontSize: controller.getMarkSelect.id == marca.id? 14: 12,fontWeight: controller.getMarkSelect.id == marca.id? FontWeight.bold: FontWeight.normal),
+                            overflow: TextOverflow.fade,
+                            softWrap: false)
+                      ],
                     ),
-                    SizedBox(
-                      height: 8.0,
+                  ),
+                );
+                if(index == 0){ return Row(children: [SizedBox(width: 81.0,height: 70.0),widget]);}
+
+                return widget;
+              }),
+        ),
+        SizedBox(
+          height: 100.0,width: 75,
+          child: Container(
+            decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: <Color>[
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).scaffoldBackgroundColor,
+            ], 
+            tileMode: TileMode.mirror,
+          ),
+        ),
+            child: Padding(
+            padding: const EdgeInsets.all(0.0),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH, arguments: {'idProduct': ''}),
+                    child: CircleAvatar(
+                      backgroundColor: isDark?Colors.grey.shade900:Colors.grey.shade300,
+                      radius: 30,
+                      child: Icon(Icons.add,color: isDark?Colors.white:Colors.grey.shade800,),
                     ),
-                    Text(marca.name,
-                        style: TextStyle(
-                            fontSize: controller.getMarkSelect.id == marca.id
-                                ? 14
-                                : 12,
-                            fontWeight: controller.getMarkSelect.id == marca.id
-                                ? FontWeight.bold
-                                : FontWeight.normal),
-                        overflow: TextOverflow.fade,
-                        softWrap: false)
-                  ],
+                  ),
                 ),
-              ),
-            );
-          }),
+                SizedBox(height: 8.0),
+                Text(''),
+              ],
+            ),
+          ),
+          ),
+        ),
+      
+      ],
     );
   }
 }

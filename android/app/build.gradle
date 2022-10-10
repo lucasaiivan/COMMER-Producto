@@ -32,7 +32,7 @@ def keystoreProperties = new Properties()
     if (keystorePropertiesFile.exists()) {keystoreProperties.load(new FileInputStream(keystorePropertiesFile))}
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -41,7 +41,7 @@ android {
     defaultConfig {
         applicationId "com.logicabooleana.commer.producto"
         minSdkVersion 19
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
