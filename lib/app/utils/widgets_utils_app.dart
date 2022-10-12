@@ -6,15 +6,16 @@ import 'package:producto/app/models/user_model.dart';
 import 'package:producto/app/modules/mainScreen/controllers/welcome_controller.dart';
 import 'package:producto/app/routes/app_pages.dart';
 import 'package:producto/app/utils/functions.dart';
-import 'dart:math';
+import 'package:rotated_corner_decoration/rotated_corner_decoration.dart'; 
 import 'dynamicTheme_lb.dart';
+import 'dart:math' as math;
 
 class ComponentApp extends StatelessWidget {
   ComponentApp({Key? key}) : super(key: key);
 
   // animations 
   static PreferredSize linearProgressBarApp({Color color = Colors.purple}) {
-    // animación para la carga de información
+  // animación para la carga de información
   return PreferredSize(preferredSize: Size.fromHeight(0.0),child: LinearProgressIndicator(minHeight: 6.0,backgroundColor: Colors.white.withOpacity(0.3),valueColor: new AlwaysStoppedAnimation<Color>(color)));
 }
 
@@ -110,8 +111,8 @@ class DashedCirclePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double gap = pi / 180 * gapSize;
-    final double singleAngle = (pi * 2) / dashes;
+    final double gap = math.pi / 180 * gapSize;
+    final double singleAngle = (math.pi * 2) / dashes;
 
     // create a bounding square, based on the centre and radius of the arc
     Rect rect = new Rect.fromCircle(
@@ -163,74 +164,97 @@ class _ProductoItemState extends State<ProductoItem> {
           elevation: welcomeController.getSelectItems? widget.producto.select? 4: 0: 3,
           shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
           clipBehavior: Clip.antiAlias,
-          child: Stack(
-            children: [
-              // imagen y información del producto
-              Stack(
+          child: Container(
+            // status : favorito
+            foregroundDecoration: widget.producto.favorite? RotatedCornerDecoration(
+              color: Colors.yellow.shade600,
+              geometry: const BadgeGeometry(width: 48, height: 48),
+              textSpan: TextSpan(
+                text: 'Favorito',
+                style: TextStyle(
+                  fontSize: 10,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  shadows: [BoxShadow(color: Colors.yellow, blurRadius: 4)],
+                ),
+              ),
+            ):null,
+            child: Container(
+              // status : favorito
+              foregroundDecoration: widget.producto.quantityStock <= widget.producto.alertStock == widget.producto.stock? RotatedCornerDecoration(
+                color: Colors.red.shade600,
+                geometry: const BadgeGeometry(width: 48, height: 48, alignment: BadgeAlignment.topLeft),
+                textSpan: TextSpan(
+                  text: widget.producto.quantityStock==0?'Sin\nstock':'Bajo\nStock',
+                  style: TextStyle(
+                    fontSize: 10,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    shadows: [BoxShadow(color: Colors.red, blurRadius: 4)],
+                  ),
+                ),
+              ):null,
+              child: Stack(
                 children: [
+                  // imagen y información del producto
                   Column(
+                    mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(child: contentImage()),
                       contentInfo(),
                     ],
+                    
                   ),
-                  // más información del producto
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      widget.producto.favorite?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip(label: Text('Favorito',style: TextStyle(fontSize:10,color: Colors.white,fontWeight: FontWeight.bold)),backgroundColor: Colors.amber,)):Container(),
-                      widget.producto.quantityStock<=widget.producto.alertStock == widget.producto.stock?Padding(padding: const EdgeInsets.symmetric(horizontal: 4),child: Chip( label: Text(widget.producto.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(fontSize:10,color: Colors.white,fontWeight: FontWeight.bold)),backgroundColor: Colors.grey,)):Container(),
-                    ],
+                  // zona Cliqueable
+                  Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => Get.toNamed(Routes.PRODUCT, arguments: {'product': widget.producto}),
+                        onLongPress: () {
+                          welcomeController.setSelectItems = !welcomeController.getSelectItems;
+                          widget.producto.select = true;
+                          welcomeController.updateSelectItemsLength();
+                        },
+                      ),
+                    ),
                   ),
+                  // state selecct item
+                  welcomeController.getSelectItems
+                      ? Positioned.fill(
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              child: Container(color: widget.producto.select? Colors.grey.withOpacity(0.0): Colors.grey.withOpacity(0.4)),
+                              onTap: () {
+                                setState(() {
+                                  widget.producto.select = !widget.producto.select;
+                                  welcomeController.updateSelectItemsLength();
+                                });
+                              },
+                            ),
+                          ),
+                        )
+                      : Container(),
+                  // icon notify selecct item
+                  widget.producto.select
+                      ? Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.circle,
+                              color: Colors.green,
+                              size: 14),
+                          ),
+                        )
+                      : Container(),
                 ],
               ),
-              // zona Cliqueable
-              Positioned.fill(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => Get.toNamed(Routes.PRODUCT, arguments: {'product': widget.producto}),
-                    onLongPress: () {
-                      welcomeController.setSelectItems = !welcomeController.getSelectItems;
-                      widget.producto.select = true;
-                      welcomeController.updateSelectItemsLength();
-                    },
-                  ),
-                ),
-              ),
-              // state selecct item
-              welcomeController.getSelectItems
-                  ? Positioned.fill(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          child: Container(color: widget.producto.select? Colors.grey.withOpacity(0.0): Colors.grey.withOpacity(0.4)),
-                          onTap: () {
-                            setState(() {
-                              widget.producto.select = !widget.producto.select;
-                              welcomeController.updateSelectItemsLength();
-                            });
-                          },
-                        ),
-                      ),
-                    )
-                  : Container(),
-              // icon notify selecct item
-              widget.producto.select
-                  ? Align(
-                      alignment: Alignment.topRight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.circle,
-                          color: Colors.green,
-                          size: 14),
-                      ),
-                    )
-                  : Container(),
-            ],
+            ),
           ),
         ),
       ),
@@ -239,32 +263,29 @@ class _ProductoItemState extends State<ProductoItem> {
 
   Widget contentImage() {
     return widget.producto.image != ""
-        ? Container(
-            width: double.infinity,
-            child: CachedNetworkImage(
-              fadeInDuration: Duration(milliseconds: 200),
-              fit: BoxFit.cover,
-              imageUrl: widget.producto.image,
-              placeholder: (context, url) => Container(
-                color: Colors.grey[100],
-                child: Center(
-                  child: Text(
-                    widget.producto.description.substring(0, 4),
-                    style: TextStyle(fontSize: 24.0, color: Colors.grey),
-                  ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: Colors.grey[100],
-                child: Center(
-                  child: Text(
-                    widget.producto.description.substring(0, 4),
-                    style: TextStyle(fontSize: 24.0, color: Colors.grey),
-                  ),
-                ),
+        ? CachedNetworkImage(
+          fadeInDuration: Duration(milliseconds: 200),
+          fit: BoxFit.cover,
+          imageUrl: widget.producto.image,
+          placeholder: (context, url) => Container(
+            color: Colors.grey[100],
+            child: Center(
+              child: Text(
+                widget.producto.description.substring(0, 4),
+                style: TextStyle(fontSize: 24.0, color: Colors.grey),
               ),
             ),
-          )
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: Colors.grey[100],
+            child: Center(
+              child: Text(
+                widget.producto.description.substring(0, 4),
+                style: TextStyle(fontSize: 24.0, color: Colors.grey),
+              ),
+            ),
+          ),
+        )
         : Container(
             color: Colors.grey[100],
             child: Center(
@@ -284,6 +305,7 @@ class _ProductoItemState extends State<ProductoItem> {
     if(widget.producto.quantityStock<=widget.producto.alertStock && widget.producto.stock){colorContent =Colors.red.withOpacity(0.2);}
 
     return Container(
+      width: double.infinity,
       color: colorContent,
       child: Padding(
         padding: const EdgeInsets.all(5.0),
@@ -312,6 +334,7 @@ class _ProductoItemState extends State<ProductoItem> {
 }
 
 class WidgetButtonListTile extends StatelessWidget {
+  
   final HomeController controller = Get.find<HomeController>();
 
   WidgetButtonListTile();
@@ -544,4 +567,5 @@ class WidgetSuggestionProduct extends StatelessWidget {
     );
   }
 }
+
 

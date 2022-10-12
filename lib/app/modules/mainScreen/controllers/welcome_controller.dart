@@ -13,9 +13,17 @@ import 'package:producto/app/utils/widgets_utils_app.dart';
 import '../../splash/controllers/splash_controller.dart';
 
 class HomeController extends GetxController {
+
   // controllers
   SplashController homeController = Get.find<SplashController>();
 
+  // index postion items horizonal : lista de marcas de los productos
+  int _indexMarksList = 999 ; /// el valor 999 significa que no ahi ningun elemento seleccionado
+  int get getIndextMarksListHorzontal => _indexMarksList;
+  set setIndexMarkListHorizontal( int index ){
+    _indexMarksList=index;
+    update(['marks']);
+  }
 
   // Guide user : Catalogue
   bool catalogUserHuideVisibility=false;

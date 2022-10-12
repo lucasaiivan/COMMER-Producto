@@ -290,29 +290,6 @@ class CatalogueScreenView extends StatelessWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                /* // en la primera posición muestra el botón para agregar un nuevo objeto
-                if (index == 0) {
-                  // item defaul add
-                  return Card(
-                    elevation: 0,
-                    color: Colors.grey.withOpacity(0.1),
-                    child: Stack(
-                      children: [
-                        Center(
-                            child: Icon(Icons.add,
-                                color: Colors.grey.withOpacity(0.8), size: 30)),
-                        Positioned.fill(
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () => Get.toNamed(Routes.PRODUCTS_SEARCH, arguments: {'idProduct': ''}),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                } */
 
                 // mostramos 15 elementos vacíos de los cuales el primero tendrá un icono 'add'
                 if ((index) <= controller.getCatalogueLoad.length-1) {
@@ -487,7 +464,6 @@ class CatalogueScreenView extends StatelessWidget {
             Get.back();
           },
         ),
-        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: controller.getProfileAccountSelected.image == ""
@@ -511,7 +487,6 @@ class CatalogueScreenView extends StatelessWidget {
             Get.toNamed(Routes.ACCOUNT);
           },
         ),
-        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: Icon(Icons.logout),
@@ -521,14 +496,8 @@ class CatalogueScreenView extends StatelessWidget {
               ''),
           onTap: controller.showDialogCerrarSesion,
         ),
-        Row(
-          children: [
-            // text
-            Padding(padding: const EdgeInsets.all(12.0),child: Text("Más",  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))),
-            // divider
-            Expanded(child: Divider(endIndent: 12.0,indent: 12.0,height: 2.0,thickness: 2.0,)),
-          ],
-        ),
+        Divider(thickness: 0.4),
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 20),child: Text("Más",  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))),
         ListTile(
               leading: const Icon(Icons.launch_rounded),
               title: const Text('Registra tus ventas'),
@@ -564,7 +533,6 @@ class CatalogueScreenView extends StatelessWidget {
             }
           },
         ),
-        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
@@ -585,7 +553,6 @@ class CatalogueScreenView extends StatelessWidget {
             }
           },
         ),
-        Divider(endIndent: 12.0, indent: 12.0, height: 0.0),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
           leading: Padding(
@@ -604,23 +571,12 @@ class CatalogueScreenView extends StatelessWidget {
                 'Hey uso esta gran aplicación que te permite comparar los precios 🧐 $url');
           },
         ),
-        Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text("Información legal",
-                  style:
-                      TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-            ),
-            Expanded(
-              child: Divider(
-                endIndent: 12.0,
-                indent: 12.0,
-                height: 2.0,
-                thickness: 2.0,
-              ),
-            ),
-          ],
+        Divider(thickness: 0.4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 20),
+          child: Text("Información legal",
+              style:
+                  TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
         ),
         ListTile(
           contentPadding: EdgeInsets.all(12.0),
@@ -765,7 +721,11 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: controller.getCatalogueMarksFilter.length,
               itemBuilder: (BuildContext c, int index) {
+
                 // get values
+                final Color colorDashedCircle = Colors.grey.withOpacity(0.5);
+                final Color colorDashedCircleSelected = Colors.blue;
+                List<Color> gradientColor = controller.getIndextMarksListHorzontal==999?[colorDashedCircle,colorDashedCircle]:controller.getIndextMarksListHorzontal==index?[colorDashedCircleSelected,colorDashedCircleSelected]:[colorDashedCircle,colorDashedCircle];
                 Mark marca = controller.getCatalogueMarksFilter[index];
                 if (marca.name == '') return Container();
 
@@ -774,12 +734,15 @@ class WidgetsListaHorizontalMarks extends StatelessWidget {
                   width: 81.0,height: 100.0,
                   padding: EdgeInsets.all(5.0),
                   child: GestureDetector(
-                    onTap: () {controller.setMarkSelect = marca;},
+                    onTap: () {
+                      controller.setMarkSelect = marca;
+                      controller.setIndexMarkListHorizontal = index;
+                    },
                     child: Column(
                       children: <Widget>[
                         DashedCircle(
                           dashes:controller.getNumeroDeProductosDeMarca(id: marca.id),
-                          gradientColor: colorGradientInstagram,
+                          gradientColor: gradientColor,
                           child: Padding(padding: EdgeInsets.all(5.0),child:ComponentApp.viewCircleImage(url: marca.image, texto: marca.name, size: 50)),
                         ),
                         SizedBox(height: 8.0),

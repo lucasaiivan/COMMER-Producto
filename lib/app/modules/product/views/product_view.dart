@@ -668,38 +668,40 @@ class Product extends GetView<ProductController> {
                         ? 'https://www.barcelonabeta.org/sites/default/files/2018-04/default-image_0.png'
                         : controller.getProduct.image,
                     placeholder: (context, url) => FadeInImage(
-                      image: AssetImage("assets/loading.gif"),
+                      image: AssetImage("assets/no_image.png"),
                       placeholder: AssetImage("assets/loading.gif"),
                       fit: BoxFit.cover,
                     ),
-                    errorWidget: (context, url, error) => Container(
-                      color: Colors.grey,
-                      width: Get.width,
-                      height: Get.width,
-                      child: Center(
-                        child: Text(
-                          controller.getProduct.description.substring(0, 1),
-                          style: TextStyle(
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.25),
-                        ),
-                      ),
+                    errorWidget: (context, url, error) => FadeInImage(
+                      image: AssetImage("assets/no_image.png"),
+                      placeholder: AssetImage("assets/loading.gif"),
+                      fit: BoxFit.cover,
                     ),
                   ),
                   
                   //información de favorito y control de stock
                   controller.getStateCheckProductInCatalogue?Container()
-                    :Flexible(
+                    :Material(
+                      color: Colors.transparent,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
                             children: [
-                              controller.getProduct.favorite?Padding(padding: const EdgeInsets.only(left: 12,top:12),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,)):Container(),
-                              controller.getProduct.quantityStock<=controller.getProduct.alertStock == controller.getProduct.stock?Padding(padding: const EdgeInsets.only(left: 12,top:12),child: Chip(label: Text(controller.getProduct.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,)):Container(),
                               Spacer(),
                               // marca
                               Padding(padding: const EdgeInsets.all(8.0),child: CircleAvatar(radius: 30, backgroundColor: Get.theme.scaffoldBackgroundColor,child: Padding(padding: const EdgeInsets.all(2.0),child: utilsWidget.ComponentApp.viewCircleImage(size: 60,url: controller.getMark.image,texto: controller.getMark.name)),),
                               ),
+                            ]  ,
+                      ),
+                    ),
+                  controller.getStateCheckProductInCatalogue?Container()
+                    :Material(
+                      color: Colors.transparent,
+                      child: Wrap(
+                        //mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              controller.getProduct.favorite?Flexible(flex: 1,child: Padding(padding: const EdgeInsets.only(left: 12,top:12),child: Chip(label: Text('Favorito',style: TextStyle(color: Colors.white)),backgroundColor: Colors.amber,))):Container(),
+                              controller.getProduct.quantityStock<=controller.getProduct.alertStock == controller.getProduct.stock?Flexible(flex:1,child: Padding(padding: const EdgeInsets.only(left: 12,top:12),child: Chip(label: Text(controller.getProduct.quantityStock==0?'Sin stock':'Bajo en Stock',style: TextStyle(color: Colors.white)),backgroundColor: Colors.grey,))):Container(),
+                            
                             ]  ,
                       ),
                     ),
@@ -1077,22 +1079,15 @@ class WidgetImagen extends StatelessWidget {
               fit: BoxFit.cover,
               imageUrl: producto.image,
               placeholder: (context, url) => FadeInImage(
-                image: AssetImage("assets/loading.gif"),
-                placeholder: AssetImage("assets/loading.gif"),
-                fit: BoxFit.cover,
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: Colors.grey,
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width,
-                child: Center(
-                  child: Text(
-                    producto.description.substring(0, 3),
-                    style: TextStyle(
-                        fontSize: MediaQuery.of(context).size.width * 0.25),
-                  ),
-                ),
-              ),
+                      image: AssetImage("assets/no_image.png"),
+                      placeholder: AssetImage("assets/loading.gif"),
+                      fit: BoxFit.cover,
+                    ),
+              errorWidget: (context, url, error) => FadeInImage(
+                      image: AssetImage("assets/no_image.png"),
+                      placeholder: AssetImage("assets/loading.gif"),
+                      fit: BoxFit.cover,
+                    ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
