@@ -59,8 +59,7 @@ class Product extends GetView<ProductController> {
           positionFactor: 1,
         ),
       ],
-      grabbing: persistentHeader(
-          colorBackground: Get.theme.cardColor, colorText: Colors.white),
+      grabbing: persistentHeader( colorBackground: Get.theme.cardColor, colorText: Colors.white),
       grabbingHeight: 170,
       sheetAbove: null,
       sheetBelow: SnappingSheetContent(
